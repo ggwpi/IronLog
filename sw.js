@@ -1,6 +1,6 @@
-const CACHE = 'ironlog-foundation-v3';
+const CACHE = 'ironlog-foundation-v4';
 const CORE = [
-  '/', '/index.html', '/manifest.webmanifest', '/src/styles.css', '/src/app.js',
+  '/', '/index.html', '/manifest.webmanifest', '/src/styles.css', '/src/nav-glass.css', '/src/app.js',
   '/src/core/store.js', '/src/core/storage.js', '/src/core/router.js', '/src/core/escape-html.js',
   '/src/components/icons.js', '/src/components/ui.js', '/src/components/bottom-nav.js',
   '/src/features/auth/login-screen.js', '/src/features/home/home-screen.js',
