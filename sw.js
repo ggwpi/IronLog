@@ -1,5 +1,5 @@
-const CACHE='ironlog-v4-2';
-const CORE=['/','/index.html','/src/styles.css','/src/data.js','/src/storage.js','/src/app.js','/manifest.webmanifest'];
+const CACHE='ironlog-v4-3';
+const CORE=['/','/index.html','/src/styles.css','/src/data.js','/src/storage.js','/src/app.js','/src/bigscreen-v2.js','/manifest.webmanifest'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
