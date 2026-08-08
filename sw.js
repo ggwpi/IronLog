@@ -1,4 +1,4 @@
-const CACHE='ironlog-v3-1';
+const CACHE='ironlog-v3-2';
 const CORE=['/','/index.html','/src/styles.css','/src/data.js','/src/storage.js','/src/app.js','/manifest.webmanifest'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
