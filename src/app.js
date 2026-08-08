@@ -3,7 +3,7 @@ import { navigate, routeFromLocation, listenToNavigation } from './core/router.j
 import { readSession, writeSession, readSettings, writeSettings } from './core/storage.js';
 import { BottomNav } from './components/bottom-nav.js';
 import { LoginScreen } from './features/auth/login-screen.js';
-import { HomeScreen } from './features/home/home-screen.js';
+import { HomeScreen, hydrateHomeArt } from './features/home/home-screen.js';
 import { WorkoutsScreen } from './features/workouts/workouts-screen.js';
 import { StatisticsScreen } from './features/statistics/statistics-screen.js';
 import { SettingsScreen } from './features/settings/settings-screen.js';
@@ -53,6 +53,7 @@ function render() {
     <div class="toast-region" id="toastRegion" aria-live="polite"></div>
   </div>`;
 
+  if (state.route === 'home') hydrateHomeArt(app);
   bindApp();
 }
 
