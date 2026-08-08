@@ -10,67 +10,192 @@ jobs:
   recover:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
-      - name: Download payload
+      - name: Open authenticated Vercel session
+        shell: bash
         run: |
           set -euo pipefail
-          rm -rf .recovery_tmp recovered
-          mkdir -p .recovery_tmp recovered
-          BASE="https://ironlog-nd8ylypxu-ziveliya1-4493s-projects.vercel.app"
-          SHARE="FgZp65T0p4vsxQvTzRPWTcXSNQca365Z"
+          rm -rf .recovery_tmp recovered src
+          mkdir -p .recovery_tmp recovered src
 
-          for i in 0 1 2 3 4; do
-            curl --connect-timeout 10 --max-time 60 --retry 2 -fsSL \
-              "${BASE}/p${i}.txt?_vercel_share=${SHARE}&nocache=$(date +%s)" \
-              -o ".recovery_tmp/p${i}.txt"
-            echo "p${i}: $(wc -c < .recovery_tmp/p${i}.txt) bytes"
-          done
+          SHARE_URL='https://ironlog-reference-ui-v4-pmnykpqgx-ziveliya1-4493s-projects.vercel.app/?_vercel_share=Sep0E89MtBi4jdlLpyT9RCVQ1Z15YKtK'
 
-      - name: Recover
+          echo 'Bootstrapping Vercel share session...'
+          curl --connect-timeout 10 --max-time 60 --retry 2 --retry-all-errors \
+            --compressed -fsSL \
+            -c .recovery_tmp/vercel.cookies \
+            -b .recovery_tmp/vercel.cookies \
+            "$SHARE_URL" \
+            -o .recovery_tmp/bootstrap.html
+
+          echo "Bootstrap response: $(wc -c < .recovery_tmp/bootstrap.html) bytes"
+          echo 'Cookie jar entries:'
+          grep -v '^#' .recovery_tmp/vercel.cookies || true
+
+      - name: Download stable IronLog payload
+        shell: bash
         run: |
           set -euo pipefail
-          python3 <<'PY'
+          BASE='https://ironlog-reference-ui-v4-pmnykpqgx-ziveliya1-4493s-projects.vercel.app'
+
+          curl --connect-timeout 10 --max-time 90 --retry 3 --retry-all-errors \
+            --compressed -fsSL \
+            -c .recovery_tmp/vercel.cookies \
+            -b .recovery_tmp/vercel.cookies \
+            -H 'Cache-Control: no-cache' \
+            "${BASE}/payload.b64?recovery=$(date +%s)" \
+            -D .recovery_tmp/payload.headers \
+            -o .recovery_tmp/payload.b64
+
+          echo "payload.b64: $(wc -c < .recovery_tmp/payload.b64) bytes"
+          echo -n 'first chars: '
+          head -c 32 .recovery_tmp/payload.b64 || true
+          echo
+
+          if grep -qi '^[[:space:]]*<html' .recovery_tmp/payload.b64; then
+            echo 'ERROR: Vercel returned an HTML protection page instead of payload.b64'
+            head -c 500 .recovery_tmp/payload.b64
+            exit 1
+          fi
+
+      - name: Decode and reconstruct full source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
           from pathlib import Path
-          import re, base64, gzip, html
+          import base64
+          import gzip
+          import hashlib
+          import html as htmlmod
+          import re
 
-          p = Path('.recovery_tmp')
-          raw_html = ''
+          root = Path('.')
+          payload_path = root / '.recovery_tmp' / 'payload.b64'
+          b64 = re.sub(r'\s+', '', payload_path.read_text(encoding='utf-8'))
 
-          for i in range(5):
-              text = (p/f'p{i}.txt').read_text(errors='ignore')
-              print('chunk', i, text[:100])
-              m = re.search(r'(<html[\s\S]*?</html>)', text, re.I)
-              if m:
-                  raw_html += m.group(1)
+          print('Base64 chars:', len(b64))
+          print('Prefix:', b64[:16])
 
-          # The Vercel endpoint is returning an HTML wrapper, not the payload directly.
-          # Search inside it for the embedded base64/gzip data.
-          matches = re.findall(r'[A-Za-z0-9+/]{100,}={0,2}', raw_html)
+          if not b64.startswith('H4sI'):
+              raise SystemExit('payload.b64 does not look like a gzip Base64 stream')
 
-          recovered = None
-          for candidate in matches:
-              try:
-                  data = base64.b64decode(candidate + '='*((4-len(candidate)%4)%4))
-                  out = gzip.decompress(data).decode('utf-8')
-                  if '<html' in out.lower():
-                      recovered = out
-                      break
-              except Exception:
-                  pass
+          if not re.fullmatch(r'[A-Za-z0-9+/]*={0,2}', b64):
+              raise SystemExit('payload.b64 contains non-Base64 characters')
 
-          if recovered is None:
-              raise Exception('Could not locate embedded IronLog gzip payload in Vercel HTML response')
+          if len(b64) % 4 == 1:
+              raise SystemExit('payload.b64 has an impossible Base64 length')
+          b64 += '=' * ((4 - len(b64) % 4) % 4)
 
-          Path('index.html').write_text(recovered, encoding='utf-8')
-          Path('recovered/original-deployment.html').write_text(recovered, encoding='utf-8')
-          print('Recovered HTML:', len(recovered))
+          compressed = base64.b64decode(b64, validate=True)
+          print('Compressed bytes:', len(compressed))
+          print('Gzip magic:', compressed[:2].hex())
+
+          app_bytes = gzip.decompress(compressed)
+          app_html = app_bytes.decode('utf-8')
+
+          if '<html' not in app_html.lower() or 'IronLog' not in app_html:
+              raise SystemExit('Decoded payload is not the IronLog application')
+
+          recovered = root / 'recovered'
+          recovered.mkdir(parents=True, exist_ok=True)
+          src = root / 'src'
+          src.mkdir(parents=True, exist_ok=True)
+
+          # Exact runnable production snapshot.
+          (root / 'index.html').write_text(app_html, encoding='utf-8')
+          (recovered / 'original-deployment.html').write_text(app_html, encoding='utf-8')
+          (recovered / 'payload.b64').write_text(b64 + '\n', encoding='utf-8')
+
+          # Readable extracted source copies for future editing/refactoring.
+          style_blocks = re.findall(r'<style(?:\s[^>]*)?>(.*?)</style>', app_html, flags=re.I | re.S)
+          script_blocks = re.findall(r'<script(?![^>]*\bsrc=)(?:\s[^>]*)?>(.*?)</script>', app_html, flags=re.I | re.S)
+
+          css = '\n\n/* ---- recovered style block ---- */\n\n'.join(
+              s.strip() for s in style_blocks if s.strip()
+          )
+          js = '\n\n// ---- recovered script block ----\n\n'.join(
+              s.strip() for s in script_blocks if s.strip()
+          )
+
+          (src / 'styles.css').write_text(css + ('\n' if css else ''), encoding='utf-8')
+          (src / 'app.js').write_text(js + ('\n' if js else ''), encoding='utf-8')
+
+          external_scripts = re.findall(
+              r'<script[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>', app_html, flags=re.I
+          )
+          links = re.findall(
+              r'<link[^>]*\bhref=["\']([^"\']+)["\'][^>]*>', app_html, flags=re.I
+          )
+
+          inventory = [
+              '# IronLog recovered source inventory',
+              '',
+              '- Recovery source project: `ironlog-reference-ui-v4`',
+              '- Recovery deployment: `dpl_7Jf6vMhxTzfWJE5iRahe9K5Kjn9H`',
+              f'- Recovered HTML bytes: {len(app_bytes)}',
+              f'- SHA-256: `{hashlib.sha256(app_bytes).hexdigest()}`',
+              f'- Inline style blocks: {len(style_blocks)}',
+              f'- Inline script blocks: {len(script_blocks)}',
+              f'- External script references: {len(external_scripts)}',
+              f'- Link references: {len(links)}',
+              '',
+              '## External scripts',
+          ] + [f'- `{htmlmod.escape(x)}`' for x in external_scripts] + [
+              '',
+              '## Link references',
+          ] + [f'- `{htmlmod.escape(x)}`' for x in links]
+
+          (recovered / 'INVENTORY.md').write_text('\n'.join(inventory) + '\n', encoding='utf-8')
+
+          print('SUCCESS')
+          print('Recovered HTML bytes:', len(app_bytes))
+          print('Inline CSS blocks:', len(style_blocks))
+          print('Inline JS blocks:', len(script_blocks))
           PY
 
-      - name: Commit
+      - name: Write repository metadata
+        shell: bash
         run: |
-          git config user.name "IronLog Recovery Bot"
-          git config user.email actions@users.noreply.github.com
-          git add .
-          git commit -m "[recovery-output] Restore IronLog source" || true
-          git push
+          cat > README.md <<'EOF'
+          # IronLog
+
+          Full runnable IronLog source reconstructed from a stable historical Vercel deployment.
+
+          ## Source layout
+
+          - `index.html` — exact decoded runnable IronLog application snapshot.
+          - `src/styles.css` — inline CSS extracted from the recovered application.
+          - `src/app.js` — inline JavaScript extracted from the recovered application.
+          - `recovered/original-deployment.html` — preserved exact decoded snapshot.
+          - `recovered/payload.b64` — preserved compressed Base64 source payload.
+          - `recovered/INVENTORY.md` — recovery metadata and external references.
+
+          The exact `index.html` snapshot is the behavioral source of truth. The files under `src/` are readable extracted copies intended for maintainable refactoring.
+          EOF
+
+          cat > vercel.json <<'EOF'
+          {
+            "cleanUrls": true,
+            "trailingSlash": false
+          }
+          EOF
+
+      - name: Commit recovered source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .recovery_tmp
+          git config user.name 'IronLog Recovery Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html src recovered README.md vercel.json
+          if git diff --cached --quiet; then
+            echo 'No recovery changes to commit.'
+            exit 0
+          fi
+          git commit -m '[recovery-output] Restore full IronLog source from stable Vercel payload'
+          git push origin HEAD:main
