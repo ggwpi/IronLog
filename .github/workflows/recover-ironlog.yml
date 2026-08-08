@@ -1,0 +1,127 @@
+name: Recover IronLog source
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  recover:
+    if: ${{ !contains(github.event.head_commit.message || '', '[recovery-output]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download and reconstruct deployed app
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .recovery_tmp recovered src
+          mkdir -p .recovery_tmp recovered src
+
+          for i in 0 1 2 3 4; do
+            curl --fail --silent --show-error --location \
+              "https://ironlog-v2-two.vercel.app/p${i}.txt" \
+              -o ".recovery_tmp/p${i}.txt"
+          done
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, gzip, re, html as htmlmod
+
+          root = Path('.')
+          parts = [(root / '.recovery_tmp' / f'p{i}.txt').read_text(encoding='utf-8') for i in range(5)]
+          b64 = re.sub(r'\s+', '', ''.join(parts))
+
+          if len(b64) % 4:
+              b64 += '=' * (4 - len(b64) % 4)
+
+          raw = base64.b64decode(b64, validate=True)
+          app_html = gzip.decompress(raw).decode('utf-8')
+
+          if '<html' not in app_html.lower() or 'IronLog' not in app_html:
+              raise SystemExit('Decoded payload does not look like IronLog HTML')
+
+          (root / 'recovered' / 'original-deployment.html').write_text(app_html, encoding='utf-8')
+          # Preserve an immediately deployable exact copy at repository root.
+          (root / 'index.html').write_text(app_html, encoding='utf-8')
+
+          style_blocks = re.findall(r'<style(?:\s[^>]*)?>(.*?)</style>', app_html, flags=re.I | re.S)
+          script_blocks = re.findall(r'<script(?![^>]*\bsrc=)(?:\s[^>]*)?>(.*?)</script>', app_html, flags=re.I | re.S)
+
+          css = '\n\n/* ---- recovered style block ---- */\n\n'.join(s.strip() for s in style_blocks if s.strip())
+          js = '\n\n// ---- recovered script block ----\n\n'.join(s.strip() for s in script_blocks if s.strip())
+
+          (root / 'src' / 'styles.css').write_text(css + ('\n' if css else ''), encoding='utf-8')
+          (root / 'src' / 'app.js').write_text(js + ('\n' if js else ''), encoding='utf-8')
+
+          # Save the exact deployment payload pieces as forensic/recovery inputs too.
+          payload_dir = root / 'recovered' / 'payload'
+          payload_dir.mkdir(parents=True, exist_ok=True)
+          for i in range(5):
+              (payload_dir / f'p{i}.txt').write_text(parts[i], encoding='utf-8')
+
+          # Produce a lightweight inventory useful for future refactors.
+          external_scripts = re.findall(r'<script[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>', app_html, flags=re.I)
+          links = re.findall(r'<link[^>]*\bhref=["\']([^"\']+)["\'][^>]*>', app_html, flags=re.I)
+          inventory = [
+              '# IronLog recovered source inventory',
+              '',
+              f'- Recovered HTML bytes: {len(app_html.encode("utf-8"))}',
+              f'- Inline style blocks: {len(style_blocks)}',
+              f'- Inline script blocks: {len(script_blocks)}',
+              f'- External script references: {len(external_scripts)}',
+              f'- Link references: {len(links)}',
+              '',
+              '## External scripts',
+          ] + [f'- `{htmlmod.escape(x)}`' for x in external_scripts] + [
+              '', '## Link references',
+          ] + [f'- `{htmlmod.escape(x)}`' for x in links]
+          (root / 'recovered' / 'INVENTORY.md').write_text('\n'.join(inventory) + '\n', encoding='utf-8')
+          PY
+
+      - name: Add recovery documentation
+        shell: bash
+        run: |
+          cat > README.md <<'EOF'
+          # IronLog
+
+          This repository was reconstructed from the live IronLog Vercel production deployment.
+
+          ## Recovered files
+
+          - `index.html` — exact decoded application HTML from production; deployable as-is.
+          - `recovered/original-deployment.html` — preserved byte-for-byte decoded HTML snapshot.
+          - `src/styles.css` — all inline CSS blocks extracted for maintainable source editing.
+          - `src/app.js` — all inline JavaScript blocks extracted for maintainable source editing.
+          - `recovered/payload/p0.txt` … `p4.txt` — original deployed Base64/GZIP payload pieces.
+          - `recovered/INVENTORY.md` — reconstruction inventory and external references.
+
+          The production snapshot remains the source of truth for behavior. `src/` is an extracted readable copy intended for refactoring; `index.html` is the exact recovered runnable app.
+          EOF
+
+          cat > vercel.json <<'EOF'
+          {
+            "cleanUrls": true,
+            "trailingSlash": false
+          }
+          EOF
+
+      - name: Commit recovered source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .recovery_tmp
+          git config user.name "IronLog Recovery Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html src recovered README.md vercel.json
+          if git diff --cached --quiet; then
+            echo "No recovery changes to commit."
+            exit 0
+          fi
+          git commit -m "[recovery-output] Restore full IronLog source from Vercel"
+          git push
