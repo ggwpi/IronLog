@@ -14,19 +14,45 @@ function safeParse(value, fallback) {
   }
 }
 
+function safeGet(key) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safeSet(key, value) {
+  try {
+    window.localStorage.setItem(key, value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function safeRemove(key) {
+  try {
+    window.localStorage.removeItem(key);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function readSession() {
-  return safeParse(localStorage.getItem(SESSION_KEY), null);
+  return safeParse(safeGet(SESSION_KEY), null);
 }
 
 export function writeSession(session) {
-  if (!session) localStorage.removeItem(SESSION_KEY);
-  else localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  if (!session) return safeRemove(SESSION_KEY);
+  return safeSet(SESSION_KEY, JSON.stringify(session));
 }
 
 export function readSettings() {
-  return { ...defaults, ...safeParse(localStorage.getItem(SETTINGS_KEY), {}) };
+  return { ...defaults, ...safeParse(safeGet(SETTINGS_KEY), {}) };
 }
 
 export function writeSettings(settings) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...defaults, ...settings }));
+  return safeSet(SETTINGS_KEY, JSON.stringify({ ...defaults, ...settings }));
 }
