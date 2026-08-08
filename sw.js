@@ -1,47 +1,26 @@
-const CACHE='ironlog-v5-1';
-const CORE=[
-  '/',
-  '/index.html',
-  '/src/styles.css',
-  '/src/bigscreen.css',
-  '/src/data.js',
-  '/src/storage.js',
-  '/src/anatomy/chest.js',
-  '/src/anatomy/biceps.js',
-  '/src/anatomy/triceps.js',
-  '/src/anatomy/shoulders.js',
-  '/src/anatomy/back.js',
-  '/src/anatomy/abs.js',
-  '/src/anatomy/quads.js',
-  '/src/anatomy/hamstrings.js',
-  '/src/anatomy/glutes.js',
-  '/src/anatomy/calves.js',
-  '/src/app.js',
-  '/src/bigscreen.js',
-  '/manifest.webmanifest'
+const CACHE = 'ironlog-foundation-v1';
+const CORE = [
+  '/', '/index.html', '/manifest.webmanifest', '/src/styles.css', '/src/app.js',
+  '/src/core/store.js', '/src/core/storage.js', '/src/core/router.js', '/src/core/escape-html.js',
+  '/src/components/icons.js', '/src/components/ui.js', '/src/components/bottom-nav.js',
+  '/src/features/auth/login-screen.js', '/src/features/home/home-screen.js',
+  '/src/features/workouts/workouts-screen.js', '/src/features/statistics/statistics-screen.js',
+  '/src/features/settings/settings-screen.js',
 ];
 
-self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
+self.addEventListener('install', (event) => {
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)).then(() => self.skipWaiting()));
 });
 
-self.addEventListener('activate',event=>{
-  event.waitUntil(
-    caches.keys()
-      .then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key))))
-      .then(()=>self.clients.claim())
-  );
+self.addEventListener('activate', (event) => {
+  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))).then(() => self.clients.claim()));
 });
 
-self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET') return;
-  event.respondWith(
-    fetch(event.request)
-      .then(response=>{
-        const copy=response.clone();
-        caches.open(CACHE).then(cache=>cache.put(event.request,copy));
-        return response;
-      })
-      .catch(()=>caches.match(event.request).then(response=>response||caches.match('/index.html')))
-  );
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  event.respondWith(fetch(event.request).then((response) => {
+    const copy = response.clone();
+    caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+    return response;
+  }).catch(() => caches.match(event.request).then((cached) => cached || caches.match('/index.html'))));
 });
