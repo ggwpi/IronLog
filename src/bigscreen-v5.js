@@ -7,7 +7,7 @@
   v6.defer = true;
   v6.addEventListener('load', () => {
     const clean = document.createElement('script');
-    clean.src = '/src/bigscreen-v7.js?v=7';
+    clean.src = '/src/bigscreen-v7.js?v=8';
     clean.defer = true;
     document.head.appendChild(clean);
   }, { once:true });
