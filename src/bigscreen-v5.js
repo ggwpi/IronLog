@@ -1,118 +1,190 @@
 (() => {
   'use strict';
+
   if (window.__IRONLOG_BIGSCREEN_V5__) return;
   window.__IRONLOG_BIGSCREEN_V5__ = true;
 
-  const FRONT = 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Muscles_anterior.png/500px-Muscles_anterior.png';
-  const BACK = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Muscles_posterior.png/500px-Muscles_posterior.png';
-  const commons = name => `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(name)}?width=640`;
+  const FRONT_IMG = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Muscular_system.svg/500px-Muscular_system.svg.png';
+  const BACK_IMG = 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Muscular_system-back.svg/500px-Muscular_system-back.svg.png';
 
-  const exerciseThumbs = {
-    'preacher-curl': commons('Preacher curl.webp'),
-    'leg-press-heavy': commons('Leg Press 1.jpg'),
-    'leg-press-volume': commons('Leg Press 1.jpg'),
-    'shoulder-press-machine': commons('ShoulderPressMachineExercise.JPG'),
-    'walking-lunges': commons('Walking-lunges-3.png'),
-    'standing-calf': commons('Calf-raises-1.png'),
-    'seated-calf': commons('SeatedCalfRaiseMachineExercise.JPG')
+  const thumbIds = {
+    'preacher-curl': 'Zbs3ko8ycyg',
+    'overhead-cable-ext': 'GzmlxvSFE7A',
+    'overhead-cable-ext-b': 'GzmlxvSFE7A',
+    'rear-delt-machine': 'o5OvdIVV61M'
   };
 
-  const style = document.createElement('style');
-  style.id = 'ironlog-bigscreen-v5';
-  style.textContent = String.raw`
-/* v5 — final reference fit */
-.workout-view{background:radial-gradient(ellipse 54% 42% at 50% 42%,rgba(88,102,111,.075),transparent 68%),radial-gradient(ellipse 40% 34% at 50% 43%,rgba(204,255,0,.025),transparent 72%),linear-gradient(180deg,#020608 0%,#05090b 53%,#030709 100%)!important}
-.big-header{border-bottom-color:rgba(55,67,74,.08)!important;background:transparent!important}
-.big-round-btn{border-color:rgba(76,89,97,.38)!important;box-shadow:inset 0 1px rgba(255,255,255,.02),0 12px 30px rgba(0,0,0,.16)!important}
-.big-workout-content{grid-template-rows:78px minmax(0,1fr) 118px 58px 70px!important;gap:8px!important;padding-top:6px!important}
-.big-title-block{padding-top:0!important;align-content:start!important}.big-title-block h1{font-size:clamp(32px,8.8vw,46px)!important;line-height:.95!important;margin-bottom:9px!important}.big-title-block h1.title-long{font-size:clamp(26px,7vw,36px)!important}.big-title-block h1.title-very-long{font-size:clamp(23px,6.1vw,31px)!important}
-.video-link{font-size:13px!important}.video-link small{font-size:9.5px!important;color:#737c82!important}
-.big-hero-layout{grid-template-columns:minmax(112px,1fr) minmax(132px,1.16fr) minmax(112px,.94fr)!important;gap:3px!important;align-items:center!important}
-.set-progress-panel{transform:translateY(10%)!important}.big-ring{width:clamp(126px,33vw,148px)!important;height:clamp(126px,33vw,148px)!important}.big-ring:after{inset:9px!important}.big-ring strong{font-size:clamp(39px,10vw,49px)!important}.big-ring .ring-label{top:19%!important;font-size:10px!important}.big-ring .ring-caption{bottom:18%!important;font-size:9px!important}
-.anatomy-stage{transform:translateY(-7%)!important;isolation:isolate!important}.real-anatomy-photo{position:absolute!important;z-index:1!important;height:min(100%,356px)!important;width:auto!important;max-width:180px!important;object-fit:contain!important;opacity:.94!important;filter:grayscale(1) invert(1) contrast(1.22) brightness(.67)!important;mix-blend-mode:screen!important;pointer-events:none!important;transition:opacity .2s ease!important}.anatomy-stage .anatomy-glow{z-index:0!important;width:190px!important;height:290px!important;background:radial-gradient(circle,rgba(107,122,132,.095),rgba(204,255,0,.025) 44%,transparent 72%)!important;filter:blur(15px)!important}.anatomy-stage>.anatomy-figure{z-index:2!important;height:min(100%,350px)!important;width:auto!important;filter:none!important}.anatomy-stage>.anatomy-figure .body-shell,.anatomy-stage>.anatomy-figure .body-mid,.anatomy-stage>.anatomy-figure .body-highlight,.anatomy-stage>.anatomy-figure .anatomy-line{opacity:0!important}.anatomy-stage>.anatomy-figure .muscle-zone{opacity:0!important}.anatomy-stage>.anatomy-figure.zone-calves .zone-calves,.anatomy-stage>.anatomy-figure.zone-hamstrings .zone-hamstrings,.anatomy-stage>.anatomy-figure.zone-quads .zone-quads,.anatomy-stage>.anatomy-figure.zone-glutes .zone-glutes,.anatomy-stage>.anatomy-figure.zone-biceps .zone-biceps,.anatomy-stage>.anatomy-figure.zone-triceps .zone-triceps,.anatomy-stage>.anatomy-figure.zone-shoulders .zone-shoulders,.anatomy-stage>.anatomy-figure.zone-chest .zone-chest,.anatomy-stage>.anatomy-figure.zone-back .zone-back,.anatomy-stage>.anatomy-figure.zone-abs .zone-abs{opacity:.92!important;fill:#cfff00!important;stroke:#eaff69!important;filter:drop-shadow(0 0 5px rgba(207,255,0,.85)) drop-shadow(0 0 11px rgba(207,255,0,.35))!important}
-.muscle-target-card{height:158px!important;transform:translateY(10%)!important;border-color:rgba(61,73,81,.38)!important;background:linear-gradient(145deg,rgba(15,21,25,.78),rgba(6,11,14,.88))!important;box-shadow:0 14px 34px rgba(0,0,0,.1),inset 0 1px rgba(255,255,255,.012)!important}.muscle-target-card strong{font-size:13px!important;line-height:1.08!important}.muscle-target-card small{font-size:8.5px!important}.mini-anatomy-wrap{position:relative!important;width:82px!important;height:78px!important;overflow:hidden!important;background:radial-gradient(circle,rgba(100,116,126,.075),transparent 70%)!important}.mini-real-anatomy{position:absolute!important;z-index:1!important;left:50%!important;top:50%!important;height:118px!important;width:auto!important;transform:translate(-50%,-50%) scale(1.05)!important;filter:grayscale(1) invert(1) contrast(1.18) brightness(.63)!important;mix-blend-mode:screen!important;opacity:.9!important}.mini-anatomy-wrap svg{position:relative!important;z-index:2!important}.mini-anatomy-wrap svg .body-shell,.mini-anatomy-wrap svg .body-mid,.mini-anatomy-wrap svg .body-highlight,.mini-anatomy-wrap svg .anatomy-line,.mini-anatomy-wrap svg .muscle-zone{opacity:0!important}.mini-anatomy-wrap svg.zone-calves .zone-calves,.mini-anatomy-wrap svg.zone-hamstrings .zone-hamstrings,.mini-anatomy-wrap svg.zone-quads .zone-quads,.mini-anatomy-wrap svg.zone-glutes .zone-glutes,.mini-anatomy-wrap svg.zone-biceps .zone-biceps,.mini-anatomy-wrap svg.zone-triceps .zone-triceps,.mini-anatomy-wrap svg.zone-shoulders .zone-shoulders,.mini-anatomy-wrap svg.zone-chest .zone-chest,.mini-anatomy-wrap svg.zone-back .zone-back,.mini-anatomy-wrap svg.zone-abs .zone-abs{opacity:.96!important;fill:#cfff00!important;stroke:#eaff69!important}
-.big-metrics{height:118px!important;min-height:118px!important;gap:8px!important}.big-metric{height:118px!important;border-color:rgba(56,68,76,.36)!important;border-radius:19px!important;background:linear-gradient(150deg,rgba(13,19,23,.78),rgba(6,11,14,.9))!important;padding:10px 5px!important}.big-metric strong{font-size:clamp(27px,7.5vw,34px)!important;font-weight:820!important}.big-metric small{color:#929ba1!important;font-size:9.5px!important}.big-metric em{color:#828b91!important;font-size:8.5px!important}
-.big-actions{height:58px!important}.dark-action,.lime-action{height:58px!important;font-size:13.5px!important}.dark-action{border-color:rgba(56,68,76,.38)!important}.lime-action{background:linear-gradient(135deg,#d4f300,#b9df00)!important;border-color:#d0ef13!important;box-shadow:0 7px 21px rgba(196,230,0,.08)!important}
-.next-exercise-strip{height:70px!important;min-height:70px!important;border-color:rgba(56,68,76,.35)!important;background:linear-gradient(150deg,rgba(13,19,23,.8),rgba(6,11,14,.91))!important;padding:7px 12px!important;grid-template-columns:34px minmax(0,1fr) 52px 26px!important}.next-exercise-strip strong{font-size:15px!important}.next-exercise-strip small{font-size:9px!important;color:#858e94!important}.next-thumb{width:50px!important;height:50px!important;border-color:rgba(72,84,92,.38)!important}.next-thumb img{transform:none!important;filter:saturate(.7) contrast(1.08) brightness(.74)!important}
-@media(max-width:390px){.big-workout-content{grid-template-rows:76px minmax(0,1fr) 112px 56px 66px!important;gap:7px!important}.big-hero-layout{grid-template-columns:minmax(105px,1fr) minmax(122px,1.14fr) minmax(104px,.92fr)!important}.big-ring{width:clamp(118px,32vw,136px)!important;height:clamp(118px,32vw,136px)!important}.real-anatomy-photo{height:min(100%,330px)!important;max-width:168px!important}.anatomy-stage>.anatomy-figure{height:min(100%,326px)!important}.muscle-target-card{height:150px!important}.big-metrics,.big-metric{height:112px!important;min-height:112px!important}.next-exercise-strip{height:66px!important;min-height:66px!important}.next-thumb{width:47px!important;height:47px!important}}
-@media(max-height:760px){.big-workout-content{grid-template-rows:68px minmax(0,1fr) 96px 50px 56px!important}.big-title-block h1{font-size:clamp(26px,7vw,35px)!important}.big-title-block h1.title-long{font-size:clamp(22px,5.9vw,29px)!important}.real-anatomy-photo{height:min(100%,286px)!important}.anatomy-stage>.anatomy-figure{height:min(100%,280px)!important}.big-metrics,.big-metric{height:96px!important;min-height:96px!important}.big-actions,.dark-action,.lime-action{height:50px!important}.next-exercise-strip{height:56px!important;min-height:56px!important}.muscle-target-card{height:130px!important}}
+  const backZones = new Set(['back', 'triceps', 'hamstrings', 'glutes', 'calves']);
+  const cropByZone = {
+    shoulders: '90 120 820 480',
+    chest: '180 170 640 520',
+    back: '150 110 700 650',
+    biceps: '70 220 860 560',
+    triceps: '70 220 860 560',
+    abs: '250 300 500 620',
+    glutes: '220 570 560 420',
+    quads: '200 620 600 560',
+    hamstrings: '200 620 600 570',
+    calves: '230 900 540 460',
+    generic: '0 0 1000 1400'
+  };
+
+  const css = document.createElement('style');
+  css.id = 'ironlog-bigscreen-v5-assets';
+  css.textContent = String.raw`
+.workout-view{
+  background:
+    radial-gradient(ellipse 38% 34% at 50% 43%,rgba(196,224,232,.055),transparent 70%),
+    radial-gradient(ellipse 42% 36% at 50% 45%,rgba(207,255,0,.025),transparent 72%),
+    linear-gradient(180deg,#030709 0%,#050a0d 51%,#030709 100%)!important;
+}
+.big-header{border-bottom-color:rgba(35,45,51,.09)!important}
+.big-workout-content{grid-template-rows:80px minmax(0,1fr) 116px 59px 69px!important;gap:7px!important;padding-top:6px!important}
+.big-title-block{padding-top:0!important;align-content:start!important}
+.big-title-block h1{margin-bottom:7px!important;font-size:clamp(31px,8.25vw,43px)!important;line-height:.96!important}
+.big-title-block h1.title-long{font-size:clamp(25px,6.7vw,34px)!important}
+.big-title-block h1.title-very-long{font-size:clamp(22px,5.9vw,29px)!important}
+.video-link{font-size:12.5px!important}.video-link small{font-size:9.5px!important;color:#7f888e!important}
+.big-hero-layout{align-items:center!important;grid-template-columns:minmax(108px,.98fr) minmax(146px,1.22fr) minmax(112px,.93fr)!important;gap:2px!important}
+.set-progress-panel{transform:translateY(5%)!important}
+.big-ring{width:clamp(121px,32.5vw,145px)!important;height:clamp(121px,32.5vw,145px)!important}.big-ring:after{inset:9px!important}
+.anatomy-stage{transform:none!important;overflow:visible!important}
+.anatomy-figure.real-anatomy{height:min(100%,390px)!important;width:min(100%,278px)!important;max-width:none!important;overflow:visible!important;filter:drop-shadow(0 24px 34px rgba(0,0,0,.66)) drop-shadow(0 0 18px rgba(208,222,229,.06))!important}
+.real-anatomy .anatomy-base-image{filter:url(#v5mono)}.real-anatomy .anatomy-accent-image{filter:url(#v5green);opacity:.98}
+.muscle-target-card{height:166px!important;transform:translateY(5%)!important;padding:13px 8px 8px!important;border-color:rgba(59,71,79,.37)!important}
+.muscle-target-card strong{font-size:14px!important;line-height:1.08!important;margin-top:7px!important}
+.mini-anatomy-wrap{width:82px!important;height:80px!important;overflow:hidden!important;border-radius:13px!important}
+.mini-anatomy-wrap svg.real-anatomy{width:100%!important;height:100%!important;max-width:none!important;filter:none!important;transform:none!important}
+.big-metrics,.big-metric{height:116px!important;min-height:116px!important}.big-metric{border-color:rgba(52,64,71,.37)!important;border-radius:19px!important;background:linear-gradient(150deg,rgba(13,20,24,.78),rgba(7,12,15,.91))!important}.big-metric strong{font-size:clamp(26px,7.15vw,33px)!important;font-weight:820!important}
+.dark-action,.lime-action{height:59px!important}.lime-action{background:linear-gradient(135deg,#cbff00,#b8ed00)!important;border-color:#c5f50a!important;box-shadow:0 8px 23px rgba(192,237,0,.09)!important}
+.next-exercise-strip{height:69px!important;min-height:69px!important;padding-top:7px!important;padding-bottom:7px!important;grid-template-columns:35px minmax(0,1fr) 52px 25px!important}
+.next-thumb{width:49px!important;height:49px!important}.next-thumb img{width:100%!important;height:100%!important;object-fit:cover!important;transform:scale(1.06)!important;filter:saturate(.82) contrast(1.06) brightness(.78)!important}
+.next-exercise-strip strong{font-size:15px!important}.next-exercise-strip small{font-size:9px!important;color:#899198!important}
+.anatomy-credit{margin:12px 0 0;color:#657078;font-size:10px;line-height:1.45;text-align:center}.anatomy-credit a{color:#89959c;text-decoration:none}
+@media(max-width:390px){.big-workout-content{grid-template-rows:78px minmax(0,1fr) 112px 57px 66px!important;gap:6px!important}.big-hero-layout{grid-template-columns:minmax(102px,.96fr) minmax(138px,1.20fr) minmax(106px,.91fr)!important}.anatomy-figure.real-anatomy{height:min(100%,370px)!important;width:min(100%,264px)!important}.big-ring{width:clamp(116px,31.5vw,136px)!important;height:clamp(116px,31.5vw,136px)!important}.muscle-target-card{height:158px!important}.mini-anatomy-wrap{width:76px!important;height:74px!important}.big-metrics,.big-metric{height:112px!important;min-height:112px!important}.next-exercise-strip{height:66px!important;min-height:66px!important}}
+@media(max-height:760px){.big-workout-content{grid-template-rows:70px minmax(0,1fr) 96px 51px 56px!important;gap:5px!important}.anatomy-figure.real-anatomy{height:min(100%,318px)!important;width:min(100%,228px)!important}.big-ring{width:108px!important;height:108px!important}.muscle-target-card{height:132px!important}.big-metrics,.big-metric{height:96px!important;min-height:96px!important}.next-exercise-strip{height:56px!important;min-height:56px!important}}
 `;
-  document.head.appendChild(style);
+  document.head.appendChild(css);
 
-  function context() {
-    const p = window.IRONLOG_PROGRAM || [];
+  function zoneFromClass(node) {
+    if (!node) return 'generic';
+    const hit = Array.from(node.classList).find(c => c.startsWith('zone-') && c !== 'zone-generic');
+    return hit ? hit.slice(5) : 'generic';
+  }
+
+  function clipDefs() {
+    return String.raw`
+      <clipPath id="v5clip-shoulders"><ellipse cx="215" cy="285" rx="135" ry="105"/><ellipse cx="785" cy="285" rx="135" ry="105"/></clipPath>
+      <clipPath id="v5clip-chest"><path d="M265 260 Q500 180 735 260 L700 510 Q500 580 300 510Z"/></clipPath>
+      <clipPath id="v5clip-back"><path d="M245 235 Q500 130 755 235 L705 650 Q500 760 295 650Z"/></clipPath>
+      <clipPath id="v5clip-biceps"><ellipse cx="190" cy="485" rx="92" ry="175"/><ellipse cx="810" cy="485" rx="92" ry="175"/></clipPath>
+      <clipPath id="v5clip-triceps"><ellipse cx="185" cy="495" rx="88" ry="185"/><ellipse cx="815" cy="495" rx="88" ry="185"/></clipPath>
+      <clipPath id="v5clip-abs"><path d="M370 430 Q500 385 630 430 L610 795 Q500 850 390 795Z"/></clipPath>
+      <clipPath id="v5clip-glutes"><ellipse cx="405" cy="785" rx="135" ry="105"/><ellipse cx="595" cy="785" rx="135" ry="105"/></clipPath>
+      <clipPath id="v5clip-quads"><ellipse cx="385" cy="900" rx="105" ry="245"/><ellipse cx="615" cy="900" rx="105" ry="245"/></clipPath>
+      <clipPath id="v5clip-hamstrings"><ellipse cx="385" cy="925" rx="100" ry="240"/><ellipse cx="615" cy="925" rx="100" ry="240"/></clipPath>
+      <clipPath id="v5clip-calves"><ellipse cx="390" cy="1180" rx="82" ry="205"/><ellipse cx="610" cy="1180" rx="82" ry="205"/></clipPath>
+      <clipPath id="v5clip-generic"><rect width="0" height="0"/></clipPath>`;
+  }
+
+  function rendererMarkup(zone, mini = false) {
+    const back = backZones.has(zone);
+    const src = back ? BACK_IMG : FRONT_IMG;
+    return {
+      viewBox: mini ? (cropByZone[zone] || cropByZone.generic) : '0 0 1000 1400',
+      html: String.raw`
+        <defs>
+          <filter id="v5mono" x="-20%" y="-20%" width="140%" height="140%"><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncR type="linear" slope=".64" intercept=".025"/><feFuncG type="linear" slope=".68" intercept=".028"/><feFuncB type="linear" slope=".72" intercept=".035"/></feComponentTransfer></filter>
+          <filter id="v5green" x="-20%" y="-20%" width="140%" height="140%"><feColorMatrix values=".12 .12 .04 0 .18  .28 .56 .10 0 .30  .02 .05 .01 0 .00  0 0 0 1 0"/><feComponentTransfer><feFuncR type="linear" slope="1.15"/><feFuncG type="linear" slope="1.35"/><feFuncB type="linear" slope=".55"/></feComponentTransfer></filter>
+          ${clipDefs()}
+        </defs>
+        <image class="anatomy-base-image" href="${src}" x="0" y="0" width="1000" height="1400" preserveAspectRatio="xMidYMid meet"/>
+        <image class="anatomy-accent-image" href="${src}" x="0" y="0" width="1000" height="1400" preserveAspectRatio="xMidYMid meet" clip-path="url(#v5clip-${zone})"/>
+      `
+    };
+  }
+
+  function renderMain() {
+    const svg = document.getElementById('anatomyFigure');
+    if (!svg) return;
+    const zone = zoneFromClass(svg);
+    const key = `${zone}:${backZones.has(zone) ? 'back' : 'front'}`;
+    if (svg.dataset.v5Key === key) return;
+    const rendered = rendererMarkup(zone, false);
+    svg.innerHTML = rendered.html;
+    svg.setAttribute('viewBox', rendered.viewBox);
+    svg.classList.add('real-anatomy');
+    svg.dataset.v4 = '1';
+    svg.dataset.v5Key = key;
+    svg.setAttribute('data-view', backZones.has(zone) ? 'back' : 'front');
+  }
+
+  function renderMini() {
+    const main = document.getElementById('anatomyFigure');
+    const mini = document.querySelector('.mini-anatomy-wrap svg');
+    if (!main || !mini) return;
+    const zone = zoneFromClass(main);
+    if (mini.dataset.v5Key === zone) return;
+    const rendered = rendererMarkup(zone, true);
+    mini.innerHTML = rendered.html;
+    mini.setAttribute('viewBox', rendered.viewBox);
+    mini.setAttribute('class', `anatomy-figure real-anatomy zone-${zone}`);
+    mini.dataset.v4 = '1';
+    mini.dataset.v5Key = zone;
+    mini.setAttribute('data-view', backZones.has(zone) ? 'back' : 'front');
+  }
+
+  function workoutContext() {
+    const program = window.IRONLOG_PROGRAM || [];
     const short = (document.getElementById('bigWorkoutTitle')?.textContent || '').trim();
-    const ixText = document.getElementById('exerciseIndex')?.textContent || '';
-    const match = ixText.match(/תרגיל\s+(\d+)/);
+    const indexText = document.getElementById('exerciseIndex')?.textContent || '';
+    const match = indexText.match(/תרגיל\s+(\d+)/);
     const index = match ? Number(match[1]) - 1 : 0;
-    const workout = p.find(w => String(w.short).trim() === short);
-    return {workout,index};
+    const workout = program.find(w => String(w.short).trim() === short) || program.find(w => String(w.title).trim() === short);
+    return { workout, index };
   }
 
-  function currentView() {
-    return document.getElementById('anatomyFigure')?.getAttribute('data-view') === 'back' ? 'back' : 'front';
-  }
-
-  function ensurePhotos() {
-    const stage = document.querySelector('.anatomy-stage');
-    if (stage && !stage.querySelector('.real-anatomy-photo')) {
-      const img = document.createElement('img');
-      img.className = 'real-anatomy-photo';
-      img.alt = '';
-      img.decoding = 'async';
-      img.referrerPolicy = 'no-referrer';
-      stage.prepend(img);
-    }
-    const mini = document.querySelector('.mini-anatomy-wrap');
-    if (mini && !mini.querySelector('.mini-real-anatomy')) {
-      const img = document.createElement('img');
-      img.className = 'mini-real-anatomy';
-      img.alt = '';
-      img.decoding = 'async';
-      img.referrerPolicy = 'no-referrer';
-      mini.prepend(img);
-    }
-  }
-
-  function syncPhotos() {
-    ensurePhotos();
-    const src = currentView() === 'back' ? BACK : FRONT;
-    const main = document.querySelector('.real-anatomy-photo');
-    const mini = document.querySelector('.mini-real-anatomy');
-    if (main && main.src !== src) main.src = src;
-    if (mini && mini.src !== src) mini.src = src;
-  }
-
-  function syncThumb() {
-    const {workout,index} = context();
-    const next = workout?.exercises?.[index + 1];
+  function realNextThumbnail() {
     const thumb = document.querySelector('.next-thumb');
-    if (!next || !thumb) return;
-    const src = exerciseThumbs[next.id];
-    if (!src) return;
-    thumb.innerHTML = `<img src="${src}" alt="${String(next.name || '').replace(/"/g,'&quot;')}" loading="eager" referrerpolicy="no-referrer">`;
+    if (!thumb) return;
+    const { workout, index } = workoutContext();
+    const next = workout?.exercises?.[index + 1];
+    if (!next) return;
+    const videoId = thumbIds[next.id];
+    if (!videoId) return;
+    const desired = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+    const img = thumb.querySelector('img');
+    if (img?.src === desired) return;
+    thumb.innerHTML = `<img src="${desired}" alt="${String(next.name || 'Next exercise').replace(/"/g, '&quot;')}" loading="eager" referrerpolicy="no-referrer">`;
   }
 
-  function keepTitleBalanced() {
+  function polishTitle() {
     const title = document.getElementById('exerciseTitle');
     if (!title) return;
     const len = (title.textContent || '').trim().length;
     title.classList.toggle('title-long', len > 18);
-    title.classList.toggle('title-very-long', len > 29);
+    title.classList.toggle('title-very-long', len > 27);
   }
 
-  function refresh() {
-    syncPhotos();
-    syncThumb();
-    keepTitleBalanced();
+  function addCredits() {
+    const dialog = document.querySelector('#settingsDialog form');
+    if (!dialog || dialog.querySelector('.anatomy-credit')) return;
+    const p = document.createElement('p');
+    p.className = 'anatomy-credit';
+    p.innerHTML = 'Anatomy imagery: <a href="https://commons.wikimedia.org/wiki/File:Muscular_system.svg" target="_blank" rel="noopener">Termininja / Wikimedia Commons</a>, CC BY-SA 3.0.';
+    dialog.appendChild(p);
   }
+
+  function refresh() { renderMain(); renderMini(); realNextThumbnail(); polishTitle(); }
 
   function boot() {
+    addCredits();
     refresh();
-    const target = document.getElementById('workoutView') || document.body;
-    new MutationObserver(() => requestAnimationFrame(refresh)).observe(target,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','data-view']});
-    document.addEventListener('click',e=>{if(e.target.closest('#workoutNextBtn,#nextExerciseStrip,[data-pick],[data-sheet-ex],#sheetStartBtn')) setTimeout(refresh,70)});
-    window.addEventListener('focus',refresh);
+    const target = document.getElementById('workoutView');
+    if (target) new MutationObserver(() => requestAnimationFrame(refresh)).observe(target, {subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','data-view']});
+    document.addEventListener('click', e => { if (e.target.closest('#sheetStartBtn,[data-sheet-ex],#workoutNextBtn,#nextExerciseStrip,[data-pick],#completeSetBtn,#skipSetBtn')) setTimeout(refresh, 35); });
+    setInterval(() => { if (document.getElementById('workoutView')?.classList.contains('active')) refresh(); }, 1000);
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
 })();
