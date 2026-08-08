@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#06090c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>IronLog</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="topbar">
+      <div class="brand-row">
+        <div>
+          <div class="eyebrow">IRONLOG</div>
+          <h1>האימונים שלי</h1>
+        </div>
+        <button id="settingsBtn" class="icon-btn" aria-label="הגדרות">•••</button>
+      </div>
+      <div id="todaySummary" class="today-summary"></div>
+    </header>
+
+    <main id="homeView" class="view active">
+      <section class="hero-card">
+        <div>
+          <div class="hero-label">האימון הבא</div>
+          <h2 id="nextWorkoutTitle">—</h2>
+          <p id="nextWorkoutMeta">—</p>
+        </div>
+        <button id="startNextBtn" class="primary-btn">התחל אימון</button>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h3>תוכנית 6 ימים</h3>
+          <span class="muted">בחר אימון</span>
+        </div>
+        <div id="workoutGrid" class="workout-grid"></div>
+      </section>
+
+      <section class="stats-section">
+        <div class="section-head"><h3>התקדמות</h3><span class="muted">נשמר במכשיר</span></div>
+        <div class="stats-grid">
+          <button id="historyBtn" class="stat-card"><span class="stat-value" id="workoutCount">0</span><span class="stat-label">אימונים שהושלמו</span></button>
+          <button id="bodyWeightBtn" class="stat-card"><span class="stat-value" id="latestWeight">—</span><span class="stat-label">משקל גוף אחרון</span></button>
+        </div>
+      </section>
+    </main>
+
+    <main id="historyView" class="view">
+      <div class="page-head"><button class="back-btn" data-back>‹</button><h2>היסטוריה</h2></div>
+      <div id="historyList" class="history-list"></div>
+    </main>
+
+    <main id="weightView" class="view">
+      <div class="page-head"><button class="back-btn" data-back>‹</button><h2>משקל גוף</h2></div>
+      <form id="weightForm" class="input-card">
+        <label>משקל בק״ג<input id="weightInput" inputmode="decimal" type="number" min="20" max="300" step="0.1" placeholder="60.0"></label>
+        <button class="primary-btn" type="submit">שמור</button>
+      </form>
+      <div id="weightList" class="history-list"></div>
+    </main>
+  </div>
+
+  <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
+  <section id="workoutSheet" class="bottom-sheet" aria-hidden="true">
+    <div id="sheetGrabber" class="sheet-grabber"><span></span></div>
+    <div class="sheet-head">
+      <button id="closeSheet" class="icon-btn">×</button>
+      <div><h2 id="sheetTitle">—</h2><p id="sheetSubtitle">בחר תרגיל או התחל מההתחלה</p></div>
+    </div>
+    <div class="sheet-summary">
+      <div><span>תרגילים</span><strong id="sheetExerciseCount">0</strong></div>
+      <div><span>סטים</span><strong id="sheetSetCount">0</strong></div>
+      <div><span>זמן משוער</span><strong id="sheetTime">—</strong></div>
+    </div>
+    <button id="sheetStartBtn" class="primary-btn wide">התחל ב-Big Screen</button>
+    <div class="sheet-list-head"><span>תרגילים בתוכנית</span><small>לחיצה פותחת את התרגיל</small></div>
+    <div id="sheetExerciseList" class="sheet-exercise-list"></div>
+  </section>
+
+  <section id="workoutView" class="workout-view" aria-hidden="true">
+    <div class="workout-safe-top"></div>
+    <header class="workout-header">
+      <button id="exitWorkoutBtn" class="round-btn">×</button>
+      <div class="workout-heading">
+        <div id="bigWorkoutTitle" class="eyebrow">—</div>
+        <div id="exerciseIndex" class="exercise-index">1 מתוך 1</div>
+      </div>
+      <button id="exercisePickerBtn" class="round-btn">⌄</button>
+    </header>
+
+    <div class="exercise-selector" id="exerciseSelector" hidden></div>
+
+    <main class="workout-content">
+      <section class="exercise-title-block">
+        <h1 id="exerciseTitle">—</h1>
+        <button id="openVideoBtn" class="video-pill">▶ סרטון תרגיל</button>
+      </section>
+
+      <section id="videoPanel" class="video-panel" hidden>
+        <div class="video-frame-wrap">
+          <div class="video-placeholder">
+            <strong>סרטון טכניקה</strong>
+            <span>נפתח ב-YouTube כדי למנוע קריסות וידאו ב-Safari.</span>
+          </div>
+        </div>
+        <div class="video-actions">
+          <a id="videoFallback" class="primary-btn wide" target="_blank" rel="noopener">פתח סרטון ב-YouTube</a>
+          <button id="closeVideoBtn" class="secondary-btn">סגור</button>
+        </div>
+      </section>
+
+      <section class="anatomy-slot">
+        <div class="muscle-chip" id="muscleChip">—</div>
+        <div class="anatomy-caption">שריר מטרה</div>
+      </section>
+
+      <section class="set-overview">
+        <div class="set-ring" id="setRing"><span id="setRingText">1/3</span></div>
+        <div class="metric-card"><span>חזרות יעד</span><strong id="targetReps">—</strong></div>
+        <div class="metric-card"><span>מנוחה</span><strong id="targetRest">—</strong></div>
+        <div class="metric-card"><span>פעם קודמת</span><strong id="lastLoad">—</strong></div>
+      </section>
+
+      <section class="entry-card">
+        <div class="entry-head"><h3 id="currentSetLabel">סט 1</h3><span id="setStatePill" class="state-pill">מוכן</span></div>
+        <div class="entry-grid">
+          <label><span>משקל (ק״ג)</span><input id="loadInput" type="number" inputmode="decimal" step="0.5" min="0" placeholder="0"></label>
+          <label><span>חזרות</span><input id="repsInput" type="number" inputmode="numeric" step="1" min="0" placeholder="0"></label>
+          <label><span>RIR</span><input id="rirInput" type="number" inputmode="numeric" step="1" min="0" max="10" placeholder="2"></label>
+        </div>
+        <div id="previousHint" class="previous-hint"></div>
+      </section>
+
+      <section id="restCard" class="rest-card" hidden>
+        <div><span>מנוחה</span><strong id="restTimerText">02:00</strong></div>
+        <div class="rest-actions"><button id="minusRestBtn" class="mini-btn">−15</button><button id="plusRestBtn" class="mini-btn">+15</button><button id="skipRestBtn" class="mini-btn accent">דלג</button></div>
+      </section>
+
+      <div class="workout-actions">
+        <button id="skipSetBtn" class="secondary-btn large">דלג סט</button>
+        <button id="completeSetBtn" class="primary-btn large">סיימתי את הסט</button>
+      </div>
+
+      <button id="nextExerciseStrip" class="next-exercise-strip">
+        <div><small>התרגיל הבא</small><strong id="nextExerciseName">—</strong></div><span>‹</span>
+      </button>
+    </main>
+  </section>
+
+  <dialog id="settingsDialog" class="dialog-card">
+    <form method="dialog">
+      <div class="dialog-head"><h3>הגדרות ונתונים</h3><button value="cancel" class="icon-btn">×</button></div>
+      <button id="exportBtn" type="button" class="secondary-btn wide">ייצוא גיבוי JSON</button>
+      <label class="secondary-btn wide file-label">ייבוא גיבוי JSON<input id="importInput" type="file" accept="application/json" hidden></label>
+      <button id="resetBtn" type="button" class="danger-btn wide">איפוס נתונים</button>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="/src/data.js" defer></script>
+  <script src="/src/storage.js" defer></script>
+  <script src="/src/app.js" defer></script>
+</body>
+</html>
