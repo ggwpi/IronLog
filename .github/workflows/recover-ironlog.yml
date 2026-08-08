@@ -15,18 +15,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download deployed payload
+      - name: Download deployed payload from immutable deployment
         shell: bash
         run: |
           set -euo pipefail
           rm -rf .recovery_tmp recovered src
           mkdir -p .recovery_tmp recovered src
-          SHARE='7vtgamVFCZ68SVvSSwGMa2p74qRTpMhB'
+
+          BASE='https://ironlog-nd8ylypxu-ziveliya1-4493s-projects.vercel.app'
+          SHARE='FgZp65T0p4vsxQvTzRPWTcXSNQca365Z'
+
           for i in 0 1 2 3 4; do
-            url="https://ironlog-v2-two.vercel.app/p${i}.txt?_vercel_share=${SHARE}"
-            echo "Downloading p${i}.txt"
+            url="${BASE}/p${i}.txt?_vercel_share=${SHARE}&cb=$(date +%s)-${i}"
+            echo "Downloading p${i}.txt from immutable deployment"
             curl --fail --show-error --location --retry 3 --retry-delay 2 \
-              -A 'Mozilla/5.0 IronLog-Recovery' "$url" -o ".recovery_tmp/p${i}.txt"
+              -H 'Cache-Control: no-cache' \
+              -H 'Pragma: no-cache' \
+              -A 'Mozilla/5.0 IronLog-Recovery' \
+              "$url" \
+              -D ".recovery_tmp/p${i}.headers" \
+              -o ".recovery_tmp/p${i}.txt"
             test -s ".recovery_tmp/p${i}.txt"
             echo "p${i}: $(wc -c < ".recovery_tmp/p${i}.txt") bytes"
           done
@@ -37,21 +45,84 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          import base64, gzip, re, html as htmlmod, hashlib
+          import base64, gzip, re, html as htmlmod, hashlib, zlib
 
           root = Path('.')
-          parts = [(root / '.recovery_tmp' / f'p{i}.txt').read_text(encoding='utf-8').strip() for i in range(5)]
-          b64 = re.sub(r'\s+', '', ''.join(parts))
-          print('Base64 chars:', len(b64))
-          print('Prefix:', b64[:12])
-          if not b64.startswith('H4sI'):
-              raise SystemExit('Payload does not start like gzip Base64; Vercel likely returned an auth/error page')
-          if len(b64) % 4:
-              b64 += '=' * (4 - len(b64) % 4)
-          raw = base64.b64decode(b64, validate=True)
-          app_html = gzip.decompress(raw).decode('utf-8')
-          if '<html' not in app_html.lower() or 'IronLog' not in app_html:
-              raise SystemExit('Decoded payload does not look like IronLog HTML')
+          parts = []
+          for i in range(5):
+              text = (root / '.recovery_tmp' / f'p{i}.txt').read_text(encoding='utf-8')
+              clean = re.sub(r'\s+', '', text)
+              parts.append(clean)
+              print(f'p{i}: chars={len(clean)} mod4={len(clean)%4} prefix={clean[:8]} suffix={clean[-8:]}')
+
+          allowed = re.compile(r'^[A-Za-z0-9+/]*={0,2}$')
+          for i, part in enumerate(parts):
+              if not allowed.fullmatch(part):
+                  raise SystemExit(f'p{i} contains non-Base64 characters')
+
+          candidates = []
+
+          # Strategy 1: exact browser behavior — concatenate Base64 first, then decode.
+          joined = ''.join(parts)
+          print('Joined Base64 chars:', len(joined), 'mod4=', len(joined) % 4, 'prefix=', joined[:12])
+          if len(joined) % 4 != 1:
+              padded = joined + ('=' * ((4 - len(joined) % 4) % 4))
+              try:
+                  raw = base64.b64decode(padded, validate=True)
+                  candidates.append(('joined-base64', raw))
+                  print('joined-base64 decoded bytes:', len(raw))
+              except Exception as e:
+                  print('joined-base64 decode failed:', repr(e))
+          else:
+              print('joined-base64 skipped: impossible Base64 remainder 1; this indicates a mixed/truncated payload')
+
+          # Strategy 2: decode each part separately if chunk boundaries happen to align.
+          decoded_parts = []
+          per_part_ok = True
+          for i, part in enumerate(parts):
+              if len(part) % 4 == 1:
+                  print(f'per-part decode unavailable: p{i} has impossible remainder 1')
+                  per_part_ok = False
+                  break
+              try:
+                  padded = part + ('=' * ((4 - len(part) % 4) % 4))
+                  decoded_parts.append(base64.b64decode(padded, validate=True))
+              except Exception as e:
+                  print(f'per-part decode failed for p{i}:', repr(e))
+                  per_part_ok = False
+                  break
+          if per_part_ok:
+              raw = b''.join(decoded_parts)
+              candidates.append(('decoded-parts-then-joined', raw))
+              print('decoded-parts-then-joined bytes:', len(raw))
+
+          def decompress_candidate(name, raw):
+              methods = [
+                  ('gzip.decompress', lambda b: gzip.decompress(b)),
+                  ('zlib-gzip', lambda b: zlib.decompress(b, 16 + zlib.MAX_WBITS)),
+              ]
+              for method_name, fn in methods:
+                  try:
+                      out = fn(raw)
+                      text = out.decode('utf-8')
+                      if '<html' in text.lower() and 'IronLog' in text:
+                          print(f'SUCCESS: {name} via {method_name}, html bytes={len(out)}')
+                          return text
+                      print(f'{name} via {method_name} decompressed but did not look like IronLog')
+                  except Exception as e:
+                      print(f'{name} via {method_name} failed:', repr(e))
+              return None
+
+          app_html = None
+          selected = None
+          for name, raw in candidates:
+              app_html = decompress_candidate(name, raw)
+              if app_html is not None:
+                  selected = name
+                  break
+
+          if app_html is None:
+              raise SystemExit('Unable to reconstruct IronLog. The payload chunks are still inconsistent or corrupted. Check printed part lengths/mod4 values.')
 
           recovered = root / 'recovered'
           recovered.mkdir(exist_ok=True)
@@ -74,6 +145,7 @@ jobs:
           links = re.findall(r'<link[^>]*\bhref=["\']([^"\']+)["\'][^>]*>', app_html, flags=re.I)
           inventory = [
               '# IronLog recovered source inventory', '',
+              f'- Recovery strategy: `{selected}`',
               f'- Recovered HTML bytes: {len(app_html.encode("utf-8"))}',
               f'- SHA-256: `{hashlib.sha256(app_html.encode()).hexdigest()}`',
               f'- Inline style blocks: {len(style_blocks)}',
@@ -83,8 +155,6 @@ jobs:
               '## External scripts',
           ] + [f'- `{htmlmod.escape(x)}`' for x in external_scripts] + ['', '## Link references'] + [f'- `{htmlmod.escape(x)}`' for x in links]
           (recovered / 'INVENTORY.md').write_text('\n'.join(inventory) + '\n', encoding='utf-8')
-          print('Recovered HTML bytes:', len(app_html.encode('utf-8')))
-          print('Inline CSS blocks:', len(style_blocks), 'Inline JS blocks:', len(script_blocks))
           PY
 
       - name: Write repository metadata
