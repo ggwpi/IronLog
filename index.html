@@ -9,6 +9,7 @@
   <title>IronLog</title>
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="stylesheet" href="/src/styles.css">
+  <link rel="stylesheet" href="/src/bigscreen.css">
 </head>
 <body>
   <div id="app" class="app-shell">
@@ -94,7 +95,9 @@
 
       <section class="research-card">
         <div class="research-icon">⌁</div>
-        <div><strong>המדדים באפליקציה בנויים סביב עקרונות עדכניים</strong><p>עקביות, נפח שבועי, התקדמות בעומס/חזרות ומנוחה מספקת בין סטים. IronLog לא מחליף ייעוץ רפואי או מאמן.</p>
+        <div>
+          <strong>המדדים באפליקציה בנויים סביב עקרונות עדכניים</strong>
+          <p>עקביות, נפח שבועי, התקדמות בעומס/חזרות ומנוחה מספקת בין סטים. IronLog לא מחליף ייעוץ רפואי או מאמן.</p>
           <div class="research-links"><a href="https://pubmed.ncbi.nlm.nih.gov/41843416/" target="_blank" rel="noopener">ACSM 2026</a><a href="https://pubmed.ncbi.nlm.nih.gov/28933024/" target="_blank" rel="noopener">Rest intervals review</a></div>
         </div>
       </section>
@@ -129,7 +132,10 @@
     <div class="workout-safe-top"></div>
     <header class="big-header">
       <button id="exitWorkoutBtn" class="big-round-btn" aria-label="יציאה מהאימון">•••</button>
-      <div class="big-workout-center"><div id="bigWorkoutTitle" class="big-workout-name">—</div><div id="exerciseIndex" class="exercise-progress-pill">תרגיל 1 מתוך 1</div></div>
+      <div class="big-workout-center">
+        <div id="bigWorkoutTitle" class="big-workout-name">—</div>
+        <div id="exerciseIndex" class="exercise-progress-pill">תרגיל 1 מתוך 1</div>
+      </div>
       <button id="workoutNextBtn" class="big-round-btn next-round" aria-label="התרגיל הבא">‹</button>
     </header>
 
@@ -138,80 +144,71 @@
     <main id="workoutContent" class="big-workout-content">
       <section class="big-title-block">
         <h1 id="exerciseTitle">—</h1>
-        <button id="openVideoBtn" class="video-link">וידאו תרגיל <span>▶</span> <small>לחץ להפעלה</small></button>
-      </section>
-
-      <section id="videoPanel" class="video-panel" hidden>
-        <div class="video-placeholder"><strong>סרטון טכניקה</strong><span>הסרטון נפתח ב-YouTube כדי לשמור על יציבות ב-Safari.</span></div>
-        <div class="video-actions"><a id="videoFallback" class="primary-btn wide" target="_blank" rel="noopener">פתח סרטון</a><button id="closeVideoBtn" class="secondary-btn">סגור</button></div>
+        <button id="openVideoBtn" class="video-link" type="button">
+          <strong>וידאו תרגיל</strong><span aria-hidden="true">▶</span><small>לחץ להפעלה</small>
+        </button>
       </section>
 
       <section class="big-hero-layout">
         <div class="set-progress-panel">
-          <span>סט נוכחי</span>
-          <div class="set-ring big-ring" id="setRing"><strong id="setRingText">1/4</strong></div>
-          <small id="setProgressCaption">מתוך 4 סטים</small>
+          <div class="set-ring big-ring" id="setRing">
+            <span class="ring-label">סט נוכחי</span>
+            <strong id="setRingText">1/4</strong>
+            <small id="setProgressCaption">מתוך 4 סטים</small>
+          </div>
         </div>
 
-        <div class="anatomy-stage" aria-hidden="true">
-          <svg id="anatomyFigure" class="anatomy-figure zone-generic" viewBox="0 0 180 420" role="img">
-            <defs><filter id="glow"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-            <ellipse class="body-base" cx="90" cy="34" rx="24" ry="29"/>
-            <path class="body-base" d="M64 62 C48 76 42 112 46 158 L54 220 C57 242 66 255 72 270 L68 345 L82 403 L94 403 L91 318 L90 270 L89 318 L86 403 L100 403 L112 345 L108 270 C114 255 123 242 126 220 L134 158 C138 112 132 76 116 62 C105 70 75 70 64 62Z"/>
-            <path class="body-base" d="M49 86 C30 100 26 135 28 180 L38 242 L48 238 L44 173 L57 112Z"/>
-            <path class="body-base" d="M131 86 C150 100 154 135 152 180 L142 242 L132 238 L136 173 L123 112Z"/>
-            <ellipse class="muscle-zone zone-shoulders" cx="55" cy="93" rx="16" ry="25"/><ellipse class="muscle-zone zone-shoulders" cx="125" cy="93" rx="16" ry="25"/>
-            <path class="muscle-zone zone-back" d="M64 88 Q90 72 116 88 L113 154 Q90 172 67 154Z"/>
-            <path class="muscle-zone zone-chest" d="M65 86 Q90 72 115 86 L110 128 Q90 140 70 128Z"/>
-            <ellipse class="muscle-zone zone-biceps" cx="42" cy="145" rx="9" ry="25"/><ellipse class="muscle-zone zone-biceps" cx="138" cy="145" rx="9" ry="25"/>
-            <ellipse class="muscle-zone zone-triceps" cx="39" cy="156" rx="8" ry="26"/><ellipse class="muscle-zone zone-triceps" cx="141" cy="156" rx="8" ry="26"/>
-            <path class="muscle-zone zone-abs" d="M75 142 H105 L102 225 H78Z"/>
-            <ellipse class="muscle-zone zone-quads" cx="75" cy="278" rx="14" ry="42"/><ellipse class="muscle-zone zone-quads" cx="105" cy="278" rx="14" ry="42"/>
-            <ellipse class="muscle-zone zone-hamstrings" cx="75" cy="292" rx="12" ry="38"/><ellipse class="muscle-zone zone-hamstrings" cx="105" cy="292" rx="12" ry="38"/>
-            <ellipse class="muscle-zone zone-glutes" cx="75" cy="235" rx="16" ry="18"/><ellipse class="muscle-zone zone-glutes" cx="105" cy="235" rx="16" ry="18"/>
-            <ellipse class="muscle-zone zone-calves" cx="76" cy="352" rx="11" ry="32"/><ellipse class="muscle-zone zone-calves" cx="104" cy="352" rx="11" ry="32"/>
-          </svg>
+        <div class="anatomy-stage" aria-label="שריר המטרה">
+          <img id="anatomyImage" class="anatomy-image" alt="">
+          <svg id="anatomyFigure" class="anatomy-figure zone-generic" viewBox="0 0 1 1" aria-hidden="true"></svg>
           <div class="anatomy-glow"></div>
         </div>
 
-        <div class="muscle-target-card">
-          <span>שריר מטרה <i></i></span>
+        <article class="muscle-target-card">
+          <div class="muscle-card-label"><i></i><span>שריר מטרה</span></div>
           <strong id="muscleChip">—</strong>
           <small id="muscleEnglish">Target muscle</small>
-          <div class="mini-muscle-bars"><b></b><b></b><b></b></div>
-        </div>
+          <div class="muscle-preview"><img id="musclePreviewImage" alt=""></div>
+        </article>
       </section>
 
       <section class="big-metrics">
-        <div id="restMetric" class="big-metric"><span class="metric-icon">◷</span><small id="restMetricLabel">מנוחה</small><strong id="restTimerText">01:45</strong><em>דקות</em></div>
-        <div class="big-metric"><span class="metric-icon">▣</span><small>יעד חזרות</small><strong id="targetReps">—</strong><em>חזרות</em></div>
-        <div class="big-metric"><span class="metric-icon">⌁</span><small>עומס אחרון</small><strong id="lastLoad">—</strong><em>ק״ג</em></div>
+        <button id="restMetric" class="big-metric metric-button" type="button"><span class="metric-icon" data-icon="timer"></span><small id="restMetricLabel">מנוחה</small><strong id="restTimerText">01:45</strong><em>דקות</em></button>
+        <div class="big-metric"><span class="metric-icon" data-icon="reps"></span><small>יעד חזרות</small><strong id="targetReps">—</strong><em>חזרות</em></div>
+        <div class="big-metric"><span class="metric-icon" data-icon="load"></span><small>עומס אחרון</small><strong id="lastLoad">—</strong><em>ק״ג</em></div>
       </section>
 
-      <section class="entry-card big-entry">
-        <div class="entry-head"><div><small>פרטי הסט</small><h3 id="currentSetLabel">סט 1</h3></div><button id="exercisePickerBtn" class="state-pill">בחר תרגיל⌄</button></div>
+      <div class="big-actions">
+        <button id="skipSetBtn" class="dark-action" type="button"><span aria-hidden="true">↻</span>דלג סט</button>
+        <button id="completeSetBtn" class="lime-action" type="button">סיימתי את הסט <span aria-hidden="true">✓</span></button>
+      </div>
+
+      <button id="nextExerciseStrip" class="next-exercise-strip" type="button">
+        <span class="list-icon" aria-hidden="true">☷</span>
+        <div class="next-copy"><strong>המשך התרגיל</strong><small>הבא: <span id="nextExerciseName">—</span></small></div>
+        <span class="next-thumb"><img id="nextExerciseThumb" alt=""></span>
+        <span class="next-chev" aria-hidden="true">‹</span>
+      </button>
+
+      <section class="entry-card big-entry" aria-hidden="true">
+        <div class="entry-head"><div><small>פרטי הסט</small><h3 id="currentSetLabel">סט 1</h3></div><button id="exercisePickerBtn" class="state-pill" type="button">בחר תרגיל⌄</button></div>
         <div class="entry-grid">
           <label><span>משקל (ק״ג)</span><input id="loadInput" type="number" inputmode="decimal" step="0.5" min="0" placeholder="0"></label>
           <label><span>חזרות</span><input id="repsInput" type="number" inputmode="numeric" step="1" min="0" placeholder="0"></label>
           <label><span>RIR</span><input id="rirInput" type="number" inputmode="numeric" step="1" min="0" max="10" placeholder="2"></label>
         </div>
         <div class="entry-foot"><span id="previousHint">—</span><span id="setStatePill" class="state-pill">מוכן</span></div>
+        <div class="set-editor-actions"><button id="cancelSetEditorBtn" type="button" class="set-editor-cancel">ביטול</button><button id="saveSetEditorBtn" type="button" class="set-editor-save">שמור וסיים סט</button></div>
       </section>
 
       <section id="restControls" class="rest-controls" hidden>
-        <button id="minusRestBtn" class="mini-btn">−15 שנ׳</button><button id="plusRestBtn" class="mini-btn">+15 שנ׳</button><button id="skipRestBtn" class="mini-btn accent">סיים מנוחה</button>
+        <button id="minusRestBtn" class="mini-btn" type="button">−15 שנ׳</button><button id="plusRestBtn" class="mini-btn" type="button">+15 שנ׳</button><button id="skipRestBtn" class="mini-btn accent" type="button">סיים מנוחה</button>
       </section>
 
-      <div class="big-actions">
-        <button id="skipSetBtn" class="dark-action"><span>↻</span> דלג סט</button>
-        <button id="completeSetBtn" class="lime-action">סיימתי את הסט <span>✓</span></button>
-      </div>
-
-      <button id="nextExerciseStrip" class="next-exercise-strip">
-        <span class="list-icon">☷</span>
-        <div><strong>המשך התרגיל</strong><small>הבא: <span id="nextExerciseName">—</span></small></div>
-        <span class="next-chev">‹</span>
-      </button>
+      <section id="videoPanel" class="video-panel" hidden>
+        <div class="video-placeholder"><strong>סרטון טכניקה</strong><span>פתח את הסרטון של התרגיל ב־YouTube.</span></div>
+        <div class="video-actions"><a id="videoFallback" class="primary-btn wide" target="_blank" rel="noopener">פתח סרטון</a><button id="closeVideoBtn" class="secondary-btn" type="button">סגור</button></div>
+      </section>
     </main>
   </section>
 
@@ -236,9 +233,17 @@
 
   <script src="/src/data.js" defer></script>
   <script src="/src/storage.js" defer></script>
+  <script src="/src/anatomy/chest.js" defer></script>
+  <script src="/src/anatomy/biceps.js" defer></script>
+  <script src="/src/anatomy/triceps.js" defer></script>
+  <script src="/src/anatomy/shoulders.js" defer></script>
+  <script src="/src/anatomy/back.js" defer></script>
+  <script src="/src/anatomy/abs.js" defer></script>
+  <script src="/src/anatomy/quads.js" defer></script>
+  <script src="/src/anatomy/hamstrings.js" defer></script>
+  <script src="/src/anatomy/glutes.js" defer></script>
+  <script src="/src/anatomy/calves.js" defer></script>
   <script src="/src/app.js" defer></script>
-  <script src="/src/bigscreen-v2.js" defer></script>
-  <script src="/src/bigscreen-v4.js" defer></script>
-  <script src="/src/bigscreen-v5.js" defer></script>
+  <script src="/src/bigscreen.js" defer></script>
 </body>
 </html>
