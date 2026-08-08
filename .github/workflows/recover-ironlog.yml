@@ -21,11 +21,10 @@ jobs:
           SHARE="FgZp65T0p4vsxQvTzRPWTcXSNQca365Z"
 
           for i in 0 1 2 3 4; do
-            echo "Downloading p${i}"
-            curl --connect-timeout 10 --max-time 60 --retry 2 --retry-delay 3 \
-              -fsSL "${BASE}/p${i}.txt?_vercel_share=${SHARE}&nocache=$(date +%s)" \
+            curl --connect-timeout 10 --max-time 60 --retry 2 -fsSL \
+              "${BASE}/p${i}.txt?_vercel_share=${SHARE}&nocache=$(date +%s)" \
               -o ".recovery_tmp/p${i}.txt"
-            echo "p${i} size: $(wc -c < .recovery_tmp/p${i}.txt)"
+            echo "p${i}: $(wc -c < .recovery_tmp/p${i}.txt) bytes"
           done
 
       - name: Recover
@@ -33,23 +32,39 @@ jobs:
           set -euo pipefail
           python3 <<'PY'
           from pathlib import Path
-          import re,base64,gzip
-          p=Path('.recovery_tmp')
-          chunks=[]
+          import re, base64, gzip, html
+
+          p = Path('.recovery_tmp')
+          raw_html = ''
+
           for i in range(5):
-            t=(p/f'p{i}.txt').read_text(errors='ignore')
-            print('p',i,'first chars:',repr(t[:50]))
-            chunks.append(t)
-          data=''.join(chunks)
-          data=re.sub(r'[^A-Za-z0-9+/=]','',data)
-          data += '='*((4-len(data)%4)%4)
-          raw=base64.b64decode(data)
-          out=gzip.decompress(raw).decode('utf-8')
-          if '<html' not in out.lower():
-            raise Exception('Recovered data is not HTML')
-          Path('index.html').write_text(out,encoding='utf-8')
-          Path('recovered/original-deployment.html').write_text(out,encoding='utf-8')
-          print('Recovered',len(out),'bytes')
+              text = (p/f'p{i}.txt').read_text(errors='ignore')
+              print('chunk', i, text[:100])
+              m = re.search(r'(<html[\s\S]*?</html>)', text, re.I)
+              if m:
+                  raw_html += m.group(1)
+
+          # The Vercel endpoint is returning an HTML wrapper, not the payload directly.
+          # Search inside it for the embedded base64/gzip data.
+          matches = re.findall(r'[A-Za-z0-9+/]{100,}={0,2}', raw_html)
+
+          recovered = None
+          for candidate in matches:
+              try:
+                  data = base64.b64decode(candidate + '='*((4-len(candidate)%4)%4))
+                  out = gzip.decompress(data).decode('utf-8')
+                  if '<html' in out.lower():
+                      recovered = out
+                      break
+              except Exception:
+                  pass
+
+          if recovered is None:
+              raise Exception('Could not locate embedded IronLog gzip payload in Vercel HTML response')
+
+          Path('index.html').write_text(recovered, encoding='utf-8')
+          Path('recovered/original-deployment.html').write_text(recovered, encoding='utf-8')
+          print('Recovered HTML:', len(recovered))
           PY
 
       - name: Commit
