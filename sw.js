@@ -1,4 +1,4 @@
-const CACHE='ironlog-v4-6';
+const CACHE='ironlog-v4-7';
 const CORE=['/','/index.html','/src/styles.css','/src/data.js','/src/storage.js','/src/app.js','/src/bigscreen-v2.js','/src/bigscreen-v4.js','/src/bigscreen-v5.js','/manifest.webmanifest'];
 
 self.addEventListener('install',event=>{
