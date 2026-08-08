@@ -1,0 +1,1 @@
+Trigger IronLog source reconstruction from the production Vercel payload.
