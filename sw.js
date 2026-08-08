@@ -1,4 +1,4 @@
-const CACHE = 'ironlog-foundation-v5';
+const CACHE = 'ironlog-foundation-v6';
 const CORE = [
   '/', '/index.html', '/manifest.webmanifest', '/src/styles.css', '/src/features/home/home.css', '/src/nav-glass.css', '/src/app.js',
   '/src/core/store.js', '/src/core/storage.js', '/src/core/router.js', '/src/core/escape-html.js',
@@ -6,6 +6,9 @@ const CORE = [
   '/src/features/auth/login-screen.js', '/src/features/home/home-screen.js',
   '/src/features/workouts/workouts-screen.js', '/src/features/statistics/statistics-screen.js',
   '/src/features/settings/settings-screen.js',
+  '/src/anatomy/chest.js', '/src/anatomy/biceps.js', '/src/anatomy/triceps.js', '/src/anatomy/shoulders.js',
+  '/src/anatomy/back.js', '/src/anatomy/abs.js', '/src/anatomy/quads.js', '/src/anatomy/hamstrings.js',
+  '/src/anatomy/glutes.js', '/src/anatomy/calves.js',
 ];
 
 self.addEventListener('install', (event) => {
