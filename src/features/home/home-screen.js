@@ -36,10 +36,6 @@ function nearestWorkout() {
   return { ...next, timing: currentDay === 0 ? 'מחר' : 'האימון הבא' };
 }
 
-function anatomyAsset(name) {
-  return window.IRONLOG_ANATOMY_ASSETS?.[name] || '';
-}
-
 function weekActivity(currentDay) {
   const activity = [72, 44, 83, 58, 76, 51, 12];
   return weekLabels.map((label, index) => {
@@ -55,14 +51,39 @@ function weekActivity(currentDay) {
 
 function anatomyVisual(workout) {
   const [primary, secondary] = workout.anatomy;
-  const primaryAsset = anatomyAsset(primary);
-  const secondaryAsset = anatomyAsset(secondary);
   return `<div class="home-anatomy" aria-label="שרירי המטרה של ${escapeHtml(workout.title)}">
     <div class="home-anatomy__halo" aria-hidden="true"></div>
-    ${primaryAsset ? `<img class="home-anatomy__primary" src="${primaryAsset}" alt="${escapeHtml(primary)} highlighted anatomy">` : ''}
-    ${secondaryAsset ? `<img class="home-anatomy__secondary" src="${secondaryAsset}" alt="${escapeHtml(secondary)} highlighted anatomy">` : ''}
+    <img class="home-anatomy__primary" data-anatomy="${escapeHtml(primary)}" alt="">
+    <img class="home-anatomy__secondary" data-anatomy="${escapeHtml(secondary)}" alt="">
     <div class="home-anatomy__caption"><span>PRIMARY FOCUS</span><strong>${escapeHtml(workout.subtitle)}</strong></div>
   </div>`;
+}
+
+export function hydrateHomeAnatomy(root = document) {
+  const assets = window.IRONLOG_ANATOMY_ASSETS || {};
+
+  root.querySelectorAll('img[data-anatomy]').forEach((image) => {
+    const name = image.dataset.anatomy;
+    const source = assets[name];
+
+    image.removeAttribute('src');
+    image.classList.remove('is-loaded', 'is-error');
+
+    if (!source) {
+      image.hidden = true;
+      return;
+    }
+
+    image.addEventListener('load', () => image.classList.add('is-loaded'), { once: true });
+    image.addEventListener('error', () => {
+      image.classList.add('is-error');
+      image.hidden = true;
+    }, { once: true });
+
+    requestAnimationFrame(() => {
+      image.src = source;
+    });
+  });
 }
 
 export function HomeScreen({ userName = 'מתאמן' } = {}) {
