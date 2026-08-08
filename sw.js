@@ -13,28 +13,8 @@ self.addEventListener('activate',event=>{
   );
 });
 
-async function patchedBigscreen(request){
-  const cache=await caches.open(CACHE);
-  let base;
-  let patch;
-  try{ base=await fetch(request); if(base.ok) cache.put(request,base.clone()); }catch(_){ base=await cache.match(request); }
-  try{ patch=await fetch('/src/bigscreen-v4.js',{cache:'no-store'}); if(patch.ok) cache.put('/src/bigscreen-v4.js',patch.clone()); }catch(_){ patch=await cache.match('/src/bigscreen-v4.js'); }
-  if(!base) return new Response('/* IronLog Big Screen unavailable */',{status:503,headers:{'Content-Type':'application/javascript; charset=utf-8'}});
-  const baseText=await base.text();
-  const patchText=patch?await patch.text():'';
-  return new Response(`${baseText}\n\n/* Big Screen v4 polish */\n${patchText}`,{
-    status:200,
-    headers:{'Content-Type':'application/javascript; charset=utf-8','Cache-Control':'no-store, max-age=0'}
-  });
-}
-
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET') return;
-  const url=new URL(event.request.url);
-  if(url.origin===self.location.origin && url.pathname==='/src/bigscreen-v2.js'){
-    event.respondWith(patchedBigscreen(event.request));
-    return;
-  }
   event.respondWith(
     fetch(event.request)
       .then(response=>{
