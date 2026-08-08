@@ -1,5 +1,25 @@
-const CACHE='ironlog-v4-11';
-const CORE=['/','/index.html','/src/styles.css','/src/data.js','/src/storage.js','/src/app.js','/src/bigscreen-v2.js','/src/bigscreen-v4.js','/src/bigscreen-v5.js','/src/bigscreen-v6.js','/src/bigscreen-v7.js','/manifest.webmanifest'];
+const CACHE='ironlog-v5-1';
+const CORE=[
+  '/',
+  '/index.html',
+  '/src/styles.css',
+  '/src/bigscreen.css',
+  '/src/data.js',
+  '/src/storage.js',
+  '/src/anatomy/chest.js',
+  '/src/anatomy/biceps.js',
+  '/src/anatomy/triceps.js',
+  '/src/anatomy/shoulders.js',
+  '/src/anatomy/back.js',
+  '/src/anatomy/abs.js',
+  '/src/anatomy/quads.js',
+  '/src/anatomy/hamstrings.js',
+  '/src/anatomy/glutes.js',
+  '/src/anatomy/calves.js',
+  '/src/app.js',
+  '/src/bigscreen.js',
+  '/manifest.webmanifest'
+];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
