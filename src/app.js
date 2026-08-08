@@ -130,8 +130,14 @@ listenToNavigation((route) => {
 
 store.subscribe(render);
 
-if (!location.hash) navigate('home', { replace: true });
-else render();
+function boot() {
+  if (!location.hash) {
+    history.replaceState(null, '', '#/home');
+  }
+  render();
+}
+
+boot();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
