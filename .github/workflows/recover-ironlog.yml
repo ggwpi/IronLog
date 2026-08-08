@@ -33,8 +33,6 @@ jobs:
             -o .recovery_tmp/bootstrap.html
 
           echo "Bootstrap response: $(wc -c < .recovery_tmp/bootstrap.html) bytes"
-          echo 'Cookie jar entries:'
-          grep -v '^#' .recovery_tmp/vercel.cookies || true
 
       - name: Download stable IronLog payload
         shell: bash
@@ -76,28 +74,57 @@ jobs:
 
           root = Path('.')
           payload_path = root / '.recovery_tmp' / 'payload.b64'
-          b64 = re.sub(r'\s+', '', payload_path.read_text(encoding='utf-8'))
+          raw_text = payload_path.read_text(encoding='utf-8', errors='replace')
 
-          print('Base64 chars:', len(b64))
-          print('Prefix:', b64[:16])
+          print('Downloaded text chars:', len(raw_text))
+          print('Raw prefix:', repr(raw_text[:32]))
+          print('Raw suffix:', repr(raw_text[-32:]))
 
-          if not b64.startswith('H4sI'):
-              raise SystemExit('payload.b64 does not look like a gzip Base64 stream')
+          # The historical Vercel artifact is almost pure Base64, but some responses
+          # contain one or more wrapper/control characters. Keep diagnostics, then
+          # recover only the Base64 alphabet instead of rejecting the whole payload.
+          no_ws = re.sub(r'\s+', '', raw_text).lstrip('\ufeff')
+          invalid = [(i, ch) for i, ch in enumerate(no_ws) if ch not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=']
+          print('Characters after whitespace removal:', len(no_ws))
+          print('Non-Base64 character count:', len(invalid))
+          if invalid:
+              print('First invalid characters:', [(i, repr(ch)) for i, ch in invalid[:20]])
 
-          if not re.fullmatch(r'[A-Za-z0-9+/]*={0,2}', b64):
-              raise SystemExit('payload.b64 contains non-Base64 characters')
+          # Prefer the gzip Base64 marker and discard any wrapper before it.
+          start = no_ws.find('H4sI')
+          if start < 0:
+              raise SystemExit('Could not find gzip Base64 marker H4sI in payload.b64')
+          candidate = no_ws[start:]
 
-          if len(b64) % 4 == 1:
-              raise SystemExit('payload.b64 has an impossible Base64 length')
-          b64 += '=' * ((4 - len(b64) % 4) % 4)
+          # Strip every character outside the Base64 alphabet. This is safe for the
+          # artifact because the encoded payload itself contains only this alphabet.
+          candidate = re.sub(r'[^A-Za-z0-9+/=]', '', candidate)
 
-          compressed = base64.b64decode(b64, validate=True)
+          # If a wrapper injected '=' in the middle, remove padding and restore it
+          # only at the end. Real Base64 padding is only valid at the end anyway.
+          candidate = candidate.replace('=', '')
+          candidate += '=' * ((4 - len(candidate) % 4) % 4)
+
+          print('Sanitized Base64 chars:', len(candidate))
+          print('Sanitized prefix:', candidate[:16])
+          print('Sanitized suffix:', candidate[-16:])
+
+          try:
+              compressed = base64.b64decode(candidate, validate=True)
+          except Exception as exc:
+              raise SystemExit(f'Base64 decode still failed after sanitization: {exc}')
+
           print('Compressed bytes:', len(compressed))
           print('Gzip magic:', compressed[:2].hex())
+          if not compressed.startswith(b'\x1f\x8b'):
+              raise SystemExit('Decoded data does not begin with gzip magic')
 
-          app_bytes = gzip.decompress(compressed)
+          try:
+              app_bytes = gzip.decompress(compressed)
+          except Exception as exc:
+              raise SystemExit(f'Gzip decompression failed after successful Base64 decode: {exc}')
+
           app_html = app_bytes.decode('utf-8')
-
           if '<html' not in app_html.lower() or 'IronLog' not in app_html:
               raise SystemExit('Decoded payload is not the IronLog application')
 
@@ -106,37 +133,29 @@ jobs:
           src = root / 'src'
           src.mkdir(parents=True, exist_ok=True)
 
-          # Exact runnable production snapshot.
           (root / 'index.html').write_text(app_html, encoding='utf-8')
           (recovered / 'original-deployment.html').write_text(app_html, encoding='utf-8')
-          (recovered / 'payload.b64').write_text(b64 + '\n', encoding='utf-8')
+          (recovered / 'payload.b64').write_text(candidate + '\n', encoding='utf-8')
 
-          # Readable extracted source copies for future editing/refactoring.
           style_blocks = re.findall(r'<style(?:\s[^>]*)?>(.*?)</style>', app_html, flags=re.I | re.S)
           script_blocks = re.findall(r'<script(?![^>]*\bsrc=)(?:\s[^>]*)?>(.*?)</script>', app_html, flags=re.I | re.S)
 
-          css = '\n\n/* ---- recovered style block ---- */\n\n'.join(
-              s.strip() for s in style_blocks if s.strip()
-          )
-          js = '\n\n// ---- recovered script block ----\n\n'.join(
-              s.strip() for s in script_blocks if s.strip()
-          )
+          css = '\n\n/* ---- recovered style block ---- */\n\n'.join(s.strip() for s in style_blocks if s.strip())
+          js = '\n\n// ---- recovered script block ----\n\n'.join(s.strip() for s in script_blocks if s.strip())
 
           (src / 'styles.css').write_text(css + ('\n' if css else ''), encoding='utf-8')
           (src / 'app.js').write_text(js + ('\n' if js else ''), encoding='utf-8')
 
-          external_scripts = re.findall(
-              r'<script[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>', app_html, flags=re.I
-          )
-          links = re.findall(
-              r'<link[^>]*\bhref=["\']([^"\']+)["\'][^>]*>', app_html, flags=re.I
-          )
+          external_scripts = re.findall(r'<script[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>', app_html, flags=re.I)
+          links = re.findall(r'<link[^>]*\bhref=["\']([^"\']+)["\'][^>]*>', app_html, flags=re.I)
 
           inventory = [
               '# IronLog recovered source inventory',
               '',
               '- Recovery source project: `ironlog-reference-ui-v4`',
               '- Recovery deployment: `dpl_7Jf6vMhxTzfWJE5iRahe9K5Kjn9H`',
+              f'- Downloaded payload text chars: {len(raw_text)}',
+              f'- Removed non-Base64 characters: {len(invalid)}',
               f'- Recovered HTML bytes: {len(app_bytes)}',
               f'- SHA-256: `{hashlib.sha256(app_bytes).hexdigest()}`',
               f'- Inline style blocks: {len(style_blocks)}',
@@ -172,7 +191,7 @@ jobs:
           - `src/styles.css` — inline CSS extracted from the recovered application.
           - `src/app.js` — inline JavaScript extracted from the recovered application.
           - `recovered/original-deployment.html` — preserved exact decoded snapshot.
-          - `recovered/payload.b64` — preserved compressed Base64 source payload.
+          - `recovered/payload.b64` — sanitized compressed Base64 source payload.
           - `recovered/INVENTORY.md` — recovery metadata and external references.
 
           The exact `index.html` snapshot is the behavioral source of truth. The files under `src/` are readable extracted copies intended for maintainable refactoring.
