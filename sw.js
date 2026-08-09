@@ -1,4 +1,4 @@
-const CACHE = 'ironlog-foundation-v19';
+const CACHE = 'ironlog-foundation-v20';
 const CORE = [
   '/',
   '/index.html',
@@ -41,16 +41,37 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request, { cache: 'no-store' });
+    if (response.ok) {
+      const cache = await caches.open(CACHE);
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    return caches.match(request);
+  }
+}
+
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  const request = event.request;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
 
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE).then((cache) => cache.put(event.request, copy));
-        return response;
-      })
-      .catch(() => caches.match(event.request).then((cached) => cached || caches.match('/index.html'))),
-  );
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' })
+        .catch(() => caches.match('/index.html')),
+    );
+    return;
+  }
+
+  if (request.destination === 'image') {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  event.respondWith(networkFirst(request));
 });
