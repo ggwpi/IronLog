@@ -12,8 +12,8 @@
 </head>
 <body>
 <main>
-  <h1>Anatomy asset check</h1>
-  <p>This page deliberately has no app layout, registry component, animation, or service-worker fallback.</p>
+  <h1>Anatomy asset check · v21</h1>
+  <p>No app layout, registry component, animation, or service-worker fallback. Every image below is loaded directly from its canonical PNG URL.</p>
   <div class="grid" id="grid"></div>
 </main>
 <script>
@@ -21,7 +21,7 @@ const assets=['push-a','legs-a','pull-a','push-b','legs-b','arms'];
 const grid=document.querySelector('#grid');
 assets.forEach((id)=>{
   const item=document.createElement('section');item.className='item';
-  item.innerHTML=`<div class="frame"><img src="/assets/anatomy/${id}.png?verify=20" alt="${id}"></div><div class="name">${id}.png</div><div class="status">loading…</div>`;
+  item.innerHTML=`<div class="frame"><img src="/assets/anatomy/${id}.png?verify=21" alt="${id}"></div><div class="name">${id}.png</div><div class="status">loading…</div>`;
   const img=item.querySelector('img');const status=item.querySelector('.status');
   img.addEventListener('load',()=>{status.className='status ok';status.textContent=`loaded · ${img.naturalWidth}×${img.naturalHeight}`});
   img.addEventListener('error',()=>{status.className='status bad';status.textContent='FAILED'});
