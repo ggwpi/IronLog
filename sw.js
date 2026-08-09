@@ -1,9 +1,10 @@
-const CACHE = 'ironlog-foundation-v16';
+const CACHE = 'ironlog-foundation-v17';
 const CORE = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
   '/src/styles.css',
+  '/src/components/anatomy-visual.css',
   '/src/features/home/home.css',
   '/src/nav-glass.css',
   '/src/app.js',
@@ -11,6 +12,8 @@ const CORE = [
   '/src/core/storage.js',
   '/src/core/router.js',
   '/src/core/escape-html.js',
+  '/src/assets/anatomy-assets.js',
+  '/src/components/anatomy-visual.js',
   '/src/components/icons.js',
   '/src/components/ui.js',
   '/src/components/bottom-nav.js',
@@ -20,12 +23,6 @@ const CORE = [
   '/src/features/workouts/workouts-screen.js',
   '/src/features/statistics/statistics-screen.js',
   '/src/features/settings/settings-screen.js',
-  '/anatomy/workouts/push-a.webp',
-  '/anatomy/workouts/legs-a.webp',
-  '/anatomy/workouts/pull-a.webp',
-  '/anatomy/workouts/push-b.webp',
-  '/anatomy/workouts/legs-b.webp',
-  '/anatomy/workouts/arms.webp',
 ];
 
 self.addEventListener('install', (event) => {
