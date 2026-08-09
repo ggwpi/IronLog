@@ -1,4 +1,4 @@
-const CACHE = 'ironlog-foundation-v20';
+const CACHE = 'ironlog-foundation-v21';
 const CORE = [
   '/',
   '/index.html',
@@ -61,15 +61,7 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
 
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request, { cache: 'no-store' })
-        .catch(() => caches.match('/index.html')),
-    );
-    return;
-  }
-
-  if (request.destination === 'image') {
-    event.respondWith(networkFirst(request));
+    event.respondWith(fetch(request, { cache: 'no-store' }).catch(() => caches.match('/index.html')));
     return;
   }
 
