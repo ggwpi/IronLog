@@ -1,4 +1,4 @@
-const CACHE = 'ironlog-foundation-v14';
+const CACHE = 'ironlog-foundation-v15';
 const CORE = [
   '/', '/index.html', '/manifest.webmanifest', '/src/styles.css', '/src/features/home/home.css', '/src/nav-glass.css', '/src/app.js',
   '/src/core/store.js', '/src/core/storage.js', '/src/core/router.js', '/src/core/escape-html.js',
@@ -9,20 +9,6 @@ const CORE = [
   '/src/anatomy/back.js', '/src/anatomy/abs.js', '/src/anatomy/quads.js', '/src/anatomy/hamstrings.js', '/src/anatomy/calves.js',
   '/anatomy/push-a.webp',
 ];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)).then(() => self.skipWaiting()));
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))).then(() => self.clients.claim()));
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  event.respondWith(fetch(event.request).then((response) => {
-    const copy = response.clone();
-    caches.open(CACHE).then((cache) => cache.put(event.request, copy));
-    return response;
-  }).catch(() => caches.match(event.request).then((cached) => cached || caches.match('/index.html'))));
-});
+self.addEventListener('install',(event)=>{event.waitUntil(caches.open(CACHE).then((cache)=>cache.addAll(CORE)).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',(event)=>{event.waitUntil(caches.keys().then((keys)=>Promise.all(keys.filter((key)=>key!==CACHE).map((key)=>caches.delete(key)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',(event)=>{if(event.request.method!=='GET')return;event.respondWith(fetch(event.request).then((response)=>{const copy=response.clone();caches.open(CACHE).then((cache)=>cache.put(event.request,copy));return response}).catch(()=>caches.match(event.request).then((cached)=>cached||caches.match('/index.html'))))});
