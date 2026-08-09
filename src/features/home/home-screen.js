@@ -1,26 +1,17 @@
 import { escapeHtml } from '../../core/escape-html.js';
-import '../../anatomy/chest.js';
-import '../../anatomy/biceps.js';
-import '../../anatomy/triceps.js';
-import '../../anatomy/shoulders.js';
-import '../../anatomy/back.js';
-import '../../anatomy/abs.js';
-import '../../anatomy/quads.js';
-import '../../anatomy/hamstrings.js';
-import '../../anatomy/glutes.js';
-import '../../anatomy/calves.js';
+import '../../anatomy/workout-art.js';
 
 const schedule = [
-  { day: 1, short: 'PUSH A', title: 'Chest + Biceps', subtitle: 'Chest · Biceps', exercises: 7, sets: 24, minutes: 72, anatomy: ['chest', 'biceps'] },
-  { day: 2, short: 'LEGS A', title: 'Legs Heavy + Abs', subtitle: 'Quads · Hamstrings · Glutes · Core', exercises: 8, sets: 29, minutes: 88, anatomy: ['quads', 'hamstrings'] },
-  { day: 3, short: 'PULL A', title: 'Back + Triceps', subtitle: 'Back · Triceps · Rear Delts', exercises: 8, sets: 27, minutes: 82, anatomy: ['back', 'triceps'] },
-  { day: 4, short: 'PUSH B', title: 'Shoulders + Chest', subtitle: 'Shoulders · Chest', exercises: 5, sets: 20, minutes: 64, anatomy: ['shoulders', 'chest'] },
-  { day: 5, short: 'LEGS B', title: 'Legs Hypertrophy + Abs', subtitle: 'Quads · Hamstrings · Calves · Core', exercises: 8, sets: 30, minutes: 86, anatomy: ['quads', 'calves'] },
-  { day: 6, short: 'ARMS', title: 'Arms + Shoulders', subtitle: 'Biceps · Triceps · Delts', exercises: 8, sets: 27, minutes: 76, anatomy: ['biceps', 'triceps'] },
+  { day: 1, short: 'PUSH A', title: 'Chest + Biceps', subtitle: 'Chest · Biceps', exercises: 7, sets: 24, minutes: 72, art: [{ col: 0, row: 0 }] },
+  { day: 2, short: 'LEGS A', title: 'Legs Heavy + Abs', subtitle: 'Quads · Hamstrings · Glutes · Core', exercises: 8, sets: 29, minutes: 88, art: [{ col: 4, row: 0 }, { col: 0, row: 1 }, { col: 4, row: 1 }] },
+  { day: 3, short: 'PULL A', title: 'Back + Triceps', subtitle: 'Back · Triceps · Rear Delts', exercises: 8, sets: 27, minutes: 82, art: [{ col: 3, row: 0 }] },
+  { day: 4, short: 'PUSH B', title: 'Shoulders + Chest', subtitle: 'Shoulders · Chest', exercises: 5, sets: 20, minutes: 64, art: [{ col: 0, row: 0 }, { col: 1, row: 0 }] },
+  { day: 5, short: 'LEGS B', title: 'Legs Hypertrophy + Abs', subtitle: 'Quads · Hamstrings · Calves · Core', exercises: 8, sets: 30, minutes: 86, art: [{ col: 4, row: 0 }, { col: 0, row: 1 }, { col: 1, row: 1 }, { col: 4, row: 1 }] },
+  { day: 6, short: 'ARMS', title: 'Arms + Shoulders', subtitle: 'Biceps · Triceps · Delts', exercises: 8, sets: 27, minutes: 76, art: [{ col: 2, row: 1 }, { col: 1, row: 0 }] },
 ];
 
 const weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-const anatomyBlobUrls = new Map();
+let sheetBlobUrl = null;
 
 function greeting() {
   const hour = new Date().getHours();
@@ -37,40 +28,29 @@ function nearestWorkout() {
   return { ...next, timing: currentDay === 0 ? 'מחר' : 'האימון הבא' };
 }
 
-function dataUrlToBlobUrl(dataUrl, cacheKey) {
-  if (anatomyBlobUrls.has(cacheKey)) return anatomyBlobUrls.get(cacheKey);
+function dataUrlToBlobUrl(dataUrl) {
+  if (sheetBlobUrl) return sheetBlobUrl;
   if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/')) return null;
-
   try {
     const comma = dataUrl.indexOf(',');
-    if (comma < 0) return null;
     const header = dataUrl.slice(0, comma);
     const payload = dataUrl.slice(comma + 1);
     const mime = header.match(/^data:([^;]+)/)?.[1] || 'image/webp';
-    const binary = header.includes(';base64') ? atob(payload) : decodeURIComponent(payload);
+    const binary = atob(payload);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-    const url = URL.createObjectURL(new Blob([bytes], { type: mime }));
-    anatomyBlobUrls.set(cacheKey, url);
-    return url;
+    sheetBlobUrl = URL.createObjectURL(new Blob([bytes], { type: mime }));
+    return sheetBlobUrl;
   } catch {
     return null;
   }
 }
 
 export function hydrateHomeArt(root = document) {
-  const assets = window.IRONLOG_ANATOMY_ASSETS || {};
-
-  root.querySelectorAll('img[data-anatomy]').forEach((image) => {
-    const name = image.dataset.anatomy;
-    const blobUrl = dataUrlToBlobUrl(assets[name], name);
-    if (!blobUrl) {
-      image.closest('.home-anatomy__figure')?.classList.add('is-unavailable');
-      return;
-    }
-
-    image.addEventListener('load', () => image.closest('.home-anatomy__figure')?.classList.add('is-loaded'), { once: true });
-    image.addEventListener('error', () => image.closest('.home-anatomy__figure')?.classList.add('is-unavailable'), { once: true });
+  const blobUrl = dataUrlToBlobUrl(window.IRONLOG_WORKOUT_ART?.sheet);
+  if (!blobUrl) return;
+  root.querySelectorAll('[data-workout-sheet]').forEach((image) => {
+    image.addEventListener('load', () => image.closest('.home-body')?.classList.add('is-loaded'), { once: true });
     image.src = blobUrl;
   });
 }
@@ -89,15 +69,14 @@ function weekActivity(currentDay) {
 }
 
 function anatomyVisual(workout) {
-  return `<div class="home-anatomy" aria-label="שרירי המטרה של ${escapeHtml(workout.title)}">
-    <div class="home-anatomy__halo" aria-hidden="true"></div>
-    <div class="home-anatomy__gallery">
-      ${workout.anatomy.map((name) => `<figure class="home-anatomy__figure">
-        <img data-anatomy="${escapeHtml(name)}" alt="${escapeHtml(name)} highlighted anatomy">
-        <figcaption>${escapeHtml(name.toUpperCase())}</figcaption>
-      </figure>`).join('')}
+  const compact = workout.art.length > 2 ? ' is-compact' : '';
+  return `<div class="home-anatomy${compact}" aria-label="שרירי המטרה של ${escapeHtml(workout.title)}">
+    <div class="home-anatomy__glow" aria-hidden="true"></div>
+    <div class="home-anatomy__bodies">
+      ${workout.art.map(({ col, row }) => `<div class="home-body" style="--col:${col};--row:${row}">
+        <img data-workout-sheet alt="" aria-hidden="true">
+      </div>`).join('')}
     </div>
-    <div class="home-anatomy__caption"><span>TODAY'S FOCUS</span><strong>${escapeHtml(workout.subtitle)}</strong></div>
   </div>`;
 }
 
@@ -119,7 +98,6 @@ export function HomeScreen({ userName = 'מתאמן' } = {}) {
         <span class="home-kicker">${workout.timing} · NEXT WORKOUT</span>
         <h2>${workout.short}</h2>
         <h3>${workout.title}</h3>
-        <p>${workout.subtitle}</p>
         <div class="home-workout-meta">
           <span><strong>${workout.exercises}</strong><small>תרגילים</small></span>
           <span><strong>${workout.sets}</strong><small>סטים</small></span>
@@ -131,9 +109,9 @@ export function HomeScreen({ userName = 'מתאמן' } = {}) {
     </section>
 
     <section class="home-metrics" aria-label="סיכום תוכנית שבועי">
-      <div><span>TRAINING DAYS</span><strong>6</strong><small>השבוע</small></div><i></i>
-      <div><span>WEEKLY SETS</span><strong>${weeklySets}</strong><small>מתוכננים</small></div><i></i>
-      <div><span>TRAINING TIME</span><strong>${Math.round(weeklyMinutes / 60)}h</strong><small>בקירוב</small></div>
+      <div><strong>6</strong><small>ימי אימון</small></div>
+      <div><strong>${weeklySets}</strong><small>סטים השבוע</small></div>
+      <div><strong>${Math.round(weeklyMinutes / 60)}h</strong><small>זמן מתוכנן</small></div>
     </section>
 
     <section class="home-activity" aria-label="פעילות שבועית">
