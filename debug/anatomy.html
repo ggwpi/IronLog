@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07090b">
+  <title>IronLog Anatomy Check</title>
+  <style>
+    :root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif;background:#07090b;color:#f5f7f5}
+    *{box-sizing:border-box}body{margin:0;padding:24px 18px 60px;background:#07090b}main{width:min(100%,760px);margin:auto}h1{font-size:28px;margin:0 0 6px}p{color:#8a948e;margin:0 0 24px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}.item{padding:14px;border:1px solid #232a26;border-radius:18px;background:#0b0e0c}.frame{height:300px;display:flex;align-items:center;justify-content:center;background:repeating-conic-gradient(#101410 0 25%,#0c0f0d 0 50%) 50%/24px 24px;border-radius:12px;overflow:hidden}.frame img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}.name{margin-top:10px;font-size:13px;font-weight:700}.status{margin-top:3px;font-size:11px;color:#89948d}.ok{color:#d2ff16}.bad{color:#ff6b78}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Anatomy asset check</h1>
+  <p>This page deliberately has no app layout, registry component, animation, or service-worker fallback.</p>
+  <div class="grid" id="grid"></div>
+</main>
+<script>
+const assets=['push-a','legs-a','pull-a','push-b','legs-b','arms'];
+const grid=document.querySelector('#grid');
+assets.forEach((id)=>{
+  const item=document.createElement('section');item.className='item';
+  item.innerHTML=`<div class="frame"><img src="/assets/anatomy/${id}.png?verify=20" alt="${id}"></div><div class="name">${id}.png</div><div class="status">loading…</div>`;
+  const img=item.querySelector('img');const status=item.querySelector('.status');
+  img.addEventListener('load',()=>{status.className='status ok';status.textContent=`loaded · ${img.naturalWidth}×${img.naturalHeight}`});
+  img.addEventListener('error',()=>{status.className='status bad';status.textContent='FAILED'});
+  grid.append(item);
+});
+</script>
+</body>
+</html>
