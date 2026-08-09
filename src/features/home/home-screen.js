@@ -1,4 +1,5 @@
 import { escapeHtml } from '../../core/escape-html.js';
+import { AnatomyVisual } from '../../components/anatomy-visual.js';
 import { WORKOUTS, workoutForDay, nextWorkoutFromDay } from '../workouts/workout-catalog.js';
 
 const weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -16,26 +17,7 @@ function nearestWorkout() {
   if (today) return { ...today, timing: 'היום' };
 
   const next = nextWorkoutFromDay(currentDay);
-  return {
-    ...next,
-    timing: currentDay === 0 ? 'מחר' : 'האימון הבא',
-  };
-}
-
-function anatomyVisual(workout) {
-  const targets = workout.targets.join(' + ');
-  const layoutClass = workout.anatomyLayout === 'pair' ? ' home-anatomy--pair' : '';
-
-  return `<div class="home-anatomy${layoutClass}" aria-label="שרירי המטרה: ${escapeHtml(targets)}">
-    <div class="home-anatomy__glow" aria-hidden="true"></div>
-    <img
-      class="home-anatomy__image"
-      src="${escapeHtml(workout.anatomyAsset)}"
-      alt=""
-      decoding="async"
-      fetchpriority="high"
-    >
-  </div>`;
+  return { ...next, timing: currentDay === 0 ? 'מחר' : 'האימון הבא' };
 }
 
 function weekActivity(currentDay) {
@@ -47,9 +29,7 @@ function weekActivity(currentDay) {
     const current = jsDay === currentDay;
 
     return `<div class="home-day ${current ? 'is-today' : ''} ${planned ? 'is-planned' : ''}">
-      <div class="home-day__line">
-        <i style="--activity:${planned ? activity[index] : 8}%"></i><b></b>
-      </div>
+      <div class="home-day__line"><i style="--activity:${planned ? activity[index] : 8}%"></i><b></b></div>
       <span>${label}</span>
     </div>`;
   }).join('');
@@ -61,6 +41,7 @@ export function HomeScreen({ userName = 'מתאמן' } = {}) {
   const currentDay = new Date().getDay();
   const weeklySets = WORKOUTS.reduce((total, item) => total + item.sets, 0);
   const weeklyMinutes = WORKOUTS.reduce((total, item) => total + item.minutes, 0);
+  const anatomyLabel = `שרירי המטרה: ${workout.targets.join(', ')}`;
 
   return `<div class="home-art animate-enter" dir="rtl">
     <header class="home-art__header">
@@ -80,7 +61,7 @@ export function HomeScreen({ userName = 'מתאמן' } = {}) {
         </div>
         <button class="home-start" type="button" data-route="workouts"><span>פתח אימון</span><i>↗</i></button>
       </div>
-      ${anatomyVisual(workout)}
+      ${AnatomyVisual({ assetId: workout.anatomyId, label: anatomyLabel })}
     </section>
 
     <section class="home-metrics" aria-label="סיכום תוכנית שבועי">
