@@ -13,11 +13,13 @@ permissions:
 
 jobs:
   convert:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -34,10 +36,10 @@ jobs:
               src = root / f'{name}.webp'
               dst = root / f'{name}.png'
               with Image.open(src) as im:
-                  im = im.convert('RGBA')
-                  im.save(dst, format='PNG', optimize=True)
-                  with Image.open(dst) as check:
-                      check.verify()
+                  rgba = im.convert('RGBA')
+                  rgba.save(dst, format='PNG', optimize=True)
+              with Image.open(dst) as check:
+                  check.verify()
               print(f'{src} -> {dst}')
           PY
       - name: Commit generated PNG masters
