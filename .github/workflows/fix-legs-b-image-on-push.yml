@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - '.github/workflows/fix-legs-b-image-on-push.yml'
-      - '.recovery/legs-b-*.b64'
+      - '.recovery2/legs-b-*.b64'
 
 permissions:
   contents: write
@@ -20,40 +20,37 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Validate staged chunks
+      - name: Reconstruct and verify exact raster
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
           import base64, hashlib
-          for i in range(6):
-              p = Path(f'.recovery/legs-b-{i:02d}.b64')
-              s = ''.join(p.read_text().split())
-              print(i, 'chars=', len(s), 'sha256=', hashlib.sha256(s.encode()).hexdigest())
-              try:
-                  raw = base64.b64decode(s, validate=True)
-              except Exception as e:
-                  print('BAD CHUNK', i, repr(e))
-                  raise
-              print(i, 'decoded=', len(raw))
-          PY
 
-      - name: Reconstruct exact original raster
-        shell: bash
-        run: |
-          set -euo pipefail
-          : > assets/anatomy/legs-b-original.jpg
-          for i in 00 01 02 03 04 05; do
-            tr -d '\r\n' < ".recovery/legs-b-${i}.b64" | base64 --decode >> assets/anatomy/legs-b-original.jpg
-          done
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('assets/anatomy/legs-b-original.jpg')
-          b = p.read_bytes()
-          if not (b.startswith(b'\xff\xd8\xff') and b.endswith(b'\xff\xd9')):
-              raise SystemExit('Reconstructed file is not a valid JPEG stream')
-          print(f'Reconstructed {p}: {len(b)} bytes')
+          expected_lengths = [6000] * 11 + [5440]
+          pieces = []
+          for i, expected in enumerate(expected_lengths):
+              p = Path(f'.recovery2/legs-b-{i:02d}.b64')
+              text = ''.join(p.read_text().split())
+              if len(text) != expected:
+                  raise SystemExit(f'Chunk {i:02d}: expected {expected} chars, got {len(text)}')
+              try:
+                  pieces.append(base64.b64decode(text, validate=True))
+              except Exception as exc:
+                  raise SystemExit(f'Chunk {i:02d} is invalid Base64: {exc}')
+
+          raw = b''.join(pieces)
+          expected_sha = 'aa41a6a10cb21d13c2e7f1785d349e74e7a032b08c93af709f2d61df09191b9d'
+          actual_sha = hashlib.sha256(raw).hexdigest()
+          if actual_sha != expected_sha:
+              raise SystemExit(f'SHA mismatch: expected {expected_sha}, got {actual_sha}')
+          if not (raw.startswith(b'\xff\xd8\xff') and raw.endswith(b'\xff\xd9')):
+              raise SystemExit('Reconstructed data is not a valid JPEG stream')
+
+          target = Path('assets/anatomy/legs-b-original.jpg')
+          target.write_bytes(raw)
+          print(f'Wrote {target}: {len(raw)} bytes, sha256={actual_sha}')
           PY
 
       - name: Commit original image
@@ -67,5 +64,5 @@ jobs:
             echo "Original JPEG already exists and matches."
             exit 0
           fi
-          git commit -m "Add original LEGS B anatomy raster"
+          git commit -m "Add exact original LEGS B anatomy raster"
           git push origin HEAD:main
