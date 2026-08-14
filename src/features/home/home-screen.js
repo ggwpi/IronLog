@@ -38,8 +38,9 @@ function workoutImage(workout) {
   if (!workout.images?.length) return '';
   const label = escapeHtml(`שרירי המטרה: ${workout.targets.join(', ')}`);
   const images = workout.images.map((src, index) => {
-    const target = escapeHtml(workout.targets[index] || workout.targets[0]);
-    return `<img src="${src}" alt="${target}" loading="eager" decoding="async">`;
+    const view = index === 0 ? 'מבט קדמי' : 'מבט אחורי';
+    const imageLabel = escapeHtml(`${workout.short} — ${view}`);
+    return `<img src="${src}" alt="${imageLabel}" width="1024" height="1536" loading="eager" decoding="async">`;
   }).join('');
 
   return `<figure class="home-workout-image" aria-label="${label}">
@@ -90,3 +91,4 @@ export function HomeScreen({ userName = 'מתאמן' } = {}) {
     </section>
   </div>`;
 }
+
