@@ -1,5 +1,4 @@
 import { escapeHtml } from '../../core/escape-html.js';
-import { AnatomyVisual } from '../../components/anatomy-visual.js';
 import { WORKOUTS, workoutForDay, nextWorkoutFromDay } from '../workouts/workout-catalog.js';
 
 const weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -35,13 +34,20 @@ function weekActivity(currentDay) {
   }).join('');
 }
 
+function workoutImage(workout) {
+  if (!workout.image) return '';
+  const label = escapeHtml(`שרירי המטרה: ${workout.targets.join(', ')}`);
+  return `<figure class="home-workout-image" aria-label="${label}">
+    <img src="${workout.image}" alt="${label}" width="643" height="520" loading="eager" decoding="sync">
+  </figure>`;
+}
+
 export function HomeScreen({ userName = 'מתאמן' } = {}) {
   const safeName = escapeHtml(userName);
   const workout = nearestWorkout();
   const currentDay = new Date().getDay();
   const weeklySets = WORKOUTS.reduce((total, item) => total + item.sets, 0);
   const weeklyMinutes = WORKOUTS.reduce((total, item) => total + item.minutes, 0);
-  const anatomyLabel = `שרירי המטרה: ${workout.targets.join(', ')}`;
 
   return `<div class="home-art animate-enter" dir="rtl">
     <header class="home-art__header">
@@ -61,7 +67,7 @@ export function HomeScreen({ userName = 'מתאמן' } = {}) {
         </div>
         <button class="home-start" type="button" data-route="workouts"><span>פתח אימון</span><i>↗</i></button>
       </div>
-      ${AnatomyVisual({ assetId: workout.anatomyId, label: anatomyLabel })}
+      ${workoutImage(workout)}
     </section>
 
     <section class="home-metrics" aria-label="סיכום תוכנית שבועי">
