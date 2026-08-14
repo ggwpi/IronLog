@@ -35,11 +35,15 @@ function weekActivity(currentDay) {
 }
 
 function workoutImage(workout) {
-  if (!workout.image) return '';
+  if (!workout.images?.length) return '';
   const label = escapeHtml(`שרירי המטרה: ${workout.targets.join(', ')}`);
+  const images = workout.images.map((src, index) => {
+    const target = escapeHtml(workout.targets[index] || workout.targets[0]);
+    return `<img src="${src}" alt="${target}" loading="eager" decoding="async">`;
+  }).join('');
 
   return `<figure class="home-workout-image" aria-label="${label}">
-    <img src="${workout.image}" alt="${label}" loading="eager" decoding="async">
+    <div class="home-workout-images" data-count="${workout.images.length}">${images}</div>
   </figure>`;
 }
 
