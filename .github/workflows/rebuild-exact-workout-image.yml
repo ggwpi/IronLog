@@ -1,0 +1,62 @@
+name: Rebuild exact workout image
+
+on:
+  push:
+    branches:
+      - image-reset-final
+    paths:
+      - '.image-transfer/**'
+      - '.github/workflows/rebuild-exact-workout-image.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild and verify image
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, hashlib
+
+          paths = [Path(f'.image-transfer/{i:02d}.b64') for i in range(14)]
+          text = ''.join(''.join(path.read_text().split()) for path in paths)
+          if len(text) != 60860:
+              raise SystemExit(f'Base64 length mismatch: {len(text)} != 60860')
+          raw = base64.b64decode(text, validate=True)
+          if len(raw) != 45644:
+              raise SystemExit(f'Image byte length mismatch: {len(raw)} != 45644')
+          actual = hashlib.sha256(raw).hexdigest()
+          expected = '9969b4a8877ea2723025d90357f78367d0168be4dac6dac0dba9bf8caf800ee1'
+          if actual != expected:
+              raise SystemExit(f'SHA-256 mismatch: {actual} != {expected}')
+          if not raw.startswith(b'\xff\xd8\xff') or not raw.endswith(b'\xff\xd9'):
+              raise SystemExit('Rebuilt data is not a complete JPEG')
+          target = Path('assets/workout-images/legs-b.jpg')
+          target.parent.mkdir(parents=True, exist_ok=True)
+          target.write_bytes(raw)
+          print(f'Exact image verified: {len(raw)} bytes, sha256={actual}')
+          PY
+
+      - name: Commit exact binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/workout-images/legs-b.jpg
+          if git diff --cached --quiet; then
+            echo 'Exact image is already committed.'
+            exit 0
+          fi
+          git commit -m 'Write exact LEGS B image binary'
+          git push origin HEAD:image-reset-final
