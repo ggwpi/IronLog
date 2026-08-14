@@ -1,4 +1,4 @@
-const ASSET_VERSION = '25';
+const ASSET_VERSION = '26';
 const src = (name) => `/assets/anatomy/${name}.svg?v=${ASSET_VERSION}`;
 
 export const ANATOMY_ASSETS = Object.freeze({
