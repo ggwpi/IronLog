@@ -1,4 +1,4 @@
-const CACHE = 'ironlog-foundation-v21';
+const CACHE = 'ironlog-foundation-v22';
 const CORE = [
   '/',
   '/index.html',
