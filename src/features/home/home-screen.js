@@ -37,8 +37,22 @@ function weekActivity(currentDay) {
 function workoutImage(workout) {
   if (!workout.image) return '';
   const label = escapeHtml(`שרירי המטרה: ${workout.targets.join(', ')}`);
+
+  if (workout.id === 'legs-b') {
+    return `<figure class="home-workout-image home-workout-image--anatomy" aria-label="${label}">
+      <div class="home-anatomy-pair" aria-hidden="true">
+        <span class="home-anatomy-crop home-anatomy-crop--front">
+          <img src="${workout.image}" alt="" width="1536" height="1024" loading="eager" decoding="async">
+        </span>
+        <span class="home-anatomy-crop home-anatomy-crop--back">
+          <img src="${workout.image}" alt="" width="1536" height="1024" loading="eager" decoding="async">
+        </span>
+      </div>
+    </figure>`;
+  }
+
   return `<figure class="home-workout-image" aria-label="${label}">
-    <img src="${workout.image}" alt="${label}" width="643" height="520" loading="eager" decoding="sync">
+    <img src="${workout.image}" alt="${label}" loading="eager" decoding="async">
   </figure>`;
 }
 
