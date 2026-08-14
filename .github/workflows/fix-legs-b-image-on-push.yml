@@ -20,19 +20,33 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validate staged chunks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, hashlib
+          for i in range(6):
+              p = Path(f'.recovery/legs-b-{i:02d}.b64')
+              s = ''.join(p.read_text().split())
+              print(i, 'chars=', len(s), 'sha256=', hashlib.sha256(s.encode()).hexdigest())
+              try:
+                  raw = base64.b64decode(s, validate=True)
+              except Exception as e:
+                  print('BAD CHUNK', i, repr(e))
+                  raise
+              print(i, 'decoded=', len(raw))
+          PY
+
       - name: Reconstruct exact original raster
         shell: bash
         run: |
           set -euo pipefail
-          cat .recovery/legs-b-00.b64 \
-              .recovery/legs-b-01.b64 \
-              .recovery/legs-b-02.b64 \
-              .recovery/legs-b-03.b64 \
-              .recovery/legs-b-04.b64 \
-              .recovery/legs-b-05.b64 \
-            | tr -d '\r\n' \
-            | base64 --decode > assets/anatomy/legs-b-original.jpg
-
+          : > assets/anatomy/legs-b-original.jpg
+          for i in 00 01 02 03 04 05; do
+            tr -d '\r\n' < ".recovery/legs-b-${i}.b64" | base64 --decode >> assets/anatomy/legs-b-original.jpg
+          done
           python3 - <<'PY'
           from pathlib import Path
           p = Path('assets/anatomy/legs-b-original.jpg')
