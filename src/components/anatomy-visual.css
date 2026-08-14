@@ -1,1 +1,0 @@
-.anatomy-visual{margin:0;width:100%;display:flex;align-items:center;justify-content:center;min-height:280px}.anatomy-visual__image{display:block;width:auto;height:auto;max-width:min(72vw,250px);max-height:360px;object-fit:contain;opacity:1;visibility:visible}@media(min-width:760px){.anatomy-visual{min-height:360px}.anatomy-visual__image{max-width:290px;max-height:420px}}
