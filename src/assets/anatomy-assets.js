@@ -1,4 +1,4 @@
-const ASSET_VERSION = '23';
+const ASSET_VERSION = '24';
 const src = (name) => `/assets/anatomy/${name}.svg?v=${ASSET_VERSION}`;
 
 export const ANATOMY_ASSETS = Object.freeze({
@@ -6,7 +6,7 @@ export const ANATOMY_ASSETS = Object.freeze({
   'legs-a': Object.freeze({ src: src('legs-a'), width: 720, height: 980 }),
   'pull-a': Object.freeze({ src: src('pull-a'), width: 720, height: 980 }),
   'push-b': Object.freeze({ src: src('push-b'), width: 720, height: 980 }),
-  'legs-b': Object.freeze({ src: `/assets/anatomy/legs-b-original.svg?v=${ASSET_VERSION}`, width: 580, height: 530 }),
+  'legs-b': Object.freeze({ src: `/assets/anatomy/legs-b-original.png?v=${ASSET_VERSION}`, width: 580, height: 530 }),
   arms: Object.freeze({ src: src('arms'), width: 720, height: 980 }),
 });
 
