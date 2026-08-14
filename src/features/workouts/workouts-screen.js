@@ -1,19 +1,45 @@
-import { Card, Button, EmptyState } from '../../components/ui.js';
-import { Icon } from '../../components/icons.js';
+import { AnatomyVisual } from '../../components/anatomy-visual.js';
+import { escapeHtml } from '../../core/escape-html.js';
+import { WORKOUTS } from './workout-catalog.js';
+
+function WorkoutCard(workout) {
+  const targetLabel = workout.targets.join(' · ');
+  const anatomyLabel = `שרירי המטרה: ${workout.targets.join(', ')}`;
+
+  return `<article class="workout-card" data-workout-id="${escapeHtml(workout.id)}">
+    <div class="workout-card__visual">
+      ${AnatomyVisual({ assetId: workout.anatomyId, label: anatomyLabel })}
+      <span class="workout-card__day">DAY ${workout.day}</span>
+    </div>
+    <div class="workout-card__body">
+      <div class="workout-card__heading">
+        <div>
+          <span class="workout-card__short">${escapeHtml(workout.short)}</span>
+          <h2>${escapeHtml(workout.title)}</h2>
+        </div>
+        <button class="workout-card__open" type="button" data-demo-action="open-workout" aria-label="פתח ${escapeHtml(workout.title)}">↗</button>
+      </div>
+      <p class="workout-card__targets">${escapeHtml(targetLabel)}</p>
+      <div class="workout-card__stats" aria-label="פרטי אימון">
+        <span><strong>${workout.exercises}</strong><small>תרגילים</small></span>
+        <span><strong>${workout.sets}</strong><small>סטים</small></span>
+        <span><strong>~${workout.minutes}</strong><small>דק׳</small></span>
+      </div>
+    </div>
+  </article>`;
+}
 
 export function WorkoutsScreen() {
-  const empty = Card(EmptyState({
-    icon: `<div class="empty-state__icon">${Icon('dumbbell', { size: 30 })}</div>`,
-    title: 'עוד אין אימונים',
-    description: 'זה יהיה המקום לתוכנית האימונים, בחירת יום, תרגילים ומעקב בזמן אמת.',
-    action: Button('צור אימון ראשון', { icon: Icon('plus', { size: 18 }), attributes: 'data-demo-action="new-workout"' }),
-  }), { className: 'empty-card' });
-
-  return `<div class="screen animate-enter">
-    <header class="screen-header screen-header--stacked">
-      <div><span class="eyebrow">WORKOUTS</span><h1>אימונים</h1><p>ניהול פשוט וברור של כל תוכנית האימונים.</p></div>
-      ${Button('אימון חדש', { variant: 'secondary', icon: Icon('plus', { size: 18 }), attributes: 'data-demo-action="new-workout"' })}
+  return `<div class="screen workouts-screen animate-enter">
+    <header class="screen-header screen-header--stacked workouts-header">
+      <div>
+        <span class="eyebrow">WORKOUTS</span>
+        <h1>האימונים שלך</h1>
+        <p>בחר אימון. התמונות נטענות ישירות מנכסי IronLog וניתן להחליף כל אחת בקובץ תמונה אחר בהמשך.</p>
+      </div>
     </header>
-    ${empty}
+    <section class="workout-grid" aria-label="תוכנית האימונים">
+      ${WORKOUTS.map(WorkoutCard).join('')}
+    </section>
   </div>`;
 }
