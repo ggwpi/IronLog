@@ -1,102 +1,91 @@
-.home-workout-image{
+.home-workout-art{
   position:absolute;
-  inset:0;
   z-index:1;
+  inset:0;
   margin:0;
+  overflow:visible;
+  pointer-events:none;
+}
+
+.home-body{
+  position:absolute;
   display:block;
-  overflow:hidden;
-}
-
-.home-workout-images{
-  width:100%;
-  height:100%;
-  display:flex;
-  align-items:stretch;
-  justify-content:center;
-  gap:0;
-  direction:ltr;
-}
-
-.home-workout-view{
-  position:relative;
-  flex:1 1 50%;
-  min-width:0;
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-
-.home-workout-view img{
-  display:block;
-  width:100%;
-  height:100%;
-  min-width:0;
+  width:auto;
+  max-width:none;
+  height:auto;
   object-fit:contain;
-  object-position:center 46%;
   background:transparent;
   border:0;
-  box-shadow:none;
-  filter:saturate(.94) contrast(1.04) brightness(.92);
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 7%,#000 84%,transparent 100%);
-  mask-image:linear-gradient(to bottom,transparent 0%,#000 7%,#000 84%,transparent 100%);
+  transform-origin:center center;
+  -webkit-mask-image:radial-gradient(ellipse 57% 70% at 50% 45%,#000 0%,#000 55%,rgba(0,0,0,.86) 69%,transparent 100%);
+  mask-image:radial-gradient(ellipse 57% 70% at 50% 45%,#000 0%,#000 55%,rgba(0,0,0,.86) 69%,transparent 100%);
 }
 
-.home-workout-view:after{
+.home-body--front{
+  z-index:3;
+  height:640px;
+  top:6px;
+  right:-9%;
+  opacity:.96;
+  filter:saturate(1.08) contrast(1.14) brightness(.86) drop-shadow(0 0 18px rgba(210,255,22,.07));
+}
+
+.home-body--back{
+  z-index:2;
+  height:465px;
+  top:116px;
+  right:-25%;
+  opacity:.31;
+  filter:saturate(.86) contrast(1.16) brightness(.62) blur(.15px);
+  transform:scale(.96);
+  -webkit-mask-image:radial-gradient(ellipse 56% 69% at 50% 46%,#000 0%,#000 47%,rgba(0,0,0,.68) 65%,transparent 100%);
+  mask-image:radial-gradient(ellipse 56% 69% at 50% 46%,#000 0%,#000 47%,rgba(0,0,0,.68) 65%,transparent 100%);
+}
+
+.home-workout-art:after{
   content:"";
   position:absolute;
-  inset:0;
+  z-index:4;
+  right:-8%;
+  top:13%;
+  width:62%;
+  height:72%;
+  border-radius:50%;
   pointer-events:none;
-  background:
-    linear-gradient(180deg,rgba(8,12,11,.44),transparent 18%,transparent 70%,rgba(8,12,11,.78) 96%),
-    radial-gradient(circle at 50% 52%,transparent 34%,rgba(8,12,11,.18) 84%);
-}
-
-.home-workout-view>span{
-  position:absolute;
-  z-index:3;
-  top:12px;
-  left:50%;
-  transform:translateX(-50%);
-  color:rgba(225,231,227,.28);
-  font-size:7px;
-  font-weight:850;
-  letter-spacing:.18em;
-  pointer-events:none;
-}
-
-.home-workout-images[data-count="1"] .home-workout-view{
-  flex-basis:100%;
-}
-
-.home-workout-images[data-count="3"] .home-workout-view{
-  flex-basis:33.333%;
-}
-
-.home-workout-images[data-count="4"]{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  grid-template-rows:repeat(2,1fr);
-}
-
-.home-workout-images[data-count="4"] .home-workout-view{
-  height:auto;
+  background:radial-gradient(ellipse at 48% 40%,transparent 35%,rgba(4,6,6,.08) 67%,rgba(4,6,6,.5) 100%);
 }
 
 @media(max-width:650px){
-  .home-workout-view img{
-    width:108%;
-    max-width:none;
-    object-position:center 45%;
+  .home-body--front{
+    height:600px;
+    top:3px;
+    right:-22%;
   }
 
-  .home-workout-view>span{
-    top:10px;
-    font-size:6px;
+  .home-body--back{
+    height:407px;
+    top:112px;
+    right:-34%;
+    opacity:.27;
   }
 }
 
-@media(max-width:380px){
-  .home-workout-view img{width:112%}
+@media(max-width:390px){
+  .home-body--front{
+    height:565px;
+    top:1px;
+    right:-24%;
+  }
+
+  .home-body--back{
+    height:385px;
+    top:103px;
+    right:-37%;
+    opacity:.25;
+  }
+}
+
+@media(min-width:760px){
+  .home-body--front{height:690px;right:0}
+  .home-body--back{height:510px;right:-8%;top:118px}
 }
