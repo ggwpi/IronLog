@@ -1,11 +1,12 @@
-name: Recover LEGS B PNG on push
+name: Recover LEGS B original raster
 
 on:
   push:
     branches:
       - main
     paths:
-      - scripts/trigger-legs-b-image.txt
+      - '.github/workflows/fix-legs-b-image-on-push.yml'
+      - '.recovery/legs-b-*.b64'
 
 permissions:
   contents: write
@@ -19,44 +20,38 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Extract original raster and save real PNG
+      - name: Reconstruct exact original raster
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m pip install --quiet pillow
+          cat .recovery/legs-b-00.b64 \
+              .recovery/legs-b-01.b64 \
+              .recovery/legs-b-02.b64 \
+              .recovery/legs-b-03.b64 \
+              .recovery/legs-b-04.b64 \
+              .recovery/legs-b-05.b64 \
+            | tr -d '\r\n' \
+            | base64 --decode > assets/anatomy/legs-b-original.jpg
+
           python3 - <<'PY'
           from pathlib import Path
-          import base64
-          import io
-          import re
-          from PIL import Image
-
-          source = Path('assets/anatomy/legs-b-original.svg')
-          target = Path('assets/anatomy/legs-b-original.png')
-          text = source.read_text(encoding='utf-8')
-          match = re.search(r'href="data:image/webp;base64,([^"]+)"', text)
-          if not match:
-              raise SystemExit('Embedded original WebP was not found')
-          raw = base64.b64decode(match.group(1), validate=True)
-          with Image.open(io.BytesIO(raw)) as image:
-              image.load()
-              rgba = image.convert('RGBA')
-              rgba.save(target, format='PNG', optimize=True)
-              print(f'Wrote {target}: {rgba.width}x{rgba.height}, {target.stat().st_size} bytes')
-          if target.read_bytes()[:8] != b'\x89PNG\r\n\x1a\n':
-              raise SystemExit('Generated file is not a valid PNG')
+          p = Path('assets/anatomy/legs-b-original.jpg')
+          b = p.read_bytes()
+          if not (b.startswith(b'\xff\xd8\xff') and b.endswith(b'\xff\xd9')):
+              raise SystemExit('Reconstructed file is not a valid JPEG stream')
+          print(f'Reconstructed {p}: {len(b)} bytes')
           PY
 
-      - name: Commit real PNG
+      - name: Commit original image
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/anatomy/legs-b-original.png
+          git add assets/anatomy/legs-b-original.jpg
           if git diff --cached --quiet; then
-            echo "PNG already exists and matches."
+            echo "Original JPEG already exists and matches."
             exit 0
           fi
-          git commit -m "Store LEGS B as real PNG binary"
+          git commit -m "Add original LEGS B anatomy raster"
           git push origin HEAD:main
