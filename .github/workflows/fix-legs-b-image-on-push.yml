@@ -1,0 +1,62 @@
+name: Recover LEGS B PNG on push
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/trigger-legs-b-image.txt
+
+permissions:
+  contents: write
+
+jobs:
+  recover-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract original raster and save real PNG
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64
+          import io
+          import re
+          from PIL import Image
+
+          source = Path('assets/anatomy/legs-b-original.svg')
+          target = Path('assets/anatomy/legs-b-original.png')
+          text = source.read_text(encoding='utf-8')
+          match = re.search(r'href="data:image/webp;base64,([^"]+)"', text)
+          if not match:
+              raise SystemExit('Embedded original WebP was not found')
+          raw = base64.b64decode(match.group(1), validate=True)
+          with Image.open(io.BytesIO(raw)) as image:
+              image.load()
+              rgba = image.convert('RGBA')
+              rgba.save(target, format='PNG', optimize=True)
+              print(f'Wrote {target}: {rgba.width}x{rgba.height}, {target.stat().st_size} bytes')
+          if target.read_bytes()[:8] != b'\x89PNG\r\n\x1a\n':
+              raise SystemExit('Generated file is not a valid PNG')
+          PY
+
+      - name: Commit real PNG
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/anatomy/legs-b-original.png
+          if git diff --cached --quiet; then
+            echo "PNG already exists and matches."
+            exit 0
+          fi
+          git commit -m "Store LEGS B as real PNG binary"
+          git push origin HEAD:main
