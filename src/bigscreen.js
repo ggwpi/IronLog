@@ -4,7 +4,18 @@
   const program = window.IRONLOG_PROGRAM || [];
   const q = (s) => document.querySelector(s);
 
-  const ASSETS = window.IRONLOG_ANATOMY_ASSETS || Object.freeze({});
+  const ASSETS = Object.freeze({
+    chest: '/assets/workout-images/muscle-groups/chest.png',
+    biceps: '/assets/workout-images/muscle-groups/biceps.png',
+    triceps: '/assets/workout-images/muscle-groups/triceps.png',
+    shoulders: '/assets/workout-images/muscle-groups/shoulders.png',
+    back: '/assets/workout-images/muscle-groups/back.png',
+    abs: '/assets/workout-images/muscle-groups/abs-core.png',
+    quads: '/assets/workout-images/muscle-groups/quadriceps.png',
+    hamstrings: '/assets/workout-images/muscle-groups/hamstrings.png',
+    glutes: '/assets/workout-images/muscle-groups/glutes.png',
+    calves: '/assets/workout-images/muscle-groups/calves.png',
+  });
 
   const META = Object.freeze({
     chest: { he: 'שרירי החזה', en: 'Pectoralis major' },
