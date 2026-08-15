@@ -26,13 +26,16 @@
     overflow:visible!important;
   }
 
-  /* Large lime presence/status dot after the user name. */
+  /* Lime ending dot: keep it prominent, but anchor it at the text baseline
+     instead of vertically centering it like a status indicator. */
   .home-editorial .home-user h1::after{
     content:"";
     display:inline-block;
     flex:0 0 auto;
+    align-self:flex-end!important;
     width:9px;
     height:9px;
+    margin-bottom:2px!important;
     border-radius:50%;
     background:var(--accent,#d2ff16);
     box-shadow:
@@ -63,6 +66,7 @@
   .home-editorial .home-user h1::after{
     width:8px;
     height:8px;
+    margin-bottom:2px!important;
   }
 
   .home-editorial .home-user .app-page-subtitle--above{
