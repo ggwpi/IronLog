@@ -1,4 +1,5 @@
 import { escapeHtml } from '../../core/escape-html.js';
+import { AppPageHeader } from '../../components/app-page-header.js';
 import { workoutForDay, nextWorkoutFromDay } from '../workouts/workout-catalog.js';
 
 const DAYS = Object.freeze([
@@ -64,18 +65,19 @@ function activityBars() {
 }
 
 export function HomeScreen({ userName = 'מתאמן' } = {}) {
-  const safeName = escapeHtml(userName);
   const workout = nearestWorkout();
   const currentDay = new Date().getDay();
   const heroLabel = workout.timing === 'היום' ? "TODAY'S WORKOUT" : 'NEXT WORKOUT';
 
   return `<div class="home-editorial animate-enter" dir="rtl">
-    <header class="home-editorial__header">
-      <div class="home-brand" aria-label="IronLog"><i aria-hidden="true"></i><span>IRONLOG</span></div>
-      <div class="home-user">
-        <div><span>${greeting()},</span><h1>${safeName}<b>.</b></h1></div>
-      </div>
-    </header>
+    ${AppPageHeader({
+      title: userName,
+      subtitle: `${greeting()},`,
+      subtitleAbove: true,
+      rootClass: 'home-editorial__header',
+      brandClass: 'home-brand',
+      headingClass: 'home-user',
+    })}
 
     <section class="home-stage" aria-label="האימון הקרוב">
       <div class="home-stage__smoke" aria-hidden="true"></div>
