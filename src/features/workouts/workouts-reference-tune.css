@@ -29,14 +29,15 @@
     width: 44%;
   }
 
-  /* Keep the date visually pinned to the card's left side. The base rule is
-     RTL, where flex-start resolves to the right, so use an LTR flex axis and
-     restore RTL only inside the Hebrew text fragments. */
+  /* Keep the entire date group pinned to the physical left edge, while
+     preserving its Hebrew visual order: TODAY sits to the right of the date. */
   body:has(.workouts-concept) .training-hero__date {
-    width: 100%;
-    direction: ltr;
+    width: max-content;
+    max-width: 100%;
+    direction: rtl;
     justify-content: flex-start;
-    text-align: left;
+    text-align: right;
+    margin-right: auto;
   }
 
   body:has(.workouts-concept) .training-hero__date > * {
