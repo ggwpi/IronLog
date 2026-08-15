@@ -1,0 +1,249 @@
+/* IronLog motion system
+   Initial motion: screen and content choreography on every route change.
+   Ambient motion: subtle, slow movement that keeps the UI alive without
+   moving the fixed navigation dock itself. */
+
+:root{
+  --motion-enter:cubic-bezier(.20,.78,.18,1);
+  --motion-soft:cubic-bezier(.45,0,.55,1);
+}
+
+/* ---------- Initial / route entrance ---------- */
+.animate-enter{
+  animation:iron-screen-in .52s var(--motion-enter) both;
+}
+
+.home-editorial.animate-enter .home-brand,
+.workouts-concept.animate-enter .training-brand{
+  animation:iron-rise-in .58s var(--motion-enter) .03s both;
+}
+
+.home-editorial.animate-enter .home-user,
+.workouts-concept.animate-enter .training-heading{
+  animation:iron-rise-in .58s var(--motion-enter) .08s both;
+}
+
+.home-editorial.animate-enter .home-stage,
+.workouts-concept.animate-enter .training-calendar{
+  animation:iron-section-in .66s var(--motion-enter) .10s both;
+}
+
+.workouts-concept.animate-enter .training-hero{
+  animation:iron-section-in .68s var(--motion-enter) .16s both;
+}
+
+.home-editorial.animate-enter .home-progress-card,
+.workouts-concept.animate-enter .training-summary{
+  animation:iron-section-in .62s var(--motion-enter) .23s both;
+}
+
+.home-editorial.animate-enter .home-activity-card,
+.workouts-concept.animate-enter .training-plan{
+  animation:iron-section-in .62s var(--motion-enter) .30s both;
+}
+
+.workouts-concept.animate-enter .training-quick{
+  animation:iron-section-in .62s var(--motion-enter) .36s both;
+}
+
+/* Editorial hero copy reveals in a short cascade. */
+.home-editorial.animate-enter .home-stage__copy > *,
+.workouts-concept.animate-enter .training-hero__copy > *{
+  animation:iron-copy-in .56s var(--motion-enter) both;
+}
+.home-editorial.animate-enter .home-stage__copy > :nth-child(1),
+.workouts-concept.animate-enter .training-hero__copy > :nth-child(1){animation-delay:.18s}
+.home-editorial.animate-enter .home-stage__copy > :nth-child(2),
+.workouts-concept.animate-enter .training-hero__copy > :nth-child(2){animation-delay:.23s}
+.home-editorial.animate-enter .home-stage__copy > :nth-child(3),
+.workouts-concept.animate-enter .training-hero__copy > :nth-child(3){animation-delay:.28s}
+.home-editorial.animate-enter .home-stage__copy > :nth-child(4),
+.workouts-concept.animate-enter .training-hero__copy > :nth-child(4){animation-delay:.33s}
+.home-editorial.animate-enter .home-stage__copy > :nth-child(5),
+.workouts-concept.animate-enter .training-hero__copy > :nth-child(5){animation-delay:.38s}
+.home-editorial.animate-enter .home-stage__copy > :nth-child(6),
+.workouts-concept.animate-enter .training-hero__copy > :nth-child(6){animation-delay:.43s}
+.home-editorial.animate-enter .home-stage__copy > :nth-child(7),
+.workouts-concept.animate-enter .training-hero__copy > :nth-child(7){animation-delay:.48s}
+
+/* Workout rows arrive progressively rather than popping in together. */
+.workouts-concept.animate-enter .training-plan-row{
+  animation:iron-row-in .48s var(--motion-enter) both;
+}
+.workouts-concept.animate-enter .training-plan-row:nth-child(1){animation-delay:.33s}
+.workouts-concept.animate-enter .training-plan-row:nth-child(2){animation-delay:.38s}
+.workouts-concept.animate-enter .training-plan-row:nth-child(3){animation-delay:.43s}
+.workouts-concept.animate-enter .training-plan-row:nth-child(4){animation-delay:.48s}
+
+/* Generic screens also get the same polished route entrance. */
+.screen.animate-enter > *,
+.auth-panel.animate-enter > *{
+  animation:iron-section-in .56s var(--motion-enter) both;
+}
+.screen.animate-enter > :nth-child(2),.auth-panel.animate-enter > :nth-child(2){animation-delay:.06s}
+.screen.animate-enter > :nth-child(3),.auth-panel.animate-enter > :nth-child(3){animation-delay:.12s}
+.screen.animate-enter > :nth-child(4),.auth-panel.animate-enter > :nth-child(4){animation-delay:.18s}
+.screen.animate-enter > :nth-child(5),.auth-panel.animate-enter > :nth-child(5){animation-delay:.24s}
+
+/* ---------- Ongoing / ambient motion ---------- */
+/* The bodies retain their natural aspect ratio; motion is only translation. */
+.home-body--front{
+  animation:
+    iron-body-arrive .78s var(--motion-enter) .10s both,
+    iron-body-float 7.2s var(--motion-soft) 1.05s infinite;
+  will-change:transform;
+}
+.home-body--back{
+  animation:
+    iron-body-arrive-back .88s var(--motion-enter) .16s both,
+    iron-body-float-back 9s var(--motion-soft) 1.2s infinite;
+  will-change:transform;
+}
+.training-hero__front{
+  animation:
+    iron-body-arrive .72s var(--motion-enter) .18s both,
+    iron-body-float 7.6s var(--motion-soft) 1.05s infinite;
+  will-change:transform;
+}
+.training-hero__back{
+  animation:
+    iron-body-arrive-back .84s var(--motion-enter) .23s both,
+    iron-body-float-back 9.4s var(--motion-soft) 1.25s infinite;
+  will-change:transform;
+}
+
+.home-stage__smoke{
+  animation:iron-smoke-drift 10s ease-in-out infinite alternate;
+  will-change:transform,opacity;
+}
+
+.home-accent-line,
+.training-day.is-selected i{
+  animation:iron-accent-breathe 2.8s ease-in-out infinite;
+}
+
+.home-progress-day.is-current > i,
+.summary-icon--ring,
+.quick-ring{
+  animation:iron-ring-breathe 3.2s ease-in-out infinite;
+}
+
+/* Keep the dock firmly fixed; only the selected symbol breathes gently. */
+.bottom-nav .nav-item.is-active .icon,
+.bottom-nav .nav-item.is-active svg{
+  animation:iron-active-tab 2.7s ease-in-out infinite;
+  transform-origin:center;
+}
+
+/* A tiny living signal in the workout intensity bars. */
+.intensity-bars b:nth-child(1){animation:iron-meter 1.8s ease-in-out infinite}
+.intensity-bars b:nth-child(2){animation:iron-meter 1.8s ease-in-out .16s infinite}
+.intensity-bars b:nth-child(3){animation:iron-meter 1.8s ease-in-out .32s infinite}
+
+/* Cards/buttons feel physical without continuously moving. */
+.home-start,
+.training-start,
+.training-plan-row,
+.bottom-nav .nav-item,
+.card--interactive{
+  transition:
+    transform .22s var(--motion-enter),
+    border-color .22s ease,
+    background-color .22s ease,
+    filter .22s ease,
+    opacity .22s ease!important;
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes iron-screen-in{
+  from{opacity:0;transform:translateY(7px);filter:blur(2px)}
+  55%{opacity:1;filter:blur(0)}
+  to{opacity:1;transform:translateY(0);filter:blur(0)}
+}
+
+@keyframes iron-rise-in{
+  from{opacity:0;transform:translateY(-8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+@keyframes iron-section-in{
+  from{opacity:0;transform:translateY(16px) scale(.992)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+@keyframes iron-copy-in{
+  from{opacity:0;transform:translateX(-12px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+@keyframes iron-row-in{
+  from{opacity:0;transform:translateX(14px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+@keyframes iron-body-arrive{
+  from{transform:translateY(18px) scale(.985)}
+  to{transform:translateY(0) scale(1)}
+}
+
+@keyframes iron-body-arrive-back{
+  from{transform:translateY(13px) scale(.99)}
+  to{transform:translateY(0) scale(1)}
+}
+
+@keyframes iron-body-float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-5px)}
+}
+
+@keyframes iron-body-float-back{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-3px)}
+}
+
+@keyframes iron-smoke-drift{
+  0%{transform:translate3d(-2px,0,0) scale(1);opacity:.34}
+  50%{opacity:.45}
+  100%{transform:translate3d(8px,-5px,0) scale(1.035);opacity:.38}
+}
+
+@keyframes iron-accent-breathe{
+  0%,100%{opacity:.72;box-shadow:0 0 7px rgba(210,255,22,.10)}
+  50%{opacity:1;box-shadow:0 0 17px rgba(210,255,22,.27)}
+}
+
+@keyframes iron-ring-breathe{
+  0%,100%{filter:drop-shadow(0 0 0 rgba(210,255,22,0))}
+  50%{filter:drop-shadow(0 0 8px rgba(210,255,22,.19))}
+}
+
+@keyframes iron-active-tab{
+  0%,100%{transform:scale(1);opacity:.92}
+  50%{transform:scale(1.055);opacity:1}
+}
+
+@keyframes iron-meter{
+  0%,100%{opacity:.66;transform:scaleY(.86)}
+  50%{opacity:1;transform:scaleY(1)}
+}
+
+/* User setting and native iOS accessibility preference both win over motion. */
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after{
+  animation-duration:.001ms!important;
+  animation-delay:0ms!important;
+  animation-iteration-count:1!important;
+  transition-duration:.001ms!important;
+  scroll-behavior:auto!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-delay:0ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+    scroll-behavior:auto!important;
+  }
+}
