@@ -1,1 +1,18 @@
-{"name":"IronLog","short_name":"IronLog","start_url":"/","display":"standalone","background_color":"#06090c","theme_color":"#06090c","lang":"he","dir":"rtl"}
+{
+  "name": "IronLog",
+  "short_name": "IronLog",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#040605",
+  "theme_color": "#040605",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/assets/ironlog-app-icon.svg?v=2",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
