@@ -3,127 +3,42 @@ import { Icon } from '../../components/icons.js';
 import { AppPageHeader } from '../../components/app-page-header.js';
 import { WORKOUTS, workoutForDay, nextWorkoutFromDay } from './workout-catalog.js';
 
-const DAY_LABELS = Object.freeze(['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳']);
-const MONTHS = Object.freeze(['בינו׳','בפבר׳','במרץ','באפר׳','במאי','ביוני','ביולי','באוג׳','בספט׳','באוק׳','בנוב׳','בדצמ׳']);
+const DAY_LABELS=Object.freeze(['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳']);
+const MONTHS=Object.freeze(['בינו׳','בפבר׳','במרץ','באפר׳','במאי','ביוני','ביולי','באוג׳','בספט׳','באוק׳','בנוב׳','בדצמ׳']);
+function weekDates(selectedDay=new Date().getDay()){const now=new Date(),sunday=new Date(now);sunday.setHours(12,0,0,0);sunday.setDate(now.getDate()-now.getDay());return DAY_LABELS.map((label,day)=>{const date=new Date(sunday);date.setDate(sunday.getDate()+day);return{label,day,date,selected:day===selectedDay}})}
+function selectedWorkout(){const t=new Date().getDay();return workoutForDay(t)||nextWorkoutFromDay(t)}
+function workoutDate(w){const t=new Date(),s=new Date(t);s.setHours(12,0,0,0);s.setDate(t.getDate()-t.getDay());const d=new Date(s);d.setDate(s.getDate()+w.day);if(w.day<t.getDay())d.setDate(d.getDate()+7);return d}
+function compactTitle(w){return w.short.replace(/\s+[AB]$/,'')}
+function hebrewTargets(w){const m={Chest:'חזה',Biceps:'בייספס',Triceps:'טרייספס',Shoulders:'כתפיים',Back:'גב','Rear Delts':'כתף אחורית',Quads:'רגליים',Hamstrings:'המסטרינג',Glutes:'ישבן',Core:'בטן',Calves:'תאומים',Delts:'כתפיים'};return w.targets.map(t=>m[t]||t).join(' · ')}
+function heroSubtitle(w){const l=compactTitle(w);return l==='ARMS'?'ידיים + כתפיים':l==='PUSH'?'חזה + כתפיים':l==='PULL'?'גב + ידיים':l==='LEGS'?'רגליים + ישבן':hebrewTargets(w)}
+function durationRange(m){return`${Math.max(30,m-16)}–${Math.max(31,m-1)} דק׳`}
+function dayStrip(){return weekDates().map(({label,date,selected})=>`<div class="training-day ${selected?'is-selected':''}"><span>${label}</span><strong>${String(date.getDate()).padStart(2,'0')}</strong><i></i></div>`).join('')}
+function liveWorkoutFor(w,ws){return ws.find(i=>i.id===w.id)||null}
+function hero(w,ws,a){const d=workoutDate(w),today=new Date().toDateString()===d.toDateString(),f=w.images?.[0]||'',b=w.images?.[1]||f,l=liveWorkoutFor(w,ws),id=l?.databaseId||'';return`<section class="training-hero"><div class="training-hero__copy"><div class="training-hero__date"><strong>${today?'היום':'האימון הבא'}</strong><span>• ${DAY_LABELS[w.day]}, ${String(d.getDate()).padStart(2,'0')} ${MONTHS[d.getMonth()]}</span></div><h2>${escapeHtml(compactTitle(w))}</h2><p>${escapeHtml(heroSubtitle(w))}</p><div class="training-hero__chips"><span>${Icon('clock',{size:13})}<b>${escapeHtml(durationRange(w.minutes))}</b></span><span><i class="intensity-bars"><b></b><b></b><b></b></i><b>עצימות גבוהה</b></span></div><button class="training-start" type="button" data-start-workout="${id}"><span>${a?'המשך אימון':'התחל אימון'}</span><i>→</i></button></div><div class="training-hero__art"><img class="training-hero__back" src="${b}" alt=""><img class="training-hero__front" src="${f}" alt=""></div></section>`}
+function summaryTiles(w){const d=workoutDate(w);return`<section class="training-summary"><article><i class="summary-icon summary-icon--ring"></i><div><strong>4/6</strong><span>אימונים השבוע</span></div></article><article><i class="summary-icon summary-icon--target"></i><div><strong>PPL</strong><span>ספליט פעיל</span></div></article><article><i class="summary-icon summary-icon--clock">${Icon('clock',{size:17})}</i><div><strong>${escapeHtml(compactTitle(w))}</strong><span>אימון הבא</span><small>יום ${DAY_LABELS[w.day]}, ${d.getDate()}</small></div></article></section>`}
+function representative(l){return WORKOUTS.find(i=>i.id===(l==='PUSH'?'push-a':l==='PULL'?'pull-a':l==='LEGS'?'legs-b':'arms'))}
+function programRow(l,s,c,ws,p=''){const w=representative(l),live=liveWorkoutFor(w,ws),thumb=w?.images?.[0]||'',action=live?.databaseId?`data-open-workout="${live.databaseId}"`:'data-demo-action';return`<button class="training-plan-row ${c}" type="button" ${action}><span class="training-plan-row__arrow">‹</span><span class="training-plan-row__copy"><strong>${l}</strong><small>${escapeHtml(hebrewTargets(w))}</small></span><span class="training-plan-row__progress"><i><b></b><b></b><b></b><b></b><b></b></i><em>${escapeHtml(p||s)}</em></span><span class="training-plan-row__state">${s==='הושלם'?'✓':s==='רגליים חלקית'?'3/6':''}</span><span class="training-plan-row__thumb"><img src="${thumb}" alt=""></span></button>`}
+function planList(ws){return`<section class="training-plan"><h3>תוכנית האימונים שלך</h3><div class="training-plan__rows">${programRow('PUSH','הושלם','is-complete',ws)}${programRow('PULL','הושלם','is-complete',ws)}${programRow('LEGS','רגליים חלקית','is-partial',ws,'רגליים חלקית')}${programRow('ARMS','הבא בתור','is-next',ws,'הבא בתור')}</div></section>`}
+function quickStats(){return`<section class="training-quick"><h3>סטטיסטיקות מהירות</h3><div class="training-quick__grid"><article><i class="quick-ring"></i><div><strong>68%</strong><span>השלמת תוכנית</span></div></article><article><i class="quick-wave">⌁</i><div><strong>12,450</strong><span>ק״ג השבוע</span></div></article><article><i class="quick-trophy">◇</i><div><strong>14</strong><span>רצף ימים</span></div></article></div></section>`}
 
-function weekDates(selectedDay = new Date().getDay()) {
-  const now = new Date();
-  const sunday = new Date(now);
-  sunday.setHours(12,0,0,0);
-  sunday.setDate(now.getDate() - now.getDay());
-  return DAY_LABELS.map((label,day) => {
-    const date = new Date(sunday);
-    date.setDate(sunday.getDate() + day);
-    return { label, day, date, selected: day === selectedDay };
-  });
-}
-function selectedWorkout(){ const t=new Date().getDay(); return workoutForDay(t)||nextWorkoutFromDay(t); }
-function workoutDate(w){ const t=new Date(),s=new Date(t); s.setHours(12,0,0,0); s.setDate(t.getDate()-t.getDay()); const d=new Date(s); d.setDate(s.getDate()+w.day); if(w.day<t.getDay())d.setDate(d.getDate()+7); return d; }
-function compactTitle(w){ return w.short.replace(/\s+[AB]$/,''); }
-function hebrewTargets(w){ const m={Chest:'חזה',Biceps:'בייספס',Triceps:'טרייספס',Shoulders:'כתפיים',Back:'גב','Rear Delts':'כתף אחורית',Quads:'רגליים',Hamstrings:'המסטרינג',Glutes:'ישבן',Core:'בטן',Calves:'תאומים',Delts:'כתפיים'}; return w.targets.map(t=>m[t]||t).join(' · '); }
-function heroSubtitle(w){ const l=compactTitle(w); return l==='ARMS'?'ידיים + כתפיים':l==='PUSH'?'חזה + כתפיים':l==='PULL'?'גב + ידיים':l==='LEGS'?'רגליים + ישבן':hebrewTargets(w); }
-function durationRange(m){ return `${Math.max(30,m-16)}–${Math.max(31,m-1)} דק׳`; }
-function dayStrip(){ return weekDates().map(({label,date,selected})=>`<div class="training-day ${selected?'is-selected':''}"><span>${label}</span><strong>${String(date.getDate()).padStart(2,'0')}</strong><i></i></div>`).join(''); }
-function liveWorkoutFor(w,ws){ return ws.find(i=>i.id===w.id)||null; }
-function hero(w,ws,a){ const d=workoutDate(w),today=new Date().toDateString()===d.toDateString(),f=w.images?.[0]||'',b=w.images?.[1]||f,l=liveWorkoutFor(w,ws),id=l?.databaseId||''; return `<section class="training-hero"><div class="training-hero__copy"><div class="training-hero__date"><strong>${today?'היום':'האימון הבא'}</strong><span>• ${DAY_LABELS[w.day]}, ${String(d.getDate()).padStart(2,'0')} ${MONTHS[d.getMonth()]}</span></div><h2>${escapeHtml(compactTitle(w))}</h2><p>${escapeHtml(heroSubtitle(w))}</p><div class="training-hero__chips"><span>${Icon('clock',{size:13})}<b>${escapeHtml(durationRange(w.minutes))}</b></span><span><i class="intensity-bars"><b></b><b></b><b></b></i><b>עצימות גבוהה</b></span></div><button class="training-start" type="button" data-start-workout="${id}"><span>${a?'המשך אימון':'התחל אימון'}</span><i>→</i></button></div><div class="training-hero__art"><img class="training-hero__back" src="${b}" alt=""><img class="training-hero__front" src="${f}" alt=""></div></section>`; }
-function summaryTiles(w){ const d=workoutDate(w); return `<section class="training-summary"><article><i class="summary-icon summary-icon--ring"></i><div><strong>4/6</strong><span>אימונים השבוע</span></div></article><article><i class="summary-icon summary-icon--target"></i><div><strong>PPL</strong><span>ספליט פעיל</span></div></article><article><i class="summary-icon summary-icon--clock">${Icon('clock',{size:17})}</i><div><strong>${escapeHtml(compactTitle(w))}</strong><span>אימון הבא</span><small>יום ${DAY_LABELS[w.day]}, ${d.getDate()}</small></div></article></section>`; }
-function representative(l){ return WORKOUTS.find(i=>i.id===(l==='PUSH'?'push-a':l==='PULL'?'pull-a':l==='LEGS'?'legs-b':'arms')); }
-function programRow(l,s,c,ws,p=''){ const w=representative(l),live=liveWorkoutFor(w,ws),thumb=w?.images?.[0]||'',action=live?.databaseId?`data-open-workout="${live.databaseId}"`:'data-demo-action'; return `<button class="training-plan-row ${c}" type="button" ${action}><span class="training-plan-row__arrow">‹</span><span class="training-plan-row__copy"><strong>${l}</strong><small>${escapeHtml(hebrewTargets(w))}</small></span><span class="training-plan-row__progress"><i><b></b><b></b><b></b><b></b><b></b></i><em>${escapeHtml(p||s)}</em></span><span class="training-plan-row__state">${s==='הושלם'?'✓':s==='רגליים חלקית'?'3/6':''}</span><span class="training-plan-row__thumb"><img src="${thumb}" alt=""></span></button>`; }
-function planList(ws){ return `<section class="training-plan"><h3>תוכנית האימונים שלך</h3><div class="training-plan__rows">${programRow('PUSH','הושלם','is-complete',ws)}${programRow('PULL','הושלם','is-complete',ws)}${programRow('LEGS','רגליים חלקית','is-partial',ws,'רגליים חלקית')}${programRow('ARMS','הבא בתור','is-next',ws,'הבא בתור')}</div></section>`; }
-function quickStats(){ return `<section class="training-quick"><h3>סטטיסטיקות מהירות</h3><div class="training-quick__grid"><article><i class="quick-ring"></i><div><strong>68%</strong><span>השלמת תוכנית</span></div></article><article><i class="quick-wave">⌁</i><div><strong>12,450</strong><span>ק״ג השבוע</span></div></article><article><i class="quick-trophy">◇</i><div><strong>14</strong><span>רצף ימים</span></div></article></div></section>`; }
+function completedSetCount(s){return s.exercises.reduce((n,e)=>n+e.sets.filter(x=>x.completed).length,0)}
+function plannedSetCount(s){return s.exercises.reduce((n,e)=>n+e.plannedSets,0)}
+function completedExerciseCount(s){return s.exercises.filter(e=>e.sets.filter(x=>x.completed).length>=e.plannedSets).length}
+function currentExercise(s){return s.exercises.find(e=>e.sets.filter(x=>x.completed).length<e.plannedSets)||s.exercises.at(-1)}
+function setMap(e){return new Map(e.sets.map(s=>[s.setNumber,s]))}
+function targetRepDefault(t){const f=String(t||'').match(/\d+/);return f?Number(f[0]):8}
+function lastCompletedSet(e){return[...e.sets].filter(s=>s.completed).sort((a,b)=>b.setNumber-a.setNumber)[0]||null}
+function workoutArt(session){const n=String(session.name||'').toLowerCase();if(n.includes('arm'))return'/assets/workout-images/plans/arms-front.png';if(n.includes('leg'))return'/assets/workout-images/plans/legs-b-front.png';if(n.includes('back')||n.includes('pull'))return'/assets/workout-images/plans/pull-a-front.png';return'/assets/workout-images/plans/push-a-front.png'}
+function exerciseMuscleLabel(e){const primary=e.exercise?.muscles?.find(m=>m.role==='primary')||e.exercise?.muscles?.[0];return primary?.name_he||primary?.nameHe||primary?.name||'שריר מטרה'}
+function normalizedHistoryPoint(point){return{load:Number(point.load_kg??point.loadKg??0),reps:Number(point.reps??0),at:point.completed_at||point.completedAt||''}}
+function recentExerciseHistory(exercise,performanceHistory=[]){return performanceHistory.filter(p=>Number(p.exercise_id??p.exerciseId)===Number(exercise.exerciseId)).map(normalizedHistoryPoint).filter(p=>p.load>0).sort((a,b)=>new Date(a.at)-new Date(b.at)).slice(-4)}
+function chartData(exercise,load,performanceHistory,activeSet){const planned=Math.max(1,Number(exercise.plannedSets)||1),sessionSets=[...exercise.sets].filter(s=>s.completed&&Number(s.loadKg)>0).sort((a,b)=>a.setNumber-b.setNumber),history=recentExerciseHistory(exercise,performanceHistory),slots=Array.from({length:planned},(_,i)=>({set:i+1,value:null,state:'future'}));sessionSets.forEach(s=>{if(slots[s.setNumber-1])slots[s.setNumber-1]={set:s.setNumber,value:Number(s.loadKg),state:'done'}});if(slots[activeSet-1]&&slots[activeSet-1].state!=='done'){const currentLoad=Number(load)||0;slots[activeSet-1]={set:activeSet,value:currentLoad||null,state:'current'}}const currentValues=slots.filter(s=>s.value!==null).map(s=>s.value),reference=history.map(h=>h.load),scaleValues=currentValues.length?currentValues:reference;let min=0,max=20;if(scaleValues.length){const rawMin=Math.min(...scaleValues),rawMax=Math.max(...scaleValues),spread=Math.max(5,rawMax-rawMin);min=Math.max(0,Math.floor((rawMin-spread*.55)/2.5)*2.5);max=Math.ceil((rawMax+spread*.55)/2.5)*2.5;if(max-min<10)max=min+10}const doneValues=sessionSets.map(s=>Number(s.loadKg)),trendUp=doneValues.length>=3&&doneValues.at(-1)>doneValues.at(-3)&&doneValues.at(-1)>=doneValues.at(-2);return{slots,history,min,max,trendUp,activeSet,planned}}
 
-function completedSetCount(s){ return s.exercises.reduce((n,e)=>n+e.sets.filter(x=>x.completed).length,0); }
-function plannedSetCount(s){ return s.exercises.reduce((n,e)=>n+e.plannedSets,0); }
-function completedExerciseCount(s){ return s.exercises.filter(e=>e.sets.filter(x=>x.completed).length>=e.plannedSets).length; }
-function currentExercise(s){ return s.exercises.find(e=>e.sets.filter(x=>x.completed).length<e.plannedSets)||s.exercises.at(-1); }
-function setMap(e){ return new Map(e.sets.map(s=>[s.setNumber,s])); }
-function targetRepDefault(t){ const f=String(t||'').match(/\d+/); return f?Number(f[0]):8; }
-function lastCompletedSet(e){ return [...e.sets].filter(s=>s.completed).sort((a,b)=>b.setNumber-a.setNumber)[0]||null; }
-function workoutArt(session){ const n=String(session.name||'').toLowerCase(); if(n.includes('arm'))return'/assets/workout-images/plans/arms-front.png'; if(n.includes('leg'))return'/assets/workout-images/plans/legs-b-front.png'; if(n.includes('back')||n.includes('pull'))return'/assets/workout-images/plans/pull-a-front.png'; return'/assets/workout-images/plans/push-a-front.png'; }
-function exerciseMuscleLabel(e){ const primary=e.exercise?.muscles?.find(m=>m.role==='primary')||e.exercise?.muscles?.[0]; return primary?.name_he||primary?.nameHe||primary?.name||'שריר מטרה'; }
-function normalizedHistoryPoint(point){ return { load:Number(point.load_kg??point.loadKg??0), reps:Number(point.reps??0), at:point.completed_at||point.completedAt||'' }; }
-function recentExerciseHistory(exercise,performanceHistory=[]){
-  return performanceHistory
-    .filter(p=>Number(p.exercise_id??p.exerciseId)===Number(exercise.exerciseId))
-    .map(normalizedHistoryPoint)
-    .filter(p=>p.load>0)
-    .sort((a,b)=>new Date(a.at)-new Date(b.at))
-    .slice(-4);
-}
-function chartData(exercise,load,performanceHistory,activeSet){
-  const planned=Math.max(1,Number(exercise.plannedSets)||1);
-  const sessionSets=[...exercise.sets].filter(s=>s.completed&&Number(s.loadKg)>0).sort((a,b)=>a.setNumber-b.setNumber);
-  const history=recentExerciseHistory(exercise,performanceHistory);
-  const slots=Array.from({length:planned},(_,i)=>({set:i+1,value:null,state:'future'}));
-  sessionSets.forEach(s=>{ if(slots[s.setNumber-1]) slots[s.setNumber-1]={set:s.setNumber,value:Number(s.loadKg),state:'done'}; });
-  if(slots[activeSet-1]&&slots[activeSet-1].state!=='done'){
-    const currentLoad=Number(load)||0;
-    slots[activeSet-1]={set:activeSet,value:currentLoad||null,state:'current'};
-  }
-  const currentValues=slots.filter(s=>s.value!==null).map(s=>s.value);
-  const reference=history.map(h=>h.load);
-  const scaleValues=currentValues.length?currentValues:reference;
-  let min=0,max=20;
-  if(scaleValues.length){
-    const rawMin=Math.min(...scaleValues),rawMax=Math.max(...scaleValues);
-    const spread=Math.max(5,rawMax-rawMin);
-    min=Math.max(0,Math.floor((rawMin-spread*.55)/2.5)*2.5);
-    max=Math.ceil((rawMax+spread*.55)/2.5)*2.5;
-    if(max-min<10)max=min+10;
-  }
-  const doneValues=sessionSets.map(s=>Number(s.loadKg));
-  const trendUp=doneValues.length>=3&&doneValues.at(-1)>doneValues.at(-3)&&doneValues.at(-1)>=doneValues.at(-2);
-  return {slots,history,min,max,trendUp,activeSet,planned};
-}
-function chartY(value,min,max){ return 61-((value-min)/(max-min))*38; }
-function chartMarkup(g){
-  const left=17,right=96;
-  const xFor=index=>g.planned===1?56:left+(right-left)*(index/Math.max(1,g.planned-1));
-  const ticks=[g.min,(g.min+g.max)/2,g.max];
-  const grid=ticks.map(v=>{const y=chartY(v,g.min,g.max);return `<line class="live-grid-line" x1="13" y1="${y}" x2="101" y2="${y}"/><text class="live-y-label" x="9" y="${y+1}">${Number(v.toFixed(1))}</text>`}).join('');
-  const completed=g.slots.filter(s=>s.state==='done'||(s.state==='current'&&s.value!==null));
-  const coords=completed.map(s=>({x:xFor(s.set-1),y:chartY(s.value,g.min,g.max),value:s.value,state:s.state,set:s.set}));
-  const line=coords.length>1?`<path class="live-chart-line" d="M ${coords.map(p=>`${p.x} ${p.y}`).join(' L ')}"/>`:'';
-  const points=g.slots.map(s=>{
-    const x=xFor(s.set-1);
-    const y=s.value!==null?chartY(s.value,g.min,g.max):61;
-    const cls=s.state==='done'?'done':s.state==='current'?'current':'future';
-    const value=s.value!==null?`<text class="live-value-label" x="${x}" y="${Math.max(12,y-7)}">${Number(s.value.toFixed(2))}</text>`:'';
-    return `<circle cx="${x}" cy="${y}" r="2.2" class="live-set-point ${cls}"/>${value}<text class="live-x-label ${s.state==='current'?'is-current':''}" x="${x}" y="78">סט ${s.set}</text>`;
-  }).join('');
-  let ghost='';
-  if(coords.length===0&&g.history.length>1){
-    const h=g.history.slice(-Math.min(g.history.length,g.planned));
-    const start=Math.max(0,g.planned-h.length);
-    const hcoords=h.map((p,i)=>({x:xFor(start+i),y:chartY(p.load,g.min,g.max)}));
-    ghost=`<path class="live-chart-history" d="M ${hcoords.map(p=>`${p.x} ${p.y}`).join(' L ')}"/>${hcoords.map(p=>`<circle class="live-history-point" cx="${p.x}" cy="${p.y}" r="1.5"/>`).join('')}`;
-  }
-  return `${grid}${ghost}${line}${points}`;
-}
+const GRAPH={w:360,h:140,left:48,right:332,top:20,bottom:102,labelY:132};
+function chartY(value,min,max){return GRAPH.bottom-((value-min)/(max-min))*(GRAPH.bottom-GRAPH.top)}
+function chartMarkup(g){const xFor=index=>g.planned===1?GRAPH.w/2:GRAPH.left+(GRAPH.right-GRAPH.left)*(index/Math.max(1,g.planned-1)),ticks=[g.min,(g.min+g.max)/2,g.max],grid=ticks.map(v=>{const y=chartY(v,g.min,g.max);return`<line class="live-grid-line" x1="${GRAPH.left-10}" y1="${y}" x2="${GRAPH.right+8}" y2="${y}"/><text class="live-y-label" x="${GRAPH.left-18}" y="${y+4}">${Number(v.toFixed(1))}</text>`}).join(''),completed=g.slots.filter(s=>s.state==='done'||(s.state==='current'&&s.value!==null)),coords=completed.map(s=>({x:xFor(s.set-1),y:chartY(s.value,g.min,g.max),value:s.value,state:s.state,set:s.set})),line=coords.length>1?`<path class="live-chart-line" d="M ${coords.map(p=>`${p.x} ${p.y}`).join(' L ')}"/>`:'';const points=g.slots.map(s=>{const x=xFor(s.set-1),y=s.value!==null?chartY(s.value,g.min,g.max):GRAPH.bottom,cls=s.state==='done'?'done':s.state==='current'?'current':'future',value=s.value!==null?`<text class="live-value-label" x="${x}" y="${Math.max(GRAPH.top+7,y-12)}">${Number(s.value.toFixed(2))}</text>`:'';return`<circle cx="${x}" cy="${y}" r="5.5" class="live-set-point ${cls}"/>${value}<text class="live-x-label ${s.state==='current'?'is-current':''}" x="${x}" y="${GRAPH.labelY}">סט ${s.set}</text>`}).join('');let ghost='';if(coords.length===0&&g.history.length>1){const h=g.history.slice(-Math.min(g.history.length,g.planned)),start=Math.max(0,g.planned-h.length),hcoords=h.map((p,i)=>({x:xFor(start+i),y:chartY(p.load,g.min,g.max)}));ghost=`<path class="live-chart-history" d="M ${hcoords.map(p=>`${p.x} ${p.y}`).join(' L ')}"/>${hcoords.map(p=>`<circle class="live-history-point" cx="${p.x}" cy="${p.y}" r="4"/>`).join('')}`}return`${grid}${ghost}${line}${points}`}
 
-function ActiveWorkoutScreen(session,performanceHistory=[]){
-  const e=currentExercise(session); if(!e)return'';
-  const map=setMap(e); let active=1;
-  for(let n=1;n<=e.plannedSets;n++){ if(!map.get(n)?.completed){active=n;break;} active=e.plannedSets; }
-  const prev=lastCompletedSet(e),load=prev?.loadKg??0,reps=prev?.reps??targetRepDefault(e.targetReps),rir=prev?.rir??e.targetRirMax??2;
-  const completedSets=completedSetCount(session),plannedSets=plannedSetCount(session),completedExercises=completedExerciseCount(session),percent=plannedSets?Math.round(completedSets/plannedSets*100):0;
-  const next=session.exercises.find(i=>i.position>e.position&&i.sets.filter(s=>s.completed).length<i.plannedSets);
-  const graph=chartData(e,load,performanceHistory,active),art=workoutArt(session),muscle=exerciseMuscleLabel(e),ringPercent=Math.round((active/e.plannedSets)*100);
-  const insight=graph.trendUp?'3 הסטים האחרונים שלך? <b>אתה על אש!</b>':completedSets?'הקצב נראה טוב — ממשיכים לסט הבא':'הגרף יתמלא עם כל סט שתשמור';
-  return `<div class="active-workout-page live-minimal" dir="rtl" data-active-session="${session.id}" data-started-at="${escapeHtml(session.startedAt)}">
-    <header class="live-workout-header"><button type="button" data-minimize-workout>‹</button><div><strong>${escapeHtml(session.name)}</strong><span><b id="liveWorkoutElapsed">00:00:00</b>　•　${completedExercises}/${session.exercises.length} תרגילים</span></div><button class="live-more">•••</button></header>
-    <div class="live-total-progress"><i style="--progress:${percent}%"></i></div>
-    <section class="live-hero-flat"><button class="live-ring" type="submit" form="liveSetForm" style="--ring:${ringPercent}%" aria-label="שמור את הסט הנוכחי"><span>סט נוכחי</span><b><em>${active}</em> / ${e.plannedSets}</b></button><div class="live-exercise-name"><h1>${escapeHtml(e.name)}</h1><p>${escapeHtml(muscle)}</p></div><div class="live-muscle-figure"><img src="${art}" alt="" loading="eager"></div></section>
-    <section class="live-performance"><svg class="live-chart" viewBox="0 0 108 82" preserveAspectRatio="none">${chartMarkup(graph)}</svg><div class="live-fire-note">${graph.trendUp?'🔥':'✦'} <span>${insight}</span></div></section>
-    <form id="liveSetForm" class="live-entry-form" data-set-form data-session-exercise-id="${e.id}" data-set-number="${active}" data-rest-seconds="${e.restMaxSeconds}"><div class="live-inline-fields"><div><label>חזרות</label><input id="liveReps" name="reps" type="number" min="0" value="${reps}" required><p><button type="button" data-step="-1" data-step-target="liveReps">−</button><button type="button" data-step="1" data-step-target="liveReps">＋</button></p></div><div><label>משקל (ק״ג)</label><input id="liveWeight" name="loadKg" type="number" min="0" step="0.25" value="${load}"><p><button type="button" data-step="-2.5" data-step-target="liveWeight">−</button><button type="button" data-step="2.5" data-step-target="liveWeight">＋</button></p></div><div><label>RIR</label><input id="liveRir" name="rir" type="number" min="0" max="10" step="0.5" value="${rir}"><p><button type="button" data-step="-0.5" data-step-target="liveRir">−</button><button type="button" data-step="0.5" data-step-target="liveRir">＋</button></p></div></div><button class="live-save-set" type="submit">שמור סט ✓</button></form>
-    <section class="live-rest-flat" id="restTimer" hidden><div class="live-rest-ring"><button type="button" id="skipRestTimer">Ⅱ</button></div><div><span>הזמן מנוחה</span><strong id="restTimerValue">00:00</strong><small>עד הסט הבא</small></div></section>
-    <section class="live-next-flat"><div><small>הבא</small><strong>${escapeHtml(next?.name||'סיום האימון')}</strong><span>${next?escapeHtml(next.targetReps||''):''}</span></div><b>‹</b></section><button class="live-finish-flat" type="button" data-complete-session="${session.id}">⚑　סיום אימון</button>
-  </div>`;
-}
+function ActiveWorkoutScreen(session,performanceHistory=[]){const e=currentExercise(session);if(!e)return'';const map=setMap(e);let active=1;for(let n=1;n<=e.plannedSets;n++){if(!map.get(n)?.completed){active=n;break}active=e.plannedSets}const prev=lastCompletedSet(e),load=prev?.loadKg??0,reps=prev?.reps??targetRepDefault(e.targetReps),rir=prev?.rir??e.targetRirMax??2,completedSets=completedSetCount(session),plannedSets=plannedSetCount(session),completedExercises=completedExerciseCount(session),percent=plannedSets?Math.round(completedSets/plannedSets*100):0,next=session.exercises.find(i=>i.position>e.position&&i.sets.filter(s=>s.completed).length<i.plannedSets),graph=chartData(e,load,performanceHistory,active),art=workoutArt(session),muscle=exerciseMuscleLabel(e),ringPercent=Math.round((active/e.plannedSets)*100),insight=graph.trendUp?'3 הסטים האחרונים שלך? <b>אתה על אש!</b>':completedSets?'הקצב נראה טוב — ממשיכים לסט הבא':'הגרף יתמלא עם כל סט שתשמור';return`<div class="active-workout-page live-minimal" dir="rtl" data-active-session="${session.id}" data-started-at="${escapeHtml(session.startedAt)}"><header class="live-workout-header"><button type="button" data-minimize-workout>‹</button><div><strong>${escapeHtml(session.name)}</strong><span><b id="liveWorkoutElapsed">00:00:00</b>　•　${completedExercises}/${session.exercises.length} תרגילים</span></div><button class="live-more">•••</button></header><div class="live-total-progress"><i style="--progress:${percent}%"></i></div><section class="live-hero-flat"><button class="live-ring" type="submit" form="liveSetForm" style="--ring:${ringPercent}%" aria-label="שמור את הסט הנוכחי"><span>סט נוכחי</span><b><em>${active}</em> / ${e.plannedSets}</b></button><div class="live-exercise-name"><h1>${escapeHtml(e.name)}</h1><p>${escapeHtml(muscle)}</p></div><div class="live-muscle-figure"><img src="${art}" alt="" loading="eager"></div></section><section class="live-performance"><svg class="live-chart" viewBox="0 0 ${GRAPH.w} ${GRAPH.h}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="גרף התקדמות משקל לפי סט">${chartMarkup(graph)}</svg><div class="live-fire-note">${graph.trendUp?'🔥':'✦'} <span>${insight}</span></div></section><form id="liveSetForm" class="live-entry-form" data-set-form data-session-exercise-id="${e.id}" data-set-number="${active}" data-rest-seconds="${e.restMaxSeconds}"><div class="live-inline-fields"><div><label>חזרות</label><input id="liveReps" name="reps" type="number" min="0" value="${reps}" required><p><button type="button" data-step="-1" data-step-target="liveReps">−</button><button type="button" data-step="1" data-step-target="liveReps">＋</button></p></div><div><label>משקל (ק״ג)</label><input id="liveWeight" name="loadKg" type="number" min="0" step="0.25" value="${load}"><p><button type="button" data-step="-2.5" data-step-target="liveWeight">−</button><button type="button" data-step="2.5" data-step-target="liveWeight">＋</button></p></div><div><label>RIR</label><input id="liveRir" name="rir" type="number" min="0" max="10" step="0.5" value="${rir}"><p><button type="button" data-step="-0.5" data-step-target="liveRir">−</button><button type="button" data-step="0.5" data-step-target="liveRir">＋</button></p></div></div><button class="live-save-set" type="submit">שמור סט ✓</button></form><section class="live-rest-flat" id="restTimer" hidden><div class="live-rest-ring"><button type="button" id="skipRestTimer">Ⅱ</button></div><div><span>הזמן מנוחה</span><strong id="restTimerValue">00:00</strong><small>עד הסט הבא</small></div></section><section class="live-next-flat"><div><small>הבא</small><strong>${escapeHtml(next?.name||'סיום האימון')}</strong><span>${next?escapeHtml(next.targetReps||''):''}</span></div><b>‹</b></section><button class="live-finish-flat" type="button" data-complete-session="${session.id}">⚑　סיום אימון</button></div>`}
 
-export function WorkoutBuilderExerciseRow(){ return ''; }
-export function WorkoutsScreen({workouts=WORKOUTS,workoutData={},ui=null}={}){
-  if(workoutData.activeSession&&ui?.type!=='overview') return ActiveWorkoutScreen(workoutData.activeSession,workoutData.performanceHistory||[]);
-  const w=selectedWorkout();
-  return `<div class="workouts-concept animate-enter" dir="rtl">${AppPageHeader({title:'אימונים',subtitle:'תכנון. ביצוע. התקדמות.',rootClass:'training-header',brandClass:'training-brand',headingClass:'training-heading'})}<section class="training-calendar"><span class="training-calendar__icon">${Icon('calendar',{size:21})}</span><div class="training-calendar__days">${dayStrip()}</div></section>${hero(w,workouts,workoutData.activeSession||null)}${summaryTiles(w)}${planList(workouts)}${quickStats()}</div>`;
-}
+export function WorkoutBuilderExerciseRow(){return''}
+export function WorkoutsScreen({workouts=WORKOUTS,workoutData={},ui=null}={}){if(workoutData.activeSession&&ui?.type!=='overview')return ActiveWorkoutScreen(workoutData.activeSession,workoutData.performanceHistory||[]);const w=selectedWorkout();return`<div class="workouts-concept animate-enter" dir="rtl">${AppPageHeader({title:'אימונים',subtitle:'תכנון. ביצוע. התקדמות.',rootClass:'training-header',brandClass:'training-brand',headingClass:'training-heading'})}<section class="training-calendar"><span class="training-calendar__icon">${Icon('calendar',{size:21})}</span><div class="training-calendar__days">${dayStrip()}</div></section>${hero(w,workouts,workoutData.activeSession||null)}${summaryTiles(w)}${planList(workouts)}${quickStats()}</div>`}
