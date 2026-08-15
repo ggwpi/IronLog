@@ -1,9 +1,19 @@
-/* Final iPhone calibration for the approved IronLog editorial concept. */
+/* iPhone calibration against the approved IronLog editorial home reference.
+   This file is loaded last on purpose: keep all snapshot-specific overrides here. */
 
 @media(max-width:650px){
+  html,body{
+    scrollbar-width:none;
+  }
+  html::-webkit-scrollbar,body::-webkit-scrollbar{
+    width:0;
+    height:0;
+    display:none;
+  }
+
   .app-content:has(.home-editorial){
-    padding-top:calc(var(--safe-top) + 4px);
-    padding-bottom:calc(var(--safe-bottom) + 92px);
+    padding-top:max(0px,calc(var(--safe-top) - 6px));
+    padding-bottom:calc(var(--safe-bottom) + 88px);
   }
 
   .home-editorial{
@@ -11,10 +21,11 @@
     padding-bottom:16px;
   }
 
+  /* Header: same visual split as the reference — brand left, bolt/name right. */
   .home-editorial__header{
     position:relative;
     z-index:20;
-    min-height:92px;
+    min-height:94px;
     padding:0 3px;
   }
 
@@ -24,40 +35,28 @@
     font-size:13px;
     letter-spacing:.20em;
   }
-
-  .home-brand i{
-    width:21px;
-    height:8px;
-  }
+  .home-brand i{width:21px;height:8px}
 
   .home-user{
     width:146px;
-    height:90px;
+    height:92px;
   }
-
   .home-bolt{
+    top:0;
     width:34px;
     height:34px;
   }
-
-  .home-user>div{
-    top:42px;
-  }
-
-  .home-user>div>span{
-    font-size:11px;
-  }
-
+  .home-user>div{top:42px}
+  .home-user>div>span{font-size:11px}
   .home-user h1{
     margin-top:4px;
     font-size:35px;
   }
 
-  /* Pull the visual upward behind the header, like the concept, while keeping
-     the copy in its original editorial position. */
+  /* Keep the reference's tall editorial hero, but overlap it upward behind the header. */
   .home-stage{
     z-index:1;
-    min-height:430px;
+    min-height:440px;
     margin-top:-62px;
     margin-inline:-18px;
     padding-inline:18px;
@@ -73,34 +72,36 @@
     inset:0;
     pointer-events:none;
     background:
-      radial-gradient(ellipse at 66% 30%,rgba(255,255,255,.055),transparent 29%),
-      radial-gradient(ellipse at 68% 43%,rgba(210,255,22,.040),transparent 39%);
+      radial-gradient(ellipse at 65% 31%,rgba(255,255,255,.060),transparent 29%),
+      radial-gradient(ellipse at 66% 45%,rgba(210,255,22,.040),transparent 39%);
   }
 
   .home-stage:after{
     z-index:4;
-    height:23%;
-    background:linear-gradient(180deg,transparent,rgba(4,6,6,.20) 48%,rgba(4,6,6,.88));
+    height:22%;
+    background:linear-gradient(180deg,transparent,rgba(4,6,6,.18) 46%,rgba(4,6,6,.90));
   }
 
   .home-stage__smoke{
     z-index:0;
-    width:71%;
-    height:94%;
+    width:72%;
+    height:96%;
     top:-5%;
-    right:-4%;
-    opacity:.36;
+    right:-3%;
+    opacity:.40;
     filter:blur(28px);
   }
 
+  /* Reference typography: very tall and condensed. Scale only X so ARMS keeps
+     the reference height without becoming wider than the left column. */
   .home-stage__copy{
     position:absolute;
     z-index:7;
     top:0;
-    left:18px;
+    left:28px;
     right:auto;
-    width:48%;
-    padding:70px 0 10px;
+    width:49%;
+    padding:92px 0 10px;
     direction:ltr;
     text-align:left;
   }
@@ -111,28 +112,33 @@
   }
 
   .home-stage__copy h2{
+    display:block;
     margin:13px 0 0;
     width:max-content;
-    max-width:calc(100vw - 44px);
-    font-size:clamp(59px,17.4vw,70px);
-    line-height:.79;
-    letter-spacing:.012em;
+    max-width:none;
+    color:#eceeed;
+    font-size:118px;
+    line-height:.86;
+    letter-spacing:.01em;
     white-space:nowrap;
+    transform:scaleX(.53);
+    transform-origin:left top;
   }
 
   .home-stage__copy p{
-    margin-top:9px;
+    margin-top:14px;
     font-size:8px;
-    letter-spacing:.17em;
+    letter-spacing:.18em;
+    white-space:nowrap;
   }
 
   .home-accent-line{
     width:25px;
-    margin-top:18px;
+    margin-top:22px;
   }
 
   .home-motivation{
-    margin-top:17px;
+    margin-top:24px;
     padding-left:10px;
     gap:3px;
     color:#9ca49e;
@@ -140,127 +146,100 @@
   }
 
   .home-workout-meta{
-    margin-top:18px;
+    margin-top:24px;
     width:184px;
   }
-
-  .home-workout-meta span{
-    padding-right:9px;
-  }
-
-  .home-workout-meta span+span{
-    padding-left:10px;
-  }
-
-  .home-workout-meta strong{
-    font-size:27px;
-  }
-
-  .home-workout-meta small{
-    font-size:7px;
-  }
+  .home-workout-meta span{padding-right:9px}
+  .home-workout-meta span+span{padding-left:10px}
+  .home-workout-meta strong{font-size:27px}
+  .home-workout-meta small{font-size:7px}
 
   .home-start{
     min-width:137px;
     min-height:42px;
-    margin-top:17px;
+    margin-top:23px;
     padding:0 7px 0 15px;
     gap:14px;
     background:rgba(5,8,6,.70);
     font-size:10px;
   }
+  .home-start i{width:29px;height:29px;font-size:16px}
 
-  .home-start i{
-    width:29px;
-    height:29px;
-    font-size:16px;
-  }
-
-  /* The plan PNGs are transparent now, so render the anatomy normally instead
-     of using screen blending. The larger front body is the visual anchor and
-     the back view stays behind it as a faded secondary silhouette. */
+  /* Critical fix: size anatomy by HEIGHT, not viewport width.
+     Width-based sizing made the 2:3 PNG ~600px tall on the user's iPhone,
+     cropping the head and shoulders. 440px reproduces the reference silhouette. */
   .home-workout-art{
     z-index:1;
     inset:0;
     overflow:hidden;
-    -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 91%,transparent 100%);
-    mask-image:linear-gradient(to bottom,#000 0%,#000 91%,transparent 100%);
+    -webkit-mask-image:none;
+    mask-image:none;
   }
 
   .home-body{
-    top:auto;
+    width:auto;
+    max-width:none;
     height:auto;
     max-height:none;
+    top:auto;
     mix-blend-mode:normal;
     background:transparent!important;
     transform-origin:center bottom;
+    -webkit-mask-image:none;
+    mask-image:none;
   }
 
   .home-body--front{
     z-index:3;
-    width:104%;
-    height:auto;
-    right:-18%;
-    bottom:-2%;
+    width:auto;
+    height:440px;
+    right:-18px;
+    bottom:-28px;
     top:auto;
     opacity:.98;
-    filter:saturate(1.12) contrast(1.11) brightness(.88) drop-shadow(0 18px 30px rgba(0,0,0,.38)) drop-shadow(0 0 20px rgba(210,255,22,.07));
-    -webkit-mask-image:radial-gradient(ellipse 54% 82% at 50% 51%,#000 0%,#000 61%,rgba(0,0,0,.92) 73%,rgba(0,0,0,.46) 86%,transparent 100%);
-    mask-image:radial-gradient(ellipse 54% 82% at 50% 51%,#000 0%,#000 61%,rgba(0,0,0,.92) 73%,rgba(0,0,0,.46) 86%,transparent 100%);
+    filter:saturate(1.10) contrast(1.08) brightness(.88) drop-shadow(0 18px 30px rgba(0,0,0,.36)) drop-shadow(0 0 18px rgba(210,255,22,.065));
   }
 
   .home-body--back{
     z-index:2;
-    width:71%;
-    height:auto;
-    right:-28%;
-    bottom:12%;
+    width:auto;
+    height:330px;
+    right:-72px;
+    bottom:50px;
     top:auto;
-    opacity:.30;
+    opacity:.25;
     transform:none;
-    filter:saturate(.98) contrast(1.04) brightness(.72) blur(.18px);
-    -webkit-mask-image:radial-gradient(ellipse 53% 80% at 50% 50%,#000 0%,#000 54%,rgba(0,0,0,.76) 70%,rgba(0,0,0,.30) 85%,transparent 100%);
-    mask-image:radial-gradient(ellipse 53% 80% at 50% 50%,#000 0%,#000 54%,rgba(0,0,0,.76) 70%,rgba(0,0,0,.30) 85%,transparent 100%);
+    filter:saturate(.95) contrast(1.03) brightness(.68) blur(.20px);
   }
 
+  /* Gentle edge/bottom fade only; transparent PNG edges stay untouched. */
   .home-workout-art:after{
     z-index:5;
-    right:-7%;
-    top:-2%;
-    width:77%;
-    height:102%;
+    right:-8%;
+    top:0;
+    width:72%;
+    height:100%;
     background:
-      radial-gradient(ellipse at 50% 42%,transparent 41%,rgba(4,6,6,.035) 67%,rgba(4,6,6,.34) 100%),
-      linear-gradient(180deg,transparent 0%,transparent 77%,rgba(4,6,6,.54));
+      radial-gradient(ellipse at 50% 43%,transparent 47%,rgba(4,6,6,.025) 70%,rgba(4,6,6,.26) 100%),
+      linear-gradient(180deg,transparent 0%,transparent 82%,rgba(4,6,6,.64));
   }
 
-  .home-progress-card,
-  .home-activity-card{
-    margin-inline:10px;
-  }
-
+  .home-progress-card,.home-activity-card{margin-inline:10px}
   .home-progress-card{
     margin-top:-1px;
     padding:14px 14px 12px;
   }
+  .home-activity-card{padding:14px 14px 9px}
+  .home-progress-days{margin-top:12px}
+  .home-chart{height:105px}
 
-  .home-activity-card{
-    padding:14px 14px 9px;
-  }
-
-  .home-progress-days{
-    margin-top:12px;
-  }
-
-  .home-chart{
-    height:105px;
-  }
-
-  /* The reference uses a neutral dark glass bar; only the active cell is lime. */
+  /* In the reference the glass navigation hugs the bottom of the phone.
+     env(safe-area-inset-bottom) is ~34px on this iPhone, so subtract part of it
+     rather than stacking the full inset above the bar. */
   body:has(.home-editorial) .bottom-nav{
     width:min(calc(100vw - 52px),720px);
     height:64px;
-    bottom:calc(var(--safe-bottom) + 7px);
+    bottom:max(6px,calc(var(--safe-bottom) - 22px));
     padding:6px;
     border-color:rgba(255,255,255,.10);
     border-radius:23px;
@@ -269,15 +248,10 @@
     backdrop-filter:blur(22px) saturate(110%);
     box-shadow:0 18px 54px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.07);
   }
-
   body:has(.home-editorial) .bottom-nav::before{
     background:radial-gradient(circle at 18% -20%,rgba(255,255,255,.08),transparent 40%);
   }
-
-  body:has(.home-editorial) .bottom-nav::after{
-    background:rgba(5,8,7,.42);
-  }
-
+  body:has(.home-editorial) .bottom-nav::after{background:rgba(5,8,7,.42)}
   body:has(.home-editorial) .nav-highlight{
     top:6px;
     bottom:6px;
@@ -287,66 +261,23 @@
     border-radius:17px;
     background:linear-gradient(180deg,rgba(210,255,22,.10),rgba(210,255,22,.035));
   }
-
-  body:has(.home-editorial) .nav-item{
-    gap:3px;
-    font-size:8px;
-  }
+  body:has(.home-editorial) .nav-item{gap:3px;font-size:8px}
 }
 
 @media(max-width:390px){
-  .home-editorial__header{
-    min-height:88px;
-  }
-
-  .home-user{
-    width:142px;
-  }
-
-  .home-user h1{
-    font-size:33px;
-  }
-
-  .home-stage{
-    min-height:412px;
-    margin-top:-58px;
-  }
-
-  .home-stage__copy{
-    width:49%;
-    padding-top:66px;
-  }
-
-  .home-stage__copy h2{
-    font-size:59px;
-  }
-
-  .home-workout-meta{
-    width:177px;
-  }
-
-  .home-workout-meta strong{
-    font-size:25px;
-  }
-
-  .home-body--front{
-    width:108%;
-    right:-21%;
-  }
-
-  .home-body--back{
-    width:74%;
-    right:-31%;
-    bottom:13%;
-    opacity:.28;
-  }
-
-  body:has(.home-editorial) .bottom-nav{
-    width:calc(100vw - 44px);
-  }
+  .home-editorial__header{min-height:92px}
+  .home-user{width:142px}
+  .home-user h1{font-size:33px}
+  .home-stage{min-height:432px;margin-top:-60px}
+  .home-stage__copy{left:25px;padding-top:89px;width:50%}
+  .home-stage__copy h2{font-size:112px;transform:scaleX(.54)}
+  .home-workout-meta{width:177px}
+  .home-workout-meta strong{font-size:25px}
+  .home-body--front{height:430px;right:-20px;bottom:-27px}
+  .home-body--back{height:322px;right:-70px;bottom:49px;opacity:.24}
+  body:has(.home-editorial) .bottom-nav{width:calc(100vw - 44px)}
 }
 
-/* Keep the wider-screen editorial treatment from the main home stylesheet. */
 @media(min-width:651px){
   .home-body{mix-blend-mode:normal}
 }
