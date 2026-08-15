@@ -9,6 +9,7 @@ import { StatisticsScreen } from './features/statistics/statistics-screen.js';
 import { SettingsScreen } from './features/settings/settings-screen.js';
 
 const app = document.querySelector('#app');
+const launchStartedAt = performance.now();
 
 const store = createStore({
   session: readSession(),
@@ -130,9 +131,28 @@ listenToNavigation((route) => {
 
 store.subscribe(render);
 
+function finishLaunchScreen() {
+  const launch = document.querySelector('#launchScreen');
+  if (!launch) return;
+
+  const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('reduce-motion');
+  const minimumVisibleMs = reducedMotion ? 120 : 1850;
+  const remaining = Math.max(0, minimumVisibleMs - (performance.now() - launchStartedAt));
+
+  window.setTimeout(() => {
+    launch.classList.add('is-leaving');
+    launch.setAttribute('aria-hidden', 'true');
+    window.setTimeout(() => launch.remove(), reducedMotion ? 20 : 520);
+  }, remaining);
+}
+
 function boot() {
   if (!location.hash) history.replaceState(null, '', '#/home');
   render();
+
+  // The app initializes behind the brand launch layer. Two frames ensure the
+  // first real screen has painted before we start the final launch handoff.
+  requestAnimationFrame(() => requestAnimationFrame(finishLaunchScreen));
 }
 
 boot();
