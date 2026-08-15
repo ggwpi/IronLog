@@ -5,7 +5,7 @@ import { WORKOUTS, workoutForDay, nextWorkoutFromDay } from './workout-catalog.j
 const DAY_LABELS = Object.freeze(['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']);
 const MONTHS = Object.freeze(['בינו׳', 'בפבר׳', 'במרץ', 'באפר׳', 'במאי', 'ביוני', 'ביולי', 'באוג׳', 'בספט׳', 'באוק׳', 'בנוב׳', 'בדצמ׳']);
 
-function weekDates(selectedDay) {
+function weekDates(selectedDay = new Date().getDay()) {
   const now = new Date();
   const sunday = new Date(now);
   sunday.setHours(12, 0, 0, 0);
@@ -23,6 +23,18 @@ function selectedWorkout() {
   return workoutForDay(today) || nextWorkoutFromDay(today);
 }
 
+function workoutDate(workout) {
+  const today = new Date();
+  const sunday = new Date(today);
+  sunday.setHours(12, 0, 0, 0);
+  sunday.setDate(today.getDate() - today.getDay());
+
+  const date = new Date(sunday);
+  date.setDate(sunday.getDate() + workout.day);
+  if (workout.day < today.getDay()) date.setDate(date.getDate() + 7);
+  return date;
+}
+
 function compactTitle(workout) {
   return workout.short.replace(/\s+[AB]$/, '');
 }
@@ -36,8 +48,21 @@ function hebrewTargets(workout) {
   return workout.targets.map((target) => map[target] || target).join(' · ');
 }
 
-function dayStrip(workout) {
-  return weekDates(workout.day).map(({ label, date, selected }) => `
+function heroSubtitle(workout) {
+  const label = compactTitle(workout);
+  if (label === 'ARMS') return 'ידיים + כתפיים';
+  if (label === 'PUSH') return 'חזה + כתפיים';
+  if (label === 'PULL') return 'גב + ידיים';
+  if (label === 'LEGS') return 'רגליים + ישבן';
+  return hebrewTargets(workout);
+}
+
+function durationRange(minutes) {
+  return `${Math.max(30, minutes - 16)}–${Math.max(31, minutes - 1)} דק׳`;
+}
+
+function dayStrip() {
+  return weekDates().map(({ label, date, selected }) => `
     <div class="training-day ${selected ? 'is-selected' : ''}">
       <span>${label}</span>
       <strong>${String(date.getDate()).padStart(2, '0')}</strong>
@@ -46,8 +71,8 @@ function dayStrip(workout) {
 }
 
 function hero(workout) {
-  const date = weekDates(workout.day)[workout.day].date;
-  const today = new Date().getDay() === workout.day;
+  const date = workoutDate(workout);
+  const today = new Date().toDateString() === date.toDateString();
   const front = workout.images?.[0] || '';
   const back = workout.images?.[1] || front;
 
@@ -55,9 +80,9 @@ function hero(workout) {
     <div class="training-hero__copy">
       <div class="training-hero__date"><strong>${today ? 'היום' : 'האימון הבא'}</strong><span>• ${DAY_LABELS[workout.day]}, ${String(date.getDate()).padStart(2, '0')} ${MONTHS[date.getMonth()]}</span></div>
       <h2>${escapeHtml(compactTitle(workout))}</h2>
-      <p>${escapeHtml(hebrewTargets(workout))}</p>
+      <p>${escapeHtml(heroSubtitle(workout))}</p>
       <div class="training-hero__chips">
-        <span>${Icon('clock', { size: 14 })}<b>~${workout.minutes} דק׳</b></span>
+        <span>${Icon('clock', { size: 13 })}<b>${escapeHtml(durationRange(workout.minutes))}</b></span>
         <span><i class="intensity-bars" aria-hidden="true"><b></b><b></b><b></b></i><b>עצימות גבוהה</b></span>
       </div>
       <button class="training-start" type="button" data-demo-action>
@@ -72,10 +97,11 @@ function hero(workout) {
 }
 
 function summaryTiles(workout) {
+  const date = workoutDate(workout);
   return `<section class="training-summary" aria-label="סיכום תוכנית">
     <article><i class="summary-icon summary-icon--ring" aria-hidden="true"></i><div><strong>4/6</strong><span>אימונים השבוע</span></div></article>
     <article><i class="summary-icon summary-icon--target" aria-hidden="true"></i><div><strong>PPL</strong><span>ספליט פעיל</span></div></article>
-    <article><i class="summary-icon summary-icon--clock" aria-hidden="true">${Icon('clock', { size: 18 })}</i><div><strong>${escapeHtml(compactTitle(workout))}</strong><span>אימון הבא</span><small>יום ${DAY_LABELS[workout.day]}</small></div></article>
+    <article><i class="summary-icon summary-icon--clock" aria-hidden="true">${Icon('clock', { size: 17 })}</i><div><strong>${escapeHtml(compactTitle(workout))}</strong><span>אימון הבא</span><small>יום ${DAY_LABELS[workout.day]}, ${date.getDate()}</small></div></article>
   </section>`;
 }
 
@@ -116,7 +142,7 @@ function quickStats() {
     <div class="training-quick__grid">
       <article><i class="quick-ring" aria-hidden="true"></i><div><strong>68%</strong><span>השלמת תוכנית</span></div></article>
       <article><i class="quick-wave" aria-hidden="true">⌁</i><div><strong>12,450</strong><span>ק״ג השבוע</span></div></article>
-      <article><i class="quick-trophy" aria-hidden="true">♜</i><div><strong>14</strong><span>רצף ימים</span></div></article>
+      <article><i class="quick-trophy" aria-hidden="true">◇</i><div><strong>14</strong><span>רצף ימים</span></div></article>
     </div>
   </section>`;
 }
@@ -131,8 +157,8 @@ export function WorkoutsScreen() {
     </header>
 
     <section class="training-calendar" aria-label="לוח שבועי">
-      <span class="training-calendar__icon">${Icon('calendar', { size: 22 })}</span>
-      <div class="training-calendar__days">${dayStrip(workout)}</div>
+      <span class="training-calendar__icon">${Icon('calendar', { size: 21 })}</span>
+      <div class="training-calendar__days">${dayStrip()}</div>
     </section>
 
     ${hero(workout)}
