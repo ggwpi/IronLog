@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="/src/features/home/workout-image.css">
   <link rel="stylesheet" href="/src/features/workouts/workouts.css">
   <link rel="stylesheet" href="/src/features/workouts/workouts-reference-tune.css">
+  <link rel="stylesheet" href="/src/features/workouts/active-workout.css">
   <link rel="stylesheet" href="/src/features/statistics/statistics.css">
   <link rel="stylesheet" href="/src/nav-glass.css">
   <link rel="stylesheet" href="/src/features/home/home-reference-fix.css">
@@ -43,48 +44,17 @@
           <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
           <div><strong>IRONLOG</strong><small>TRAIN. TRACK. PROGRESS.</small></div>
         </div>
-        <div class="auth-copy">
-          <span class="eyebrow">LOADING</span>
-          <h1>IronLog<br><em>נטען עכשיו.</em></h1>
-          <p>אם המסך הזה נשאר יותר מרגע, רענן את העמוד פעם אחת.</p>
-        </div>
+        <div class="auth-copy"><span class="eyebrow">LOADING</span><h1>IronLog<br><em>נטען עכשיו.</em></h1><p>אם המסך הזה נשאר יותר מרגע, רענן את העמוד פעם אחת.</p></div>
       </section>
     </main>
   </div>
-
   <div class="launch-screen" id="launchScreen" role="status" aria-label="IronLog נטען">
-    <div class="launch-screen__content">
-      <div class="launch-bolt" aria-hidden="true">
-        <svg viewBox="0 0 64 84" focusable="false">
-          <path class="launch-bolt__trace" d="M40 3 L11 47 L30 47 L23 81 L54 36 L35 36 Z" />
-          <path class="launch-bolt__fill" d="M40 3 L11 47 L30 47 L23 81 L54 36 L35 36 Z" />
-        </svg>
-      </div>
-      <div class="launch-wordmark" aria-label="IRONLOG"><span>IRONLOG</span></div>
-      <p class="launch-tagline">TRAIN. TRACK. PROGRESS.</p>
-      <div class="launch-progress" aria-hidden="true">
-        <i class="launch-progress__fill"></i>
-        <i class="launch-progress__spark"></i>
-      </div>
-      <div class="launch-progress__label" aria-hidden="true"><span>INITIALIZING</span><span>IRONLOG</span></div>
-    </div>
+    <div class="launch-screen__content"><div class="launch-bolt" aria-hidden="true"><svg viewBox="0 0 64 84" focusable="false"><path class="launch-bolt__trace" d="M40 3 L11 47 L30 47 L23 81 L54 36 L35 36 Z" /><path class="launch-bolt__fill" d="M40 3 L11 47 L30 47 L23 81 L54 36 L35 36 Z" /></svg></div><div class="launch-wordmark" aria-label="IRONLOG"><span>IRONLOG</span></div><p class="launch-tagline">TRAIN. TRACK. PROGRESS.</p><div class="launch-progress" aria-hidden="true"><i class="launch-progress__fill"></i><i class="launch-progress__spark"></i></div><div class="launch-progress__label" aria-hidden="true"><span>INITIALIZING</span><span>IRONLOG</span></div></div>
   </div>
-
   <noscript>IronLog requires JavaScript.</noscript>
   <script>
-    window.addEventListener('error', function () {
-      var fallback = document.getElementById('bootFallback');
-      if (!fallback) return;
-      var eyebrow = fallback.querySelector('.eyebrow');
-      var title = fallback.querySelector('h1');
-      var copy = fallback.querySelector('p');
-      if (eyebrow) eyebrow.textContent = 'STARTUP ERROR';
-      if (title) title.innerHTML = 'לא הצלחנו לפתוח את<br><em>IronLog.</em>';
-      if (copy) copy.textContent = 'נסה לרענן את העמוד. אם זה ממשיך, האפליקציה תציג עכשיו שגיאה במקום מסך שחור.';
-    });
-    window.addEventListener('unhandledrejection', function () {
-      window.dispatchEvent(new Event('error'));
-    });
+    window.addEventListener('error', function () { var fallback = document.getElementById('bootFallback'); if (!fallback) return; var eyebrow = fallback.querySelector('.eyebrow'); var title = fallback.querySelector('h1'); var copy = fallback.querySelector('p'); if (eyebrow) eyebrow.textContent = 'STARTUP ERROR'; if (title) title.innerHTML = 'לא הצלחנו לפתוח את<br><em>IronLog.</em>'; if (copy) copy.textContent = 'נסה לרענן את העמוד. אם זה ממשיך, האפליקציה תציג עכשיו שגיאה במקום מסך שחור.'; });
+    window.addEventListener('unhandledrejection', function () { window.dispatchEvent(new Event('error')); });
   </script>
   <script type="module" src="/src/app.js"></script>
 </body>
