@@ -26,6 +26,7 @@
   <link rel="stylesheet" href="/src/features/statistics/statistics-final-tune.css">
   <link rel="stylesheet" href="/src/features/statistics/statistics-motion.css">
   <link rel="stylesheet" href="/src/app-header.css">
+  <link rel="stylesheet" href="/src/launch-screen.css">
 </head>
 <body>
   <div id="app">
@@ -43,6 +44,25 @@
       </section>
     </main>
   </div>
+
+  <div class="launch-screen" id="launchScreen" role="status" aria-label="IronLog נטען">
+    <div class="launch-screen__content">
+      <div class="launch-bolt" aria-hidden="true">
+        <svg viewBox="0 0 64 84" focusable="false">
+          <path class="launch-bolt__trace" d="M40 3 L11 47 L30 47 L23 81 L54 36 L35 36 Z" />
+          <path class="launch-bolt__fill" d="M40 3 L11 47 L30 47 L23 81 L54 36 L35 36 Z" />
+        </svg>
+      </div>
+      <div class="launch-wordmark" aria-label="IRONLOG"><span>IRONLOG</span></div>
+      <p class="launch-tagline">TRAIN. TRACK. PROGRESS.</p>
+      <div class="launch-progress" aria-hidden="true">
+        <i class="launch-progress__fill"></i>
+        <i class="launch-progress__spark"></i>
+      </div>
+      <div class="launch-progress__label" aria-hidden="true"><span>INITIALIZING</span><span>IRONLOG</span></div>
+    </div>
+  </div>
+
   <noscript>IronLog requires JavaScript.</noscript>
   <script>
     window.addEventListener('error', function () {
