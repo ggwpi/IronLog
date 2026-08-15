@@ -73,7 +73,6 @@ export function HomeScreen({ userName = 'מתאמן' } = {}) {
     <header class="home-editorial__header">
       <div class="home-brand" aria-label="IronLog"><i aria-hidden="true"></i><span>IRONLOG</span></div>
       <div class="home-user">
-        <button class="home-bolt" type="button" aria-label="IronLog"><span>ϟ</span></button>
         <div><span>${greeting()},</span><h1>${safeName}<b>.</b></h1></div>
       </div>
     </header>
