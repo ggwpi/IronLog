@@ -7,8 +7,8 @@
   --iron-header-inline:4px;
   --iron-header-top-gap:8px;
   --iron-brand-font:13px;
-  --iron-brand-mark-w:20px;
-  --iron-brand-mark-h:8px;
+  --iron-brand-mark-w:11px;
+  --iron-brand-mark-h:15px;
   --iron-page-title:29px;
   --iron-page-subtitle:9.5px;
 }
@@ -64,14 +64,18 @@
   }
 
   .app-page-brand > i{
+    display:none!important;
+  }
+
+  .app-page-brand__bolt{
     display:block!important;
     flex:0 0 auto!important;
     width:var(--iron-brand-mark-w)!important;
     height:var(--iron-brand-mark-h)!important;
     margin:0!important;
-    background:var(--accent)!important;
-    clip-path:polygon(0 0,72% 46%,48% 48%,100% 100%,28% 62%,51% 58%)!important;
-    filter:drop-shadow(0 0 8px rgba(210,255,22,.16))!important;
+    object-fit:contain!important;
+    object-position:center!important;
+    filter:drop-shadow(0 0 7px rgba(210,255,22,.20))!important;
   }
 
   .app-page-brand__text{
