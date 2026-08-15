@@ -44,8 +44,28 @@
     gap: 4px;
   }
 
+  /* True 2x2 dashboard grid: each pair of cards shares one row height.
+     Earlier calibration layers used align-items/start and align-self/start,
+     which made the right and left cards end at different Y positions. */
   body:has(.statistics-page) .statistics-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row;
     gap: 5px;
+    align-items: stretch;
+  }
+
+  body:has(.statistics-page) .statistics-dashboard-grid > .statistics-card {
+    align-self: stretch;
+    min-width: 0;
+  }
+
+  body:has(.statistics-page) .volume-card,
+  body:has(.statistics-page) .exercise-card,
+  body:has(.statistics-page) .recovery-card,
+  body:has(.statistics-page) .cycle-card {
+    display: flex;
+    flex-direction: column;
   }
 
   body:has(.statistics-page) .volume-card,
@@ -65,6 +85,12 @@
   body:has(.statistics-page) .stats-card-action {
     height: 24px;
     margin-top: 4px;
+  }
+
+  /* Anchor the first-row actions to the same baseline once the cards stretch. */
+  body:has(.statistics-page) .exercise-card > .stats-card-action,
+  body:has(.statistics-page) .volume-card > .stats-card-action {
+    margin-top: auto;
   }
 
   /* Reference order is physically: sleep | RIR | readiness, left -> right. */
@@ -92,6 +118,12 @@
 
   body:has(.statistics-page) .recovery-metric > strong {
     font-size: 15px;
+  }
+
+  /* Match the bottom-row action baselines as well. */
+  body:has(.statistics-page) .recovery-card > .stats-card-action,
+  body:has(.statistics-page) .cycle-card > .cycle-footer {
+    margin-top: auto;
   }
 
   /* Fit all 12 weeks inside the narrow half-width card instead of clipping week 12. */
@@ -127,7 +159,7 @@
   }
 
   body:has(.statistics-page) .cycle-footer {
-    margin-top: 2px;
+    margin-top: auto;
   }
 
   body:has(.statistics-page) .cycle-footer > div strong {
