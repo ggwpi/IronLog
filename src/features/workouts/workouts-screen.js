@@ -288,8 +288,8 @@ export function WorkoutsScreen({ workouts = WORKOUTS, workoutData = {}, ui = nul
     sessions: workoutData.sessions || [], activeSession: workoutData.activeSession || null,
     performanceHistory: workoutData.performanceHistory || [], summary: workoutData.summary || {},
   };
-  const workout = activeSession
-    ? workouts.find((candidate) => candidate.databaseId === activeSession.templateId) || selectedWorkout(workouts)
+  const workout = resolvedData.activeSession
+    ? workouts.find((candidate) => candidate.databaseId === resolvedData.activeSession.templateId) || selectedWorkout(workouts)
     : selectedWorkout(workouts);
 
   return `<div class="workouts-concept animate-enter" dir="rtl">
