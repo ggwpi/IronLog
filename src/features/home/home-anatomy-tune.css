@@ -1,0 +1,53 @@
+/* Narrow final visual tune for the approved IronLog home concept.
+   Keep this file focused on hero-art scale/layering only. */
+
+@media(max-width:650px){
+  .home-stage{
+    min-height:450px;
+  }
+
+  .home-body--front{
+    height:440px;
+    right:-18px;
+    bottom:-18px;
+    transform:scale(1.16);
+    transform-origin:50% 50%;
+  }
+
+  .home-body--back{
+    height:330px;
+    right:-72px;
+    bottom:50px;
+    opacity:.32;
+    transform:scale(1.12);
+    transform-origin:50% 50%;
+    filter:saturate(.98) contrast(1.05) brightness(.72) blur(.18px);
+  }
+
+  .home-workout-art:after{
+    background:
+      radial-gradient(ellipse at 50% 43%,transparent 52%,rgba(4,6,6,.02) 72%,rgba(4,6,6,.20) 100%),
+      linear-gradient(180deg,transparent 0%,transparent 84%,rgba(4,6,6,.54));
+  }
+}
+
+@media(max-width:390px){
+  .home-stage{
+    min-height:442px;
+  }
+
+  .home-body--front{
+    height:430px;
+    right:-20px;
+    bottom:-17px;
+    transform:scale(1.16);
+  }
+
+  .home-body--back{
+    height:322px;
+    right:-70px;
+    bottom:49px;
+    opacity:.30;
+    transform:scale(1.12);
+  }
+}
