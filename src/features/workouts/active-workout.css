@@ -1,5 +1,6 @@
 /* Active workout execution screen — concept 1 translated into IronLog */
 body:has(.active-workout-page) .app-content{width:min(100%,620px);padding:calc(var(--safe-top) + 10px) 14px calc(var(--safe-bottom) + 28px)}
+.app-shell:has(.active-workout-page) .bottom-nav{display:none!important}
 .active-workout-page{display:grid;gap:12px;color:#f7f9fa;min-height:100dvh}
 .live-workout-header{display:grid;grid-template-columns:42px 1fr 42px;align-items:center;gap:8px;direction:ltr;padding:3px 0 0}
 .live-workout-header>button{width:42px;height:42px;border:0;border-radius:14px;background:transparent;color:#f5f6f7;font-size:28px;display:grid;place-items:center}
