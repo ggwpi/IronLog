@@ -64,13 +64,14 @@ function chartY(value,min,max){ return 62-((value-min)/(max-min))*39; }
 function chartMarkup(g){
   const gridValues=g.ready?[g.min,(g.min+g.max)/2,g.max]:[0,15,30];
   const grid=gridValues.map(v=>{const y=chartY(v,g.ready?g.min:0,g.ready?g.max:30);return `<line class="live-grid-line" x1="14" y1="${y}" x2="101" y2="${y}"/><text class="live-y-label" x="9" y="${y+1}">${Number(v.toFixed(1))}</text>`}).join('');
-  if(!g.ready) return `${grid}<text class="live-empty-label" x="57" y="43">הסטים האחרונים יופיעו כאן</text><text class="live-x-label" x="88" y="78">סט ${g.activeSet}</text><circle cx="88" cy="62" r="2" class="next"/>`;
-  const historyXs=g.points.length===1?[24]:g.points.length===2?[20,50]:[18,43,68];
+  if(!g.ready) return `${grid}<text class="live-empty-label" x="57" y="42">הסטים האחרונים יופיעו כאן</text><circle cx="92" cy="62" r="2.2" class="next"/><text class="live-x-label is-current" x="92" y="78">סט ${g.activeSet}</text>`;
+  const historyXs=g.points.length===1?[68]:g.points.length===2?[43,68]:[18,43,68];
   const coords=g.points.map((p,i)=>({x:historyXs[i],y:chartY(p.load,g.min,g.max),v:p.load}));
   const currentX=92,currentY=chartY(g.projected||g.points.at(-1).load,g.min,g.max);
   const path=`M ${coords.map(p=>`${p.x} ${p.y}`).join(' L ')} L ${currentX} ${currentY}`;
-  const historyLabels=coords.map((p,i)=>`<text class="live-x-label" x="${p.x}" y="78">${g.points.length===1?'קודם':`-${g.points.length-i}`}</text>`).join('');
-  return `${grid}<path class="live-chart-fill" d="${path} L ${currentX} 66 L ${coords[0].x} 66 Z"/><path class="live-chart-line" d="${path}"/>${coords.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="1.9" class="${i===coords.length-1?'hot':''}"/><text class="live-value-label" x="${p.x}" y="${p.y-6}">${p.v}</text>`).join('')}<circle cx="${currentX}" cy="${currentY}" r="2.2" class="next"/>${historyLabels}<text class="live-x-label is-current" x="${currentX}" y="78">סט ${g.activeSet}</text>`;
+  const historyLabels=coords.map((p,i)=>`<text class="live-x-label" x="${p.x}" y="78">${g.points.length===1?'קודם':g.points.length===2?(i===0?'לפני 2':'קודם'):`-${3-i}`}</text>`).join('');
+  const pathClass=g.points.length===1?'live-chart-line is-sparse':'live-chart-line';
+  return `${grid}<path class="${pathClass}" d="${path}"/>${coords.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="1.9" class="${i===coords.length-1?'hot':''}"/><text class="live-value-label" x="${p.x}" y="${p.y-6}">${p.v}</text>`).join('')}<circle cx="${currentX}" cy="${currentY}" r="2.2" class="next"/>${historyLabels}<text class="live-x-label is-current" x="${currentX}" y="78">סט ${g.activeSet}</text>`;
 }
 
 function ActiveWorkoutScreen(session,performanceHistory=[]){
