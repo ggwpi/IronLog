@@ -1,0 +1,213 @@
+/* IronLog Statistics motion
+   Visual motion only. Never changes grid sizing, widths, heights, or layout transforms. */
+
+/* ---------- Initial / route entrance ---------- */
+.statistics-page.animate-enter .statistics-header{
+  animation:stats-header-in .54s var(--motion-enter) .03s both;
+}
+
+.statistics-page.animate-enter .weight-card{
+  animation:stats-card-in .64s var(--motion-enter) .10s both;
+}
+
+.statistics-page.animate-enter .statistics-dashboard-grid > .statistics-card:nth-child(1),
+.statistics-page.animate-enter .statistics-dashboard-grid > .statistics-card:nth-child(2){
+  animation:stats-card-in .60s var(--motion-enter) .20s both;
+}
+
+.statistics-page.animate-enter .statistics-dashboard-grid > .statistics-card:nth-child(3),
+.statistics-page.animate-enter .statistics-dashboard-grid > .statistics-card:nth-child(4){
+  animation:stats-card-in .60s var(--motion-enter) .29s both;
+}
+
+/* Draw the primary trend after the hero card settles. */
+.statistics-page.animate-enter .stats-weight-line{
+  stroke-dasharray:1400;
+  stroke-dashoffset:1400;
+  animation:
+    stats-line-draw .92s cubic-bezier(.18,.75,.22,1) .24s forwards,
+    stats-line-breathe 4.8s ease-in-out 1.30s infinite;
+}
+
+.statistics-page.animate-enter .stats-current-guide,
+.statistics-page.animate-enter .stats-current-ring,
+.statistics-page.animate-enter .stats-current-dot{
+  animation:stats-point-arrive .40s var(--motion-enter) .92s both;
+}
+
+.statistics-page.animate-enter .exercise-row{
+  animation:stats-row-in .48s var(--motion-enter) both;
+}
+.statistics-page.animate-enter .exercise-row:nth-child(1){animation-delay:.27s}
+.statistics-page.animate-enter .exercise-row:nth-child(2){animation-delay:.34s}
+.statistics-page.animate-enter .exercise-row:nth-child(3){animation-delay:.41s}
+
+.statistics-page.animate-enter .spark-line{
+  stroke-dasharray:360;
+  stroke-dashoffset:360;
+  animation:
+    stats-spark-draw .66s cubic-bezier(.22,.72,.22,1) .40s forwards,
+    stats-spark-breathe 5.4s ease-in-out 1.20s infinite;
+}
+
+.statistics-page.animate-enter .volume-row{
+  animation:stats-row-in .42s var(--motion-enter) both;
+}
+.statistics-page.animate-enter .volume-row:nth-child(1){animation-delay:.26s}
+.statistics-page.animate-enter .volume-row:nth-child(2){animation-delay:.30s}
+.statistics-page.animate-enter .volume-row:nth-child(3){animation-delay:.34s}
+.statistics-page.animate-enter .volume-row:nth-child(4){animation-delay:.38s}
+.statistics-page.animate-enter .volume-row:nth-child(5){animation-delay:.42s}
+.statistics-page.animate-enter .volume-row:nth-child(6){animation-delay:.46s}
+.statistics-page.animate-enter .volume-row:nth-child(7){animation-delay:.50s}
+.statistics-page.animate-enter .volume-row:nth-child(8){animation-delay:.54s}
+
+/* ---------- Ongoing / ambient data motion ---------- */
+.statistics-page .weight-card::before{
+  animation:stats-hero-ambient 8.5s ease-in-out infinite alternate;
+}
+
+.statistics-page .status-chip{
+  animation:stats-status-breathe 3.6s ease-in-out infinite;
+}
+
+.statistics-page .stats-current-ring{
+  animation:stats-current-ring 2.9s ease-in-out infinite;
+}
+
+.statistics-page .stats-current-dot{
+  animation:stats-current-dot 2.9s ease-in-out infinite;
+}
+
+.statistics-page .stats-weight-svg polygon{
+  animation:stats-band-breathe 5.8s ease-in-out infinite;
+}
+
+.statistics-page .volume-actual{
+  animation:stats-volume-live 4.2s ease-in-out infinite;
+}
+.statistics-page .volume-row:nth-child(2n) .volume-actual{animation-delay:.42s}
+.statistics-page .volume-row:nth-child(3n) .volume-actual{animation-delay:.76s}
+
+.statistics-page .spark-dot{
+  animation:stats-spark-dot 3.2s ease-in-out infinite;
+}
+.statistics-page .exercise-row:nth-child(2) .spark-dot{animation-delay:.35s}
+.statistics-page .exercise-row:nth-child(3) .spark-dot{animation-delay:.70s}
+
+.statistics-page .recovery-metric > i{
+  animation:stats-icon-breathe 4.6s ease-in-out infinite;
+}
+.statistics-page .recovery-metric:nth-child(2) > i{animation-delay:.55s}
+.statistics-page .recovery-metric:nth-child(3) > i{animation-delay:1.10s}
+
+.statistics-page .cycle-week.is-current > span{
+  animation:stats-cycle-current 3.1s ease-in-out infinite;
+}
+
+/* Buttons remain physically still; only their surface responds. */
+.statistics-page .stats-card-action{
+  transition:background-color .20s ease,color .20s ease,border-color .20s ease,filter .20s ease!important;
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes stats-header-in{
+  from{opacity:0;translate:0 -8px}
+  to{opacity:1;translate:0 0}
+}
+
+@keyframes stats-card-in{
+  from{opacity:0;translate:0 14px;filter:blur(1.2px)}
+  to{opacity:1;translate:0 0;filter:blur(0)}
+}
+
+@keyframes stats-row-in{
+  from{opacity:0;translate:8px 0}
+  to{opacity:1;translate:0 0}
+}
+
+@keyframes stats-line-draw{
+  to{stroke-dashoffset:0}
+}
+
+@keyframes stats-spark-draw{
+  to{stroke-dashoffset:0}
+}
+
+@keyframes stats-point-arrive{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+@keyframes stats-line-breathe{
+  0%,100%{opacity:.88;stroke-width:2.8}
+  50%{opacity:1;stroke-width:3.15}
+}
+
+@keyframes stats-spark-breathe{
+  0%,100%{opacity:.82;stroke-width:2.2}
+  50%{opacity:1;stroke-width:2.45}
+}
+
+@keyframes stats-hero-ambient{
+  0%{opacity:.52;translate:-3px 0}
+  100%{opacity:1;translate:8px -2px}
+}
+
+@keyframes stats-status-breathe{
+  0%,100%{box-shadow:0 0 0 rgba(210,255,22,0);background-color:rgba(210,255,22,.055)}
+  50%{box-shadow:0 0 15px rgba(210,255,22,.10);background-color:rgba(210,255,22,.075)}
+}
+
+@keyframes stats-current-ring{
+  0%,100%{filter:drop-shadow(0 0 1px rgba(210,255,22,.08))}
+  50%{filter:drop-shadow(0 0 8px rgba(210,255,22,.38))}
+}
+
+@keyframes stats-current-dot{
+  0%,100%{opacity:.82}
+  50%{opacity:1}
+}
+
+@keyframes stats-band-breathe{
+  0%,100%{opacity:.72}
+  50%{opacity:1}
+}
+
+@keyframes stats-volume-live{
+  0%,100%{filter:brightness(.94) saturate(.96)}
+  50%{filter:brightness(1.12) saturate(1.08)}
+}
+
+@keyframes stats-spark-dot{
+  0%,100%{opacity:.76;filter:drop-shadow(0 0 1px rgba(210,255,22,.10))}
+  50%{opacity:1;filter:drop-shadow(0 0 6px rgba(210,255,22,.38))}
+}
+
+@keyframes stats-icon-breathe{
+  0%,100%{opacity:.60;filter:drop-shadow(0 0 0 rgba(210,255,22,0))}
+  50%{opacity:.94;filter:drop-shadow(0 0 5px rgba(210,255,22,.12))}
+}
+
+@keyframes stats-cycle-current{
+  0%,100%{box-shadow:0 0 0 2px #101308,0 0 0 3px rgba(210,255,22,.55),0 0 0 rgba(210,255,22,0)}
+  50%{box-shadow:0 0 0 2px #101308,0 0 0 3px rgba(210,255,22,.88),0 0 10px rgba(210,255,22,.20)}
+}
+
+html.reduce-motion .statistics-page *,
+html.reduce-motion .statistics-page *::before,
+html.reduce-motion .statistics-page *::after{
+  animation-duration:.001ms!important;
+  animation-delay:0ms!important;
+  animation-iteration-count:1!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .statistics-page *,
+  .statistics-page *::before,
+  .statistics-page *::after{
+    animation-duration:.001ms!important;
+    animation-delay:0ms!important;
+    animation-iteration-count:1!important;
+  }
+}
