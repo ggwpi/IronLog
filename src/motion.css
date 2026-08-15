@@ -1,7 +1,12 @@
 /* IronLog motion system
    Initial motion: screen and content choreography on every route change.
    Ambient motion: subtle, slow movement that keeps the UI alive without
-   moving the fixed navigation dock itself. */
+   moving the fixed navigation dock itself.
+
+   IMPORTANT: layout-calibrated elements in IronLog already use `transform`
+   for their approved proportions (for example the condensed ARMS title and
+   anatomy scale). Motion therefore uses the independent `translate` property
+   instead of `transform`, so animation can never overwrite those scales. */
 
 :root{
   --motion-enter:cubic-bezier(.20,.78,.18,1);
@@ -46,7 +51,8 @@
   animation:iron-section-in .62s var(--motion-enter) .36s both;
 }
 
-/* Editorial hero copy reveals in a short cascade. */
+/* Editorial hero copy reveals in a short cascade.
+   `translate` is separate from `transform`, preserving the title's scaleX. */
 .home-editorial.animate-enter .home-stage__copy > *,
 .workouts-concept.animate-enter .training-hero__copy > *{
   animation:iron-copy-in .56s var(--motion-enter) both;
@@ -86,30 +92,30 @@
 .screen.animate-enter > :nth-child(5),.auth-panel.animate-enter > :nth-child(5){animation-delay:.24s}
 
 /* ---------- Ongoing / ambient motion ---------- */
-/* The bodies retain their natural aspect ratio; motion is only translation. */
+/* Preserve native/calibrated scale. Only the independent translate property moves. */
 .home-body--front{
   animation:
     iron-body-arrive .78s var(--motion-enter) .10s both,
     iron-body-float 7.2s var(--motion-soft) 1.05s infinite;
-  will-change:transform;
+  will-change:translate;
 }
 .home-body--back{
   animation:
     iron-body-arrive-back .88s var(--motion-enter) .16s both,
     iron-body-float-back 9s var(--motion-soft) 1.2s infinite;
-  will-change:transform;
+  will-change:translate;
 }
 .training-hero__front{
   animation:
     iron-body-arrive .72s var(--motion-enter) .18s both,
     iron-body-float 7.6s var(--motion-soft) 1.05s infinite;
-  will-change:transform;
+  will-change:translate;
 }
 .training-hero__back{
   animation:
     iron-body-arrive-back .84s var(--motion-enter) .23s both,
     iron-body-float-back 9.4s var(--motion-soft) 1.25s infinite;
-  will-change:transform;
+  will-change:translate;
 }
 
 .home-stage__smoke{
@@ -155,50 +161,51 @@
 }
 
 /* ---------- Keyframes ---------- */
+/* No entrance keyframe below writes `transform`. This is intentional. */
 @keyframes iron-screen-in{
-  from{opacity:0;transform:translateY(7px);filter:blur(2px)}
+  from{opacity:0;translate:0 7px;filter:blur(2px)}
   55%{opacity:1;filter:blur(0)}
-  to{opacity:1;transform:translateY(0);filter:blur(0)}
+  to{opacity:1;translate:0 0;filter:blur(0)}
 }
 
 @keyframes iron-rise-in{
-  from{opacity:0;transform:translateY(-8px)}
-  to{opacity:1;transform:translateY(0)}
+  from{opacity:0;translate:0 -8px}
+  to{opacity:1;translate:0 0}
 }
 
 @keyframes iron-section-in{
-  from{opacity:0;transform:translateY(16px) scale(.992)}
-  to{opacity:1;transform:translateY(0) scale(1)}
+  from{opacity:0;translate:0 16px;filter:blur(1px)}
+  to{opacity:1;translate:0 0;filter:blur(0)}
 }
 
 @keyframes iron-copy-in{
-  from{opacity:0;transform:translateX(-12px)}
-  to{opacity:1;transform:translateX(0)}
+  from{opacity:0;translate:-12px 0}
+  to{opacity:1;translate:0 0}
 }
 
 @keyframes iron-row-in{
-  from{opacity:0;transform:translateX(14px)}
-  to{opacity:1;transform:translateX(0)}
+  from{opacity:0;translate:14px 0}
+  to{opacity:1;translate:0 0}
 }
 
 @keyframes iron-body-arrive{
-  from{transform:translateY(18px) scale(.985)}
-  to{transform:translateY(0) scale(1)}
+  from{translate:0 18px}
+  to{translate:0 0}
 }
 
 @keyframes iron-body-arrive-back{
-  from{transform:translateY(13px) scale(.99)}
-  to{transform:translateY(0) scale(1)}
+  from{translate:0 13px}
+  to{translate:0 0}
 }
 
 @keyframes iron-body-float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-5px)}
+  0%,100%{translate:0 0}
+  50%{translate:0 -5px}
 }
 
 @keyframes iron-body-float-back{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-3px)}
+  0%,100%{translate:0 0}
+  50%{translate:0 -3px}
 }
 
 @keyframes iron-smoke-drift{
