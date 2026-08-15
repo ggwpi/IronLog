@@ -1,0 +1,152 @@
+/* Final mobile geometry tune against the approved Statistics concept.
+   Presentation only: analytics model and SVG generation stay untouched. */
+
+@media (max-width: 650px) {
+  /* The previous stats screen started noticeably lower than the reference. */
+  body:has(.statistics-page) .app-content {
+    padding-top: max(6px, calc(var(--safe-top) - 10px));
+  }
+
+  body:has(.statistics-page) .statistics-page {
+    gap: 5px;
+  }
+
+  body:has(.statistics-page) .statistics-header {
+    min-height: 50px;
+  }
+
+  body:has(.statistics-page) .statistics-heading h1 {
+    font-size: 27px;
+  }
+
+  body:has(.statistics-page) .statistics-heading p {
+    margin-top: 3px;
+    font-size: 8.5px;
+  }
+
+  /* Numeric ranges must read min -> max even inside the RTL card. */
+  body:has(.statistics-page) .weight-summary__target strong {
+    direction: ltr;
+    unicode-bidi: isolate;
+    text-align: right;
+  }
+
+  /* Compact the hero slightly so the bottom row can clear the fixed global dock. */
+  body:has(.statistics-page) .weight-card {
+    padding-bottom: 6px;
+  }
+
+  body:has(.statistics-page) .weight-summary {
+    gap: 8px;
+  }
+
+  body:has(.statistics-page) .weight-legend {
+    gap: 4px;
+  }
+
+  body:has(.statistics-page) .statistics-dashboard-grid {
+    gap: 5px;
+  }
+
+  body:has(.statistics-page) .volume-card,
+  body:has(.statistics-page) .exercise-card {
+    padding-top: 8px;
+    padding-bottom: 6px;
+  }
+
+  body:has(.statistics-page) .exercise-row {
+    min-height: 51px;
+  }
+
+  body:has(.statistics-page) .exercise-spark {
+    height: 39px;
+  }
+
+  body:has(.statistics-page) .stats-card-action {
+    height: 24px;
+    margin-top: 4px;
+  }
+
+  /* Reference order is physically: sleep | RIR | readiness, left -> right. */
+  body:has(.statistics-page) .recovery-grid {
+    direction: ltr;
+  }
+
+  body:has(.statistics-page) .recovery-metric {
+    direction: rtl;
+  }
+
+  body:has(.statistics-page) .recovery-card,
+  body:has(.statistics-page) .cycle-card {
+    padding: 7px 7px 5px;
+  }
+
+  body:has(.statistics-page) .recovery-metric > span {
+    height: 15px;
+  }
+
+  body:has(.statistics-page) .recovery-metric > i {
+    height: 15px;
+    font-size: 15px;
+  }
+
+  body:has(.statistics-page) .recovery-metric > strong {
+    font-size: 15px;
+  }
+
+  /* Fit all 12 weeks inside the narrow half-width card instead of clipping week 12. */
+  body:has(.statistics-page) .cycle-weeks {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 0;
+    width: 100%;
+    min-height: 27px;
+    margin: 5px 0 3px;
+  }
+
+  body:has(.statistics-page) .cycle-week {
+    min-width: 0;
+    width: 100%;
+  }
+
+  body:has(.statistics-page) .cycle-week > span {
+    width: 13px;
+    height: 13px;
+    font-size: 5px;
+  }
+
+  body:has(.statistics-page) .cycle-week small {
+    top: 17px;
+    font-size: 3.5px;
+  }
+
+  body:has(.statistics-page) .cycle-legend {
+    gap: 4px;
+    margin: 1px 0 4px;
+    font-size: 4.5px;
+  }
+
+  body:has(.statistics-page) .cycle-footer {
+    margin-top: 2px;
+  }
+
+  body:has(.statistics-page) .cycle-footer > div strong {
+    font-size: 8px;
+  }
+
+  body:has(.statistics-page) .stats-card-action--compact {
+    height: 22px;
+    min-width: 62px;
+  }
+}
+
+@media (max-width: 390px) {
+  body:has(.statistics-page) .statistics-heading h1 {
+    font-size: 26px;
+  }
+
+  body:has(.statistics-page) .cycle-week > span {
+    width: 12px;
+    height: 12px;
+  }
+}
