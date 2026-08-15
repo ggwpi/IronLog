@@ -5,13 +5,15 @@ import { escapeHtml } from './core/escape-html.js';
 import { BottomNav } from './components/bottom-nav.js';
 import { LoginScreen } from './features/auth/login-screen.js';
 import { HomeScreen } from './features/home/home-screen.js';
-import { WorkoutsScreen } from './features/workouts/workouts-screen.js';
+import { WorkoutsScreen, WorkoutBuilderExerciseRow } from './features/workouts/workouts-screen.js';
 import { WORKOUTS } from './features/workouts/workout-catalog.js';
 import { StatisticsScreen } from './features/statistics/statistics-screen.js';
 import { buildStatisticsModel } from './features/statistics/statistics-data.js';
 import { SettingsScreen } from './features/settings/settings-screen.js';
 import {
+  archiveCustomExercise, archiveWorkoutTemplate,
   currentSession, loadAppData, onAuthChange, signInWithGoogle, signOut,
+  finishWorkout, recordWorkoutSet, saveCustomExercise, saveWorkoutTemplate,
   startWorkout, subscribeToTraining, userFromSession,
 } from './data/ironlog-repository.js';
 
@@ -19,6 +21,7 @@ const app = document.querySelector('#app');
 const launchStartedAt = performance.now();
 let stopTrainingSubscription = null;
 let refreshTimer = null;
+let restTimerInterval = null;
 let sessionVersion = 0;
 
 const store = createStore({
@@ -29,6 +32,11 @@ const store = createStore({
   route: routeFromLocation(),
   settings: readSettings(),
   workouts: WORKOUTS,
+  workoutData: {
+    exerciseLibrary: [], muscles: [], sessions: [], activeSession: null,
+    performanceHistory: [], summary: {},
+  },
+  workoutUi: null,
   statistics: buildStatisticsModel(),
 });
 
@@ -39,7 +47,7 @@ function applyPreferences(settings) {
 
 function screenFor(route, state) {
   switch (route) {
-    case 'workouts': return WorkoutsScreen({ workouts: state.workouts });
+    case 'workouts': return WorkoutsScreen({ workouts: state.workouts, workoutData: state.workoutData, ui: state.workoutUi });
     case 'statistics': return StatisticsScreen({ model: state.statistics });
     case 'settings': return SettingsScreen({ user: state.session?.user, settings: state.settings });
     case 'home':
@@ -56,6 +64,8 @@ function renderLoading() {
 
 function render() {
   const state = store.getState();
+  window.clearInterval(restTimerInterval);
+  restTimerInterval = null;
   applyPreferences(state.settings);
 
   if (state.authLoading) {
@@ -106,6 +116,7 @@ async function bindSession(session) {
       ...state,
       session: { user: resolvedUser },
       workouts: data.workouts.length ? data.workouts : WORKOUTS,
+      workoutData: data.workoutData,
       statistics: buildStatisticsModel(data.statisticsSource),
       dataLoading: false,
       dataError: '',
@@ -127,6 +138,7 @@ async function refreshData(userId) {
     store.setState((state) => ({
       ...state,
       workouts: data.workouts.length ? data.workouts : state.workouts,
+      workoutData: data.workoutData,
       statistics: buildStatisticsModel(data.statisticsSource),
       dataError: '',
     }));
@@ -167,6 +179,50 @@ function showToast(message) {
   }, 2200);
 }
 
+function openWorkoutUi(workoutUi) {
+  store.setState((state) => ({ ...state, workoutUi }));
+}
+
+function showFormError(id, error) {
+  const element = document.querySelector(`#${id}`);
+  if (!element) return;
+  element.textContent = error?.message || 'לא הצלחנו לשמור. נסה שוב.';
+  element.hidden = false;
+}
+
+function nullableNumber(value) {
+  return value === '' || value == null ? null : Number(value);
+}
+
+function refreshBuilderPositions() {
+  const rows = [...document.querySelectorAll('[data-builder-exercise]')];
+  rows.forEach((row, index) => { row.querySelector('.builder-position').textContent = String(index + 1); });
+  const count = document.querySelector('#builderExerciseCount');
+  if (count) count.textContent = String(rows.length);
+}
+
+function startRestTimer(seconds) {
+  const container = document.querySelector('#restTimer');
+  const value = document.querySelector('#restTimerValue');
+  if (!container || !value || !seconds) return;
+  let remaining = Number(seconds);
+  container.hidden = false;
+  const paint = () => {
+    const minutes = Math.floor(remaining / 60);
+    const rest = remaining % 60;
+    value.textContent = `${String(minutes).padStart(2, '0')}:${String(rest).padStart(2, '0')}`;
+    if (remaining <= 0) {
+      window.clearInterval(restTimerInterval);
+      restTimerInterval = null;
+      container.classList.add('is-finished');
+      return;
+    }
+    remaining -= 1;
+  };
+  paint();
+  restTimerInterval = window.setInterval(paint, 1000);
+}
+
 function bindApp() {
   document.querySelectorAll('[data-route]').forEach((element) => {
     element.addEventListener('click', () => navigate(element.dataset.route));
@@ -176,21 +232,230 @@ function bindApp() {
     element.addEventListener('click', () => showToast('המסך המפורט יתווסף בשלב הבא'));
   });
 
-  document.querySelector('[data-start-workout]')?.addEventListener('click', async (event) => {
-    const button = event.currentTarget;
-    const templateId = Number(button.dataset.startWorkout);
-    if (!templateId) {
-      showToast('תבנית האימון עדיין נטענת');
-      return;
-    }
-    button.disabled = true;
+  document.querySelectorAll('[data-close-workout-ui]').forEach((element) => {
+    element.addEventListener('click', () => openWorkoutUi(null));
+  });
+
+  document.querySelectorAll('[data-open-workout]').forEach((element) => {
+    element.addEventListener('click', () => openWorkoutUi({ type: 'details', templateId: Number(element.dataset.openWorkout) }));
+  });
+
+  document.querySelectorAll('[data-new-workout]').forEach((element) => {
+    element.addEventListener('click', () => openWorkoutUi({ type: 'builder' }));
+  });
+
+  document.querySelectorAll('[data-edit-workout]').forEach((element) => {
+    element.addEventListener('click', () => openWorkoutUi({ type: 'builder', templateId: Number(element.dataset.editWorkout) }));
+  });
+
+  document.querySelectorAll('[data-copy-workout]').forEach((element) => {
+    element.addEventListener('click', () => openWorkoutUi({ type: 'builder', templateId: Number(element.dataset.copyWorkout), copyMode: true }));
+  });
+
+  document.querySelectorAll('[data-new-exercise]').forEach((element) => {
+    element.addEventListener('click', () => openWorkoutUi({ type: 'exercise' }));
+  });
+
+  document.querySelectorAll('[data-edit-exercise]').forEach((element) => {
+    element.addEventListener('click', () => openWorkoutUi({ type: 'exercise', exerciseId: Number(element.dataset.editExercise) }));
+  });
+
+  document.querySelectorAll('[data-start-workout]').forEach((element) => {
+    element.addEventListener('click', async () => {
+      const state = store.getState();
+      if (state.workoutData.activeSession) {
+        openWorkoutUi({ type: 'session' });
+        return;
+      }
+      const templateId = Number(element.dataset.startWorkout);
+      if (!templateId) return showToast('תבנית האימון עדיין נטענת');
+      element.disabled = true;
+      try {
+        await startWorkout(templateId);
+        await refreshData(state.session.user.id);
+        openWorkoutUi({ type: 'session' });
+        showToast('האימון התחיל ונשמר בענן');
+      } catch (error) {
+        showToast(error.message || 'לא הצלחנו להתחיל את האימון');
+        element.disabled = false;
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-archive-workout]').forEach((element) => {
+    element.addEventListener('click', async () => {
+      if (!window.confirm('להעביר את האימון האישי לארכיון? היסטוריית האימונים תישמר.')) return;
+      element.disabled = true;
+      try {
+        await archiveWorkoutTemplate(Number(element.dataset.archiveWorkout));
+        await refreshData(store.getState().session.user.id);
+        showToast('האימון הועבר לארכיון');
+      } catch (error) {
+        showToast(error.message || 'לא הצלחנו להעביר לארכיון');
+        element.disabled = false;
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-archive-exercise]').forEach((element) => {
+    element.addEventListener('click', async () => {
+      if (!window.confirm('להעביר את התרגיל לארכיון? אימונים קיימים לא יימחקו.')) return;
+      element.disabled = true;
+      try {
+        await archiveCustomExercise(Number(element.dataset.archiveExercise));
+        await refreshData(store.getState().session.user.id);
+        showToast('התרגיל הועבר לארכיון');
+      } catch (error) {
+        showToast(error.message || 'לא הצלחנו להעביר לארכיון');
+        element.disabled = false;
+      }
+    });
+  });
+
+  const builderForm = document.querySelector('#workoutBuilderForm');
+  if (builderForm) {
+    const rows = builderForm.querySelector('#builderExerciseRows');
+    builderForm.querySelector('#addBuilderExercise')?.addEventListener('click', () => {
+      const exerciseId = Number(builderForm.querySelector('#builderExerciseSelect')?.value);
+      const exercise = store.getState().workoutData.exerciseLibrary.find((item) => item.id === exerciseId);
+      if (!exercise) return;
+      rows.insertAdjacentHTML('beforeend', WorkoutBuilderExerciseRow(exercise, rows.children.length));
+      refreshBuilderPositions();
+    });
+    rows?.addEventListener('click', (event) => {
+      const remove = event.target.closest('[data-remove-builder-exercise]');
+      const move = event.target.closest('[data-move-exercise]');
+      const row = event.target.closest('[data-builder-exercise]');
+      if (!row) return;
+      if (remove) row.remove();
+      if (move?.dataset.moveExercise === 'up' && row.previousElementSibling) row.parentElement.insertBefore(row, row.previousElementSibling);
+      if (move?.dataset.moveExercise === 'down' && row.nextElementSibling) row.parentElement.insertBefore(row.nextElementSibling, row);
+      refreshBuilderPositions();
+    });
+    builderForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const submit = document.querySelector(`[form="${builderForm.id}"][type="submit"]`);
+      const data = new FormData(builderForm);
+      const exerciseRows = [...builderForm.querySelectorAll('[data-builder-exercise]')];
+      if (!exerciseRows.length) return showFormError('workoutBuilderError', new Error('צריך להוסיף לפחות תרגיל אחד.'));
+      submit.disabled = true;
+      try {
+        const templateId = await saveWorkoutTemplate({
+          templateId: nullableNumber(builderForm.dataset.templateId),
+          name: data.get('name'), code: data.get('code'), weekday: nullableNumber(data.get('weekday')),
+          description: data.get('description'),
+          exercises: exerciseRows.map((row) => ({
+            exercise_id: Number(row.dataset.exerciseId),
+            planned_sets: Number(row.querySelector('[name="plannedSets"]').value),
+            target_reps: row.querySelector('[name="targetReps"]').value,
+            target_rir_min: nullableNumber(row.querySelector('[name="targetRir"]').value),
+            target_rir_max: nullableNumber(row.querySelector('[name="targetRir"]').value),
+            rest_min_seconds: Number(row.querySelector('[name="restSeconds"]').value),
+            rest_max_seconds: Number(row.querySelector('[name="restSeconds"]').value),
+            notes: null,
+          })),
+        });
+        await refreshData(store.getState().session.user.id);
+        openWorkoutUi({ type: 'details', templateId });
+        showToast('האימון נשמר בחשבון שלך');
+      } catch (error) {
+        submit.disabled = false;
+        showFormError('workoutBuilderError', error);
+      }
+    });
+  }
+
+  const exerciseForm = document.querySelector('#exerciseEditorForm');
+  exerciseForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const submit = document.querySelector(`[form="${exerciseForm.id}"][type="submit"]`);
+    const data = new FormData(exerciseForm);
+    submit.disabled = true;
     try {
-      await startWorkout(templateId);
-      showToast('האימון התחיל ונשמר בענן');
+      await saveCustomExercise({
+        exerciseId: nullableNumber(exerciseForm.dataset.exerciseId), name: data.get('name'), nameHe: data.get('nameHe'),
+        equipment: data.get('equipment'), trackingType: data.get('trackingType'), muscleId: nullableNumber(data.get('muscleId')),
+        instructions: data.get('instructions'),
+      });
+      await refreshData(store.getState().session.user.id);
+      openWorkoutUi(null);
+      showToast('התרגיל נשמר בספרייה שלך');
     } catch (error) {
-      showToast(error.message || 'לא הצלחנו להתחיל את האימון');
-      button.disabled = false;
+      submit.disabled = false;
+      showFormError('exerciseEditorError', error);
     }
+  });
+
+  document.querySelectorAll('[data-toggle-live-exercise]').forEach((element) => {
+    element.addEventListener('click', () => element.closest('.live-exercise-card')?.classList.toggle('is-open'));
+  });
+
+  document.querySelectorAll('[data-set-form]').forEach((form) => {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = form.querySelector('button[type="submit"]');
+      const data = new FormData(form);
+      button.disabled = true;
+      try {
+        await recordWorkoutSet({
+          sessionExerciseId: form.dataset.sessionExerciseId,
+          setNumber: Number(form.dataset.setNumber), setType: 'working',
+          loadKg: nullableNumber(data.get('loadKg')), reps: nullableNumber(data.get('reps')), rir: nullableNumber(data.get('rir')),
+          durationSeconds: nullableNumber(data.get('durationSeconds')), distanceMeters: nullableNumber(data.get('distanceMeters')),
+          restSeconds: null, notes: null,
+        });
+        await refreshData(store.getState().session.user.id);
+        startRestTimer(Number(form.dataset.restSeconds));
+        showToast('הסט נשמר');
+      } catch (error) {
+        button.disabled = false;
+        showToast(error.message || 'לא הצלחנו לשמור את הסט');
+      }
+    });
+  });
+
+  document.querySelector('#skipRestTimer')?.addEventListener('click', () => {
+    window.clearInterval(restTimerInterval);
+    restTimerInterval = null;
+    const timer = document.querySelector('#restTimer');
+    if (timer) timer.hidden = true;
+  });
+
+  document.querySelectorAll('[data-complete-session]').forEach((element) => {
+    element.addEventListener('click', async () => {
+      const active = store.getState().workoutData.activeSession;
+      if (!active) return;
+      const planned = active.exercises.reduce((sum, exercise) => sum + exercise.plannedSets, 0);
+      const completed = active.exercises.reduce((sum, exercise) => sum + exercise.sets.filter((set) => set.completed).length, 0);
+      if (completed < planned && !window.confirm(`נשמרו ${completed} מתוך ${planned} סטים. לסיים בכל זאת?`)) return;
+      element.disabled = true;
+      try {
+        await finishWorkout(active.id, false);
+        await refreshData(store.getState().session.user.id);
+        openWorkoutUi(null);
+        showToast('האימון הושלם ונשמר');
+      } catch (error) {
+        element.disabled = false;
+        showToast(error.message || 'לא הצלחנו לסיים את האימון');
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-cancel-session]').forEach((element) => {
+    element.addEventListener('click', async () => {
+      const active = store.getState().workoutData.activeSession;
+      if (!active || !window.confirm('לבטל את האימון הפעיל? הסטים שכבר נשמרו יישארו בהיסטוריה.')) return;
+      element.disabled = true;
+      try {
+        await finishWorkout(active.id, true);
+        await refreshData(store.getState().session.user.id);
+        openWorkoutUi(null);
+        showToast('האימון בוטל');
+      } catch (error) {
+        element.disabled = false;
+        showToast(error.message || 'לא הצלחנו לבטל את האימון');
+      }
+    });
   });
 
   document.querySelector('#logoutButton')?.addEventListener('click', async () => {
