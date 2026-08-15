@@ -1,5 +1,6 @@
 import { escapeHtml } from '../../core/escape-html.js';
 import { Icon } from '../../components/icons.js';
+import { AppPageHeader } from '../../components/app-page-header.js';
 import { WORKOUTS, workoutForDay, nextWorkoutFromDay } from './workout-catalog.js';
 
 const DAY_LABELS = Object.freeze(['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']);
@@ -151,10 +152,13 @@ export function WorkoutsScreen() {
   const workout = selectedWorkout();
 
   return `<div class="workouts-concept animate-enter" dir="rtl">
-    <header class="training-header">
-      <div class="training-brand"><i aria-hidden="true"></i><span>IRONLOG</span></div>
-      <div class="training-heading"><h1>אימונים</h1><p>תכנון. ביצוע. התקדמות.</p></div>
-    </header>
+    ${AppPageHeader({
+      title: 'אימונים',
+      subtitle: 'תכנון. ביצוע. התקדמות.',
+      rootClass: 'training-header',
+      brandClass: 'training-brand',
+      headingClass: 'training-heading',
+    })}
 
     <section class="training-calendar" aria-label="לוח שבועי">
       <span class="training-calendar__icon">${Icon('calendar', { size: 21 })}</span>
