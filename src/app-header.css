@@ -1,0 +1,166 @@
+/* Shared IronLog page header.
+   This file is intentionally loaded last: individual feature screens own their
+   content, while the app shell owns logo/title geometry. */
+
+:root{
+  --iron-header-height:72px;
+  --iron-header-inline:4px;
+  --iron-header-top-gap:8px;
+  --iron-brand-font:13px;
+  --iron-brand-mark-w:20px;
+  --iron-brand-mark-h:8px;
+  --iron-page-title:29px;
+  --iron-page-subtitle:9.5px;
+}
+
+@media(max-width:650px){
+  /* One physical top origin for every main tab. */
+  body:has(.home-editorial) .app-content,
+  body:has(.workouts-concept) .app-content,
+  body:has(.statistics-page) .app-content,
+  body:has(.settings-page) .app-content{
+    padding-top:calc(var(--safe-top) + var(--iron-header-top-gap))!important;
+  }
+
+  .app-page-header{
+    width:100%!important;
+    min-height:var(--iron-header-height)!important;
+    height:var(--iron-header-height)!important;
+    padding:0 var(--iron-header-inline)!important;
+    margin:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:start!important;
+    column-gap:18px!important;
+    direction:ltr!important;
+    position:relative;
+    z-index:30;
+    box-sizing:border-box;
+  }
+
+  .app-page-brand{
+    display:flex!important;
+    align-items:center!important;
+    align-self:start!important;
+    gap:8px!important;
+    margin:10px 0 0!important;
+    padding:0!important;
+    width:max-content!important;
+    height:18px!important;
+    color:#f2f4f3!important;
+    direction:ltr!important;
+    font-size:var(--iron-brand-font)!important;
+    line-height:1!important;
+    font-weight:800!important;
+    letter-spacing:.21em!important;
+    white-space:nowrap!important;
+    text-align:left!important;
+  }
+
+  .app-page-brand::before,
+  .statistics-brand::before{
+    display:none!important;
+    content:none!important;
+  }
+
+  .app-page-brand > i{
+    display:block!important;
+    flex:0 0 auto!important;
+    width:var(--iron-brand-mark-w)!important;
+    height:var(--iron-brand-mark-h)!important;
+    margin:0!important;
+    background:var(--accent)!important;
+    clip-path:polygon(0 0,72% 46%,48% 48%,100% 100%,28% 62%,51% 58%)!important;
+    filter:drop-shadow(0 0 8px rgba(210,255,22,.16))!important;
+  }
+
+  .app-page-brand__text{
+    display:block!important;
+    color:inherit!important;
+    font:inherit!important;
+    letter-spacing:inherit!important;
+    line-height:1!important;
+    transform:none!important;
+  }
+
+  .app-page-heading{
+    position:relative!important;
+    align-self:start!important;
+    width:auto!important;
+    height:auto!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    direction:rtl!important;
+    text-align:right!important;
+  }
+
+  .app-page-heading__inner{
+    position:relative!important;
+    top:auto!important;
+    right:auto!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    display:block!important;
+    direction:rtl!important;
+    text-align:right!important;
+  }
+
+  .app-page-heading h1{
+    margin:0!important;
+    padding:0!important;
+    font-size:var(--iron-page-title)!important;
+    line-height:.96!important;
+    letter-spacing:-.045em!important;
+    font-weight:900!important;
+    white-space:nowrap;
+  }
+
+  .app-page-subtitle{
+    display:block!important;
+    margin:5px 0 0!important;
+    padding:0!important;
+    color:rgba(255,255,255,.50)!important;
+    font-size:var(--iron-page-subtitle)!important;
+    line-height:1.08!important;
+    font-weight:520!important;
+    letter-spacing:0!important;
+    white-space:nowrap;
+  }
+
+  /* Home keeps the greeting above the name without moving the name itself.
+     The h1 still occupies the exact same top/right origin as every page title. */
+  .app-page-subtitle--above{
+    position:absolute!important;
+    right:0!important;
+    top:-15px!important;
+    margin:0!important;
+  }
+
+  /* Neutralize old feature-specific header geometry. */
+  .home-brand,
+  .training-brand,
+  .statistics-brand{
+    margin-top:10px!important;
+  }
+
+  .home-user,
+  .training-heading,
+  .statistics-heading{
+    padding-top:0!important;
+  }
+
+  /* Settings now participates in the same header system. */
+  .settings-page .screen-header{
+    border:0!important;
+    background:none!important;
+  }
+}
+
+@media(max-width:390px){
+  :root{
+    --iron-page-title:29px;
+    --iron-brand-font:13px;
+  }
+}
