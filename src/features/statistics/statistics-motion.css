@@ -1,113 +1,246 @@
 /* IronLog Statistics motion
-   Visual motion only. Never changes grid sizing, widths, heights, or layout transforms. */
+   Complete initial reveal + restrained ambient motion for every data surface.
+   Motion is visual only and does not alter dashboard layout. */
 
 /* ---------- Initial / route entrance ---------- */
 .statistics-page.animate-enter .statistics-header{
   animation:stats-header-in .54s var(--motion-enter) .03s both;
 }
+.statistics-page.animate-enter .statistics-header > *{
+  animation:stats-soft-in .46s var(--motion-enter) both;
+}
+.statistics-page.animate-enter .statistics-header > *:first-child{animation-delay:.08s}
+.statistics-page.animate-enter .statistics-header > *:last-child{animation-delay:.14s}
 
 .statistics-page.animate-enter .weight-card{
   animation:stats-card-in .64s var(--motion-enter) .10s both;
 }
+.statistics-page.animate-enter .weight-card__top > *,
+.statistics-page.animate-enter .weight-card__filter,
+.statistics-page.animate-enter .weight-summary > *,
+.statistics-page.animate-enter .weight-delta{
+  animation:stats-soft-in .46s var(--motion-enter) both;
+}
+.statistics-page.animate-enter .weight-card__top > *:nth-child(1){animation-delay:.18s}
+.statistics-page.animate-enter .weight-card__top > *:nth-child(2){animation-delay:.24s}
+.statistics-page.animate-enter .weight-card__filter{animation-delay:.28s}
+.statistics-page.animate-enter .weight-summary > *:nth-child(1){animation-delay:.42s}
+.statistics-page.animate-enter .weight-summary > *:nth-child(2){animation-delay:.49s}
+.statistics-page.animate-enter .weight-summary > *:nth-child(3){animation-delay:.56s}
+.statistics-page.animate-enter .weight-delta{animation-delay:.66s}
 
-.statistics-page.animate-enter .statistics-dashboard-grid > .statistics-card:nth-child(1),
-.statistics-page.animate-enter .statistics-dashboard-grid > .statistics-card:nth-child(2){
+.statistics-page.animate-enter .statistics-dashboard-grid > .statistics-card:nth-child(1){
   animation:stats-card-in .60s var(--motion-enter) .20s both;
 }
-
-.statistics-page.animate-enter .statistics-dashboard-grid > .statistics-card:nth-child(3),
+.statistics-page.animate-enter .statistics-dashboard-grid > .statistics-card:nth-child(2){
+  animation:stats-card-in .60s var(--motion-enter) .25s both;
+}
+.statistics-page.animate-enter .statistics-dashboard-grid > .statistics-card:nth-child(3){
+  animation:stats-card-in .60s var(--motion-enter) .30s both;
+}
 .statistics-page.animate-enter .statistics-dashboard-grid > .statistics-card:nth-child(4){
-  animation:stats-card-in .60s var(--motion-enter) .29s both;
+  animation:stats-card-in .60s var(--motion-enter) .35s both;
 }
 
-/* Draw the primary trend after the hero card settles. */
+.statistics-page.animate-enter .compact-card-heading,
+.statistics-page.animate-enter .volume-table-head,
+.statistics-page.animate-enter .volume-legend,
+.statistics-page.animate-enter .cycle-legend,
+.statistics-page.animate-enter .cycle-footer,
+.statistics-page.animate-enter .stats-card-action{
+  animation:stats-soft-in .44s var(--motion-enter) both;
+}
+.statistics-page.animate-enter .compact-card-heading{animation-delay:.31s}
+.statistics-page.animate-enter .volume-table-head{animation-delay:.37s}
+.statistics-page.animate-enter .volume-legend{animation-delay:.66s}
+.statistics-page.animate-enter .cycle-legend{animation-delay:.70s}
+.statistics-page.animate-enter .cycle-footer{animation-delay:.76s}
+.statistics-page.animate-enter .stats-card-action{animation-delay:.74s}
+
+/* Main body-weight graph: target region first, then guides/actual line. */
+.statistics-page.animate-enter .stats-weight-svg polygon{
+  animation:
+    stats-band-in .55s var(--motion-enter) .20s both,
+    stats-band-breathe 5.8s ease-in-out .90s infinite;
+}
+.statistics-page.animate-enter .stats-target-edge,
+.statistics-page.animate-enter .stats-target-trend{
+  stroke-dasharray:1400;
+  stroke-dashoffset:1400;
+  animation:stats-line-draw .76s cubic-bezier(.18,.75,.22,1) .20s forwards;
+}
+.statistics-page.animate-enter .stats-grid-line,
+.statistics-page.animate-enter .stats-axis-label,
+.statistics-page.animate-enter .stats-x-label,
+.statistics-page.animate-enter .weight-unit{
+  animation:stats-fade-in .38s ease .18s both;
+}
 .statistics-page.animate-enter .stats-weight-line{
   stroke-dasharray:1400;
   stroke-dashoffset:1400;
   animation:
-    stats-line-draw .92s cubic-bezier(.18,.75,.22,1) .24s forwards,
+    stats-line-draw .92s cubic-bezier(.18,.75,.22,1) .30s forwards,
     stats-line-breathe 4.8s ease-in-out 1.30s infinite;
 }
-
-.statistics-page.animate-enter .stats-current-guide,
-.statistics-page.animate-enter .stats-current-ring,
-.statistics-page.animate-enter .stats-current-dot{
+.statistics-page.animate-enter .stats-current-guide{
   animation:stats-point-arrive .40s var(--motion-enter) .92s both;
 }
+/* Include ambient pulse in the same declaration so entrance does not override it. */
+.statistics-page.animate-enter .stats-current-ring{
+  animation:
+    stats-point-arrive .40s var(--motion-enter) .92s both,
+    stats-current-ring 2.9s ease-in-out 1.32s infinite;
+}
+.statistics-page.animate-enter .stats-current-dot{
+  animation:
+    stats-point-arrive .40s var(--motion-enter) .98s both,
+    stats-current-dot 2.9s ease-in-out 1.38s infinite;
+}
 
+/* Exercise cards and every chart part. */
 .statistics-page.animate-enter .exercise-row{
   animation:stats-row-in .48s var(--motion-enter) both;
 }
-.statistics-page.animate-enter .exercise-row:nth-child(1){animation-delay:.27s}
-.statistics-page.animate-enter .exercise-row:nth-child(2){animation-delay:.34s}
-.statistics-page.animate-enter .exercise-row:nth-child(3){animation-delay:.41s}
-
+.statistics-page.animate-enter .exercise-row:nth-child(1){animation-delay:.32s}
+.statistics-page.animate-enter .exercise-row:nth-child(2){animation-delay:.39s}
+.statistics-page.animate-enter .exercise-row:nth-child(3){animation-delay:.46s}
+.statistics-page.animate-enter .exercise-copy > *{
+  animation:stats-soft-in .38s var(--motion-enter) .48s both;
+}
+.statistics-page.animate-enter .spark-base,
+.statistics-page.animate-enter .exercise-chart > div{
+  animation:stats-fade-in .35s ease .44s both;
+}
 .statistics-page.animate-enter .spark-line{
   stroke-dasharray:360;
   stroke-dashoffset:360;
   animation:
-    stats-spark-draw .66s cubic-bezier(.22,.72,.22,1) .40s forwards,
+    stats-spark-draw .66s cubic-bezier(.22,.72,.22,1) .46s forwards,
     stats-spark-breathe 5.4s ease-in-out 1.20s infinite;
 }
+.statistics-page.animate-enter .spark-dot{
+  animation:
+    stats-point-arrive .34s var(--motion-enter) .92s both,
+    stats-spark-dot 3.2s ease-in-out 1.28s infinite;
+}
 
+/* Volume: rows arrive, then bars physically fill to their real width. */
 .statistics-page.animate-enter .volume-row{
   animation:stats-row-in .42s var(--motion-enter) both;
 }
-.statistics-page.animate-enter .volume-row:nth-child(1){animation-delay:.26s}
-.statistics-page.animate-enter .volume-row:nth-child(2){animation-delay:.30s}
-.statistics-page.animate-enter .volume-row:nth-child(3){animation-delay:.34s}
-.statistics-page.animate-enter .volume-row:nth-child(4){animation-delay:.38s}
-.statistics-page.animate-enter .volume-row:nth-child(5){animation-delay:.42s}
-.statistics-page.animate-enter .volume-row:nth-child(6){animation-delay:.46s}
-.statistics-page.animate-enter .volume-row:nth-child(7){animation-delay:.50s}
-.statistics-page.animate-enter .volume-row:nth-child(8){animation-delay:.54s}
+.statistics-page.animate-enter .volume-row:nth-child(1){animation-delay:.34s}
+.statistics-page.animate-enter .volume-row:nth-child(2){animation-delay:.38s}
+.statistics-page.animate-enter .volume-row:nth-child(3){animation-delay:.42s}
+.statistics-page.animate-enter .volume-row:nth-child(4){animation-delay:.46s}
+.statistics-page.animate-enter .volume-row:nth-child(5){animation-delay:.50s}
+.statistics-page.animate-enter .volume-row:nth-child(6){animation-delay:.54s}
+.statistics-page.animate-enter .volume-row:nth-child(7){animation-delay:.58s}
+.statistics-page.animate-enter .volume-row:nth-child(8){animation-delay:.62s}
+.statistics-page.animate-enter .volume-target{
+  transform-origin:left center;
+  animation:stats-bar-grow .64s cubic-bezier(.2,.8,.2,1) .42s both;
+}
+.statistics-page.animate-enter .volume-actual{
+  transform-origin:left center;
+  animation:
+    stats-bar-grow .70s cubic-bezier(.2,.8,.2,1) .48s both,
+    stats-volume-live 4.2s ease-in-out 1.24s infinite;
+}
+.statistics-page.animate-enter .volume-track em{
+  animation:stats-marker-in .34s var(--motion-enter) .94s both;
+}
+
+/* Recovery: each metric and its value comes alive, then icons breathe. */
+.statistics-page.animate-enter .recovery-metric{
+  animation:stats-metric-in .46s var(--motion-enter) both;
+}
+.statistics-page.animate-enter .recovery-metric:nth-child(1){animation-delay:.38s}
+.statistics-page.animate-enter .recovery-metric:nth-child(2){animation-delay:.46s}
+.statistics-page.animate-enter .recovery-metric:nth-child(3){animation-delay:.54s}
+.statistics-page.animate-enter .recovery-metric > strong,
+.statistics-page.animate-enter .recovery-metric > em{
+  animation:stats-value-pop .42s var(--motion-enter) .62s both;
+}
+.statistics-page.animate-enter .recovery-metric > i{
+  animation:
+    stats-value-pop .42s var(--motion-enter) .52s both,
+    stats-icon-breathe 4.6s ease-in-out 1.08s infinite;
+}
+
+/* Cycle timeline: every week participates in the initial reveal. */
+.statistics-page.animate-enter .cycle-week{
+  animation:stats-week-in .40s var(--motion-enter) both;
+}
+.statistics-page.animate-enter .cycle-week:nth-child(1){animation-delay:.38s}
+.statistics-page.animate-enter .cycle-week:nth-child(2){animation-delay:.42s}
+.statistics-page.animate-enter .cycle-week:nth-child(3){animation-delay:.46s}
+.statistics-page.animate-enter .cycle-week:nth-child(4){animation-delay:.50s}
+.statistics-page.animate-enter .cycle-week:nth-child(5){animation-delay:.54s}
+.statistics-page.animate-enter .cycle-week:nth-child(6){animation-delay:.58s}
+.statistics-page.animate-enter .cycle-week:nth-child(7){animation-delay:.62s}
+.statistics-page.animate-enter .cycle-week:nth-child(8){animation-delay:.66s}
+.statistics-page.animate-enter .cycle-week:nth-child(9){animation-delay:.70s}
+.statistics-page.animate-enter .cycle-week:nth-child(10){animation-delay:.74s}
+.statistics-page.animate-enter .cycle-week:nth-child(11){animation-delay:.78s}
+.statistics-page.animate-enter .cycle-week:nth-child(12){animation-delay:.82s}
+.statistics-page.animate-enter .cycle-week.is-current > span{
+  animation:
+    stats-current-week-arrive .42s var(--motion-enter) .70s both,
+    stats-cycle-current 3.1s ease-in-out 1.16s infinite;
+}
 
 /* ---------- Ongoing / ambient data motion ---------- */
 .statistics-page .weight-card::before{
   animation:stats-hero-ambient 8.5s ease-in-out infinite alternate;
 }
-
 .statistics-page .status-chip{
   animation:stats-status-breathe 3.6s ease-in-out infinite;
 }
-
 .statistics-page .stats-current-ring{
   animation:stats-current-ring 2.9s ease-in-out infinite;
 }
-
 .statistics-page .stats-current-dot{
   animation:stats-current-dot 2.9s ease-in-out infinite;
 }
-
 .statistics-page .stats-weight-svg polygon{
   animation:stats-band-breathe 5.8s ease-in-out infinite;
 }
-
+.statistics-page .stats-target-trend{
+  animation:stats-target-breathe 6.2s ease-in-out infinite;
+}
 .statistics-page .volume-actual{
   animation:stats-volume-live 4.2s ease-in-out infinite;
 }
 .statistics-page .volume-row:nth-child(2n) .volume-actual{animation-delay:.42s}
 .statistics-page .volume-row:nth-child(3n) .volume-actual{animation-delay:.76s}
-
+.statistics-page .volume-track em{
+  animation:stats-marker-live 3.8s ease-in-out infinite;
+}
 .statistics-page .spark-dot{
   animation:stats-spark-dot 3.2s ease-in-out infinite;
 }
 .statistics-page .exercise-row:nth-child(2) .spark-dot{animation-delay:.35s}
 .statistics-page .exercise-row:nth-child(3) .spark-dot{animation-delay:.70s}
-
 .statistics-page .recovery-metric > i{
   animation:stats-icon-breathe 4.6s ease-in-out infinite;
 }
 .statistics-page .recovery-metric:nth-child(2) > i{animation-delay:.55s}
 .statistics-page .recovery-metric:nth-child(3) > i{animation-delay:1.10s}
-
+.statistics-page .recovery-metric > em{
+  animation:stats-status-text-live 4.8s ease-in-out infinite;
+}
 .statistics-page .cycle-week.is-current > span{
   animation:stats-cycle-current 3.1s ease-in-out infinite;
 }
-
-/* Buttons remain physically still; only their surface responds. */
+.statistics-page .cycle-week.is-complete > span{
+  animation:stats-complete-live 5.2s ease-in-out infinite;
+}
+.statistics-page .stats-info{
+  animation:stats-info-live 6s ease-in-out infinite;
+}
 .statistics-page .stats-card-action{
   transition:background-color .20s ease,color .20s ease,border-color .20s ease,filter .20s ease!important;
+  animation:stats-action-live 7s ease-in-out infinite;
 }
 
 /* ---------- Keyframes ---------- */
@@ -115,83 +248,123 @@
   from{opacity:0;translate:0 -8px}
   to{opacity:1;translate:0 0}
 }
-
 @keyframes stats-card-in{
   from{opacity:0;translate:0 14px;filter:blur(1.2px)}
   to{opacity:1;translate:0 0;filter:blur(0)}
 }
-
 @keyframes stats-row-in{
   from{opacity:0;translate:8px 0}
   to{opacity:1;translate:0 0}
 }
-
-@keyframes stats-line-draw{
-  to{stroke-dashoffset:0}
+@keyframes stats-soft-in{
+  from{opacity:0;translate:0 6px}
+  to{opacity:1;translate:0 0}
 }
-
-@keyframes stats-spark-draw{
-  to{stroke-dashoffset:0}
+@keyframes stats-fade-in{
+  from{opacity:0}
+  to{opacity:1}
 }
-
+@keyframes stats-line-draw{to{stroke-dashoffset:0}}
+@keyframes stats-spark-draw{to{stroke-dashoffset:0}}
 @keyframes stats-point-arrive{
   from{opacity:0}
   to{opacity:1}
 }
-
+@keyframes stats-band-in{
+  from{opacity:0}
+  to{opacity:.82}
+}
+@keyframes stats-bar-grow{
+  from{transform:scaleX(0);opacity:.25}
+  to{transform:scaleX(1);opacity:1}
+}
+@keyframes stats-marker-in{
+  from{opacity:0;scale:.4 1}
+  to{opacity:1;scale:1 1}
+}
+@keyframes stats-metric-in{
+  from{opacity:0;translate:0 7px}
+  to{opacity:1;translate:0 0}
+}
+@keyframes stats-value-pop{
+  from{opacity:0;scale:.92}
+  to{opacity:1;scale:1}
+}
+@keyframes stats-week-in{
+  from{opacity:0;translate:0 6px;scale:.88}
+  to{opacity:1;translate:0 0;scale:1}
+}
+@keyframes stats-current-week-arrive{
+  from{opacity:0;scale:.72}
+  to{opacity:1;scale:1}
+}
 @keyframes stats-line-breathe{
   0%,100%{opacity:.88;stroke-width:2.8}
   50%{opacity:1;stroke-width:3.15}
 }
-
 @keyframes stats-spark-breathe{
   0%,100%{opacity:.82;stroke-width:2.2}
   50%{opacity:1;stroke-width:2.45}
 }
-
 @keyframes stats-hero-ambient{
   0%{opacity:.52;translate:-3px 0}
   100%{opacity:1;translate:8px -2px}
 }
-
 @keyframes stats-status-breathe{
   0%,100%{box-shadow:0 0 0 rgba(210,255,22,0);background-color:rgba(210,255,22,.055)}
   50%{box-shadow:0 0 15px rgba(210,255,22,.10);background-color:rgba(210,255,22,.075)}
 }
-
 @keyframes stats-current-ring{
   0%,100%{filter:drop-shadow(0 0 1px rgba(210,255,22,.08))}
   50%{filter:drop-shadow(0 0 8px rgba(210,255,22,.38))}
 }
-
 @keyframes stats-current-dot{
   0%,100%{opacity:.82}
   50%{opacity:1}
 }
-
 @keyframes stats-band-breathe{
   0%,100%{opacity:.72}
   50%{opacity:1}
 }
-
+@keyframes stats-target-breathe{
+  0%,100%{opacity:.55}
+  50%{opacity:.88}
+}
 @keyframes stats-volume-live{
   0%,100%{filter:brightness(.94) saturate(.96)}
   50%{filter:brightness(1.12) saturate(1.08)}
 }
-
+@keyframes stats-marker-live{
+  0%,100%{opacity:.55}
+  50%{opacity:1}
+}
 @keyframes stats-spark-dot{
   0%,100%{opacity:.76;filter:drop-shadow(0 0 1px rgba(210,255,22,.10))}
   50%{opacity:1;filter:drop-shadow(0 0 6px rgba(210,255,22,.38))}
 }
-
 @keyframes stats-icon-breathe{
   0%,100%{opacity:.60;filter:drop-shadow(0 0 0 rgba(210,255,22,0))}
   50%{opacity:.94;filter:drop-shadow(0 0 5px rgba(210,255,22,.12))}
 }
-
+@keyframes stats-status-text-live{
+  0%,100%{opacity:.80}
+  50%{opacity:1}
+}
 @keyframes stats-cycle-current{
   0%,100%{box-shadow:0 0 0 2px #101308,0 0 0 3px rgba(210,255,22,.55),0 0 0 rgba(210,255,22,0)}
   50%{box-shadow:0 0 0 2px #101308,0 0 0 3px rgba(210,255,22,.88),0 0 10px rgba(210,255,22,.20)}
+}
+@keyframes stats-complete-live{
+  0%,100%{filter:brightness(.94)}
+  50%{filter:brightness(1.08)}
+}
+@keyframes stats-info-live{
+  0%,100%{border-color:#646b6f;color:#a3a9ac}
+  50%{border-color:rgba(210,255,22,.36);color:#c7d68d}
+}
+@keyframes stats-action-live{
+  0%,92%,100%{filter:brightness(1)}
+  96%{filter:brightness(1.08)}
 }
 
 html.reduce-motion .statistics-page *,
@@ -201,7 +374,6 @@ html.reduce-motion .statistics-page *::after{
   animation-delay:0ms!important;
   animation-iteration-count:1!important;
 }
-
 @media(prefers-reduced-motion:reduce){
   .statistics-page *,
   .statistics-page *::before,
