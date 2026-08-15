@@ -29,6 +29,21 @@
     width: 44%;
   }
 
+  /* Keep the date visually pinned to the card's left side. The base rule is
+     RTL, where flex-start resolves to the right, so use an LTR flex axis and
+     restore RTL only inside the Hebrew text fragments. */
+  body:has(.workouts-concept) .training-hero__date {
+    width: 100%;
+    direction: ltr;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  body:has(.workouts-concept) .training-hero__date > * {
+    direction: rtl;
+    unicode-bidi: isolate;
+  }
+
   body:has(.workouts-concept) .training-hero__copy h2 {
     margin-top: 10px;
     font-size: 68px;
