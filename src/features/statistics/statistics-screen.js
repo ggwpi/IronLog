@@ -1,4 +1,5 @@
 import { escapeHtml } from '../../core/escape-html.js';
+import { AppPageHeader } from '../../components/app-page-header.js';
 import { getStatisticsModel } from './statistics-data.js';
 
 const ACCENT = '#d2ff16';
@@ -80,16 +81,13 @@ function Sparkline(exercise) {
 }
 
 function BrandHeader() {
-  return `<header class="statistics-header">
-    <div class="statistics-brand" aria-label="IronLog">
-      <strong>IRON<span>LOG</span></strong>
-      <small>BUILT. TRACKED. PROVEN.</small>
-    </div>
-    <div class="statistics-heading">
-      <h1>סטטיסטיקה</h1>
-      <p>ביצועים. מגמות. התקדמות.</p>
-    </div>
-  </header>`;
+  return AppPageHeader({
+    title: 'סטטיסטיקה',
+    subtitle: 'ביצועים. מגמות. התקדמות.',
+    rootClass: 'statistics-header',
+    brandClass: 'statistics-brand',
+    headingClass: 'statistics-heading',
+  });
 }
 
 function WeightCard(weight) {
