@@ -1,6 +1,5 @@
 /* Final visual calibration for the approved workouts reference.
-   Keep this file intentionally small: the structure lives in workouts.css;
-   these rules only correct iPhone-scale composition differences. */
+   The anatomy artwork must always keep its native aspect ratio. */
 
 @media (max-width: 650px) {
   body:has(.workouts-concept) .training-brand {
@@ -8,28 +7,30 @@
     letter-spacing: .21em;
   }
 
+  /* The reference uses a tighter card with a large, intentionally cropped
+     anatomy figure rather than shrinking the whole body to fit. */
   body:has(.workouts-concept) .training-hero {
-    min-height: 214px;
+    min-height: 202px;
   }
 
   body:has(.workouts-concept) .training-hero::after {
     background: linear-gradient(
       90deg,
       rgba(4, 6, 6, .97) 0%,
-      rgba(4, 6, 6, .87) 24%,
-      rgba(4, 6, 6, .16) 48%,
-      transparent 66%
+      rgba(4, 6, 6, .88) 24%,
+      rgba(4, 6, 6, .14) 48%,
+      transparent 65%
     );
   }
 
   body:has(.workouts-concept) .training-hero__copy {
     left: 16px;
-    top: 12px;
+    top: 11px;
     width: 44%;
   }
 
   body:has(.workouts-concept) .training-hero__copy h2 {
-    margin-top: 11px;
+    margin-top: 10px;
     font-size: 68px;
     line-height: .78;
     transform: scaleX(.58);
@@ -41,42 +42,45 @@
   }
 
   body:has(.workouts-concept) .training-hero__chips {
-    margin-top: 9px;
+    margin-top: 8px;
   }
 
   body:has(.workouts-concept) .training-start {
-    margin-top: 9px;
+    margin-top: 8px;
   }
 
-  /* The source anatomy PNG is considerably narrower than the generated
-     concept figure. Increase height modestly, then widen around the body's
-     center so the shoulders/torso carry the same visual weight without
-     forcing the hero card to become taller. */
+  /* IMPORTANT: do not scale X/Y independently. The previous scaleX() made
+     the body look stretched. Size only by height and allow the card's
+     overflow:hidden to create the close crop seen in the concept. */
   body:has(.workouts-concept) .training-hero__front {
-    height: 248px;
-    right: 20px;
-    bottom: -23px;
-    transform: scaleX(1.18);
-    transform-origin: center bottom;
+    width: auto;
+    height: 350px;
+    max-width: none;
+    right: 13px;
+    bottom: -137px;
+    transform: none;
+    transform-origin: center center;
+    object-fit: contain;
     filter:
-      saturate(1.2)
-      contrast(1.08)
-      brightness(.98)
+      saturate(1.16)
+      contrast(1.07)
+      brightness(.94)
       drop-shadow(0 14px 24px rgba(0, 0, 0, .34));
   }
 
   body:has(.workouts-concept) .training-hero__back {
-    height: 188px;
-    right: -18px;
-    bottom: 19px;
-    opacity: .38;
-    transform: scaleX(1.14);
-    transform-origin: center bottom;
-    filter: saturate(1.02) contrast(1.04) brightness(.74) blur(.1px);
+    width: auto;
+    height: 255px;
+    max-width: none;
+    right: -31px;
+    bottom: -47px;
+    opacity: .30;
+    transform: none;
+    transform-origin: center center;
+    object-fit: contain;
+    filter: saturate(.98) contrast(1.03) brightness(.68) blur(.12px);
   }
 
-  /* Pull the lower dashboard upward to match the reference while keeping
-     every section independently readable and tappable. */
   body:has(.workouts-concept) .training-summary {
     margin-top: 7px;
   }
@@ -99,17 +103,25 @@
 }
 
 @media (max-width: 390px) {
+  body:has(.workouts-concept) .training-hero {
+    min-height: 198px;
+  }
+
   body:has(.workouts-concept) .training-hero__copy h2 {
     font-size: 65px;
   }
 
   body:has(.workouts-concept) .training-hero__front {
-    height: 240px;
-    right: 15px;
+    height: 338px;
+    right: 9px;
+    bottom: -132px;
+    transform: none;
   }
 
   body:has(.workouts-concept) .training-hero__back {
-    height: 180px;
-    right: -20px;
+    height: 246px;
+    right: -31px;
+    bottom: -45px;
+    transform: none;
   }
 }
