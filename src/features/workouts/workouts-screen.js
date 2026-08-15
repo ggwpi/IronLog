@@ -43,35 +43,62 @@ function workoutArt(session){ const n=String(session.name||'').toLowerCase(); if
 function exerciseMuscleLabel(e){ const primary=e.exercise?.muscles?.find(m=>m.role==='primary')||e.exercise?.muscles?.[0]; return primary?.name_he||primary?.nameHe||primary?.name||'שריר מטרה'; }
 function normalizedHistoryPoint(point){ return { load:Number(point.load_kg??point.loadKg??0), reps:Number(point.reps??0), at:point.completed_at||point.completedAt||'' }; }
 function recentExerciseHistory(exercise,performanceHistory=[]){
-  const historical=performanceHistory.filter(p=>Number(p.exercise_id??p.exerciseId)===Number(exercise.exerciseId)).map(normalizedHistoryPoint).filter(p=>p.load>0).sort((a,b)=>new Date(a.at)-new Date(b.at));
-  const sessionSets=exercise.sets.filter(s=>s.completed&&Number(s.loadKg)>0).sort((a,b)=>a.setNumber-b.setNumber).map(s=>({load:Number(s.loadKg),reps:Number(s.reps||0),at:''}));
-  return [...historical,...sessionSets].slice(-3);
+  return performanceHistory
+    .filter(p=>Number(p.exercise_id??p.exerciseId)===Number(exercise.exerciseId))
+    .map(normalizedHistoryPoint)
+    .filter(p=>p.load>0)
+    .sort((a,b)=>new Date(a.at)-new Date(b.at))
+    .slice(-4);
 }
 function chartData(exercise,load,performanceHistory,activeSet){
-  const points=recentExerciseHistory(exercise,performanceHistory);
-  const projected=Number(load)||points.at(-1)?.load||0;
-  if(!points.length) return { points:[], projected, ready:false, trendUp:false, min:0, max:30, activeSet };
-  const values=[...points.map(p=>p.load),projected||points.at(-1).load];
-  let min=Math.min(...values),max=Math.max(...values);
-  const spread=Math.max(5,max-min);
-  min=Math.max(0,Math.floor((min-spread*.4)/2.5)*2.5);
-  max=Math.ceil((max+spread*.4)/2.5)*2.5;
-  if(max-min<10)max=min+10;
-  const trendUp=points.length===3&&points[2].load>points[0].load&&points[2].load>=points[1].load;
-  return { points, projected, ready:true, trendUp, min, max, activeSet };
+  const planned=Math.max(1,Number(exercise.plannedSets)||1);
+  const sessionSets=[...exercise.sets].filter(s=>s.completed&&Number(s.loadKg)>0).sort((a,b)=>a.setNumber-b.setNumber);
+  const history=recentExerciseHistory(exercise,performanceHistory);
+  const slots=Array.from({length:planned},(_,i)=>({set:i+1,value:null,state:'future'}));
+  sessionSets.forEach(s=>{ if(slots[s.setNumber-1]) slots[s.setNumber-1]={set:s.setNumber,value:Number(s.loadKg),state:'done'}; });
+  if(slots[activeSet-1]&&slots[activeSet-1].state!=='done'){
+    const currentLoad=Number(load)||0;
+    slots[activeSet-1]={set:activeSet,value:currentLoad||null,state:'current'};
+  }
+  const currentValues=slots.filter(s=>s.value!==null).map(s=>s.value);
+  const reference=history.map(h=>h.load);
+  const scaleValues=currentValues.length?currentValues:reference;
+  let min=0,max=20;
+  if(scaleValues.length){
+    const rawMin=Math.min(...scaleValues),rawMax=Math.max(...scaleValues);
+    const spread=Math.max(5,rawMax-rawMin);
+    min=Math.max(0,Math.floor((rawMin-spread*.55)/2.5)*2.5);
+    max=Math.ceil((rawMax+spread*.55)/2.5)*2.5;
+    if(max-min<10)max=min+10;
+  }
+  const doneValues=sessionSets.map(s=>Number(s.loadKg));
+  const trendUp=doneValues.length>=3&&doneValues.at(-1)>doneValues.at(-3)&&doneValues.at(-1)>=doneValues.at(-2);
+  return {slots,history,min,max,trendUp,activeSet,planned};
 }
-function chartY(value,min,max){ return 62-((value-min)/(max-min))*39; }
+function chartY(value,min,max){ return 61-((value-min)/(max-min))*38; }
 function chartMarkup(g){
-  const gridValues=g.ready?[g.min,(g.min+g.max)/2,g.max]:[0,15,30];
-  const grid=gridValues.map(v=>{const y=chartY(v,g.ready?g.min:0,g.ready?g.max:30);return `<line class="live-grid-line" x1="14" y1="${y}" x2="101" y2="${y}"/><text class="live-y-label" x="9" y="${y+1}">${Number(v.toFixed(1))}</text>`}).join('');
-  if(!g.ready) return `${grid}<text class="live-empty-label" x="57" y="42">הסטים האחרונים יופיעו כאן</text><circle cx="92" cy="62" r="2.2" class="next"/><text class="live-x-label is-current" x="92" y="78">סט ${g.activeSet}</text>`;
-  const historyXs=g.points.length===1?[68]:g.points.length===2?[43,68]:[18,43,68];
-  const coords=g.points.map((p,i)=>({x:historyXs[i],y:chartY(p.load,g.min,g.max),v:p.load}));
-  const currentX=92,currentY=chartY(g.projected||g.points.at(-1).load,g.min,g.max);
-  const path=`M ${coords.map(p=>`${p.x} ${p.y}`).join(' L ')} L ${currentX} ${currentY}`;
-  const historyLabels=coords.map((p,i)=>`<text class="live-x-label" x="${p.x}" y="78">${g.points.length===1?'קודם':g.points.length===2?(i===0?'לפני 2':'קודם'):`-${3-i}`}</text>`).join('');
-  const pathClass=g.points.length===1?'live-chart-line is-sparse':'live-chart-line';
-  return `${grid}<path class="${pathClass}" d="${path}"/>${coords.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="1.9" class="${i===coords.length-1?'hot':''}"/><text class="live-value-label" x="${p.x}" y="${p.y-6}">${p.v}</text>`).join('')}<circle cx="${currentX}" cy="${currentY}" r="2.2" class="next"/>${historyLabels}<text class="live-x-label is-current" x="${currentX}" y="78">סט ${g.activeSet}</text>`;
+  const left=17,right=96;
+  const xFor=index=>g.planned===1?56:left+(right-left)*(index/Math.max(1,g.planned-1));
+  const ticks=[g.min,(g.min+g.max)/2,g.max];
+  const grid=ticks.map(v=>{const y=chartY(v,g.min,g.max);return `<line class="live-grid-line" x1="13" y1="${y}" x2="101" y2="${y}"/><text class="live-y-label" x="9" y="${y+1}">${Number(v.toFixed(1))}</text>`}).join('');
+  const completed=g.slots.filter(s=>s.state==='done'||(s.state==='current'&&s.value!==null));
+  const coords=completed.map(s=>({x:xFor(s.set-1),y:chartY(s.value,g.min,g.max),value:s.value,state:s.state,set:s.set}));
+  const line=coords.length>1?`<path class="live-chart-line" d="M ${coords.map(p=>`${p.x} ${p.y}`).join(' L ')}"/>`:'';
+  const points=g.slots.map(s=>{
+    const x=xFor(s.set-1);
+    const y=s.value!==null?chartY(s.value,g.min,g.max):61;
+    const cls=s.state==='done'?'done':s.state==='current'?'current':'future';
+    const value=s.value!==null?`<text class="live-value-label" x="${x}" y="${Math.max(12,y-7)}">${Number(s.value.toFixed(2))}</text>`:'';
+    return `<circle cx="${x}" cy="${y}" r="2.2" class="live-set-point ${cls}"/>${value}<text class="live-x-label ${s.state==='current'?'is-current':''}" x="${x}" y="78">סט ${s.set}</text>`;
+  }).join('');
+  let ghost='';
+  if(coords.length===0&&g.history.length>1){
+    const h=g.history.slice(-Math.min(g.history.length,g.planned));
+    const start=Math.max(0,g.planned-h.length);
+    const hcoords=h.map((p,i)=>({x:xFor(start+i),y:chartY(p.load,g.min,g.max)}));
+    ghost=`<path class="live-chart-history" d="M ${hcoords.map(p=>`${p.x} ${p.y}`).join(' L ')}"/>${hcoords.map(p=>`<circle class="live-history-point" cx="${p.x}" cy="${p.y}" r="1.5"/>`).join('')}`;
+  }
+  return `${grid}${ghost}${line}${points}`;
 }
 
 function ActiveWorkoutScreen(session,performanceHistory=[]){
@@ -82,12 +109,12 @@ function ActiveWorkoutScreen(session,performanceHistory=[]){
   const completedSets=completedSetCount(session),plannedSets=plannedSetCount(session),completedExercises=completedExerciseCount(session),percent=plannedSets?Math.round(completedSets/plannedSets*100):0;
   const next=session.exercises.find(i=>i.position>e.position&&i.sets.filter(s=>s.completed).length<i.plannedSets);
   const graph=chartData(e,load,performanceHistory,active),art=workoutArt(session),muscle=exerciseMuscleLabel(e),ringPercent=Math.round((active/e.plannedSets)*100);
-  const insight=graph.ready?(graph.trendUp?'3 הסטים האחרונים שלך? <b>אתה על אש!</b>':'שמור על הקצב — הסט הבא שלך מחכה'):'אחרי כמה סטים נציג כאן את המגמה שלך';
+  const insight=graph.trendUp?'3 הסטים האחרונים שלך? <b>אתה על אש!</b>':completedSets?'הקצב נראה טוב — ממשיכים לסט הבא':'הגרף יתמלא עם כל סט שתשמור';
   return `<div class="active-workout-page live-minimal" dir="rtl" data-active-session="${session.id}" data-started-at="${escapeHtml(session.startedAt)}">
     <header class="live-workout-header"><button type="button" data-minimize-workout>‹</button><div><strong>${escapeHtml(session.name)}</strong><span><b id="liveWorkoutElapsed">00:00:00</b>　•　${completedExercises}/${session.exercises.length} תרגילים</span></div><button class="live-more">•••</button></header>
     <div class="live-total-progress"><i style="--progress:${percent}%"></i></div>
     <section class="live-hero-flat"><button class="live-ring" type="submit" form="liveSetForm" style="--ring:${ringPercent}%" aria-label="שמור את הסט הנוכחי"><span>סט נוכחי</span><b><em>${active}</em> / ${e.plannedSets}</b></button><div class="live-exercise-name"><h1>${escapeHtml(e.name)}</h1><p>${escapeHtml(muscle)}</p></div><div class="live-muscle-figure"><img src="${art}" alt="" loading="eager"></div></section>
-    <section class="live-performance"><svg class="live-chart" viewBox="0 0 108 82" preserveAspectRatio="none"><defs><linearGradient id="liveFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfff12" stop-opacity=".2"/><stop offset="1" stop-color="#cfff12" stop-opacity="0"/></linearGradient></defs>${chartMarkup(graph)}</svg><div class="live-fire-note">${graph.trendUp?'🔥':'✦'} <span>${insight}</span></div></section>
+    <section class="live-performance"><svg class="live-chart" viewBox="0 0 108 82" preserveAspectRatio="none">${chartMarkup(graph)}</svg><div class="live-fire-note">${graph.trendUp?'🔥':'✦'} <span>${insight}</span></div></section>
     <form id="liveSetForm" class="live-entry-form" data-set-form data-session-exercise-id="${e.id}" data-set-number="${active}" data-rest-seconds="${e.restMaxSeconds}"><div class="live-inline-fields"><div><label>חזרות</label><input id="liveReps" name="reps" type="number" min="0" value="${reps}" required><p><button type="button" data-step="-1" data-step-target="liveReps">−</button><button type="button" data-step="1" data-step-target="liveReps">＋</button></p></div><div><label>משקל (ק״ג)</label><input id="liveWeight" name="loadKg" type="number" min="0" step="0.25" value="${load}"><p><button type="button" data-step="-2.5" data-step-target="liveWeight">−</button><button type="button" data-step="2.5" data-step-target="liveWeight">＋</button></p></div><div><label>RIR</label><input id="liveRir" name="rir" type="number" min="0" max="10" step="0.5" value="${rir}"><p><button type="button" data-step="-0.5" data-step-target="liveRir">−</button><button type="button" data-step="0.5" data-step-target="liveRir">＋</button></p></div></div><button class="live-save-set" type="submit">שמור סט ✓</button></form>
     <section class="live-rest-flat" id="restTimer" hidden><div class="live-rest-ring"><button type="button" id="skipRestTimer">Ⅱ</button></div><div><span>הזמן מנוחה</span><strong id="restTimerValue">00:00</strong><small>עד הסט הבא</small></div></section>
     <section class="live-next-flat"><div><small>הבא</small><strong>${escapeHtml(next?.name||'סיום האימון')}</strong><span>${next?escapeHtml(next.targetReps||''):''}</span></div><b>‹</b></section><button class="live-finish-flat" type="button" data-complete-session="${session.id}">⚑　סיום אימון</button>
