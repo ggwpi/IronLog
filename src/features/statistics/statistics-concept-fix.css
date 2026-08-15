@@ -1,0 +1,162 @@
+/* Final Statistics concept alignment.
+   This layer only calibrates layout; all analytics data remains in statistics-data.js. */
+
+@media (max-width: 650px) {
+  body:has(.statistics-page) .statistics-page {
+    gap: 6px;
+  }
+
+  /* Keep the shared IronLog header language, but tighten it to the concept. */
+  body:has(.statistics-page) .statistics-header {
+    min-height: 54px;
+    padding-bottom: 0;
+  }
+
+  body:has(.statistics-page) .statistics-heading h1 {
+    font-size: 29px;
+    line-height: .95;
+  }
+
+  body:has(.statistics-page) .statistics-heading p {
+    margin-top: 4px;
+    font-size: 9px;
+  }
+
+  /* The concept's hero header is a mixed-direction composition:
+     title/icon live on the physical left, status lives on the physical right. */
+  body:has(.statistics-page) .weight-card__top {
+    direction: ltr;
+  }
+
+  body:has(.statistics-page) .stats-card-title {
+    direction: ltr;
+  }
+
+  body:has(.statistics-page) .stats-card-title h2 {
+    direction: rtl;
+    unicode-bidi: isolate;
+    text-align: left;
+  }
+
+  body:has(.statistics-page) .status-chip {
+    direction: rtl;
+  }
+
+  /* In the reference the averaging selector belongs under the title on the left. */
+  body:has(.statistics-page) .weight-card__filter {
+    margin: 6px auto 0 0;
+    direction: rtl;
+  }
+
+  body:has(.statistics-page) .weight-card {
+    padding-top: 9px;
+    padding-bottom: 7px;
+  }
+
+  body:has(.statistics-page) .weight-card__body {
+    margin-top: -1px;
+  }
+
+  body:has(.statistics-page) .weight-summary {
+    padding-top: 8px;
+    gap: 9px;
+  }
+
+  body:has(.statistics-page) .weight-delta {
+    margin-top: -8px;
+  }
+
+  /* Make the first dashboard row closer to the reference height instead of
+     allowing the sparkline aspect ratio to make each exercise tile too tall. */
+  body:has(.statistics-page) .statistics-dashboard-grid {
+    gap: 6px;
+    align-items: start;
+  }
+
+  body:has(.statistics-page) .exercise-list {
+    gap: 4px;
+  }
+
+  body:has(.statistics-page) .exercise-row {
+    min-height: 54px;
+    padding: 4px 5px;
+  }
+
+  body:has(.statistics-page) .exercise-spark {
+    width: 100%;
+    height: 42px;
+  }
+
+  body:has(.statistics-page) .exercise-copy > strong {
+    font-size: 14px;
+  }
+
+  body:has(.statistics-page) .exercise-card .stats-card-action,
+  body:has(.statistics-page) .volume-card .stats-card-action {
+    height: 25px;
+    margin-top: 5px;
+  }
+
+  body:has(.statistics-page) .volume-list {
+    gap: 3px;
+  }
+
+  body:has(.statistics-page) .volume-track {
+    height: 8px;
+  }
+
+  body:has(.statistics-page) .volume-legend {
+    margin: 6px 0 4px;
+  }
+
+  body:has(.statistics-page) .volume-card,
+  body:has(.statistics-page) .exercise-card,
+  body:has(.statistics-page) .recovery-card,
+  body:has(.statistics-page) .cycle-card {
+    align-self: start;
+  }
+
+  /* Bottom cards are intentionally compact because the app-level glass dock
+     is fixed higher than the generated concept's mock navigation. */
+  body:has(.statistics-page) .recovery-card,
+  body:has(.statistics-page) .cycle-card {
+    padding-top: 8px;
+    padding-bottom: 6px;
+  }
+
+  body:has(.statistics-page) .recovery-metric > span {
+    height: 17px;
+  }
+
+  body:has(.statistics-page) .recovery-metric > i {
+    height: 17px;
+    font-size: 16px;
+  }
+
+  body:has(.statistics-page) .recovery-metric > strong {
+    font-size: 16px;
+  }
+
+  body:has(.statistics-page) .cycle-weeks {
+    margin-top: 6px;
+    margin-bottom: 4px;
+  }
+
+  body:has(.statistics-page) .cycle-legend {
+    margin-bottom: 5px;
+  }
+
+  body:has(.statistics-page) .cycle-footer {
+    margin-top: 3px;
+  }
+}
+
+@media (max-width: 390px) {
+  body:has(.statistics-page) .statistics-heading h1 {
+    font-size: 28px;
+  }
+
+  body:has(.statistics-page) .exercise-spark {
+    height: 39px;
+  }
+}
