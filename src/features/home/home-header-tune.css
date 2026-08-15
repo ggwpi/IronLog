@@ -1,6 +1,5 @@
 /* Final mobile header calibration.
-   The Home top area should read as one bar: brand on the left, user/bolt cluster
-   on the right, with the hero beginning beneath the same visual plane. */
+   One connected Home top bar: brand on the left, greeting/name on the right. */
 
 @media(max-width:650px){
   .home-editorial__header{
@@ -15,8 +14,6 @@
     direction:ltr;
   }
 
-  /* One continuous top surface. It is intentionally borderless so it still
-     feels like part of the editorial page rather than a separate card. */
   .home-editorial__header::before{
     content:"";
     position:absolute;
@@ -38,37 +35,13 @@
     align-self:center;
   }
 
-  /* Bolt + greeting + name are one compact hotspot instead of three stacked
-     islands. */
   .home-user{
     position:relative;
     width:auto;
     height:auto;
-    min-width:128px;
-    display:flex;
-    flex-direction:row-reverse;
-    align-items:center;
-    justify-content:flex-start;
-    gap:10px;
+    min-width:86px;
+    display:block;
     direction:rtl;
-  }
-
-  .home-bolt{
-    position:static;
-    top:auto;
-    right:auto;
-    flex:0 0 38px;
-    width:38px;
-    height:38px;
-    border-color:rgba(255,255,255,.16);
-    background:rgba(10,13,12,.52);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.07),
-      0 7px 20px rgba(0,0,0,.15);
-  }
-
-  .home-bolt span{
-    font-size:20px;
   }
 
   .home-user>div{
@@ -95,8 +68,6 @@
     letter-spacing:-.045em;
   }
 
-  /* Preserve the successful hero composition, but stop it from visually
-     splitting the header cluster. */
   .home-stage{
     margin-top:-34px;
   }
@@ -113,14 +84,7 @@
   }
 
   .home-user{
-    min-width:120px;
-    gap:8px;
-  }
-
-  .home-bolt{
-    flex-basis:36px;
-    width:36px;
-    height:36px;
+    min-width:82px;
   }
 
   .home-user h1{
