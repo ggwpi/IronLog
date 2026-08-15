@@ -4,7 +4,7 @@ const items = [
   ['home', 'בית', 'home'],
   ['workouts', 'אימונים', 'dumbbell'],
   ['statistics', 'סטטיסטיקה', 'chart'],
-  ['settings', 'הגדרות', 'settings'],
+  ['settings', 'פרופיל', 'user'],
 ];
 
 export function BottomNav(activeRoute) {
