@@ -1,5 +1,6 @@
 import { Card } from '../../components/ui.js';
 import { Icon } from '../../components/icons.js';
+import { AppPageHeader } from '../../components/app-page-header.js';
 import { escapeHtml } from '../../core/escape-html.js';
 
 function SettingRow({ icon, title, description, control }) {
@@ -9,8 +10,14 @@ function SettingRow({ icon, title, description, control }) {
 export function SettingsScreen({ user, settings }) {
   const safeName = escapeHtml(user?.name || 'IronLog User');
   const safeEmail = escapeHtml(user?.email || '');
-  return `<div class="screen animate-enter">
-    <header class="screen-header"><div><span class="eyebrow">SETTINGS</span><h1>הגדרות</h1><p>העדפות, חשבון והתנהגות האפליקציה.</p></div></header>
+  return `<div class="screen settings-page animate-enter">
+    ${AppPageHeader({
+      title: 'הגדרות',
+      subtitle: 'העדפות. חשבון. אפליקציה.',
+      rootClass: 'screen-header settings-app-header',
+      brandClass: 'settings-brand',
+      headingClass: 'settings-heading',
+    })}
 
     ${Card(`
       <div class="profile-row"><div class="avatar avatar--large">${safeName.slice(0, 1)}</div><div><strong>${safeName}</strong><span>${safeEmail}</span></div></div>
