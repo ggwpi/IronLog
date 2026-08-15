@@ -1,6 +1,6 @@
 import { escapeHtml } from '../../core/escape-html.js';
 import { AppPageHeader } from '../../components/app-page-header.js';
-import { getStatisticsModel } from './statistics-data.js';
+import { buildStatisticsModel } from './statistics-data.js';
 
 const ACCENT = '#d2ff16';
 
@@ -91,6 +91,12 @@ function BrandHeader() {
 }
 
 function WeightCard(weight) {
+  if (!weight.hasData) {
+    return `<section class="statistics-card stats-empty-card">
+      <div class="stats-card-title"><span class="stats-title-icon">↗</span><h2>משקל גוף מול טווח יעד</h2></div>
+      <p>הוסף מדידת משקל ראשונה כדי להתחיל מסלול אמיתי מול טווח היעד.</p>
+    </section>`;
+  }
   const deltaClass = weight.weeklyDelta <= 0 ? 'is-down' : 'is-up';
   return `<section class="statistics-card weight-card">
     <div class="weight-card__top">
@@ -149,6 +155,12 @@ function VolumeCard(volume) {
 }
 
 function ExerciseCard(performance) {
+  if (!performance.hasData) {
+    return `<section class="statistics-card exercise-card stats-empty-card">
+      <div class="compact-card-heading"><div><h2>ביצועי תרגילים</h2><p>מגמת ביצועים · 1RM משוער</p></div></div>
+      <p>הגרף יתעדכן לאחר השלמת סטים עם משקל וחזרות.</p>
+    </section>`;
+  }
   return `<section class="statistics-card exercise-card">
     <div class="compact-card-heading">
       <div><h2>ביצועי תרגילים <span class="stats-info">i</span></h2><p>מגמת ביצועים · 1RM משוער</p></div>
@@ -200,16 +212,16 @@ function CycleCard(cycle) {
   </section>`;
 }
 
-export function StatisticsScreen() {
-  const model = getStatisticsModel();
+export function StatisticsScreen({ model } = {}) {
+  const resolvedModel = model || buildStatisticsModel();
   return `<div class="statistics-page animate-enter" dir="rtl">
     ${BrandHeader()}
-    ${WeightCard(model.bodyWeight)}
+    ${WeightCard(resolvedModel.bodyWeight)}
     <div class="statistics-dashboard-grid">
-      ${ExerciseCard(model.exercisePerformance)}
-      ${VolumeCard(model.muscleVolume)}
-      ${RecoveryCard(model.recovery)}
-      ${CycleCard(model.mesocycle)}
+      ${ExerciseCard(resolvedModel.exercisePerformance)}
+      ${VolumeCard(resolvedModel.muscleVolume)}
+      ${RecoveryCard(resolvedModel.recovery)}
+      ${CycleCard(resolvedModel.mesocycle)}
     </div>
   </div>`;
 }

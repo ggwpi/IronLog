@@ -136,3 +136,4 @@
   .exercise-row{grid-template-columns:86px minmax(0,1fr)}
   .weight-card__body{grid-template-columns:1fr}.weight-summary{border-left:0;border-top:1px solid rgba(255,255,255,.07);padding:12px 4px 3px;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}.weight-legend{grid-column:1/-1;grid-template-columns:repeat(3,1fr);gap:5px}.weight-summary strong{font-size:27px}.weight-summary__target strong{font-size:15px}
 }
+.stats-empty-card{min-height:180px;display:flex;flex-direction:column;justify-content:center;gap:16px}.stats-empty-card>p{margin:0;color:var(--muted);font-size:12px;line-height:1.7;max-width:420px}

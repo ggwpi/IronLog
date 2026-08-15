@@ -19,9 +19,9 @@ function weekDates(selectedDay = new Date().getDay()) {
   });
 }
 
-function selectedWorkout() {
+function selectedWorkout(workouts) {
   const today = new Date().getDay();
-  return workoutForDay(today) || nextWorkoutFromDay(today);
+  return workoutForDay(today, workouts) || nextWorkoutFromDay(today, workouts);
 }
 
 function workoutDate(workout) {
@@ -86,7 +86,7 @@ function hero(workout) {
         <span>${Icon('clock', { size: 13 })}<b>${escapeHtml(durationRange(workout.minutes))}</b></span>
         <span><i class="intensity-bars" aria-hidden="true"><b></b><b></b><b></b></i><b>עצימות גבוהה</b></span>
       </div>
-      <button class="training-start" type="button" data-demo-action>
+      <button class="training-start" type="button" data-start-workout="${workout.databaseId || ''}">
         <span>התחל אימון</span><i aria-hidden="true">→</i>
       </button>
     </div>
@@ -106,15 +106,15 @@ function summaryTiles(workout) {
   </section>`;
 }
 
-function representative(label) {
-  if (label === 'PUSH') return WORKOUTS.find((item) => item.id === 'push-a');
-  if (label === 'PULL') return WORKOUTS.find((item) => item.id === 'pull-a');
-  if (label === 'LEGS') return WORKOUTS.find((item) => item.id === 'legs-b');
-  return WORKOUTS.find((item) => item.id === 'arms');
+function representative(label, workouts) {
+  if (label === 'PUSH') return workouts.find((item) => item.id === 'push-a');
+  if (label === 'PULL') return workouts.find((item) => item.id === 'pull-a');
+  if (label === 'LEGS') return workouts.find((item) => item.id === 'legs-b');
+  return workouts.find((item) => item.id === 'arms');
 }
 
-function programRow(label, status, stateClass, progressText = '') {
-  const workout = representative(label);
+function programRow(label, status, stateClass, progressText = '', workouts = WORKOUTS) {
+  const workout = representative(label, workouts);
   const thumb = workout?.images?.[0] || '';
   return `<button class="training-plan-row ${stateClass}" type="button" data-demo-action>
     <span class="training-plan-row__arrow">‹</span>
@@ -125,14 +125,14 @@ function programRow(label, status, stateClass, progressText = '') {
   </button>`;
 }
 
-function planList() {
+function planList(workouts) {
   return `<section class="training-plan" aria-label="תוכנית האימונים שלך">
     <h3>תוכנית האימונים שלך</h3>
     <div class="training-plan__rows">
-      ${programRow('PUSH', 'הושלם', 'is-complete')}
-      ${programRow('PULL', 'הושלם', 'is-complete')}
-      ${programRow('LEGS', 'רגליים חלקית', 'is-partial', 'רגליים חלקית')}
-      ${programRow('ARMS', 'הבא בתור', 'is-next', 'הבא בתור')}
+      ${programRow('PUSH', 'הושלם', 'is-complete', '', workouts)}
+      ${programRow('PULL', 'הושלם', 'is-complete', '', workouts)}
+      ${programRow('LEGS', 'רגליים חלקית', 'is-partial', 'רגליים חלקית', workouts)}
+      ${programRow('ARMS', 'הבא בתור', 'is-next', 'הבא בתור', workouts)}
     </div>
   </section>`;
 }
@@ -148,8 +148,8 @@ function quickStats() {
   </section>`;
 }
 
-export function WorkoutsScreen() {
-  const workout = selectedWorkout();
+export function WorkoutsScreen({ workouts = WORKOUTS } = {}) {
+  const workout = selectedWorkout(workouts);
 
   return `<div class="workouts-concept animate-enter" dir="rtl">
     ${AppPageHeader({
@@ -167,7 +167,7 @@ export function WorkoutsScreen() {
 
     ${hero(workout)}
     ${summaryTiles(workout)}
-    ${planList()}
+    ${planList(workouts)}
     ${quickStats()}
   </div>`;
 }

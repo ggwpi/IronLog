@@ -34,18 +34,15 @@ export const WORKOUTS = Object.freeze([
   Object.freeze({ id: 'arms', day: 6, short: 'ARMS', title: 'Arms + Shoulders', targets: Object.freeze(['Biceps', 'Triceps', 'Delts']), exercises: 8, sets: 27, minutes: 76, images: PLAN_IMAGES.arms }),
 ]);
 
-const WORKOUT_BY_DAY = new Map(WORKOUTS.map((workout) => [workout.day, workout]));
-const WORKOUT_BY_ID = new Map(WORKOUTS.map((workout) => [workout.id, workout]));
-
-export function workoutForDay(day) {
-  return WORKOUT_BY_DAY.get(day) || null;
+export function workoutForDay(day, workouts = WORKOUTS) {
+  return workouts.find((workout) => workout.day === day) || null;
 }
 
-export function workoutById(id) {
-  return WORKOUT_BY_ID.get(id) || null;
+export function workoutById(id, workouts = WORKOUTS) {
+  return workouts.find((workout) => workout.id === id) || null;
 }
 
-export function nextWorkoutFromDay(day) {
-  return WORKOUTS.find((workout) => workout.day > day) || WORKOUTS[0];
+export function nextWorkoutFromDay(day, workouts = WORKOUTS) {
+  return workouts.find((workout) => workout.day > day) || workouts[0] || null;
 }
 

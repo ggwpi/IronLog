@@ -1,5 +1,3 @@
-import { Icon } from '../../components/icons.js';
-
 export function LoginScreen() {
   return `<main class="auth-shell">
     <section class="auth-panel animate-enter">
@@ -14,20 +12,15 @@ export function LoginScreen() {
         <p>התחבר כדי להמשיך לעקוב אחרי האימונים וההתקדמות שלך.</p>
       </div>
 
-      <form id="loginForm" class="auth-form" novalidate>
-        <label class="field">
-          <span>אימייל</span>
-          <div class="field-control">${Icon('user', { size: 19 })}<input id="emailInput" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com" required></div>
-        </label>
-        <label class="field">
-          <span>סיסמה</span>
-          <div class="field-control"><span class="password-dot">••</span><input id="passwordInput" type="password" autocomplete="current-password" placeholder="••••••••" minlength="4" required></div>
-        </label>
+      <div class="auth-form">
         <p id="loginError" class="form-error" role="alert" hidden></p>
-        <button class="button button--primary button--full" type="submit"><span>התחבר</span>${Icon('arrow', { size: 20 })}</button>
-      </form>
+        <button id="googleLoginButton" class="button button--primary button--full" type="button">
+          <span>המשך עם Google</span>
+          <span class="google-mark" aria-hidden="true">G</span>
+        </button>
+      </div>
 
-      <p class="auth-note">בגרסת הבסיס ההתחברות נשמרת מקומית במכשיר. חיבור ל־backend/auth אמיתי יתווסף כשנבנה את שכבת הנתונים.</p>
+      <p class="auth-note">Google מאמתת את הזהות שלך. נתוני האימונים נשמרים ב־IronLog ומוגנים לכל משתמש בנפרד.</p>
     </section>
   </main>`;
 }

@@ -21,12 +21,12 @@ function greeting() {
   return 'ערב טוב';
 }
 
-function nearestWorkout() {
+function nearestWorkout(workouts) {
   const currentDay = new Date().getDay();
-  const today = workoutForDay(currentDay);
+  const today = workoutForDay(currentDay, workouts);
   if (today) return { ...today, timing: 'היום' };
 
-  const next = nextWorkoutFromDay(currentDay);
+  const next = nextWorkoutFromDay(currentDay, workouts);
   return { ...next, timing: currentDay === 0 ? 'מחר' : 'האימון הבא' };
 }
 
@@ -43,9 +43,9 @@ function workoutArt(workout) {
   </figure>`;
 }
 
-function weeklyProgress(currentDay) {
+function weeklyProgress(currentDay, workouts) {
   return DAYS.map(({ jsDay, label }) => {
-    const planned = Boolean(workoutForDay(jsDay));
+    const planned = Boolean(workoutForDay(jsDay, workouts));
     const current = jsDay === currentDay;
     const complete = planned && (currentDay === 0 ? true : jsDay < currentDay);
     const state = [planned ? 'is-planned' : '', current ? 'is-current' : '', complete ? 'is-complete' : ''].filter(Boolean).join(' ');
@@ -64,8 +64,8 @@ function activityBars() {
   </div>`).join('');
 }
 
-export function HomeScreen({ userName = 'מתאמן' } = {}) {
-  const workout = nearestWorkout();
+export function HomeScreen({ userName = 'מתאמן', workouts } = {}) {
+  const workout = nearestWorkout(workouts);
   const currentDay = new Date().getDay();
   const heroLabel = workout.timing === 'היום' ? "TODAY'S WORKOUT" : 'NEXT WORKOUT';
 
@@ -111,7 +111,7 @@ export function HomeScreen({ userName = 'מתאמן' } = {}) {
         <span class="home-card-title">WEEKLY PROGRESS</span>
         <div><i aria-hidden="true">⌁</i><span>התקדמות שבועית</span></div>
       </div>
-      <div class="home-progress-days">${weeklyProgress(currentDay)}</div>
+      <div class="home-progress-days">${weeklyProgress(currentDay, workouts)}</div>
     </section>
 
     <section class="home-activity-card" aria-label="פעילות שבועית">
