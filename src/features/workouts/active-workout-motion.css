@@ -1,0 +1,171 @@
+/* Motion layer for the active workout. Motion is subtle, state-driven, and touch responsive. */
+.active-workout-page.motion-ready{position:relative}
+
+.motion-ready .live-total-progress i{
+  transition:width .7s cubic-bezier(.2,.85,.2,1)!important;
+  box-shadow:0 0 12px rgba(203,255,18,.18);
+}
+
+.motion-ready .live-hero-flat{position:relative;isolation:isolate}
+.motion-ready .live-hero-flat:after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:-35% auto -35% -38%;
+  width:36%;
+  transform:skewX(-18deg) translateX(-180%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.035),rgba(203,255,18,.055),transparent);
+  pointer-events:none;
+  animation:awHeroSheen 7.5s ease-in-out 1.4s infinite;
+}
+.motion-ready .live-hero-flat>*{position:relative;z-index:1}
+.motion-ready .live-muscle-figure img{animation:awFigureFloat 5.6s ease-in-out infinite}
+.motion-ready .live-ring{animation:awRingBreath 3.8s ease-in-out infinite;will-change:transform,filter}
+.motion-ready .live-set-point.current{transform-box:fill-box;transform-origin:center;animation:awCurrentPoint 1.8s ease-in-out infinite}
+.motion-ready .live-fire-note{animation:awNoteBreathe 4.2s ease-in-out infinite}
+
+.motion-first-mount .live-workout-header{animation:awEnterDown .48s cubic-bezier(.2,.8,.2,1) both}
+.motion-first-mount .live-total-progress{animation:awFadeIn .48s ease .08s both}
+.motion-first-mount .live-hero-flat{animation:awEnterUp .58s cubic-bezier(.16,.84,.28,1) .08s both}
+.motion-first-mount .live-performance{animation:awEnterUp .58s cubic-bezier(.16,.84,.28,1) .14s both}
+.motion-first-mount .live-entry-form{animation:awEnterUp .58s cubic-bezier(.16,.84,.28,1) .2s both}
+.motion-first-mount .live-next-flat{animation:awEnterUp .58s cubic-bezier(.16,.84,.28,1) .26s both}
+.motion-first-mount .live-finish-flat{animation:awEnterUp .58s cubic-bezier(.16,.84,.28,1) .31s both}
+
+.motion-first-mount .live-chart-line,.live-chart.is-redraw .live-chart-line{
+  stroke-dasharray:620;
+  stroke-dashoffset:620;
+  animation:awChartDraw .92s cubic-bezier(.2,.75,.2,1) forwards;
+}
+.motion-first-mount .live-set-point.done,.live-chart.is-redraw .live-set-point.done{
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:awPointPop .46s cubic-bezier(.2,1.25,.35,1) both;
+}
+
+.live-ring.is-set-pop{animation:awSetPop .72s cubic-bezier(.16,.9,.25,1) both!important}
+.live-hero-flat.is-state-shift{animation:awStateShift .72s cubic-bezier(.18,.82,.2,1) both}
+.live-chart.is-redraw{animation:awChartLift .62s cubic-bezier(.2,.8,.2,1) both}
+.live-next-flat.is-next-refresh{animation:awNextRefresh .62s cubic-bezier(.2,.85,.2,1) both}
+.motion-exercise-change .live-exercise-name{animation:awExerciseSwap .62s cubic-bezier(.18,.85,.2,1) both}
+.motion-exercise-change .live-muscle-figure{animation:awExerciseArt .7s cubic-bezier(.18,.85,.2,1) both}
+.motion-set-complete .live-total-progress i{filter:brightness(1.28)}
+
+.live-inline-fields>div{
+  border-radius:15px;
+  transition:background .22s ease,box-shadow .22s ease,transform .18s ease;
+}
+.live-inline-fields>div.has-focus,.live-inline-fields>div.is-field-active{
+  background:rgba(203,255,18,.028);
+  box-shadow:inset 0 0 0 1px rgba(203,255,18,.08);
+}
+.live-inline-fields input{
+  transition:transform .2s cubic-bezier(.2,.9,.2,1),color .2s ease,text-shadow .2s ease!important;
+}
+.live-inline-fields input:focus{color:#fff;text-shadow:0 0 16px rgba(203,255,18,.08)}
+.live-inline-fields input.is-value-bump{animation:awValueBump .32s cubic-bezier(.2,1.15,.3,1)}
+.live-inline-fields [data-step]{transition:transform .12s ease,filter .12s ease!important}
+.live-inline-fields [data-step].is-pressed,.live-inline-fields [data-step]:active{transform:scale(.72)!important;filter:brightness(1.25)}
+
+.live-next-flat{transition:transform .18s cubic-bezier(.2,.8,.2,1),border-color .18s ease,background .18s ease!important;will-change:transform}
+.live-next-flat.is-pressed,.live-next-flat:active{transform:scale(.985);border-color:rgba(203,255,18,.16)!important}
+.motion-ready .live-next-flat:before{animation:awNextIcon 3.6s ease-in-out infinite}
+.motion-ready .live-next-flat>b{transition:transform .2s ease,background .2s ease!important}
+.live-next-flat.is-pressed>b{transform:rotate(180deg) translateX(-2px) scale(.92)!important}
+
+.live-finish-flat{position:relative;overflow:hidden;will-change:transform}
+.live-finish-flat:after{
+  content:"";
+  position:absolute;
+  inset:-55% auto -55% -26%;
+  width:20%;
+  transform:skewX(-18deg) translateX(-220%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+  pointer-events:none;
+}
+.motion-ready .live-finish-flat:after{animation:awButtonSheen 4.8s ease-in-out 1.8s infinite}
+.live-finish-flat.is-pressed,.live-finish-flat:active{transform:scale(.975)!important}
+.live-finish-flat.is-committing{animation:awCommitPulse .72s ease-in-out infinite alternate}
+.is-saving-set .live-hero-flat{filter:saturate(.96)}
+
+.live-workout-header button,.live-rest-ring button{
+  transition:transform .14s ease,background .14s ease,opacity .14s ease!important;
+}
+.live-workout-header button.is-pressed,.live-rest-ring button.is-pressed{transform:scale(.82);opacity:.72}
+
+.live-rest-flat:not([hidden]){animation:awRestEnter .52s cubic-bezier(.18,.85,.2,1) both}
+.live-rest-flat:not([hidden]) .live-rest-ring{animation:awRestPulse 2.2s ease-in-out infinite}
+.live-rest-flat.is-finished .live-rest-ring{animation:awRestDone .55s cubic-bezier(.2,1.2,.3,1) both}
+
+.live-motion-toast{
+  position:absolute;
+  z-index:80;
+  left:50%;
+  top:47%;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 14px;
+  border:1px solid rgba(203,255,18,.28);
+  border-radius:999px;
+  background:rgba(10,15,16,.94);
+  box-shadow:0 16px 34px rgba(0,0,0,.38),0 0 22px rgba(203,255,18,.06);
+  color:#eef3e7;
+  font-size:12px;
+  font-weight:650;
+  transform:translate(-50%,14px) scale(.92);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease,transform .36s cubic-bezier(.2,1.15,.3,1);
+}
+.live-motion-toast b{
+  display:grid;
+  place-items:center;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:var(--accent);
+  color:#0a0d0d;
+  font-size:13px;
+}
+.live-motion-toast.is-visible{opacity:1;transform:translate(-50%,0) scale(1)}
+.live-motion-toast.is-leaving{opacity:0;transform:translate(-50%,-9px) scale(.96)}
+
+@keyframes awEnterDown{from{opacity:0;transform:translateY(-9px)}to{opacity:1;transform:none}}
+@keyframes awEnterUp{from{opacity:0;transform:translateY(13px) scale(.99)}to{opacity:1;transform:none}}
+@keyframes awFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes awHeroSheen{0%,68%{transform:skewX(-18deg) translateX(-180%);opacity:0}76%{opacity:.9}92%,100%{transform:skewX(-18deg) translateX(560%);opacity:0}}
+@keyframes awFigureFloat{0%,100%{transform:scale(1.08) translateY(3px)}50%{transform:scale(1.085) translateY(0)}}
+@keyframes awRingBreath{0%,100%{filter:brightness(1);transform:scale(1)}50%{filter:brightness(1.045);transform:scale(1.012)}}
+@keyframes awCurrentPoint{0%,100%{filter:drop-shadow(0 0 1px rgba(203,255,18,.25));transform:scale(1)}50%{filter:drop-shadow(0 0 6px rgba(203,255,18,.48));transform:scale(1.14)}}
+@keyframes awNoteBreathe{0%,100%{border-color:rgba(190,239,0,.34)}50%{border-color:rgba(190,239,0,.48)}}
+@keyframes awChartDraw{to{stroke-dashoffset:0}}
+@keyframes awPointPop{0%{opacity:0;transform:scale(.3)}70%{opacity:1;transform:scale(1.18)}100%{opacity:1;transform:scale(1)}}
+@keyframes awSetPop{0%{transform:scale(.94);filter:brightness(.9)}48%{transform:scale(1.075);filter:brightness(1.2)}100%{transform:scale(1);filter:brightness(1)}}
+@keyframes awStateShift{0%{transform:scale(.992);border-color:rgba(255,255,255,.075)}45%{transform:scale(1.006);border-color:rgba(203,255,18,.2)}100%{transform:scale(1);border-color:rgba(255,255,255,.075)}}
+@keyframes awChartLift{0%{opacity:.5;transform:translateY(5px)}100%{opacity:1;transform:none}}
+@keyframes awNextRefresh{0%{opacity:.65;transform:translateY(4px)}100%{opacity:1;transform:none}}
+@keyframes awExerciseSwap{0%{opacity:0;transform:translateX(12px)}100%{opacity:1;transform:none}}
+@keyframes awExerciseArt{0%{opacity:.5;transform:scale(.96)}100%{opacity:1;transform:none}}
+@keyframes awValueBump{0%{transform:scale(1)}45%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes awNextIcon{0%,100%{transform:translate(0,0)}50%{transform:translate(2px,-2px)}}
+@keyframes awButtonSheen{0%,72%{transform:skewX(-18deg) translateX(-220%);opacity:0}80%{opacity:1}94%,100%{transform:skewX(-18deg) translateX(690%);opacity:0}}
+@keyframes awCommitPulse{from{filter:brightness(.92)}to{filter:brightness(1.18)}}
+@keyframes awRestEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes awRestPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.14)}}
+@keyframes awRestDone{0%{transform:scale(.9)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+@media(prefers-reduced-motion:reduce){
+  .active-workout-page.motion-ready *,
+  .active-workout-page.motion-ready *:before,
+  .active-workout-page.motion-ready *:after{
+    animation:none!important;
+    transition:none!important;
+  }
+}
+html.reduce-motion .active-workout-page.motion-ready *,
+html.reduce-motion .active-workout-page.motion-ready *:before,
+html.reduce-motion .active-workout-page.motion-ready *:after{
+  animation:none!important;
+  transition:none!important;
+}
