@@ -1,0 +1,171 @@
+/* Active workout visual polish: premium exercise identity + clearer set action. */
+.live-hero-flat{
+  box-sizing:border-box;
+  padding:clamp(10px,1.45dvh,14px) clamp(11px,3.3vw,15px)!important;
+  grid-template-columns:clamp(88px,23vw,100px) minmax(0,1fr) clamp(76px,20vw,90px)!important;
+  gap:clamp(8px,2.5vw,12px)!important;
+  border:1px solid rgba(255,255,255,.075);
+  border-radius:26px;
+  background:
+    radial-gradient(80% 130% at 92% 48%,rgba(203,255,18,.095) 0%,rgba(203,255,18,.025) 42%,transparent 70%),
+    linear-gradient(145deg,rgba(15,21,22,.98),rgba(8,12,13,.98));
+  box-shadow:0 16px 38px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.035);
+  overflow:hidden;
+}
+.live-ring{
+  width:clamp(86px,22vw,96px)!important;
+  height:clamp(86px,22vw,96px)!important;
+  justify-self:start;
+  cursor:default!important;
+  background:conic-gradient(var(--accent) var(--ring),#222b2e 0)!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.045),0 10px 24px rgba(0,0,0,.2),0 0 24px rgba(203,255,18,.035);
+  transition:none!important;
+}
+.live-ring:before{
+  inset:8px!important;
+  background:radial-gradient(circle at 50% 34%,#13191b 0%,#090d0e 72%)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.045),inset 0 -10px 20px rgba(0,0,0,.16);
+}
+.live-ring:after{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.04);
+  pointer-events:none;
+}
+.live-ring span{
+  font-size:11px!important;
+  letter-spacing:.01em;
+  color:#a7afb2!important;
+}
+.live-ring b{
+  margin-top:6px!important;
+  font-size:clamp(27px,7vw,32px)!important;
+  font-weight:420!important;
+  letter-spacing:-.04em;
+}
+.live-ring em{font-weight:560}
+.live-ring:active{transform:none!important}
+.live-exercise-name{
+  align-self:center;
+  min-width:0;
+  direction:ltr!important;
+  text-align:left!important;
+  padding-inline:1px;
+}
+.live-exercise-name h1{
+  margin:0!important;
+  max-width:100%;
+  white-space:normal!important;
+  overflow-wrap:normal;
+  text-wrap:balance;
+  font-size:clamp(22px,5.75vw,28px)!important;
+  line-height:1.02!important;
+  font-weight:760;
+  letter-spacing:-.045em!important;
+  text-align:left!important;
+  color:#f7f9f9;
+  text-shadow:0 1px 12px rgba(0,0,0,.18);
+}
+.live-exercise-name p{
+  width:max-content;
+  max-width:100%;
+  margin:9px 0 0!important;
+  padding:4px 8px 5px;
+  border:1px solid rgba(255,255,255,.055);
+  border-radius:999px;
+  background:rgba(255,255,255,.025);
+  color:#929b9e!important;
+  font-size:11.5px!important;
+  line-height:1;
+  direction:rtl;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.live-muscle-figure{
+  justify-self:end!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:142px!important;
+  box-sizing:border-box;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:21px;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(203,255,18,.115),rgba(203,255,18,.025) 38%,transparent 66%),
+    linear-gradient(180deg,rgba(20,27,28,.8),rgba(8,12,13,.36));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+  overflow:hidden!important;
+}
+.live-muscle-figure:after{
+  content:"";
+  position:absolute;
+  inset:auto 8px 6px;
+  height:20px;
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(0,0,0,.42),transparent 68%);
+  filter:blur(3px);
+  pointer-events:none;
+}
+.live-muscle-figure img{
+  width:auto!important;
+  height:108%!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  transform:scale(1.08) translateY(3px)!important;
+  transform-origin:50% 42%!important;
+  filter:brightness(1.02) contrast(1.1) saturate(1.04)!important;
+  opacity:1!important;
+  position:relative;
+  z-index:1;
+}
+.live-finish-flat{
+  box-sizing:border-box;
+  width:min(100%,360px);
+  min-height:40px!important;
+  margin:0 auto!important;
+  padding:8px 18px!important;
+  border:1px solid rgba(203,255,18,.34)!important;
+  border-radius:14px;
+  background:linear-gradient(180deg,rgba(203,255,18,.075),rgba(203,255,18,.025))!important;
+  color:var(--accent)!important;
+  font-size:14px!important;
+  font-weight:720;
+  letter-spacing:.01em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+  transition:transform .14s ease,background .14s ease,opacity .14s ease;
+}
+.live-finish-flat:active{transform:scale(.985)}
+.live-finish-flat:disabled{opacity:.48;transform:none}
+.live-finish-flat.is-workout-final{
+  border-color:var(--accent)!important;
+  background:var(--accent)!important;
+  color:#0a0d0d!important;
+  box-shadow:0 7px 20px rgba(203,255,18,.11),inset 0 1px 0 rgba(255,255,255,.24);
+}
+@media(max-width:390px){
+  .live-hero-flat{
+    grid-template-columns:84px minmax(0,1fr) 72px!important;
+    gap:8px!important;
+    padding:10px!important;
+    border-radius:23px;
+  }
+  .live-ring{width:82px!important;height:82px!important}
+  .live-ring span{font-size:10px!important}
+  .live-ring b{font-size:26px!important}
+  .live-exercise-name h1{font-size:21px!important;line-height:1.04!important}
+  .live-exercise-name p{font-size:10.5px!important;padding:4px 7px}
+  .live-muscle-figure{max-height:128px!important;border-radius:18px}
+}
+@media(max-height:760px){
+  .live-hero-flat{padding:8px 10px!important;border-radius:21px}
+  .live-ring{width:78px!important;height:78px!important}
+  .live-ring:before{inset:7px!important}
+  .live-ring b{font-size:24px!important}
+  .live-exercise-name h1{font-size:20px!important}
+  .live-exercise-name p{margin-top:6px!important}
+  .live-muscle-figure{max-height:112px!important;border-radius:17px}
+  .live-finish-flat{min-height:34px!important;padding-block:5px!important;font-size:13px!important}
+}
