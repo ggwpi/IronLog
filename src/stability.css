@@ -1,0 +1,32 @@
+/* IronLog UI stability: do not replay page-entry animations on background sync/remounts. */
+html.ironlog-ui-stable .animate-enter{
+  animation:none!important;
+}
+
+/* active-workout.css applies liveIn to every direct child on every DOM remount.
+   That reads as a full-screen flash even when only cloud data refreshed. */
+html.ironlog-ui-stable .active-workout-page > *:not(.live-rest-flat){
+  animation:none!important;
+}
+
+/* Keep deliberate state-change motion after a set actually changes. */
+html.ironlog-ui-stable .active-workout-page.motion-state-change > .live-hero-flat.is-state-shift{
+  animation:awStateShift .72s cubic-bezier(.18,.82,.2,1) both!important;
+}
+html.ironlog-ui-stable .active-workout-page.motion-state-change > .live-next-flat.is-next-refresh{
+  animation:awNextRefresh .62s cubic-bezier(.2,.85,.2,1) both!important;
+}
+
+/* Rest mode is an intentional transition, not a remount flash. */
+html.ironlog-ui-stable .active-workout-page > .live-rest-flat:not([hidden]){
+  animation:awRestScreenIn .32s cubic-bezier(.2,.8,.2,1) both!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  html.ironlog-ui-stable .active-workout-page *,
+  html.ironlog-ui-stable .active-workout-page *:before,
+  html.ironlog-ui-stable .active-workout-page *:after{
+    animation:none!important;
+    transition:none!important;
+  }
+}
