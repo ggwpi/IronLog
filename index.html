@@ -41,6 +41,7 @@
   <link rel="stylesheet" href="/src/app-header.css">
   <link rel="stylesheet" href="/src/features/home/home-greeting-final.css">
   <link rel="stylesheet" href="/src/launch-screen.css">
+  <link rel="stylesheet" href="/src/stability.css?v=1">
   <style>html,body{touch-action:manipulation;-webkit-text-size-adjust:100%}</style>
 </head>
 <body>
@@ -51,7 +52,8 @@
     window.addEventListener('error', function () { var fallback = document.getElementById('bootFallback'); if (!fallback) return; var eyebrow = fallback.querySelector('.eyebrow'); var title = fallback.querySelector('h1'); var copy = fallback.querySelector('p'); if (eyebrow) eyebrow.textContent = 'STARTUP ERROR'; if (title) title.innerHTML = 'לא הצלחנו לפתוח את<br><em>IronLog.</em>'; if (copy) copy.textContent = 'נסה לרענן את העמוד. אם זה ממשיך, האפליקציה תציג עכשיו שגיאה במקום מסך שחור.'; });
     window.addEventListener('unhandledrejection', function () { window.dispatchEvent(new Event('error')); });
   </script>
-  <script type="module" src="/src/app.js?v=6"></script>
+  <script type="module" src="/src/stability-runtime.js?v=1"></script>
+  <script type="module" src="/src/app.js?v=7"></script>
   <script type="module" src="/src/features/workouts/active-workout-runtime.js?v=5"></script>
   <script type="module" src="/src/features/workouts/active-workout-motion.js?v=3"></script>
 </body>
