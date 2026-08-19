@@ -1,0 +1,169 @@
+/* Active workout v6 — deterministic layout, cleaner empty state, no accidental flex gaps. */
+
+/* The base polish stylesheet is loaded before this file. These rules are the final layout authority. */
+.active-workout-page.live-minimal{
+  grid-template-rows:auto 3px auto auto auto auto auto!important;
+  align-content:start!important;
+  row-gap:clamp(8px,1.05dvh,11px)!important;
+}
+
+/* Header: back / title / manual rest / menu must always stay on one line. */
+.live-workout-header{
+  grid-template-columns:36px minmax(0,1fr) 34px 36px!important;
+  column-gap:4px!important;
+  direction:ltr!important;
+}
+.live-workout-header>div:not(.live-menu-wrap){min-width:0!important}
+.live-menu-wrap{
+  min-width:36px!important;
+  width:36px!important;
+  height:36px!important;
+  display:grid!important;
+  place-items:center!important;
+  position:relative!important;
+}
+.live-manual-rest{align-self:center!important;justify-self:center!important}
+.live-more{align-self:center!important;justify-self:center!important}
+
+/* Exercise block: status is metadata, never a decorative rail/card. */
+.live-hero-flat{
+  min-height:148px!important;
+  max-height:164px!important;
+  grid-template-columns:minmax(0,1fr) 98px!important;
+  gap:20px!important;
+  padding:12px 0 14px!important;
+  direction:ltr!important;
+}
+.live-exercise-name{min-width:0!important;padding:0!important}
+.live-ring{
+  width:auto!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0 0 10px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:baseline!important;
+  justify-content:flex-start!important;
+  gap:8px!important;
+  border:0!important;
+  border-left:0!important;
+  border-radius:0!important;
+  background:none!important;
+  box-shadow:none!important;
+  direction:ltr!important;
+  text-align:left!important;
+  animation:none!important;
+  filter:none!important;
+}
+.live-ring:before,.live-ring:after{display:none!important}
+.live-ring b{order:1!important;margin:0!important;display:flex!important;align-items:baseline!important;gap:3px!important;color:#aeb6b8!important;font-size:13px!important;font-weight:470!important;line-height:1!important}
+.live-ring b em{color:var(--accent)!important;font-size:16px!important;font-weight:780!important;font-style:normal!important}
+.live-ring b i{color:#5f696c!important;font-style:normal!important;font-weight:380!important}
+.live-ring span{order:2!important;color:#7d878a!important;font-size:10.5px!important;font-weight:580!important;line-height:1!important;direction:rtl!important;white-space:nowrap!important}
+.live-exercise-name h1{
+  max-width:265px!important;
+  font-size:clamp(25px,6.5vw,31px)!important;
+  line-height:1.01!important;
+  text-wrap:balance!important;
+}
+.live-exercise-name p{margin-top:9px!important;font-size:11.5px!important}
+.live-muscle-figure{width:98px!important;height:136px!important;max-height:136px!important}
+.live-muscle-figure img{max-height:136px!important}
+
+/* Performance is secondary. Never let it become a flexible blank canvas. */
+.live-performance{
+  min-height:0!important;
+  height:auto!important;
+  align-self:start!important;
+  justify-self:stretch!important;
+  overflow:visible!important;
+}
+.live-performance.has-data{
+  min-height:126px!important;
+  max-height:140px!important;
+  padding:8px 0 6px!important;
+  grid-template-rows:auto 88px auto!important;
+  gap:3px!important;
+}
+.live-chart{height:88px!important;max-height:88px!important;margin:0!important}
+
+/* Empty state: useful context, not a fake graph or button-looking icon. */
+.live-performance.is-empty{
+  min-height:78px!important;
+  max-height:90px!important;
+  padding:11px 0 10px!important;
+  border-top:0!important;
+  border-bottom:1px solid rgba(255,255,255,.07)!important;
+}
+.live-performance-empty{
+  min-height:56px!important;
+  width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:12px!important;
+  padding:0 0 0 12px!important;
+  box-sizing:border-box!important;
+  position:relative!important;
+  direction:ltr!important;
+}
+.live-performance-empty:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:8px;
+  bottom:8px;
+  width:2px;
+  border-radius:99px;
+  background:rgba(203,255,18,.72);
+  box-shadow:0 0 10px rgba(203,255,18,.08);
+}
+.live-performance-empty>div{min-width:0!important;text-align:left!important}
+.live-performance-empty>i{display:none!important}
+.live-performance-empty span{font-size:9.5px!important;color:#737e81!important}
+.live-performance-empty strong{margin-top:5px!important;font-size:13.5px!important;font-weight:650!important;color:#dfe4e5!important}
+.live-performance-empty small{margin-top:5px!important;font-size:9.5px!important;color:#626d70!important}
+
+/* Keep data entry attached to the performance state. */
+.live-entry-form{
+  min-height:120px!important;
+  max-height:136px!important;
+  margin:0!important;
+  padding-top:8px!important;
+  border-top:0!important;
+}
+.live-next-flat{margin:0!important;min-height:50px!important;max-height:58px!important}
+.live-finish-flat{margin:0!important;min-height:50px!important}
+
+@media(max-width:390px){
+  .active-workout-page.live-minimal{row-gap:7px!important}
+  .live-workout-header{grid-template-columns:34px minmax(0,1fr) 32px 34px!important;column-gap:2px!important}
+  .live-menu-wrap{width:34px!important;min-width:34px!important;height:34px!important}
+  .live-hero-flat{min-height:132px!important;max-height:146px!important;grid-template-columns:minmax(0,1fr) 84px!important;gap:13px!important;padding:9px 0 11px!important}
+  .live-ring{margin-bottom:8px!important}
+  .live-exercise-name h1{max-width:225px!important;font-size:23px!important}
+  .live-muscle-figure{width:84px!important;height:120px!important;max-height:120px!important}
+  .live-muscle-figure img{max-height:120px!important}
+  .live-performance.has-data{min-height:116px!important;max-height:128px!important;grid-template-rows:auto 78px auto!important}
+  .live-chart{height:78px!important;max-height:78px!important}
+  .live-performance.is-empty{min-height:70px!important;max-height:80px!important;padding-block:8px!important}
+  .live-performance-empty{min-height:52px!important}
+  .live-entry-form{min-height:112px!important;max-height:124px!important;padding-top:6px!important}
+}
+
+@media(max-height:760px){
+  .active-workout-page.live-minimal{row-gap:5px!important}
+  .live-hero-flat{min-height:110px!important;max-height:120px!important;padding:6px 0 8px!important}
+  .live-ring{margin-bottom:5px!important}
+  .live-exercise-name h1{font-size:21px!important}
+  .live-muscle-figure{height:102px!important;max-height:102px!important}
+  .live-muscle-figure img{max-height:102px!important}
+  .live-performance.has-data{min-height:98px!important;max-height:108px!important;grid-template-rows:auto 62px auto!important;padding:5px 0 4px!important}
+  .live-chart{height:62px!important;max-height:62px!important}
+  .live-performance.is-empty{min-height:58px!important;max-height:64px!important;padding-block:5px!important}
+  .live-performance-empty{min-height:46px!important}
+  .live-entry-form{min-height:92px!important;max-height:104px!important;padding-top:4px!important}
+  .live-next-flat{min-height:42px!important;max-height:48px!important}
+  .live-finish-flat{min-height:44px!important}
+}
