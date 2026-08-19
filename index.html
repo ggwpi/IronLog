@@ -22,8 +22,10 @@
   <link rel="stylesheet" href="/src/features/workouts/active-workout.css?v=3">
   <link rel="stylesheet" href="/src/features/workouts/active-workout-menu.css">
   <link id="ironlog-active-workout-motion" rel="stylesheet" href="/src/features/workouts/active-workout-motion.css?v=3">
+  <link rel="stylesheet" href="/src/features/workouts/active-workout-polish.css?v=4" data-active-workout-polish="true">
   <link rel="stylesheet" href="/src/features/workouts/active-workout-interactions.css?v=4">
   <link rel="stylesheet" href="/src/features/workouts/active-workout-layout-v5.css?v=5">
+  <link rel="stylesheet" href="/src/features/workouts/active-workout-layout-v6.css?v=6">
   <link rel="stylesheet" href="/src/features/statistics/statistics.css">
   <link rel="stylesheet" href="/src/nav-glass.css">
   <link rel="stylesheet" href="/src/features/home/home-reference-fix.css">
@@ -49,8 +51,8 @@
     window.addEventListener('error', function () { var fallback = document.getElementById('bootFallback'); if (!fallback) return; var eyebrow = fallback.querySelector('.eyebrow'); var title = fallback.querySelector('h1'); var copy = fallback.querySelector('p'); if (eyebrow) eyebrow.textContent = 'STARTUP ERROR'; if (title) title.innerHTML = 'לא הצלחנו לפתוח את<br><em>IronLog.</em>'; if (copy) copy.textContent = 'נסה לרענן את העמוד. אם זה ממשיך, האפליקציה תציג עכשיו שגיאה במקום מסך שחור.'; });
     window.addEventListener('unhandledrejection', function () { window.dispatchEvent(new Event('error')); });
   </script>
-  <script type="module" src="/src/app.js?v=5"></script>
-  <script type="module" src="/src/features/workouts/active-workout-runtime.js?v=4"></script>
+  <script type="module" src="/src/app.js?v=6"></script>
+  <script type="module" src="/src/features/workouts/active-workout-runtime.js?v=5"></script>
   <script type="module" src="/src/features/workouts/active-workout-motion.js?v=3"></script>
 </body>
 </html>
