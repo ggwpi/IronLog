@@ -1,5 +1,5 @@
 const ACTIVE_KEY='ironlog:active-workout',REST_KEY_PREFIX='ironlog:rest:';
-let elapsedInterval=null,restInterval=null,saveTimer=null,finishAfterFinalSet=false;
+let elapsedInterval=null,restInterval=null,saveTimer=null,hydrateTimer=null;
 
 const menuPositionStyle=document.createElement('style');
 menuPositionStyle.id='ironlog-active-menu-position';
@@ -8,7 +8,7 @@ if(!document.getElementById(menuPositionStyle.id))document.head.appendChild(menu
 
 const polishStylesheet=document.createElement('link');
 polishStylesheet.rel='stylesheet';
-polishStylesheet.href='/src/features/workouts/active-workout-polish.css?v=1';
+polishStylesheet.href='/src/features/workouts/active-workout-polish.css?v=3';
 polishStylesheet.dataset.activeWorkoutPolish='true';
 if(!document.querySelector('link[data-active-workout-polish]'))document.head.appendChild(polishStylesheet);
 
@@ -20,41 +20,40 @@ function formatElapsed(ms){const t=Math.max(0,Math.floor(ms/1000)),h=Math.floor(
 function restKey(id){return`${REST_KEY_PREFIX}${id}`}
 function stopTimers(){if(elapsedInterval)clearInterval(elapsedInterval);if(restInterval)clearInterval(restInterval);elapsedInterval=restInterval=null}
 function closeWorkoutMenu(){const menu=document.querySelector('[data-workout-menu]'),toggle=document.querySelector('[data-workout-menu-toggle]');if(menu){menu.hidden=true;restoreWorkoutMenu(menu)}if(toggle)toggle.setAttribute('aria-expanded','false')}
-function paintRest(id,endAt){const shell=document.querySelector('#restTimer'),value=document.querySelector('#restTimerValue');if(!shell||!value)return;const update=()=>{const r=Math.max(0,Math.ceil((endAt-Date.now())/1000));value.textContent=`${String(Math.floor(r/60)).padStart(2,'0')}:${String(r%60).padStart(2,'0')}`;const ring=shell.querySelector('.live-rest-ring');if(ring)ring.style.opacity=r?'1':'.55';if(!r){clearInterval(restInterval);restInterval=null;localStorage.removeItem(restKey(id));shell.classList.add('is-finished')}};update();if(endAt>Date.now())restInterval=setInterval(update,250)}
+function setText(element,text){if(element&&element.textContent!==text)element.textContent=text}
+function hideRest(id){const shell=document.querySelector('#restTimer');if(id)localStorage.removeItem(restKey(id));if(restInterval)clearInterval(restInterval);restInterval=null;if(shell){shell.hidden=true;shell.classList.remove('is-finished')}}
+function paintRest(id,endAt){const shell=document.querySelector('#restTimer'),value=document.querySelector('#restTimerValue');if(!shell||!value)return;shell.hidden=false;shell.classList.remove('is-finished');const update=()=>{const r=Math.max(0,Math.ceil((endAt-Date.now())/1000));setText(value,`${String(Math.floor(r/60)).padStart(2,'0')}:${String(r%60).padStart(2,'0')}`);if(!r){if(restInterval)clearInterval(restInterval);restInterval=null;localStorage.removeItem(restKey(id));shell.classList.add('is-finished');window.setTimeout(()=>{if(shell.classList.contains('is-finished'))shell.hidden=true},900)}};update();if(endAt>Date.now())restInterval=setInterval(update,250)}
 function workoutProgress(){const bar=document.querySelector('.live-total-progress i'),raw=bar?.style.getPropertyValue('--progress')||'';const value=Number.parseFloat(raw);return Number.isFinite(value)?value:0}
 function setPosition(){const text=document.querySelector('.live-ring b')?.textContent||'',match=text.match(/(\d+)\s*\/\s*(\d+)/);return match?{current:Number(match[1]),planned:Number(match[2])}:{current:0,planned:0}}
-function isFinalExercise(){return (document.querySelector('.live-next-flat strong')?.textContent||'').trim()==='סיום האימון'}
-function isFinalUnsavedSet(){const {current,planned}=setPosition();return workoutProgress()<100&&planned>0&&current===planned&&isFinalExercise()}
+function isFinalExercise(){return(document.querySelector('.live-next-flat strong')?.textContent||'').trim()==='סיום האימון'}
+function isFinalUnsavedSet(){const{current,planned}=setPosition();return workoutProgress()<100&&planned>0&&current===planned&&isFinalExercise()}
 function polishActiveWorkout(){const page=document.querySelector('.active-workout-page');if(!page)return;
   const ring=document.querySelector('.live-ring');
   if(ring){ring.type='button';ring.removeAttribute('form');ring.setAttribute('aria-label','מצב הסט הנוכחי');ring.setAttribute('aria-disabled','true');ring.tabIndex=-1}
+  const skip=document.querySelector('#skipRestTimer');
+  if(skip){setText(skip,'דלג');skip.setAttribute('aria-label','דלג על המנוחה')}
   const action=document.querySelector('.live-finish-flat');
   if(!action)return;
-  const progress=workoutProgress(),finalUnsaved=isFinalUnsavedSet();
+  const progress=workoutProgress();
   action.classList.toggle('is-set-action',progress<100);
-  action.classList.toggle('is-workout-final',progress>=100||finalUnsaved);
-  if(progress<100){
-    action.textContent=finalUnsaved?'⚑  סיום אימון':'✓  סיום סט';
-    action.setAttribute('aria-label',finalUnsaved?'שמור את הסט האחרון וסיים את האימון':'שמור וסיים את הסט הנוכחי');
-  }else{
-    action.textContent='⚑  סיום אימון';
-    action.setAttribute('aria-label','סיים את האימון');
-  }
-  if(finishAfterFinalSet&&progress>=100){
-    finishAfterFinalSet=false;
-    window.setTimeout(()=>{const finish=document.querySelector('[data-complete-session]');if(finish&&!finish.disabled)finish.click()},0);
-  }
+  action.classList.toggle('is-workout-final',progress>=100);
+  action.classList.toggle('is-final-set',isFinalUnsavedSet());
+  if(progress<100){setText(action,'סיום סט');action.setAttribute('aria-label','שמור וסיים את הסט הנוכחי')}
+  else{setText(action,'סיום אימון');action.setAttribute('aria-label','סיים את האימון')}
 }
-function hydrateActiveScreen(){const page=document.querySelector('.active-workout-page');if(!page)return;const id=page.dataset.activeSession,started=new Date(page.dataset.startedAt).getTime();localStorage.setItem(ACTIVE_KEY,id||'active');const elapsed=document.querySelector('#liveWorkoutElapsed');if(elapsed&&Number.isFinite(started)){const paint=()=>elapsed.textContent=formatElapsed(Date.now()-started);paint();elapsedInterval=setInterval(paint,1000)}if(id){const saved=Number(localStorage.getItem(restKey(id))||0);if(saved>Date.now())paintRest(id,saved);else if(saved)localStorage.removeItem(restKey(id))}polishActiveWorkout()}
+function hydrateActiveScreen(){const page=document.querySelector('.active-workout-page');if(!page)return;const id=page.dataset.activeSession,started=new Date(page.dataset.startedAt).getTime();localStorage.setItem(ACTIVE_KEY,id||'active');const elapsed=document.querySelector('#liveWorkoutElapsed');if(elapsed&&Number.isFinite(started)){const paint=()=>setText(elapsed,formatElapsed(Date.now()-started));paint();elapsedInterval=setInterval(paint,1000)}if(id){const saved=Number(localStorage.getItem(restKey(id))||0);if(saved>Date.now())paintRest(id,saved);else if(saved)localStorage.removeItem(restKey(id))}polishActiveWorkout()}
 function rehydrate(){stopTimers();hydrateActiveScreen()}
+function scheduleHydrate(){window.clearTimeout(hydrateTimer);hydrateTimer=window.setTimeout(rehydrate,16)}
 function watchForSessionEnd(sessionId){const started=Date.now(),timer=setInterval(()=>{const page=document.querySelector('.active-workout-page');if(!page&&location.hash.includes('/workouts')){localStorage.removeItem(ACTIVE_KEY);if(sessionId)localStorage.removeItem(restKey(sessionId));clearInterval(timer);return}if(Date.now()-started>12000)clearInterval(timer)},180)}
+
 if(localStorage.getItem(ACTIVE_KEY)&&!location.hash.includes('/workouts'))history.replaceState(null,'','#/workouts');
-new MutationObserver(()=>{clearTimeout(window.__ironlogActiveHydrate);window.__ironlogActiveHydrate=setTimeout(rehydrate,10)}).observe(document.documentElement,{childList:true,subtree:true});
-addEventListener('pageshow',()=>{closeWorkoutMenu();rehydrate()});
+const appRoot=document.querySelector('#app');
+if(appRoot)new MutationObserver(scheduleHydrate).observe(appRoot,{childList:true});
+addEventListener('pageshow',()=>{closeWorkoutMenu();scheduleHydrate()});
 addEventListener('resize',()=>{const menu=document.querySelector('[data-workout-menu]'),toggle=document.querySelector('[data-workout-menu-toggle]');if(menu&&!menu.hidden)positionWorkoutMenu(toggle,menu)});
 window.visualViewport?.addEventListener('resize',()=>{const menu=document.querySelector('[data-workout-menu]'),toggle=document.querySelector('[data-workout-menu-toggle]');if(menu&&!menu.hidden)positionWorkoutMenu(toggle,menu)});
 window.visualViewport?.addEventListener('scroll',()=>{const menu=document.querySelector('[data-workout-menu]'),toggle=document.querySelector('[data-workout-menu-toggle]');if(menu&&!menu.hidden)positionWorkoutMenu(toggle,menu)});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){closeWorkoutMenu();rehydrate()}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){closeWorkoutMenu();scheduleHydrate()}});
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeWorkoutMenu()});
 document.addEventListener('click',event=>{
   const ring=event.target.closest('.live-ring');
@@ -62,12 +61,9 @@ document.addEventListener('click',event=>{
   const workoutAction=event.target.closest('.live-finish-flat');
   if(workoutAction&&workoutProgress()<100){
     event.preventDefault();event.stopImmediatePropagation();
-    const form=document.querySelector('#liveSetForm');
-    if(!form||workoutAction.disabled)return;
-    const finalSet=isFinalUnsavedSet();
-    finishAfterFinalSet=finalSet;
-    workoutAction.disabled=true;
-    if(finalSet)form.dataset.restSeconds='0';
+    const form=document.querySelector('#liveSetForm'),submit=form?.querySelector('button[type="submit"]');
+    if(!form||submit?.disabled)return;
+    if(isFinalUnsavedSet())form.dataset.restSeconds='0';
     form.requestSubmit();
     return;
   }
@@ -77,11 +73,11 @@ document.addEventListener('click',event=>{
   const step=event.target.closest('[data-step]');
   if(step){const input=document.getElementById(step.dataset.stepTarget);if(input){const next=Math.max(Number(input.min||0),Number(input.value||0)+Number(step.dataset.step||0)),max=input.max===''?Infinity:Number(input.max);input.value=String(Math.min(max,Math.round(next*100)/100));input.dispatchEvent(new Event('input',{bubbles:true}))}}
   if(event.target.closest('[data-minimize-workout]'))location.hash='#/home';
-  if(event.target.closest('#skipRestTimer')){const p=document.querySelector('.active-workout-page');if(p?.dataset.activeSession)localStorage.removeItem(restKey(p.dataset.activeSession))}
+  if(event.target.closest('#skipRestTimer')){const p=document.querySelector('.active-workout-page');hideRest(p?.dataset.activeSession)}
   const ending=event.target.closest('[data-complete-session],[data-cancel-session]');
   if(ending){const p=document.querySelector('.active-workout-page');closeWorkoutMenu();watchForSessionEnd(p?.dataset.activeSession)}
 },true);
 document.addEventListener('input',event=>{if(!event.target.closest('.live-inline-fields'))return;clearTimeout(saveTimer);saveTimer=setTimeout(()=>{const form=event.target.closest('form');if(form)form.dataset.edited='true'},120)},true);
-document.addEventListener('submit',event=>{const form=event.target.closest('[data-set-form]');if(!form)return;const page=document.querySelector('.active-workout-page'),id=page?.dataset.activeSession,seconds=Number(form.dataset.restSeconds||0);if(id&&seconds>0)localStorage.setItem(restKey(id),String(Date.now()+seconds*1000))},true);
+document.addEventListener('submit',event=>{const form=event.target.closest('[data-set-form]');if(!form)return;const page=document.querySelector('.active-workout-page'),id=page?.dataset.activeSession,seconds=Number(form.dataset.restSeconds||0);if(id&&seconds>0)localStorage.setItem(restKey(id),String(Date.now()+seconds*1000));else if(id)localStorage.removeItem(restKey(id))},true);
 closeWorkoutMenu();
-rehydrate();
+scheduleHydrate();
