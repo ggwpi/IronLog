@@ -86,11 +86,11 @@ function SectionHeader(title, subtitle = '') {
 
 function WeightSection(weight) {
   if (!weight.hasData) {
-    return `<section class="native-stats-section native-weight-section">${SectionHeader('משקל גוף', 'מגמה מול טווח יעד')}<div class="native-empty-state"><strong>אין עדיין מדידות משקל</strong><span>אחרי המדידה הראשונה תופיע כאן מגמה אמיתית.</span></div></section>`;
+    return `<section class="native-stats-section native-weight-section" data-stats-animate data-stats-key="weight">${SectionHeader('משקל גוף', 'מגמה מול טווח יעד')}<div class="native-empty-state"><strong>אין עדיין מדידות משקל</strong><span>אחרי המדידה הראשונה תופיע כאן מגמה אמיתית.</span></div></section>`;
   }
   const deltaTone = weight.weeklyDelta > 0 ? 'is-up' : weight.weeklyDelta < 0 ? 'is-down' : 'is-flat';
   const deltaArrow = weight.weeklyDelta > 0 ? '↑' : weight.weeklyDelta < 0 ? '↓' : '–';
-  return `<section class="native-stats-section native-weight-section">
+  return `<section class="native-stats-section native-weight-section" data-stats-animate data-stats-key="weight">
     ${SectionHeader('משקל גוף', 'מגמה מול טווח יעד')}
     <div class="native-weight-summary">
       <div class="native-weight-current"><strong>${weight.current.toFixed(1)}</strong><span>${escapeHtml(weight.unit)}</span></div>
@@ -102,17 +102,30 @@ function WeightSection(weight) {
   </section>`;
 }
 
+function SummaryIcon(kind) {
+  const icons = {
+    rir: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2.8v2.4M21.2 12h-2.4M12 21.2v-2.4M2.8 12h2.4"/>',
+    sets: '<path d="M4.5 18.5V13M9.5 18.5V8.5M14.5 18.5V5.5M19.5 18.5V10.5"/>',
+    muscles: '<path d="M7.4 9.2h9.2v5.6H7.4zM4.2 10.3v3.4M19.8 10.3v3.4M2.8 11.1v1.8M21.2 11.1v1.8"/>',
+    cycle: '<path d="M18.7 7.1A8 8 0 1 0 20 12"/><path d="M18.7 3.8v3.3h-3.3"/><path d="M12 7.5V12l3 1.8"/>',
+  };
+  return `<span class="native-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24">${icons[kind] || icons.sets}</svg></span>`;
+}
+
 function quickSummary(model) {
   const volume = model.muscleVolume;
-  const weeklySets = volume.muscles.reduce((sum, muscle) => sum + Number(muscle.actual || 0), 0);
-  const activeMuscles = volume.muscles.filter((muscle) => Number(muscle.actual) > 0).length;
+  const weeklySets = Number.isFinite(Number(volume.weeklySets)) ? Number(volume.weeklySets) : volume.muscles.reduce((sum, muscle) => sum + Number(muscle.actual || 0), 0);
+  const activeMuscles = Number.isFinite(Number(volume.activeMuscles)) ? Number(volume.activeMuscles) : volume.muscles.filter((muscle) => Number(muscle.actual) > 0).length;
   const rir = model.recovery.rirAdherence;
   const cycle = model.mesocycle;
-  return `<section class="native-summary-strip" aria-label="סיכום מהיר">
-    <div><strong>${escapeHtml(rir.value)}</strong><span>עמידה ב־RIR</span></div>
-    <div><strong>${weeklySets.toFixed(0)}</strong><span>סטים השבוע</span></div>
-    <div><strong>${activeMuscles}</strong><span>שרירים פעילים</span></div>
-    <div><strong>${cycle.currentWeek}/${cycle.totalWeeks}</strong><span>מחזור נוכחי</span></div>
+  const items = [
+    { icon: 'rir', value: rir.value, label: 'עמידה ב־RIR' },
+    { icon: 'sets', value: weeklySets.toFixed(0), label: 'סטים השבוע' },
+    { icon: 'muscles', value: activeMuscles, label: 'שרירים פעילים' },
+    { icon: 'cycle', value: `${cycle.currentWeek}/${cycle.totalWeeks}`, label: 'מחזור נוכחי' },
+  ];
+  return `<section class="native-summary-strip" aria-label="סיכום מהיר" data-stats-animate data-stats-key="summary">
+    ${items.map((item) => `<div>${SummaryIcon(item.icon)}<strong>${escapeHtml(String(item.value))}</strong><span>${escapeHtml(item.label)}</span></div>`).join('')}
   </section>`;
 }
 
@@ -128,17 +141,28 @@ function exerciseRow(exercise) {
   </article>`;
 }
 
+function disclosure(labelClosed, labelOpen, helper, body, kind) {
+  return `<details class="native-disclosure native-disclosure--${kind}">
+    <summary>
+      <span class="native-disclosure-copy"><b><span class="when-closed">${escapeHtml(labelClosed)}</span><span class="when-open">${escapeHtml(labelOpen)}</span></b><small>${escapeHtml(helper)}</small></span>
+      <span class="native-disclosure-chevron" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></span>
+    </summary>
+    <div class="native-disclosure-body">${body}</div>
+  </details>`;
+}
+
 function ExerciseSection(performance) {
   if (!performance.hasData) {
-    return `<section class="native-stats-section">${SectionHeader('ביצועי תרגילים', '1RM משוער לאורך זמן')}<div class="native-empty-state"><strong>אין עדיין גרף ביצועים</strong><span>סטים עם משקל וחזרות ייצרו את המגמה.</span></div></section>`;
+    return `<section class="native-stats-section" data-stats-animate data-stats-key="performance">${SectionHeader('ביצועי תרגילים', '1RM משוער לאורך זמן')}<div class="native-empty-state"><strong>אין עדיין גרף ביצועים</strong><span>סטים עם משקל וחזרות ייצרו את המגמה.</span></div></section>`;
   }
   const all = performance.allExercises || performance.exercises || [];
   const primary = all.slice(0, 3);
   const rest = all.slice(3);
-  return `<section class="native-stats-section">
+  const more = rest.length ? disclosure(`עוד ${rest.length} תרגילים`, 'הצג פחות', 'כל נתוני הביצועים נשארים כאן בלי להעמיס על הסקירה', `<div class="native-exercise-list native-exercise-list--extra">${rest.map(exerciseRow).join('')}</div>`, 'exercises') : '';
+  return `<section class="native-stats-section" data-stats-animate data-stats-key="performance">
     ${SectionHeader('ביצועי תרגילים', performance.periodLabel || '1RM משוער לאורך זמן')}
     <div class="native-exercise-list">${primary.map(exerciseRow).join('')}</div>
-    ${rest.length ? `<details class="native-disclosure"><summary>הצג את כל התרגילים <span>${all.length}</span></summary><div class="native-exercise-list native-exercise-list--extra">${rest.map(exerciseRow).join('')}</div></details>` : ''}
+    ${more}
   </section>`;
 }
 
@@ -157,10 +181,11 @@ function VolumeSection(volume) {
   const muscles = volume.muscles || [];
   const primary = muscles.slice(0, 5);
   const rest = muscles.slice(5);
-  return `<section class="native-stats-section">
+  const more = rest.length ? disclosure(`עוד ${rest.length} קבוצות שריר`, 'הצג פחות', 'פירוט מלא של נפח האימון מול טווחי היעד', `<div class="native-volume-list native-volume-list--extra">${rest.map((muscle) => volumeRow(muscle, volume.maxScale)).join('')}</div>`, 'muscles') : '';
+  return `<section class="native-stats-section" data-stats-animate data-stats-key="volume">
     ${SectionHeader('נפח לפי שריר', 'סטים אפקטיביים מול טווח היעד')}
     <div class="native-volume-list">${primary.map((muscle) => volumeRow(muscle, volume.maxScale)).join('')}</div>
-    ${rest.length ? `<details class="native-disclosure"><summary>הצג את כל השרירים <span>${muscles.length}</span></summary><div class="native-volume-list native-volume-list--extra">${rest.map((muscle) => volumeRow(muscle, volume.maxScale)).join('')}</div></details>` : ''}
+    ${more}
   </section>`;
 }
 
@@ -169,8 +194,8 @@ function RecoverySection(recovery) {
   const measured = metrics.filter((metric) => metric.value !== '—');
   const good = measured.filter((metric) => metric.tone === 'good').length;
   const overall = !measured.length ? 'אין מספיק נתונים' : good === measured.length ? 'טובה' : good ? 'מעורבת' : 'דורשת שיפור';
-  return `<section class="native-stats-section">
-    ${SectionHeader('התאוששות', 'תמונה אחת במקום שלושה Widgets')}
+  return `<section class="native-stats-section" data-stats-animate data-stats-key="recovery">
+    ${SectionHeader('התאוששות', 'תמונה אחת של מצב ההתאוששות')}
     <div class="native-recovery-overview"><strong>${escapeHtml(overall)}</strong><span>${measured.length}/${metrics.length} מדדים זמינים</span></div>
     <div class="native-recovery-list">
       ${metrics.map((metric) => `<div><span>${escapeHtml(metric.label)}</span><strong>${escapeHtml(metric.value)}${metric.unit ? ` <small>${escapeHtml(metric.unit)}</small>` : ''}</strong><em class="${metric.tone === 'good' ? 'is-good' : 'is-medium'}">${escapeHtml(metric.status)}</em></div>`).join('')}
@@ -179,7 +204,7 @@ function RecoverySection(recovery) {
 }
 
 function CycleSection(cycle) {
-  return `<section class="native-stats-section native-cycle-section">
+  return `<section class="native-stats-section native-cycle-section" data-stats-animate data-stats-key="cycle">
     ${SectionHeader(`מחזור ${cycle.totalWeeks} שבועות`, 'התקדמות המחזור')}
     <div class="native-cycle-weeks" dir="ltr">
       ${Array.from({ length: cycle.totalWeeks }, (_, index) => {
