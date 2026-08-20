@@ -9,8 +9,6 @@ body.ironlog-flow-dragging{user-select:none!important;-webkit-user-select:none!i
   --flow-text:#f3f6f6;
   --flow-muted:#7d888b;
   --flow-accent:#cbff12;
-  --flow-viewport-top:0px;
-  --flow-viewport-height:100dvh;
   position:fixed;
   z-index:120000;
   inset:0;
@@ -73,12 +71,44 @@ body.ironlog-flow-dragging{user-select:none!important;-webkit-user-select:none!i
 .workout-flow-section-title strong{font-size:13px;color:#dfe4e5}
 .workout-flow-section-title span{font-size:10px;color:#667174}
 
-/* Timeline is deliberately anchored to the RIGHT edge in RTL. */
-.workout-flow-timeline{position:relative;padding-right:38px;padding-left:0;direction:rtl}
-.workout-flow-timeline:before{content:"";position:absolute;right:10px;left:auto;top:24px;bottom:24px;width:1px;background:linear-gradient(180deg,rgba(203,255,18,.38),var(--flow-line) 18%,var(--flow-line) 84%,rgba(255,255,255,.04));pointer-events:none}
+/* One shared horizontal rail coordinate keeps the line and every dot mathematically centered. */
+.workout-flow-timeline{
+  --flow-rail-pad:38px;
+  --flow-rail-center:12px;
+  position:relative;
+  padding-right:var(--flow-rail-pad);
+  padding-left:0;
+  direction:rtl;
+}
+.workout-flow-timeline:before{
+  content:"";
+  position:absolute;
+  right:calc(var(--flow-rail-center) - 1px);
+  left:auto;
+  top:24px;
+  bottom:24px;
+  width:2px;
+  background:linear-gradient(180deg,rgba(203,255,18,.38),var(--flow-line) 18%,var(--flow-line) 84%,rgba(255,255,255,.04));
+  pointer-events:none;
+}
 .workout-flow-item{position:relative;margin-bottom:12px;will-change:transform}
-.workout-flow-item:before{content:"";position:absolute;right:-34px;left:auto;top:27px;width:9px;height:9px;border:2px solid #455154;border-radius:50%;background:var(--flow-bg);box-sizing:border-box;z-index:2;transition:border-color .2s ease,background .2s ease,box-shadow .2s ease,transform .2s ease}
-.workout-flow-item.is-current:before{border-color:var(--flow-accent);background:var(--flow-accent);box-shadow:0 0 0 5px rgba(203,255,18,.07)}
+.workout-flow-item:before{
+  content:"";
+  position:absolute;
+  right:calc(var(--flow-rail-center) - var(--flow-rail-pad) - 5px);
+  left:auto;
+  top:26px;
+  width:10px;
+  height:10px;
+  border:2px solid #455154;
+  border-radius:50%;
+  background:var(--flow-bg);
+  box-sizing:border-box;
+  box-shadow:0 0 0 2px var(--flow-bg);
+  z-index:2;
+  transition:border-color .2s ease,background .2s ease,box-shadow .2s ease,transform .2s ease;
+}
+.workout-flow-item.is-current:before{border-color:var(--flow-accent);background:var(--flow-accent);box-shadow:0 0 0 2px var(--flow-bg),0 0 0 6px rgba(203,255,18,.07)}
 .workout-flow-item.is-done:before{border-color:var(--flow-accent);background:var(--flow-bg)}
 .workout-flow-item.is-skipped:before{border-color:#343d40;background:#202729}
 .workout-flow-card{
@@ -153,33 +183,32 @@ body.ironlog-flow-dragging .workout-flow-card{touch-action:none!important}
   -webkit-tap-highlight-color:transparent;
 }
 .workout-flow-add b{color:var(--flow-accent);font-size:20px;font-weight:400}
-.workout-flow-add:before{content:"";position:absolute;right:-32px;left:auto;top:23px;width:9px;height:9px;border:2px solid rgba(203,255,18,.34);border-radius:50%;background:var(--flow-bg);box-sizing:border-box}
+.workout-flow-add:before{
+  content:"";
+  position:absolute;
+  right:calc(var(--flow-rail-center) - var(--flow-rail-pad) - 5px);
+  left:auto;
+  top:23px;
+  width:10px;
+  height:10px;
+  border:2px solid rgba(203,255,18,.34);
+  border-radius:50%;
+  background:var(--flow-bg);
+  box-sizing:border-box;
+  box-shadow:0 0 0 2px var(--flow-bg);
+}
 .workout-flow-add:active{background:rgba(203,255,18,.04)}
 .workout-flow-note{margin:17px 0 0;color:#626d70;font-size:9.5px;line-height:1.5;text-align:center}
 
-/* Bottom sheet uses the iOS visual viewport so it is always physically attached to the visible bottom edge. */
+/* The reusable portal owns fixed positioning; this file only owns the workout sheet's visual treatment. */
 .workout-flow-sheet-backdrop{
-  position:fixed;
-  z-index:120010;
-  left:0;
-  right:0;
-  top:var(--flow-viewport-top,0px);
-  height:var(--flow-viewport-height,100dvh);
-  bottom:auto;
-  background:rgba(0,0,0,.5);
+  z-index:200000!important;
+  background:rgba(0,0,0,.52)!important;
   backdrop-filter:blur(3px);
   -webkit-backdrop-filter:blur(3px);
-  overflow:hidden;
-  animation:flowFade .16s ease both;
 }
-.workout-flow-sheet-backdrop[hidden]{display:none!important}
 .workout-flow-sheet{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  width:100%;
-  max-height:min(72%,670px);
+  max-height:min(72%,670px)!important;
   display:flex;
   flex-direction:column;
   border-radius:24px 24px 0 0;
@@ -187,10 +216,7 @@ body.ironlog-flow-dragging .workout-flow-card{touch-action:none!important}
   background:#0b1011;
   box-shadow:0 -24px 55px rgba(0,0,0,.42);
   padding:10px 16px calc(env(safe-area-inset-bottom) + 14px);
-  box-sizing:border-box;
   direction:rtl;
-  transform:translate3d(0,0,0);
-  animation:flowSheetUp .24s cubic-bezier(.2,.8,.2,1) both;
 }
 .workout-flow-sheet__grab{width:38px;height:4px;margin:0 auto 13px;border-radius:99px;background:#3a4447}
 .workout-flow-sheet__head{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -213,17 +239,13 @@ body.ironlog-flow-dragging .workout-flow-card{touch-action:none!important}
 .live-next-flat:active{background:rgba(255,255,255,.018)!important}
 
 @keyframes flowPageIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-@keyframes flowFade{from{opacity:0}to{opacity:1}}
-@keyframes flowSheetUp{from{transform:translate3d(0,24px,0);opacity:.7}to{transform:translate3d(0,0,0);opacity:1}}
 @media(max-width:390px){
   .workout-flow-shell{padding-left:14px;padding-right:14px}
-  .workout-flow-timeline{padding-right:34px;padding-left:0}
-  .workout-flow-item:before{right:-30px;left:auto}
-  .workout-flow-add:before{right:-28px;left:auto}
+  .workout-flow-timeline{--flow-rail-pad:34px}
   .workout-flow-card h2{font-size:17px}
   .workout-flow-drag-hint span{display:none}
 }
 @media(prefers-reduced-motion:reduce){
-  .workout-flow-page,.workout-flow-sheet-backdrop,.workout-flow-sheet{animation:none!important}
+  .workout-flow-page{animation:none!important}
   .workout-flow-card,.workout-flow-item:before{transition:none!important}
 }
