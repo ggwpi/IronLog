@@ -63,6 +63,83 @@ function scheduleReveal() {
   requestAnimationFrame(() => requestAnimationFrame(revealStatistics));
 }
 
+function resetDisclosureBody(body) {
+  body.style.removeProperty('height');
+  body.style.removeProperty('opacity');
+  body.style.removeProperty('transform');
+  body.style.removeProperty('overflow');
+}
+
+function animateDisclosure(details, opening) {
+  const body = details.querySelector(':scope > .native-disclosure-body');
+  if (!body) {
+    details.open = opening;
+    return;
+  }
+
+  if (prefersReducedMotion() || typeof body.animate !== 'function') {
+    details.open = opening;
+    details.classList.remove('is-closing');
+    resetDisclosureBody(body);
+    return;
+  }
+
+  if (details.dataset.animating === 'true') return;
+  details.dataset.animating = 'true';
+
+  const easing = 'cubic-bezier(.16,.82,.18,1)';
+
+  if (opening) {
+    details.classList.remove('is-closing');
+    details.open = true;
+    resetDisclosureBody(body);
+    const targetHeight = Math.max(1, body.scrollHeight);
+    body.style.height = '0px';
+    body.style.opacity = '0';
+    body.style.transform = 'translateY(-8px)';
+    body.style.overflow = 'hidden';
+
+    const animation = body.animate([
+      { height: '0px', opacity: 0, transform: 'translateY(-8px)' },
+      { height: `${targetHeight}px`, opacity: 1, transform: 'translateY(0)' },
+    ], { duration: 560, easing, fill: 'forwards' });
+
+    animation.onfinish = () => {
+      delete details.dataset.animating;
+      resetDisclosureBody(body);
+    };
+    animation.oncancel = animation.onfinish;
+    return;
+  }
+
+  details.classList.add('is-closing');
+  const startHeight = Math.max(1, body.getBoundingClientRect().height || body.scrollHeight);
+  body.style.overflow = 'hidden';
+
+  const animation = body.animate([
+    { height: `${startHeight}px`, opacity: 1, transform: 'translateY(0)' },
+    { height: '0px', opacity: 0, transform: 'translateY(-7px)' },
+  ], { duration: 460, easing, fill: 'forwards' });
+
+  animation.onfinish = () => {
+    details.open = false;
+    details.classList.remove('is-closing');
+    delete details.dataset.animating;
+    resetDisclosureBody(body);
+  };
+  animation.oncancel = animation.onfinish;
+}
+
+document.addEventListener('click', (event) => {
+  const summary = event.target.closest('.statistics-page--native .native-disclosure > summary');
+  if (!summary) return;
+  const details = summary.parentElement;
+  if (!(details instanceof HTMLDetailsElement)) return;
+  if (prefersReducedMotion()) return;
+  event.preventDefault();
+  animateDisclosure(details, !details.open);
+});
+
 if (app) new MutationObserver(scheduleReveal).observe(app, { childList: true, subtree: true });
 addEventListener('hashchange', scheduleReveal);
 addEventListener('popstate', scheduleReveal);
