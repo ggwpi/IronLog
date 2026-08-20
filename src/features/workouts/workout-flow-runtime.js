@@ -1,8 +1,10 @@
 import { supabase } from '../../lib/supabase.js';
+import { createBottomSheet } from '../../components/bottom-sheet.js';
 
 let flowState = null;
 let flowRoot = null;
 let flowBusyTimer = null;
+let addSheet = null;
 let dragState = null;
 let suppressClickUntil = 0;
 const LONG_PRESS_MS = 320;
@@ -199,6 +201,20 @@ function libraryMarkup() {
   }).join('');
 }
 
+function mountAddSheet() {
+  addSheet?.destroy();
+  addSheet = createBottomSheet({
+    ariaLabel: 'הוסף תרגיל',
+    layerClassName: 'workout-flow-sheet-backdrop',
+    panelClassName: 'workout-flow-sheet',
+    content: `<div class="workout-flow-sheet__grab"></div>
+      <div class="workout-flow-sheet__head"><strong>הוסף תרגיל</strong><button type="button" data-flow-close-sheet aria-label="סגור">×</button></div>
+      <input class="workout-flow-search" type="search" inputmode="search" placeholder="חיפוש תרגיל..." data-flow-search autocomplete="off">
+      <div class="workout-flow-library">${libraryMarkup()}</div>`,
+  });
+  addSheet.root.dataset.flowSheetBackdrop = 'true';
+}
+
 function renderFlow() {
   if (!flowRoot || !flowState) return;
   const { session, exercises } = flowState;
@@ -230,16 +246,8 @@ function renderFlow() {
     </section>
     <p class="workout-flow-note">תרגיל שבוטל נשאר ברשימה באפור ולא נספר בהתקדמות. אפשר להחזיר אותו בכל רגע.</p>
   </div>
-  <div class="workout-flow-busy" role="status" hidden></div>
-  <div class="workout-flow-sheet-backdrop" data-flow-sheet-backdrop hidden>
-    <section class="workout-flow-sheet" role="dialog" aria-modal="true" aria-label="הוסף תרגיל">
-      <div class="workout-flow-sheet__grab"></div>
-      <div class="workout-flow-sheet__head"><strong>הוסף תרגיל</strong><button type="button" data-flow-close-sheet aria-label="סגור">×</button></div>
-      <input class="workout-flow-search" type="search" inputmode="search" placeholder="חיפוש תרגיל..." data-flow-search autocomplete="off">
-      <div class="workout-flow-library">${libraryMarkup()}</div>
-    </section>
-  </div>`;
-  syncVisualViewport();
+  <div class="workout-flow-busy" role="status" hidden></div>`;
+  mountAddSheet();
 }
 
 function showFlowLoading() {
@@ -262,35 +270,22 @@ function showError(error) {
 
 function closeFlow() {
   cancelPendingDrag();
+  addSheet?.destroy();
+  addSheet = null;
   document.body.classList.remove('ironlog-flow-open', 'ironlog-flow-dragging');
   flowRoot?.remove();
   flowRoot = null;
   flowState = null;
 }
 
-function syncVisualViewport() {
-  if (!flowRoot) return;
-  const viewport = window.visualViewport;
-  const top = viewport ? viewport.offsetTop : 0;
-  const height = viewport ? viewport.height : window.innerHeight;
-  flowRoot.style.setProperty('--flow-viewport-top', `${Math.max(0, top)}px`);
-  flowRoot.style.setProperty('--flow-viewport-height', `${Math.max(1, height)}px`);
-}
-
 function openAddSheet() {
-  const backdrop = flowRoot?.querySelector('[data-flow-sheet-backdrop]');
-  if (!backdrop) return;
-  syncVisualViewport();
-  backdrop.hidden = false;
-  backdrop.setAttribute('aria-hidden', 'false');
+  if (!addSheet) mountAddSheet();
+  addSheet?.open();
 }
 
 function closeAddSheet() {
-  const backdrop = flowRoot?.querySelector('[data-flow-sheet-backdrop]');
-  if (!backdrop) return;
   document.activeElement?.blur?.();
-  backdrop.hidden = true;
-  backdrop.setAttribute('aria-hidden', 'true');
+  addSheet?.close();
 }
 
 async function refreshFlow(message = '') {
@@ -345,6 +340,7 @@ async function toggleSkipped(id, isCurrentlySkipped) {
 
 async function addExercise(exerciseId) {
   if (!flowState) return;
+  closeAddSheet();
   showBusy('מוסיף תרגיל...');
   const { error } = await supabase.rpc('add_active_workout_exercise', {
     p_session_id: flowState.session.id,
@@ -629,7 +625,6 @@ async function openFlow() {
   flowRoot.setAttribute('aria-label', 'מפת האימון');
   document.body.appendChild(flowRoot);
   document.body.classList.add('ironlog-flow-open');
-  syncVisualViewport();
   showFlowLoading();
   try {
     await loadFlowData();
@@ -728,22 +723,17 @@ document.addEventListener('keydown', (event) => {
     return;
   }
   if (event.key !== 'Escape' || !flowRoot) return;
-  const backdrop = flowRoot.querySelector('[data-flow-sheet-backdrop]');
-  if (backdrop && !backdrop.hidden) closeAddSheet();
+  if (addSheet?.isOpen()) closeAddSheet();
   else closeFlow();
 });
 
 document.addEventListener('input', (event) => {
   if (!flowRoot || !event.target.matches('[data-flow-search]')) return;
   const query = event.target.value.trim().toLowerCase();
-  flowRoot.querySelectorAll('[data-search]').forEach((item) => {
+  addSheet?.root.querySelectorAll('[data-search]').forEach((item) => {
     item.hidden = Boolean(query) && !String(item.dataset.search || '').includes(query);
   });
 }, true);
-
-window.visualViewport?.addEventListener('resize', syncVisualViewport, { passive: true });
-window.visualViewport?.addEventListener('scroll', syncVisualViewport, { passive: true });
-window.addEventListener('resize', syncVisualViewport, { passive: true });
 
 const appRoot = document.querySelector('#app');
 if (appRoot) new MutationObserver(prepareNextWidget).observe(appRoot, { childList: true, subtree: true });
