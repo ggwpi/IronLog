@@ -37,10 +37,7 @@ function buildWeight(rows) {
   const current = average(latestWeek) || normalized.at(-1).value;
   const weeklyDelta = priorWeek.length ? current - average(priorWeek) : 0;
   const baseline = normalized[0].value;
-  const sample = normalized.length <= 10
-    ? normalized
-    : normalized.filter((_, index) => index % Math.ceil(normalized.length / 9) === 0).slice(-9).concat(normalized.at(-1));
-  const series = sample.map((row) => {
+  const series = normalized.map((row) => {
     const weeks = Math.max(0, (row.date - normalized[0].date) / (7 * 86400000));
     return { label: dateLabel(row.date), value: row.value, targetMin: baseline + weeks * 0.15, targetMax: baseline + weeks * 0.30 };
   });
@@ -77,7 +74,7 @@ function buildPerformance(rows) {
   });
 
   const allExercises = [...groups.values()].map((group) => {
-    const series = group.values.filter(Number.isFinite).slice(-10);
+    const series = group.values.filter(Number.isFinite);
     if (!series.length) return null;
     const current = series.at(-1);
     const baseline = series[0];
@@ -98,7 +95,7 @@ function buildPerformance(rows) {
 
   return {
     hasData: allExercises.length > 0,
-    periodLabel: '120 הימים האחרונים',
+    periodLabel: 'כל הנתונים הזמינים',
     exercises: allExercises.slice(0, 3),
     allExercises,
   };
