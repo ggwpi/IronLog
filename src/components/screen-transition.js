@@ -14,8 +14,7 @@ function finishTransition() {
   activeViewTransition = null;
 }
 
-function runFallback() {
-  const frame = document.querySelector('[data-app-screen-frame]');
+function runFallback(frame) {
   if (!frame || reducedMotion()) return;
   window.clearTimeout(fallbackTimer);
   frame.classList.remove('app-screen-frame--enter');
@@ -23,6 +22,14 @@ function runFallback() {
   void frame.offsetWidth;
   frame.classList.add('app-screen-frame--enter');
   fallbackTimer = window.setTimeout(() => frame.classList.remove('app-screen-frame--enter'), 300);
+}
+
+/** Animate one already-mounted screen as a single surface. */
+export function animateMountedScreen(frame) {
+  if (!frame || reducedMotion()) return;
+  document.documentElement.classList.add('ironlog-screen-transitioning');
+  runFallback(frame);
+  window.setTimeout(() => document.documentElement.classList.remove('ironlog-screen-transitioning'), 300);
 }
 
 /**
@@ -63,6 +70,6 @@ export function renderWithScreenTransition(screenKey, mutate) {
   }
 
   commit();
-  runFallback();
+  runFallback(document.querySelector('[data-app-screen-frame]'));
   window.setTimeout(finishTransition, 300);
 }
