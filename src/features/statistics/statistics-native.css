@@ -1,0 +1,218 @@
+/* Native statistics overview: hierarchy and disclosure instead of dashboard cards. */
+.statistics-page.statistics-page--native{
+  width:min(100%,760px)!important;
+  margin:0 auto!important;
+  display:block!important;
+  color:#f5f7f7!important;
+  padding-bottom:18px!important;
+}
+
+.statistics-page--native .statistics-header{
+  min-height:106px!important;
+  padding:7px 3px 9px!important;
+  margin:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+
+.statistics-page--native .native-stats-section{
+  padding:24px 2px 22px;
+  border-top:1px solid rgba(255,255,255,.075);
+  background:transparent;
+}
+.statistics-page--native .native-weight-section{border-top:0;padding-top:13px}
+
+.native-stats-section__head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:17px;
+}
+.native-stats-section__head h2{margin:0;color:#f3f5f5;font-size:20px;line-height:1.08;font-weight:760;letter-spacing:-.035em}
+.native-stats-section__head p{margin:6px 0 0;color:#6f797c;font-size:10.5px;line-height:1.3;font-weight:500}
+
+/* Hero data is open on the page; no card shell. */
+.native-weight-summary{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:18px;
+  direction:rtl;
+  margin-bottom:8px;
+}
+.native-weight-current{display:flex;align-items:baseline;gap:7px;white-space:nowrap}
+.native-weight-current strong{font-size:48px;line-height:.9;letter-spacing:-.055em;font-weight:720;font-variant-numeric:tabular-nums}
+.native-weight-current span{color:#a7adaf;font-size:12px}
+.native-weight-status{min-width:0}
+.native-weight-status b{display:block;color:#dce1e2;font-size:12px;font-weight:650}
+.native-weight-status span{display:block;margin-top:5px;color:#717b7e;font-size:10px;direction:rtl}
+.native-weight-delta{text-align:left;direction:rtl;white-space:nowrap}
+.native-weight-delta strong{display:block;font-size:13px;font-weight:720;font-variant-numeric:tabular-nums}
+.native-weight-delta span{display:block;margin-top:4px;color:#687276;font-size:9px}
+.native-weight-delta.is-up strong,.native-weight-delta.is-down strong{color:var(--accent)}
+.native-weight-delta.is-flat strong{color:#9aa2a5}
+.native-weight-chart-wrap{width:100%;margin-top:6px;direction:ltr}
+.native-weight-chart{display:block;width:100%;height:auto;color:var(--accent);overflow:visible}
+.native-chart-guide{stroke:rgba(255,255,255,.055);stroke-width:1}
+.native-target-band{color:var(--accent)}
+.native-target-edge{fill:none;stroke:rgba(210,255,22,.26);stroke-width:1;stroke-dasharray:4 5}
+.native-weight-line{fill:none;stroke:var(--accent);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.native-weight-dot{fill:var(--accent);stroke:#0a0d0d;stroke-width:2}
+.native-chart-label{fill:#6f787b;font:9px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.native-chart-legend{display:flex;align-items:center;gap:16px;flex-wrap:wrap;color:#697377;font-size:9px;margin-top:-3px}
+.native-chart-legend span{display:inline-flex;align-items:center;gap:6px}
+.native-chart-legend i{display:inline-block}
+.native-chart-legend .is-line{width:18px;height:2px;border-radius:9px;background:var(--accent)}
+.native-chart-legend .is-band{width:18px;height:8px;border-top:1px dashed rgba(210,255,22,.45);border-bottom:1px dashed rgba(210,255,22,.45);background:rgba(210,255,22,.04)}
+
+/* A single native summary strip replaces mini-cards. */
+.native-summary-strip{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  border-top:1px solid rgba(255,255,255,.075);
+  border-bottom:1px solid rgba(255,255,255,.075);
+  padding:15px 0;
+  margin:0 2px;
+}
+.native-summary-strip>div{min-width:0;text-align:center;padding:0 9px}
+.native-summary-strip>div+div{border-right:1px solid rgba(255,255,255,.065)}
+.native-summary-strip strong{display:block;color:#edf1f1;font-size:16px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
+.native-summary-strip span{display:block;margin-top:7px;color:#6e787b;font-size:8.5px;line-height:1.25}
+
+/* Exercise rows behave like a native table/list, not nested cards. */
+.native-exercise-list{display:block}
+.native-exercise-row{
+  min-height:78px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto 96px;
+  align-items:center;
+  gap:12px;
+  padding:10px 0;
+  direction:rtl;
+}
+.native-exercise-row+.native-exercise-row{border-top:1px solid rgba(255,255,255,.065)}
+.native-exercise-copy{min-width:0}
+.native-exercise-copy strong{display:block;color:#eef1f2;font-size:13px;line-height:1.18;font-weight:660;direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.native-exercise-copy span{display:block;margin-top:5px;color:#667174;font-size:9px}
+.native-exercise-value{min-width:72px;text-align:left;direction:ltr}
+.native-exercise-value>strong{display:block;color:#f3f5f5;font-size:16px;font-weight:680;font-variant-numeric:tabular-nums}
+.native-exercise-value>strong small{color:#80898c;font-size:8px;font-weight:500}
+.native-exercise-value>span{display:block;margin-top:4px;font-size:9px;font-weight:650}
+.native-exercise-value .is-positive{color:var(--accent)}
+.native-exercise-value .is-negative{color:#ec6672}
+.native-exercise-value .is-neutral{color:#7e888b}
+.native-exercise-spark{direction:ltr}
+.native-sparkline{display:block;width:96px;height:40px;overflow:visible}
+.native-sparkline path{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.native-sparkline circle{fill:var(--accent)}
+
+/* Native disclosure rows keep secondary information available without making the overview dense. */
+.native-disclosure{margin-top:4px;border-top:1px solid rgba(255,255,255,.075)}
+.native-disclosure summary{
+  min-height:46px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  list-style:none;
+  cursor:pointer;
+  color:#a3aaad;
+  font-size:11px;
+  -webkit-tap-highlight-color:transparent;
+}
+.native-disclosure summary::-webkit-details-marker{display:none}
+.native-disclosure summary:before{content:'‹';font-size:20px;color:#697377;transition:transform .2s ease}
+.native-disclosure[open] summary:before{transform:rotate(-90deg)}
+.native-disclosure summary span{margin-right:auto;color:#566164;font-size:9px}
+.native-exercise-list--extra,.native-volume-list--extra{border-top:1px solid rgba(255,255,255,.045)}
+
+/* Muscle volume is a readable list with thin analytical tracks. */
+.native-volume-list{display:block}
+.native-volume-row{
+  min-height:45px;
+  display:grid;
+  grid-template-columns:105px minmax(0,1fr) 42px;
+  align-items:center;
+  gap:12px;
+  direction:rtl;
+}
+.native-volume-row+.native-volume-row{border-top:1px solid rgba(255,255,255,.045)}
+.native-volume-label{min-width:0}
+.native-volume-label strong{display:block;color:#e7eaeb;font-size:11px;font-weight:630;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.native-volume-label span{display:block;margin-top:3px;color:#697377;font-size:8px;direction:ltr;text-align:right;font-variant-numeric:tabular-nums}
+.native-volume-track{position:relative;height:7px;border-radius:999px;background:#202729;overflow:hidden;direction:ltr}
+.native-volume-target{position:absolute;inset-block:0;background:rgba(210,255,22,.09);border-inline:1px solid rgba(210,255,22,.18)}
+.native-volume-track b{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--accent)}
+.native-volume-row[data-status="low"] .native-volume-track b{background:#d9a923}
+.native-volume-row[data-status="high"] .native-volume-track b{background:#e25d6a}
+.native-volume-state{text-align:left;color:#7b8588;font-size:9px}
+.native-volume-row[data-status="ok"] .native-volume-state{color:var(--accent)}
+.native-volume-row[data-status="low"] .native-volume-state{color:#d9a923}
+.native-volume-row[data-status="high"] .native-volume-state{color:#e25d6a}
+
+.native-recovery-overview{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:10px}
+.native-recovery-overview strong{font-size:24px;line-height:1;font-weight:700;letter-spacing:-.035em}
+.native-recovery-overview span{color:#6e787b;font-size:9px}
+.native-recovery-list{display:block}
+.native-recovery-list>div{min-height:46px;display:grid;grid-template-columns:minmax(0,1fr) auto 58px;gap:10px;align-items:center}
+.native-recovery-list>div+div{border-top:1px solid rgba(255,255,255,.055)}
+.native-recovery-list span{color:#929a9d;font-size:11px}
+.native-recovery-list strong{font-size:13px;font-weight:650;direction:ltr;font-variant-numeric:tabular-nums}
+.native-recovery-list strong small{color:#7b8588;font-size:8px;font-weight:500}
+.native-recovery-list em{text-align:left;font-size:9px;font-style:normal}
+.native-recovery-list .is-good{color:var(--accent)}
+.native-recovery-list .is-medium{color:#d5a721}
+
+.native-cycle-weeks{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;margin-top:4px}
+.native-cycle-weeks span{aspect-ratio:1;border:1px solid #343d40;border-radius:50%;display:grid;place-items:center;color:#707a7d;font-size:8px;font-variant-numeric:tabular-nums;background:#090c0d}
+.native-cycle-weeks span.is-complete{border-color:rgba(210,255,22,.55);color:#d9f27a}
+.native-cycle-weeks span.is-current{border-color:var(--accent);background:rgba(210,255,22,.08);color:var(--accent);box-shadow:0 0 0 2px rgba(210,255,22,.04)}
+.native-cycle-weeks span.is-deload:not(.is-current){border-style:dashed}
+.native-cycle-meta{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-top:14px}
+.native-cycle-meta strong{font-size:12px;font-weight:650;color:#e6e9ea}
+.native-cycle-meta span{color:var(--accent);font-size:10px}
+.native-cycle-deload{margin-top:7px;color:#657073;font-size:8.5px;direction:ltr;text-align:right}
+
+.native-empty-state{padding:13px 0 6px}
+.native-empty-state strong{display:block;color:#cfd4d5;font-size:13px;font-weight:630}
+.native-empty-state span{display:block;margin-top:6px;color:#687276;font-size:10px;line-height:1.4}
+
+@media(max-width:650px){
+  body:has(.statistics-page--native) .app-content{padding-inline:18px!important;padding-top:calc(var(--safe-top) + 15px)!important}
+  .statistics-page--native .statistics-header{min-height:96px!important;padding-inline:0!important}
+  .statistics-page--native .statistics-heading h1{font-size:38px!important}
+  .statistics-page--native .statistics-heading p{font-size:11px!important}
+  .statistics-page--native .statistics-brand strong{font-size:22px!important}
+  .statistics-page--native .native-stats-section{padding-block:21px 19px}
+  .native-stats-section__head{margin-bottom:15px}
+  .native-stats-section__head h2{font-size:18px}
+  .native-weight-summary{grid-template-columns:auto minmax(0,1fr);gap:13px}
+  .native-weight-current strong{font-size:42px}
+  .native-weight-delta{grid-column:1/-1;display:flex;align-items:baseline;justify-content:flex-start;gap:7px;margin-top:-4px;text-align:right}
+  .native-weight-delta span{margin-top:0}
+  .native-summary-strip>div{padding-inline:5px}
+  .native-summary-strip strong{font-size:15px}
+  .native-summary-strip span{font-size:7.5px}
+  .native-exercise-row{grid-template-columns:minmax(0,1fr) 68px 78px;gap:8px;min-height:70px}
+  .native-exercise-copy strong{font-size:11.5px}
+  .native-exercise-value>strong{font-size:14px}
+  .native-sparkline{width:78px;height:auto}
+  .native-volume-row{grid-template-columns:86px minmax(0,1fr) 37px;gap:9px}
+  .native-volume-label strong{font-size:10px}
+  .native-cycle-weeks{gap:3px}
+  .native-cycle-weeks span{font-size:7px}
+}
+
+@media(max-width:370px){
+  body:has(.statistics-page--native) .app-content{padding-inline:14px!important}
+  .native-summary-strip span{font-size:7px}
+  .native-exercise-row{grid-template-columns:minmax(0,1fr) 64px 68px}
+  .native-sparkline{width:68px}
+  .native-cycle-weeks{gap:2px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .native-disclosure summary:before{transition:none}
+}
+html.reduce-motion .native-disclosure summary:before{transition:none}
