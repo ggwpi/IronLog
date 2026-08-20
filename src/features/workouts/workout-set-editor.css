@@ -1,0 +1,234 @@
+/* Completed-set editing inside Workout Flow cards. */
+.workout-flow-saved-sets{
+  padding:2px 14px 8px;
+  border-top:1px solid rgba(255,255,255,.045);
+  animation:workoutSavedSetsIn .26s cubic-bezier(.2,.8,.2,1) both;
+}
+.workout-flow-saved-sets__head{
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  direction:rtl;
+}
+.workout-flow-saved-sets__head strong{
+  color:#cfd5d6;
+  font-size:9.5px;
+  font-weight:680;
+}
+.workout-flow-saved-sets__head span{
+  color:#5f6a6d;
+  font-size:8.5px;
+}
+.workout-flow-saved-sets__list{display:block}
+.workout-flow-saved-set.workout-flow-action{
+  width:100%!important;
+  min-height:42px!important;
+  padding:0!important;
+  display:grid!important;
+  grid-template-columns:46px minmax(0,1fr) 28px!important;
+  align-items:center!important;
+  gap:8px!important;
+  direction:rtl!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:inherit!important;
+  text-align:right!important;
+  font:inherit!important;
+  -webkit-tap-highlight-color:transparent;
+  transition:background-color .18s ease,transform .18s ease;
+}
+.workout-flow-saved-set+.workout-flow-saved-set{border-top:1px solid rgba(255,255,255,.04)!important}
+.workout-flow-saved-set:active{background:rgba(255,255,255,.018)!important;transform:scale(.995)}
+.workout-flow-saved-set__number{
+  color:#7a8588;
+  font-size:9px;
+  font-weight:650;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.workout-flow-saved-set__metrics{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:6px;
+  color:#8d979a;
+  font-size:9.5px;
+  line-height:1;
+  direction:rtl;
+  white-space:nowrap;
+  overflow:hidden;
+}
+.workout-flow-saved-set__metrics b{
+  color:#e5e9ea;
+  font-size:10.5px;
+  font-weight:650;
+}
+.workout-flow-saved-set__metrics span{color:#899397}
+.workout-flow-saved-set__metrics i{color:#495356;font-style:normal}
+.workout-flow-saved-set__edit{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  color:#6e797c;
+}
+.workout-flow-saved-set__edit svg{
+  width:15px;
+  height:15px;
+  display:block;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.workout-flow-saved-set:active .workout-flow-saved-set__edit{color:var(--flow-accent)}
+
+/* Reuse the viewport-anchored generic sheet, but give set editing its own hierarchy. */
+.workout-set-editor-backdrop{z-index:210000!important}
+.workout-set-editor-sheet{
+  max-height:min(68%,620px)!important;
+  padding:10px 18px calc(env(safe-area-inset-bottom) + 18px)!important;
+}
+.workout-set-editor-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  direction:rtl;
+}
+.workout-set-editor-head>div{min-width:0}
+.workout-set-editor-head span{
+  display:block;
+  color:var(--flow-accent,#cbff12);
+  font-size:9.5px;
+  font-weight:700;
+}
+.workout-set-editor-head strong{
+  display:block;
+  margin-top:5px;
+  color:#f0f3f3;
+  font-size:19px;
+  line-height:1.08;
+  font-weight:740;
+  direction:ltr;
+  text-align:right;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.workout-set-editor-head>button{
+  flex:0 0 auto;
+  width:34px;
+  height:34px;
+  padding:0;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:#879194;
+  font:inherit;
+  font-size:23px;
+  display:grid;
+  place-items:center;
+}
+.workout-set-editor-head>button:active{background:#12191a;color:#eef2f2;transform:scale(.94)}
+.workout-set-editor-form{margin-top:19px}
+.workout-set-editor-fields{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+  direction:rtl;
+}
+.workout-set-editor-field{min-width:0;display:block}
+.workout-set-editor-field>span{
+  display:block;
+  color:#758083;
+  font-size:9px;
+  font-weight:580;
+}
+.workout-set-editor-field input{
+  box-sizing:border-box;
+  width:100%;
+  height:49px;
+  margin-top:5px;
+  padding:0 0 5px;
+  border:0;
+  border-bottom:1px solid rgba(255,255,255,.09);
+  border-radius:0;
+  outline:0;
+  background:transparent;
+  color:#f3f5f5;
+  font:inherit;
+  font-size:27px;
+  line-height:1;
+  font-weight:390;
+  text-align:center;
+  caret-color:var(--flow-accent,#cbff12);
+  font-variant-numeric:tabular-nums;
+  -webkit-appearance:none;
+  appearance:textfield;
+}
+.workout-set-editor-field input:focus{border-bottom-color:rgba(203,255,18,.5);color:#fff}
+.workout-set-editor-note{
+  margin:16px 0 0;
+  color:#657073;
+  font-size:9px;
+  line-height:1.45;
+}
+.workout-set-editor-note.is-error{color:#ee747e}
+.workout-set-editor-save{
+  width:100%;
+  height:50px;
+  margin-top:17px;
+  padding:0 18px;
+  border:0;
+  border-radius:15px;
+  background:var(--flow-accent,#cbff12);
+  color:#101500;
+  font:inherit;
+  font-size:13px;
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  box-shadow:0 9px 24px rgba(203,255,18,.08);
+  transition:transform .18s ease,opacity .18s ease;
+}
+.workout-set-editor-save b{font-size:15px}
+.workout-set-editor-save:active{transform:scale(.985)}
+.workout-set-editor-save:disabled{opacity:.55}
+.workout-set-editor-save.is-saving span:after{content:'...'}
+
+@keyframes workoutSavedSetsIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:none}
+}
+
+@media(max-width:390px){
+  .workout-flow-saved-sets{padding-inline:12px}
+  .workout-flow-saved-set.workout-flow-action{grid-template-columns:42px minmax(0,1fr) 24px!important}
+  .workout-flow-saved-set__metrics{font-size:8.8px;gap:5px}
+  .workout-flow-saved-set__metrics b{font-size:10px}
+  .workout-set-editor-sheet{padding-inline:16px!important}
+  .workout-set-editor-fields{gap:11px}
+  .workout-set-editor-field input{font-size:24px}
+}
+
+@media(max-width:340px){
+  .workout-set-editor-fields{grid-template-columns:1fr;gap:10px}
+  .workout-set-editor-field input{height:42px;text-align:right;font-size:22px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .workout-flow-saved-sets{animation:none!important}
+  .workout-flow-saved-set.workout-flow-action,
+  .workout-set-editor-save{transition:none!important}
+}
+html.reduce-motion .workout-flow-saved-sets{animation:none!important}
+html.reduce-motion .workout-flow-saved-set.workout-flow-action,
+html.reduce-motion .workout-set-editor-save{transition:none!important}
