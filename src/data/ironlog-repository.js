@@ -164,7 +164,9 @@ function toActiveSession(session, sessionExercises, performedSets, exerciseById)
       exerciseId: Number(item.exercise_id),
       name: item.exercise_name,
       position: Number(item.position),
-      plannedSets: Number(item.planned_sets || 1),
+      plannedSets: Number(item.planned_sets ?? 0),
+      originalPlannedSets: Number(item.original_planned_sets ?? item.planned_sets ?? 0),
+      isSkipped: Boolean(item.is_skipped),
       targetReps: item.target_reps || '',
       targetRirMin: item.target_rir_min == null ? null : Number(item.target_rir_min),
       targetRirMax: item.target_rir_max == null ? null : Number(item.target_rir_max),
@@ -210,7 +212,7 @@ export async function loadAppData(userId) {
   let activePerformedSets = [];
   if (activeSession) {
     const [sessionExercisesResult, performedSetsResult] = await Promise.all([
-      supabase.from('session_exercises').select('id,session_id,exercise_id,position,exercise_name,planned_sets,target_reps,target_rir_min,target_rir_max,rest_min_seconds,rest_max_seconds').eq('session_id', activeSession.id).order('position'),
+      supabase.from('session_exercises').select('id,session_id,exercise_id,position,exercise_name,planned_sets,original_planned_sets,is_skipped,target_reps,target_rir_min,target_rir_max,rest_min_seconds,rest_max_seconds').eq('session_id', activeSession.id).order('position'),
       supabase.from('performed_sets').select('id,session_exercise_id,set_number,set_type,load_kg,reps,rir,duration_seconds,distance_meters,rest_seconds,notes,completed').eq('session_id', activeSession.id).order('set_number'),
     ]);
     activeSessionExercises = assertResult(sessionExercisesResult, 'session exercises');
