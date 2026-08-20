@@ -1,0 +1,52 @@
+/* Generic page/screen transition. The frame moves as one surface; its children do not animate here. */
+.app-screen-frame{
+  width:100%;
+  min-height:100%;
+  view-transition-name:ironlog-screen;
+  contain:layout paint;
+}
+html.ironlog-screen-transitioning .app-screen-frame{pointer-events:none}
+
+/* Keep the document chrome stable and animate only the named screen surface. */
+::view-transition-old(root),
+::view-transition-new(root){
+  animation:none!important;
+  mix-blend-mode:normal!important;
+}
+::view-transition-group(ironlog-screen){
+  animation-duration:250ms;
+  animation-timing-function:cubic-bezier(.22,.78,.22,1);
+}
+::view-transition-old(ironlog-screen){
+  animation:ironlogScreenOld 210ms cubic-bezier(.22,.78,.22,1) both;
+  mix-blend-mode:normal;
+}
+::view-transition-new(ironlog-screen){
+  animation:ironlogScreenNew 250ms cubic-bezier(.22,.78,.22,1) both;
+  mix-blend-mode:normal;
+}
+
+.app-screen-frame--enter{
+  animation:ironlogScreenFallback 250ms cubic-bezier(.22,.78,.22,1) both!important;
+}
+
+@keyframes ironlogScreenOld{
+  from{opacity:1;transform:translate3d(0,0,0) scale(1)}
+  to{opacity:0;transform:translate3d(0,-5px,0) scale(.997)}
+}
+@keyframes ironlogScreenNew{
+  from{opacity:0;transform:translate3d(0,10px,0) scale(.995)}
+  to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+}
+@keyframes ironlogScreenFallback{
+  from{opacity:0;transform:translate3d(0,10px,0) scale(.995)}
+  to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .app-screen-frame--enter{animation:none!important}
+  ::view-transition-old(ironlog-screen),
+  ::view-transition-new(ironlog-screen),
+  ::view-transition-group(ironlog-screen){animation:none!important}
+}
+html.reduce-motion .app-screen-frame--enter{animation:none!important}
