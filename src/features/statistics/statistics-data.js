@@ -25,14 +25,21 @@ function dateLabel(value) {
 
 function buildWeight(rows) {
   if (!rows.length) return { hasData: false, unit: 'ק״ג', averageWindowDays: 7 };
-  const normalized = rows.map((row) => ({ date: new Date(row.measured_at), value: Number(row.weight_kg) }));
+  const normalized = rows
+    .map((row) => ({ date: new Date(row.measured_at), value: Number(row.weight_kg) }))
+    .filter((row) => Number.isFinite(row.value) && !Number.isNaN(row.date.getTime()))
+    .sort((a, b) => a.date - b.date);
+  if (!normalized.length) return { hasData: false, unit: 'ק״ג', averageWindowDays: 7 };
+
   const latestAt = normalized.at(-1).date;
   const latestWeek = normalized.filter((row) => latestAt - row.date <= 7 * 86400000).map((row) => row.value);
   const priorWeek = normalized.filter((row) => latestAt - row.date > 7 * 86400000 && latestAt - row.date <= 14 * 86400000).map((row) => row.value);
   const current = average(latestWeek) || normalized.at(-1).value;
   const weeklyDelta = priorWeek.length ? current - average(priorWeek) : 0;
   const baseline = normalized[0].value;
-  const sample = normalized.length <= 7 ? normalized : normalized.filter((_, index) => index % Math.ceil(normalized.length / 7) === 0).slice(-6).concat(normalized.at(-1));
+  const sample = normalized.length <= 10
+    ? normalized
+    : normalized.filter((_, index) => index % Math.ceil(normalized.length / 9) === 0).slice(-9).concat(normalized.at(-1));
   const series = sample.map((row) => {
     const weeks = Math.max(0, (row.date - normalized[0].date) / (7 * 86400000));
     return { label: dateLabel(row.date), value: row.value, targetMin: baseline + weeks * 0.15, targetMax: baseline + weeks * 0.30 };
@@ -41,7 +48,11 @@ function buildWeight(rows) {
   const targetToday = series.at(-1);
   const within = current >= targetToday.targetMin && current <= targetToday.targetMax;
   return {
-    hasData: true, unit: 'ק״ג', current: round(current), weeklyDelta: round(weeklyDelta), averageWindowDays: 7,
+    hasData: true,
+    unit: 'ק״ג',
+    current: round(current),
+    weeklyDelta: round(weeklyDelta),
+    averageWindowDays: 7,
     status: within ? 'within' : current < targetToday.targetMin ? 'below' : 'above',
     statusLabel: within ? 'בתוך הטווח' : current < targetToday.targetMin ? 'מתחת לטווח' : 'מעל הטווח',
     targetToday: { min: round(targetToday.targetMin), max: round(targetToday.targetMax) },
@@ -64,19 +75,33 @@ function buildPerformance(rows) {
     if (!groups.has(row.exercise_id)) groups.set(row.exercise_id, { id: row.exercise_id, label: row.name, values: [] });
     groups.get(row.exercise_id).values.push(Number(row.estimated_1rm_kg));
   });
-  const exercises = [...groups.values()].map((group) => {
-    const series = group.values.slice(-10);
+
+  const allExercises = [...groups.values()].map((group) => {
+    const series = group.values.filter(Number.isFinite).slice(-10);
+    if (!series.length) return null;
     const current = series.at(-1);
     const baseline = series[0];
     const min = Math.floor(Math.min(...series) * 0.9);
     const rawMax = Math.ceil(Math.max(...series) * 1.1);
     return {
-      id: group.id, label: group.label, metric: '1RM משוער', unit: 'ק״ג', current,
-      delta: current - baseline, deltaPct: baseline ? (current - baseline) / baseline * 100 : 0,
-      yDomain: [min, rawMax === min ? min + 10 : rawMax], series,
+      id: group.id,
+      label: group.label,
+      metric: '1RM משוער',
+      unit: 'ק״ג',
+      current,
+      delta: current - baseline,
+      deltaPct: baseline ? (current - baseline) / baseline * 100 : 0,
+      yDomain: [min, rawMax === min ? min + 10 : rawMax],
+      series,
     };
-  }).sort((a, b) => b.series.length - a.series.length).slice(0, 3);
-  return { hasData: exercises.length > 0, periodLabel: '120 הימים האחרונים', exercises };
+  }).filter(Boolean).sort((a, b) => b.series.length - a.series.length || b.current - a.current);
+
+  return {
+    hasData: allExercises.length > 0,
+    periodLabel: '120 הימים האחרונים',
+    exercises: allExercises.slice(0, 3),
+    allExercises,
+  };
 }
 
 function buildRecovery(rows, performanceRows) {
@@ -102,7 +127,7 @@ function buildCycle(cycle) {
 
 export function buildStatisticsModel(source = {}) {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     generatedAt: new Date().toISOString(),
     source: 'supabase',
     bodyWeight: buildWeight(source.weights || []),
@@ -112,4 +137,3 @@ export function buildStatisticsModel(source = {}) {
     mesocycle: buildCycle(source.cycle || null),
   };
 }
-
