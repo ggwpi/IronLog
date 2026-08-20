@@ -1,0 +1,165 @@
+/* Full-screen workout flow / exercise order page */
+body.ironlog-flow-open{overflow:hidden!important;overscroll-behavior:none!important}
+.workout-flow-page{
+  --flow-bg:#070b0c;
+  --flow-panel:#0c1112;
+  --flow-panel-2:#101617;
+  --flow-line:#20292b;
+  --flow-text:#f3f6f6;
+  --flow-muted:#7d888b;
+  --flow-accent:#cbff12;
+  position:fixed;
+  z-index:120000;
+  inset:0;
+  background:var(--flow-bg);
+  color:var(--flow-text);
+  overflow:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  direction:rtl;
+  animation:flowPageIn .22s ease both;
+}
+.workout-flow-page[hidden]{display:none!important}
+.workout-flow-shell{
+  width:min(760px,100%);
+  min-height:100%;
+  margin:0 auto;
+  padding:calc(env(safe-area-inset-top) + 10px) 18px calc(env(safe-area-inset-bottom) + 34px);
+  box-sizing:border-box;
+}
+.workout-flow-topbar{
+  position:sticky;
+  top:0;
+  z-index:8;
+  min-height:54px;
+  display:grid;
+  grid-template-columns:40px minmax(0,1fr) 40px;
+  align-items:center;
+  direction:ltr;
+  background:linear-gradient(180deg,var(--flow-bg) 72%,rgba(7,11,12,0));
+  padding-bottom:10px;
+}
+.workout-flow-topbar button{
+  width:40px;
+  height:40px;
+  padding:0;
+  border:0;
+  border-radius:12px;
+  background:transparent;
+  color:#edf1f1;
+  font:inherit;
+  font-size:28px;
+  display:grid;
+  place-items:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.workout-flow-topbar button:active{transform:scale(.92);background:#111718}
+.workout-flow-heading{text-align:center;direction:rtl;min-width:0}
+.workout-flow-heading strong{display:block;font-size:18px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.workout-flow-heading span{display:block;margin-top:5px;color:var(--flow-muted);font-size:10px}
+.workout-flow-summary{padding:18px 0 20px;border-bottom:1px solid rgba(255,255,255,.07)}
+.workout-flow-summary__eyebrow{color:var(--flow-accent);font-size:10px;font-weight:700;letter-spacing:.08em}
+.workout-flow-summary h1{margin:7px 0 8px;font-size:clamp(28px,7vw,38px);line-height:1;font-weight:790;letter-spacing:-.045em}
+.workout-flow-summary p{margin:0;color:#8c9699;font-size:12px;line-height:1.4}
+.workout-flow-progress{margin-top:18px}
+.workout-flow-progress__meta{display:flex;align-items:baseline;justify-content:space-between;gap:14px;font-size:11px;color:#838d90}
+.workout-flow-progress__meta strong{color:#e8eded;font-size:12px;font-weight:650}
+.workout-flow-progress__track{height:4px;margin-top:9px;border-radius:999px;background:#151d1f;overflow:hidden;direction:ltr}
+.workout-flow-progress__track i{display:block;height:100%;width:var(--flow-progress);background:var(--flow-accent);border-radius:inherit;box-shadow:0 0 12px rgba(203,255,18,.14)}
+.workout-flow-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:21px 0 12px}
+.workout-flow-section-title strong{font-size:13px;color:#dfe4e5}
+.workout-flow-section-title span{font-size:10px;color:#667174}
+.workout-flow-timeline{position:relative;padding-left:38px}
+.workout-flow-timeline:before{content:"";position:absolute;left:10px;top:24px;bottom:24px;width:1px;background:linear-gradient(180deg,rgba(203,255,18,.38),var(--flow-line) 18%,var(--flow-line) 84%,rgba(255,255,255,.04))}
+.workout-flow-item{position:relative;margin-bottom:12px}
+.workout-flow-item:before{content:"";position:absolute;left:-34px;top:27px;width:9px;height:9px;border:2px solid #455154;border-radius:50%;background:var(--flow-bg);box-sizing:border-box;z-index:2;transition:.2s ease}
+.workout-flow-item.is-current:before{border-color:var(--flow-accent);background:var(--flow-accent);box-shadow:0 0 0 5px rgba(203,255,18,.07)}
+.workout-flow-item.is-done:before{border-color:var(--flow-accent);background:var(--flow-bg)}
+.workout-flow-item.is-skipped:before{border-color:#343d40;background:#202729}
+.workout-flow-card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.075);
+  border-radius:18px;
+  background:linear-gradient(150deg,#0d1213,#0a0f10 74%);
+  box-shadow:0 8px 28px rgba(0,0,0,.13);
+  transition:border-color .18s ease,background .18s ease,transform .14s ease,opacity .18s ease;
+}
+.workout-flow-item.is-current .workout-flow-card{border-color:rgba(203,255,18,.28);background:linear-gradient(150deg,rgba(203,255,18,.045),#0a0f10 72%)}
+.workout-flow-item.is-skipped .workout-flow-card{opacity:.46;filter:saturate(.35)}
+.workout-flow-card__main{width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:inherit;padding:15px 15px 12px;display:block;-webkit-tap-highlight-color:transparent}
+.workout-flow-card__main:active{background:rgba(255,255,255,.018)}
+.workout-flow-card__head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.workout-flow-card__copy{min-width:0}
+.workout-flow-state{display:inline-flex;align-items:center;gap:5px;color:#778286;font-size:9.5px;font-weight:650}
+.workout-flow-state i{width:5px;height:5px;border-radius:50%;background:#596467}
+.is-current .workout-flow-state{color:var(--flow-accent)}
+.is-current .workout-flow-state i{background:var(--flow-accent)}
+.is-done .workout-flow-state{color:#a4b080}
+.is-skipped .workout-flow-state{color:#737c7f}
+.workout-flow-card h2{margin:7px 0 0;font-size:18px;line-height:1.05;font-weight:720;direction:ltr;text-align:right;white-space:normal}
+.workout-flow-card__index{flex:0 0 auto;color:#555f62;font-size:11px;font-variant-numeric:tabular-nums}
+.workout-flow-card__meta{display:flex;flex-wrap:wrap;gap:5px 12px;margin-top:8px;color:#788285;font-size:10.5px}
+.workout-flow-set-dots{display:flex;direction:ltr;align-items:center;gap:6px;margin-top:13px}
+.workout-flow-set-dots i{width:18px;height:3px;border-radius:999px;background:#252e31}
+.workout-flow-set-dots i.is-done{background:var(--flow-accent)}
+.workout-flow-set-dots i.is-current{background:rgba(203,255,18,.4);box-shadow:inset 0 0 0 1px rgba(203,255,18,.18)}
+.is-skipped .workout-flow-set-dots i{background:#252b2d!important}
+.workout-flow-card__actions{display:flex;align-items:center;gap:4px;padding:0 8px 8px;border-top:1px solid rgba(255,255,255,.055);direction:ltr}
+.workout-flow-action{min-height:38px;border:0;background:transparent;color:#8a9497;font:inherit;font-size:10.5px;border-radius:10px;padding:0 10px;display:inline-flex;align-items:center;justify-content:center;gap:5px;-webkit-tap-highlight-color:transparent}
+.workout-flow-action:active{background:#12191a;color:#e7ebec}
+.workout-flow-action--go{margin-left:auto;color:var(--flow-accent);font-weight:700;direction:rtl}
+.workout-flow-action--skip{color:#8b9295;direction:rtl}
+.workout-flow-action--skip.is-restore{color:#b0b9bb}
+.workout-flow-action--move{width:36px;padding:0;font-size:15px;color:#657074}
+.workout-flow-action:disabled{opacity:.22;pointer-events:none}
+.workout-flow-add{
+  position:relative;
+  width:100%;
+  min-height:58px;
+  margin-top:3px;
+  border:1px dashed rgba(203,255,18,.18);
+  border-radius:17px;
+  background:rgba(203,255,18,.018);
+  color:#aab3b5;
+  font:inherit;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:12px;
+  -webkit-tap-highlight-color:transparent;
+}
+.workout-flow-add b{color:var(--flow-accent);font-size:20px;font-weight:400}
+.workout-flow-add:before{content:"";position:absolute;left:-32px;top:23px;width:9px;height:9px;border:2px solid rgba(203,255,18,.34);border-radius:50%;background:var(--flow-bg);box-sizing:border-box}
+.workout-flow-add:active{background:rgba(203,255,18,.04)}
+.workout-flow-note{margin:17px 0 0;color:#626d70;font-size:9.5px;line-height:1.5;text-align:center}
+
+.workout-flow-sheet-backdrop{position:fixed;z-index:120010;inset:0;background:rgba(0,0,0,.48);backdrop-filter:blur(2px);animation:flowFade .16s ease both}
+.workout-flow-sheet-backdrop[hidden]{display:none!important}
+.workout-flow-sheet{position:absolute;left:0;right:0;bottom:0;max-height:min(72dvh,670px);display:flex;flex-direction:column;border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,.1);background:#0b1011;box-shadow:0 -24px 55px rgba(0,0,0,.42);padding:10px 16px calc(env(safe-area-inset-bottom) + 14px);box-sizing:border-box;direction:rtl;animation:flowSheetUp .24s cubic-bezier(.2,.8,.2,1) both}
+.workout-flow-sheet__grab{width:38px;height:4px;margin:0 auto 13px;border-radius:99px;background:#3a4447}
+.workout-flow-sheet__head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.workout-flow-sheet__head strong{font-size:17px}
+.workout-flow-sheet__head button{width:34px;height:34px;border:0;border-radius:10px;background:transparent;color:#939da0;font:inherit;font-size:22px}
+.workout-flow-search{width:100%;height:43px;margin-top:13px;padding:0 14px;border:1px solid #222b2e;border-radius:13px;background:#0f1516;color:#f1f4f4;font:inherit;font-size:12px;outline:0;box-sizing:border-box}
+.workout-flow-search:focus{border-color:rgba(203,255,18,.3);box-shadow:0 0 0 3px rgba(203,255,18,.035)}
+.workout-flow-library{min-height:0;overflow:auto;margin-top:10px;padding-bottom:4px}
+.workout-flow-library-item{width:100%;min-height:56px;padding:9px 5px;border:0;border-bottom:1px solid rgba(255,255,255,.055);background:transparent;color:inherit;font:inherit;display:grid;grid-template-columns:minmax(0,1fr) 36px;align-items:center;gap:10px;text-align:right}
+.workout-flow-library-item>span{min-width:0}
+.workout-flow-library-item strong{display:block;font-size:13px;direction:ltr;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}
+.workout-flow-library-item small{display:block;margin-top:4px;color:#707a7d;font-size:9.5px}
+.workout-flow-library-item b{width:32px;height:32px;border:1px solid rgba(203,255,18,.2);border-radius:50%;display:grid;place-items:center;color:var(--flow-accent);font-size:18px;font-weight:400}
+.workout-flow-library-item:active{background:#101718}
+.workout-flow-library-empty{padding:30px 12px;text-align:center;color:#687376;font-size:11px}
+.workout-flow-busy{position:fixed;z-index:120030;left:50%;bottom:calc(env(safe-area-inset-bottom) + 28px);transform:translateX(-50%);padding:9px 14px;border:1px solid rgba(203,255,18,.2);border-radius:999px;background:rgba(10,15,16,.96);color:#dbe0d5;font-size:10.5px;box-shadow:0 12px 30px rgba(0,0,0,.32)}
+.workout-flow-busy[hidden]{display:none!important}
+
+.live-next-flat{cursor:pointer!important;-webkit-tap-highlight-color:transparent;font:inherit!important}
+.live-next-flat:active{background:rgba(255,255,255,.018)!important}
+
+@keyframes flowPageIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes flowFade{from{opacity:0}to{opacity:1}}
+@keyframes flowSheetUp{from{transform:translateY(18px);opacity:.7}to{transform:none;opacity:1}}
+@media(max-width:390px){.workout-flow-shell{padding-left:14px;padding-right:14px}.workout-flow-timeline{padding-left:34px}.workout-flow-item:before{left:-30px}.workout-flow-add:before{left:-28px}.workout-flow-card h2{font-size:17px}}
+@media(prefers-reduced-motion:reduce){.workout-flow-page,.workout-flow-sheet-backdrop,.workout-flow-sheet{animation:none!important}.workout-flow-card,.workout-flow-item:before{transition:none!important}}
