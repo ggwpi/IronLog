@@ -3,6 +3,10 @@ import { supabase } from '../../lib/supabase.js';
 let flowState = null;
 let flowRoot = null;
 let flowBusyTimer = null;
+let dragState = null;
+let suppressClickUntil = 0;
+const LONG_PRESS_MS = 320;
+const LONG_PRESS_SLOP = 9;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -160,7 +164,7 @@ function cardMarkup(exercise, index, exercises, currentId) {
   const skipDisabled = !exercise.isSkipped && nonSkippedCount <= 1;
 
   return `<article class="${classNames.join(' ')}" data-flow-item="${exercise.id}">
-    <div class="workout-flow-card">
+    <div class="workout-flow-card" data-flow-drag-card>
       <button class="workout-flow-card__main" type="button" ${runnable ? `data-flow-go="${exercise.id}"` : ''} ${runnable ? '' : 'aria-disabled="true"'}>
         <div class="workout-flow-card__head">
           <div class="workout-flow-card__copy">
@@ -173,8 +177,7 @@ function cardMarkup(exercise, index, exercises, currentId) {
         <div class="workout-flow-set-dots" aria-label="${completedCount(exercise)} מתוך ${exercise.isSkipped ? originalPlannedCount(exercise) : plannedCount(exercise)} סטים">${setDotsMarkup(exercise)}</div>
       </button>
       <div class="workout-flow-card__actions">
-        <button class="workout-flow-action workout-flow-action--move" type="button" data-flow-move="${exercise.id}" data-direction="-1" aria-label="הזז למעלה" ${index === 0 ? 'disabled' : ''}>↑</button>
-        <button class="workout-flow-action workout-flow-action--move" type="button" data-flow-move="${exercise.id}" data-direction="1" aria-label="הזז למטה" ${index === exercises.length - 1 ? 'disabled' : ''}>↓</button>
+        <span class="workout-flow-drag-hint" aria-hidden="true"><i></i><span>לחיצה ארוכה לגרירה</span></span>
         <button class="workout-flow-action workout-flow-action--skip ${exercise.isSkipped ? 'is-restore' : ''}" type="button" data-flow-skip="${exercise.id}" data-skipped="${exercise.isSkipped ? 'true' : 'false'}" ${skipDisabled ? 'disabled' : ''}>${exercise.isSkipped ? '↶ החזר לאימון' : '⊘ לא לבצע'}</button>
         ${runnable ? `<button class="workout-flow-action workout-flow-action--go" type="button" data-flow-go="${exercise.id}">${exercise.id === currentId ? 'חזרה לתרגיל' : 'בצע עכשיו'} <span>↗</span></button>` : ''}
       </div>
@@ -213,14 +216,14 @@ function renderFlow() {
     <section class="workout-flow-summary">
       <span class="workout-flow-summary__eyebrow">WORKOUT FLOW</span>
       <h1>כל האימון, במקום אחד.</h1>
-      <p>בחר תרגיל לביצוע עכשיו, שנה את הסדר, השבת תרגיל מהאימון או הוסף תרגיל חדש.</p>
+      <p>בחר תרגיל לביצוע עכשיו, גרור בלחיצה ארוכה כדי לשנות סדר, השבת תרגיל או הוסף תרגיל חדש.</p>
       <div class="workout-flow-progress">
         <div class="workout-flow-progress__meta"><strong>${progress.completed}/${progress.planned} סטים</strong><span>${progress.doneExercises}/${progress.activeExercises} תרגילים הושלמו</span></div>
         <div class="workout-flow-progress__track"><i style="--flow-progress:${progress.percent}%"></i></div>
       </div>
     </section>
 
-    <div class="workout-flow-section-title"><strong>סדר האימון</strong><span>אפשר לשנות גם באמצע האימון</span></div>
+    <div class="workout-flow-section-title"><strong>סדר האימון</strong><span>לחיצה ארוכה על Card וגרירה</span></div>
     <section class="workout-flow-timeline" aria-label="סדר התרגילים">
       ${exercises.map((exercise, index) => cardMarkup(exercise, index, exercises, currentId)).join('')}
       <button class="workout-flow-add" type="button" data-flow-open-add><b>＋</b><span>הוסף תרגיל לאימון</span></button>
@@ -236,6 +239,7 @@ function renderFlow() {
       <div class="workout-flow-library">${libraryMarkup()}</div>
     </section>
   </div>`;
+  syncVisualViewport();
 }
 
 function showFlowLoading() {
@@ -252,55 +256,47 @@ function showBusy(message, duration = 0) {
   if (duration > 0) flowBusyTimer = window.setTimeout(() => { element.hidden = true; }, duration);
 }
 
-function hideBusy() {
-  const element = flowRoot?.querySelector('.workout-flow-busy');
-  if (element) element.hidden = true;
-}
-
 function showError(error) {
   showBusy(error?.message || 'לא הצלחנו לעדכן את האימון', 2600);
 }
 
 function closeFlow() {
-  document.body.classList.remove('ironlog-flow-open');
+  cancelPendingDrag();
+  document.body.classList.remove('ironlog-flow-open', 'ironlog-flow-dragging');
   flowRoot?.remove();
   flowRoot = null;
   flowState = null;
 }
 
+function syncVisualViewport() {
+  if (!flowRoot) return;
+  const viewport = window.visualViewport;
+  const top = viewport ? viewport.offsetTop : 0;
+  const height = viewport ? viewport.height : window.innerHeight;
+  flowRoot.style.setProperty('--flow-viewport-top', `${Math.max(0, top)}px`);
+  flowRoot.style.setProperty('--flow-viewport-height', `${Math.max(1, height)}px`);
+}
+
 function openAddSheet() {
   const backdrop = flowRoot?.querySelector('[data-flow-sheet-backdrop]');
   if (!backdrop) return;
+  syncVisualViewport();
   backdrop.hidden = false;
-  requestAnimationFrame(() => backdrop.querySelector('[data-flow-search]')?.focus({ preventScroll: true }));
+  backdrop.setAttribute('aria-hidden', 'false');
 }
 
 function closeAddSheet() {
   const backdrop = flowRoot?.querySelector('[data-flow-sheet-backdrop]');
-  if (backdrop) backdrop.hidden = true;
+  if (!backdrop) return;
+  document.activeElement?.blur?.();
+  backdrop.hidden = true;
+  backdrop.setAttribute('aria-hidden', 'true');
 }
 
 async function refreshFlow(message = '') {
   await loadFlowData();
   renderFlow();
   if (message) showBusy(message, 1300);
-}
-
-async function reorderExercise(id, direction) {
-  if (!flowState) return;
-  const order = flowState.exercises.map((exercise) => exercise.id);
-  const index = order.indexOf(id);
-  const target = index + direction;
-  if (index < 0 || target < 0 || target >= order.length) return;
-  [order[index], order[target]] = [order[target], order[index]];
-
-  showBusy('מעדכן את הסדר...');
-  const { error } = await supabase.rpc('reorder_active_workout_exercises', {
-    p_session_id: flowState.session.id,
-    p_order: order,
-  });
-  if (error) throw error;
-  await refreshFlow('הסדר עודכן');
 }
 
 async function goToExercise(id) {
@@ -358,6 +354,274 @@ async function addExercise(exerciseId) {
   await refreshFlow('התרגיל נוסף לסוף האימון');
 }
 
+function timelineItems() {
+  return [...(flowRoot?.querySelectorAll('.workout-flow-item') || [])];
+}
+
+function captureRects(items) {
+  return new Map(items.map((item) => [item.dataset.flowItem, item.getBoundingClientRect()]));
+}
+
+function animateFlip(previousRects, items) {
+  items.forEach((item) => {
+    if (item === dragState?.source) return;
+    const before = previousRects.get(item.dataset.flowItem);
+    if (!before) return;
+    const after = item.getBoundingClientRect();
+    const delta = before.top - after.top;
+    if (Math.abs(delta) < 1) return;
+    item.animate([
+      { transform: `translateY(${delta}px)` },
+      { transform: 'translateY(0)' },
+    ], { duration: 190, easing: 'cubic-bezier(.2,.78,.2,1)' });
+  });
+}
+
+function updateOrderNumbersAndStates() {
+  if (!flowState) return;
+  const order = timelineItems().map((item) => item.dataset.flowItem);
+  const byId = new Map(flowState.exercises.map((exercise) => [exercise.id, exercise]));
+  flowState.exercises = order.map((id, index) => ({ ...byId.get(id), position: index + 1 })).filter(Boolean);
+  const currentId = currentExercise(flowState.exercises)?.id || '';
+  timelineItems().forEach((item, index) => {
+    const exercise = byId.get(item.dataset.flowItem);
+    if (!exercise) return;
+    item.querySelector('.workout-flow-card__index').textContent = String(index + 1).padStart(2, '0');
+    item.classList.toggle('is-current', !exercise.isSkipped && !isDone(exercise) && exercise.id === currentId);
+    item.classList.toggle('is-done', isDone(exercise));
+    item.classList.toggle('is-skipped', exercise.isSkipped);
+    const state = item.querySelector('.workout-flow-state');
+    if (state) state.lastChild.textContent = stateLabel(exercise, currentId);
+    const go = item.querySelector('.workout-flow-action--go');
+    if (go && isRunnable(exercise)) go.innerHTML = `${exercise.id === currentId ? 'חזרה לתרגיל' : 'בצע עכשיו'} <span>↗</span>`;
+  });
+}
+
+function dragTargetAt(clientY) {
+  const items = timelineItems().filter((item) => item !== dragState?.source);
+  if (!items.length) return null;
+  for (const item of items) {
+    const rect = item.getBoundingClientRect();
+    if (clientY < rect.top + rect.height / 2) return { item, before: true };
+  }
+  return { item: items.at(-1), before: false };
+}
+
+function moveSourceNearPointer(clientY) {
+  if (!dragState?.active) return;
+  const target = dragTargetAt(clientY);
+  if (!target) return;
+  const source = dragState.source;
+  const timeline = source.parentElement;
+  const previousRects = captureRects(timelineItems());
+  const reference = target.before ? target.item : target.item.nextElementSibling;
+  if (reference === source || source.nextElementSibling === reference) return;
+  timeline.insertBefore(source, reference);
+  animateFlip(previousRects, timelineItems());
+  updateOrderNumbersAndStates();
+}
+
+function updateGhost(clientY) {
+  if (!dragState?.active) return;
+  dragState.lastClientY = clientY;
+  const y = clientY - dragState.grabOffsetY;
+  dragState.ghost.style.transform = `translate3d(0, ${y - dragState.originTop}px, 0) scale(1.015)`;
+
+  const viewport = window.visualViewport;
+  const top = viewport?.offsetTop || 0;
+  const bottom = top + (viewport?.height || window.innerHeight);
+  const edge = 92;
+  if (clientY < top + edge) flowRoot?.scrollBy({ top: -12, behavior: 'auto' });
+  else if (clientY > bottom - edge) flowRoot?.scrollBy({ top: 12, behavior: 'auto' });
+}
+
+function beginDrag(pending) {
+  if (!flowRoot || !pending?.source?.isConnected) return;
+  const rect = pending.source.getBoundingClientRect();
+  const card = pending.source.querySelector('.workout-flow-card');
+  if (!card) return;
+  const ghost = card.cloneNode(true);
+  ghost.classList.add('workout-flow-drag-ghost');
+  ghost.querySelectorAll('button').forEach((button) => { button.tabIndex = -1; });
+  Object.assign(ghost.style, {
+    position: 'fixed',
+    left: `${rect.left}px`,
+    top: `${rect.top}px`,
+    width: `${rect.width}px`,
+    height: `${rect.height}px`,
+    margin: '0',
+    zIndex: '120050',
+    pointerEvents: 'none',
+    transformOrigin: 'center center',
+  });
+  document.body.appendChild(ghost);
+
+  dragState = {
+    ...pending,
+    active: true,
+    ghost,
+    originTop: rect.top,
+    grabOffsetY: pending.startClientY - rect.top,
+    lastClientY: pending.startClientY,
+    initialOrder: timelineItems().map((item) => item.dataset.flowItem),
+  };
+  pending.source.classList.add('is-drag-source');
+  document.body.classList.add('ironlog-flow-dragging');
+  try { pending.source.setPointerCapture(pending.pointerId); } catch {}
+  navigator.vibrate?.(12);
+  updateGhost(pending.startClientY);
+}
+
+function cancelPendingDrag() {
+  if (!dragState) return;
+  window.clearTimeout(dragState.timer);
+  if (!dragState.active) {
+    dragState = null;
+    return;
+  }
+  dragState.ghost?.remove();
+  dragState.source?.classList.remove('is-drag-source');
+  document.body.classList.remove('ironlog-flow-dragging');
+  dragState = null;
+}
+
+async function commitDraggedOrder(order) {
+  if (!flowState) return;
+  showBusy('שומר את הסדר...');
+  const { error } = await supabase.rpc('reorder_active_workout_exercises', {
+    p_session_id: flowState.session.id,
+    p_order: order,
+  });
+  if (error) throw error;
+  showBusy('הסדר עודכן', 1100);
+}
+
+async function finishDrag() {
+  if (!dragState?.active) {
+    cancelPendingDrag();
+    return;
+  }
+  const state = dragState;
+  const finalRect = state.source.getBoundingClientRect();
+  const finalY = finalRect.top - state.originTop;
+  state.ghost.style.transition = 'transform 170ms cubic-bezier(.2,.82,.2,1), opacity 170ms ease';
+  state.ghost.style.transform = `translate3d(0, ${finalY}px, 0) scale(1)`;
+  state.ghost.style.opacity = '.72';
+  suppressClickUntil = performance.now() + 450;
+
+  const order = timelineItems().map((item) => item.dataset.flowItem);
+  const changed = order.some((id, index) => id !== state.initialOrder[index]);
+  window.setTimeout(() => {
+    state.source?.classList.remove('is-drag-source');
+    state.ghost?.remove();
+  }, 175);
+  document.body.classList.remove('ironlog-flow-dragging');
+  dragState = null;
+
+  if (!changed) return;
+  try {
+    updateOrderNumbersAndStates();
+    await commitDraggedOrder(order);
+  } catch (error) {
+    showError(error);
+    try { await refreshFlow(); } catch {}
+  }
+}
+
+function onDragPointerDown(event) {
+  if (event.pointerType === 'touch') return;
+  if (!flowRoot || event.button !== 0 || !event.isPrimary) return;
+  if (event.target.closest('.workout-flow-action, [data-flow-open-add], .workout-flow-sheet')) return;
+  const source = event.target.closest('.workout-flow-item');
+  if (!source) return;
+  cancelPendingDrag();
+  const pending = {
+    active: false,
+    source,
+    pointerId: event.pointerId,
+    startClientX: event.clientX,
+    startClientY: event.clientY,
+    timer: 0,
+  };
+  pending.timer = window.setTimeout(() => beginDrag(pending), LONG_PRESS_MS);
+  dragState = pending;
+}
+
+function onDragPointerMove(event) {
+  if (event.pointerType === 'touch') return;
+  if (!dragState || event.pointerId !== dragState.pointerId) return;
+  if (!dragState.active) {
+    const moved = Math.hypot(event.clientX - dragState.startClientX, event.clientY - dragState.startClientY);
+    if (moved > LONG_PRESS_SLOP) cancelPendingDrag();
+    return;
+  }
+  event.preventDefault();
+  updateGhost(event.clientY);
+  moveSourceNearPointer(event.clientY);
+}
+
+function onDragPointerEnd(event) {
+  if (event.pointerType === 'touch') return;
+  if (!dragState || event.pointerId !== dragState.pointerId) return;
+  window.clearTimeout(dragState.timer);
+  if (dragState.active) {
+    event.preventDefault();
+    finishDrag();
+  } else {
+    dragState = null;
+  }
+}
+
+function touchByIdentifier(event, identifier) {
+  return [...event.changedTouches, ...event.touches].find((touch) => touch.identifier === identifier) || null;
+}
+
+function onDragTouchStart(event) {
+  if (!flowRoot || event.touches.length !== 1) return;
+  if (event.target.closest('.workout-flow-action, [data-flow-open-add], .workout-flow-sheet')) return;
+  const source = event.target.closest('.workout-flow-item');
+  if (!source) return;
+  cancelPendingDrag();
+  const touch = event.touches[0];
+  const pending = {
+    active: false,
+    source,
+    touchIdentifier: touch.identifier,
+    startClientX: touch.clientX,
+    startClientY: touch.clientY,
+    timer: 0,
+  };
+  pending.timer = window.setTimeout(() => beginDrag(pending), LONG_PRESS_MS);
+  dragState = pending;
+}
+
+function onDragTouchMove(event) {
+  if (!dragState || dragState.touchIdentifier == null) return;
+  const touch = touchByIdentifier(event, dragState.touchIdentifier);
+  if (!touch) return;
+  if (!dragState.active) {
+    const moved = Math.hypot(touch.clientX - dragState.startClientX, touch.clientY - dragState.startClientY);
+    if (moved > LONG_PRESS_SLOP) cancelPendingDrag();
+    return;
+  }
+  event.preventDefault();
+  updateGhost(touch.clientY);
+  moveSourceNearPointer(touch.clientY);
+}
+
+function onDragTouchEnd(event) {
+  if (!dragState || dragState.touchIdentifier == null) return;
+  const touch = [...event.changedTouches].find((candidate) => candidate.identifier === dragState.touchIdentifier);
+  if (!touch && event.type !== 'touchcancel') return;
+  window.clearTimeout(dragState.timer);
+  if (dragState.active) {
+    event.preventDefault();
+    finishDrag();
+  } else {
+    dragState = null;
+  }
+}
+
 async function openFlow() {
   if (flowRoot) return;
   flowRoot = document.createElement('main');
@@ -365,6 +629,7 @@ async function openFlow() {
   flowRoot.setAttribute('aria-label', 'מפת האימון');
   document.body.appendChild(flowRoot);
   document.body.classList.add('ironlog-flow-open');
+  syncVisualViewport();
   showFlowLoading();
   try {
     await loadFlowData();
@@ -382,7 +647,25 @@ function prepareNextWidget() {
   });
 }
 
+document.addEventListener('pointerdown', onDragPointerDown, { capture: true });
+document.addEventListener('pointermove', onDragPointerMove, { capture: true, passive: false });
+document.addEventListener('pointerup', onDragPointerEnd, { capture: true });
+document.addEventListener('pointercancel', onDragPointerEnd, { capture: true });
+document.addEventListener('touchstart', onDragTouchStart, { capture: true, passive: true });
+document.addEventListener('touchmove', onDragTouchMove, { capture: true, passive: false });
+document.addEventListener('touchend', onDragTouchEnd, { capture: true, passive: false });
+document.addEventListener('touchcancel', onDragTouchEnd, { capture: true, passive: false });
+document.addEventListener('contextmenu', (event) => {
+  if (flowRoot && event.target.closest?.('.workout-flow-card')) event.preventDefault();
+}, { capture: true });
+
 document.addEventListener('click', async (event) => {
+  if (performance.now() < suppressClickUntil && event.target.closest('.workout-flow-card')) {
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+
   const nextWidget = event.target.closest('.live-next-flat');
   if (nextWidget && !flowRoot) {
     event.preventDefault();
@@ -424,13 +707,6 @@ document.addEventListener('click', async (event) => {
     return;
   }
 
-  const move = event.target.closest('[data-flow-move]');
-  if (move) {
-    event.preventDefault();
-    try { await reorderExercise(move.dataset.flowMove, Number(move.dataset.direction)); } catch (error) { showError(error); }
-    return;
-  }
-
   const skip = event.target.closest('[data-flow-skip]');
   if (skip) {
     event.preventDefault();
@@ -464,6 +740,10 @@ document.addEventListener('input', (event) => {
     item.hidden = Boolean(query) && !String(item.dataset.search || '').includes(query);
   });
 }, true);
+
+window.visualViewport?.addEventListener('resize', syncVisualViewport, { passive: true });
+window.visualViewport?.addEventListener('scroll', syncVisualViewport, { passive: true });
+window.addEventListener('resize', syncVisualViewport, { passive: true });
 
 const appRoot = document.querySelector('#app');
 if (appRoot) new MutationObserver(prepareNextWidget).observe(appRoot, { childList: true, subtree: true });
