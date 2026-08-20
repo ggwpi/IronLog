@@ -70,9 +70,22 @@ function metricsMarkup(set) {
   return parts.length ? parts.join('<i>·</i>') : '<span>ללא נתונים</span>';
 }
 
-function savedSetsMarkup(exerciseId, sets) {
+function savedSetSignature(sets) {
+  return sets.map((set) => [
+    set.id,
+    set.setNumber,
+    set.loadKg,
+    set.reps,
+    set.rir,
+    set.durationSeconds,
+    set.distanceMeters,
+    set.trackingType,
+  ].join(':')).join('|');
+}
+
+function savedSetsMarkup(exerciseId, sets, signature) {
   if (!sets.length) return '';
-  return `<section class="workout-flow-saved-sets" data-flow-saved-sets="${escapeHtml(exerciseId)}">
+  return `<section class="workout-flow-saved-sets" data-flow-saved-sets="${escapeHtml(exerciseId)}" data-set-signature="${escapeHtml(signature)}">
     <div class="workout-flow-saved-sets__head"><strong>סטים שבוצעו</strong><span>לחץ על סט כדי לערוך</span></div>
     <div class="workout-flow-saved-sets__list">
       ${sets.map((set) => `<button class="workout-flow-saved-set workout-flow-action" type="button" data-flow-edit-set="${escapeHtml(set.id)}" aria-label="ערוך סט ${set.setNumber}">
@@ -92,10 +105,16 @@ function renderSavedSets() {
     const card = item.querySelector('.workout-flow-card');
     const actions = card?.querySelector('.workout-flow-card__actions');
     if (!card || !actions) return;
-    card.querySelector('.workout-flow-saved-sets')?.remove();
+    const current = card.querySelector('.workout-flow-saved-sets');
     const sets = setsByExercise.get(exerciseId) || [];
-    if (!sets.length) return;
-    actions.insertAdjacentHTML('beforebegin', savedSetsMarkup(exerciseId, sets));
+    if (!sets.length) {
+      current?.remove();
+      return;
+    }
+    const signature = savedSetSignature(sets);
+    if (current?.dataset.setSignature === signature) return;
+    current?.remove();
+    actions.insertAdjacentHTML('beforebegin', savedSetsMarkup(exerciseId, sets, signature));
   });
 }
 
