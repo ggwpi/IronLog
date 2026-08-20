@@ -1,0 +1,189 @@
+/* Statistics native v2: tighter top hierarchy, richer summary strip and calmer disclosures. */
+.statistics-page--native .statistics-header{
+  height:64px!important;
+  min-height:64px!important;
+  padding:0 2px!important;
+  margin:0!important;
+  align-items:start!important;
+}
+.statistics-page--native .native-weight-section{
+  margin-top:-2px!important;
+  padding-top:2px!important;
+}
+.statistics-page--native .native-stats-section__head{margin-bottom:14px}
+.statistics-page--native .native-weight-section .native-stats-section__head{margin-bottom:12px}
+
+/* Summary metrics behave like a native status strip, not four mini cards. */
+.statistics-page--native .native-summary-strip{
+  padding:14px 0 13px!important;
+  align-items:start;
+}
+.statistics-page--native .native-summary-strip>div{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:0;
+  padding:0 7px!important;
+}
+.statistics-page--native .native-summary-icon{
+  width:22px;
+  height:22px;
+  margin:0 0 8px;
+  display:grid;
+  place-items:center;
+  color:var(--accent);
+  opacity:.92;
+}
+.statistics-page--native .native-summary-icon svg{
+  width:21px;
+  height:21px;
+  display:block;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.65;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.statistics-page--native .native-summary-strip strong{
+  font-size:16px!important;
+  line-height:1!important;
+  font-weight:720!important;
+}
+.statistics-page--native .native-summary-strip span:not(.native-summary-icon){
+  margin-top:6px!important;
+  color:#748084!important;
+  font-size:8px!important;
+  line-height:1.18!important;
+}
+
+/* Disclosures read like iOS list continuations instead of CTA buttons. */
+.statistics-page--native .native-disclosure{
+  margin-top:7px!important;
+  border-top:1px solid rgba(255,255,255,.075)!important;
+}
+.statistics-page--native .native-disclosure summary{
+  min-height:58px!important;
+  padding:6px 1px 5px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 28px!important;
+  align-items:center!important;
+  gap:12px!important;
+  color:inherit!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  text-align:right!important;
+}
+.statistics-page--native .native-disclosure summary:before{display:none!important;content:none!important}
+.statistics-page--native .native-disclosure-copy{min-width:0;display:block}
+.statistics-page--native .native-disclosure-copy b{
+  display:block;
+  color:#d9ddde;
+  font-size:11.5px;
+  line-height:1.2;
+  font-weight:650;
+}
+.statistics-page--native .native-disclosure-copy small{
+  display:block;
+  margin-top:5px;
+  color:#657074;
+  font-size:8.5px;
+  line-height:1.35;
+  font-weight:500;
+}
+.statistics-page--native .native-disclosure .when-open{display:none}
+.statistics-page--native .native-disclosure[open] .when-closed{display:none}
+.statistics-page--native .native-disclosure[open] .when-open{display:inline}
+.statistics-page--native .native-disclosure-chevron{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  color:#778286;
+}
+.statistics-page--native .native-disclosure-chevron svg{
+  width:18px;
+  height:18px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),color .2s ease;
+}
+.statistics-page--native .native-disclosure[open] .native-disclosure-chevron svg{
+  transform:rotate(180deg);
+  color:var(--accent);
+}
+.statistics-page--native .native-disclosure-body{overflow:hidden}
+.statistics-page--native .native-disclosure[open] .native-disclosure-body{
+  animation:statsDisclosureOpen .34s cubic-bezier(.2,.8,.2,1) both;
+}
+.statistics-page--native .native-disclosure summary:active .native-disclosure-copy{transform:translateY(1px)}
+.statistics-page--native .native-disclosure summary:active .native-disclosure-chevron{transform:scale(.9)}
+
+/* Give data rows a native touch response without making them card-like. */
+.statistics-page--native .native-exercise-row,
+.statistics-page--native .native-volume-row,
+.statistics-page--native .native-recovery-list>div{
+  transition:background-color .18s ease,transform .18s ease,opacity .18s ease;
+}
+.statistics-page--native .native-exercise-row:active,
+.statistics-page--native .native-volume-row:active,
+.statistics-page--native .native-recovery-list>div:active{
+  background:rgba(255,255,255,.018);
+  transform:scale(.995);
+}
+.statistics-page--native .native-summary-strip>div{
+  transition:transform .2s cubic-bezier(.2,.8,.2,1),opacity .2s ease;
+}
+
+/* Slightly cleaner weight hero rhythm. */
+.statistics-page--native .native-weight-summary{margin-bottom:2px!important}
+.statistics-page--native .native-weight-chart-wrap{margin-top:0!important}
+.statistics-page--native .native-chart-legend{margin-top:-6px!important}
+
+@keyframes statsDisclosureOpen{
+  from{opacity:0;transform:translateY(-7px)}
+  to{opacity:1;transform:none}
+}
+
+@media(max-width:650px){
+  body:has(.statistics-page--native) .app-content{
+    padding-top:calc(var(--safe-top) + 7px)!important;
+  }
+  .statistics-page--native .statistics-header{
+    height:60px!important;
+    min-height:60px!important;
+  }
+  .statistics-page--native .native-weight-section{
+    margin-top:-5px!important;
+    padding-top:0!important;
+    padding-bottom:17px!important;
+  }
+  .statistics-page--native .native-weight-section .native-stats-section__head{margin-bottom:10px}
+  .statistics-page--native .native-stats-section__head h2{font-size:18px!important}
+  .statistics-page--native .native-summary-strip{padding-block:12px 11px!important}
+  .statistics-page--native .native-summary-icon{width:20px;height:20px;margin-bottom:7px}
+  .statistics-page--native .native-summary-icon svg{width:19px;height:19px}
+  .statistics-page--native .native-summary-strip strong{font-size:15px!important}
+  .statistics-page--native .native-summary-strip span:not(.native-summary-icon){font-size:7.4px!important}
+  .statistics-page--native .native-disclosure summary{min-height:55px!important}
+  .statistics-page--native .native-disclosure-copy b{font-size:11px}
+  .statistics-page--native .native-disclosure-copy small{font-size:7.8px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .statistics-page--native .native-disclosure-chevron svg,
+  .statistics-page--native .native-exercise-row,
+  .statistics-page--native .native-volume-row,
+  .statistics-page--native .native-recovery-list>div,
+  .statistics-page--native .native-summary-strip>div{transition:none!important}
+  .statistics-page--native .native-disclosure[open] .native-disclosure-body{animation:none!important}
+}
+html.reduce-motion .statistics-page--native .native-disclosure-chevron svg,
+html.reduce-motion .statistics-page--native .native-exercise-row,
+html.reduce-motion .statistics-page--native .native-volume-row,
+html.reduce-motion .statistics-page--native .native-recovery-list>div,
+html.reduce-motion .statistics-page--native .native-summary-strip>div{transition:none!important}
