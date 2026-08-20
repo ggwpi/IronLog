@@ -60,9 +60,12 @@ function buildWeight(rows) {
 
 function buildMuscleVolume(rows) {
   const latestWeek = rows.reduce((latest, row) => !latest || row.week_start > latest ? row.week_start : latest, null);
-  const bySlug = new Map(rows.filter((row) => row.week_start === latestWeek).map((row) => [row.muscle_slug, Number(row.effective_sets)]));
+  const latestRows = rows.filter((row) => row.week_start === latestWeek);
+  const bySlug = new Map(latestRows.map((row) => [row.muscle_slug, Number(row.effective_sets)]));
   const muscles = Object.entries(MUSCLE_TARGETS).map(([id, config]) => ({ id, ...config, actual: round(bySlug.get(id) || 0) }));
-  return { unit: 'סטים', maxScale: 24, hasData: Boolean(latestWeek), muscles };
+  const weeklySets = latestRows.reduce((sum, row) => sum + Math.max(0, Number(row.direct_sets) || 0), 0);
+  const activeMuscles = latestRows.filter((row) => Number(row.effective_sets) > 0).length;
+  return { unit: 'סטים', maxScale: 24, hasData: Boolean(latestWeek), muscles, weeklySets: round(weeklySets, 0), activeMuscles };
 }
 
 function buildPerformance(rows) {
@@ -124,7 +127,7 @@ function buildCycle(cycle) {
 
 export function buildStatisticsModel(source = {}) {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     generatedAt: new Date().toISOString(),
     source: 'supabase',
     bodyWeight: buildWeight(source.weights || []),
