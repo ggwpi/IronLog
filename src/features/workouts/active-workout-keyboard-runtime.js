@@ -1,5 +1,6 @@
 /*
- * Backwards-compatible entry point.
- * Keyboard handling is now part of the stable app-shell architecture.
+ * iOS keyboard workaround temporarily disabled.
+ * The previous viewport-shell mitigation changed the global app geometry.
+ * Keep this entry point intentionally inert while the UI uses its original
+ * layout architecture.
  */
-import '/src/viewport-keyboard-runtime.js?v=3';
