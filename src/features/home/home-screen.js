@@ -26,7 +26,7 @@ function isScheduled(workout) {
 }
 
 function scheduledWorkouts(workouts = []) {
-  return workouts.filter(isScheduled);
+  return workouts.filter(isScheduled).sort((a, b) => Number(a.day) - Number(b.day));
 }
 
 function nearestWorkout(workouts = WORKOUTS) {
