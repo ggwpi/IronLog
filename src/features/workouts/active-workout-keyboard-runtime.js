@@ -1,5 +1,5 @@
 /*
  * Backwards-compatible entry point.
- * Keyboard/VisualViewport stabilization is global now, not workout-specific.
+ * Keyboard handling is now part of the stable app-shell architecture.
  */
-import '/src/viewport-keyboard-runtime.js?v=2';
+import '/src/viewport-keyboard-runtime.js?v=3';
