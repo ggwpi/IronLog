@@ -1,3 +1,5 @@
+import './statistics-detail-runtime.js';
+
 const app = document.querySelector('#app');
 const seen = new Set();
 let observer = null;
