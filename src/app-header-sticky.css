@@ -1,0 +1,71 @@
+/* Shared sticky tab header.
+   Every main-tab AppPageHeader keeps the exact same visual origin while the
+   document scrolls. A translucent iOS-style backdrop appears only after the
+   user has moved the page, so the initial layout stays open and editorial. */
+
+:root{
+  --iron-header-scroll-inline:18px;
+}
+
+.app-page-header{
+  position:sticky!important;
+  top:calc(var(--safe-top) + var(--iron-header-top-gap))!important;
+  z-index:950!important;
+  isolation:isolate;
+  transform:translateZ(0);
+  -webkit-transform:translateZ(0);
+}
+
+/* The backdrop is larger than the content column, but the title/logo geometry
+   itself never moves. It also extends into the safe-area/status-bar region. */
+.app-page-header::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+  top:calc(-1 * (var(--safe-top) + var(--iron-header-top-gap)));
+  right:calc(-1 * var(--iron-header-scroll-inline));
+  bottom:-9px;
+  left:calc(-1 * var(--iron-header-scroll-inline));
+  border-bottom:1px solid transparent;
+  background:rgba(6,9,8,0);
+  -webkit-backdrop-filter:blur(0) saturate(100%);
+  backdrop-filter:blur(0) saturate(100%);
+  opacity:0;
+  transition:
+    opacity .24s ease,
+    background-color .24s ease,
+    border-color .24s ease,
+    -webkit-backdrop-filter .28s ease;
+}
+
+html.iron-header-scrolled .app-page-header::after{
+  opacity:1;
+  background:rgba(6,9,8,.72);
+  border-bottom-color:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(26px) saturate(155%);
+  backdrop-filter:blur(26px) saturate(155%);
+  box-shadow:0 8px 24px rgba(0,0,0,.10);
+}
+
+/* Normalize feature-specific header height overrides so switching tabs never
+   changes the sticky header's physical position or height. */
+@media(max-width:650px){
+  .app-page-header,
+  .statistics-page--native .statistics-header,
+  .home-editorial .app-page-header,
+  .workouts-concept .app-page-header,
+  .settings-page .app-page-header{
+    min-height:var(--iron-header-height)!important;
+    height:var(--iron-header-height)!important;
+  }
+}
+
+@media(max-width:390px){
+  :root{--iron-header-scroll-inline:14px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .app-page-header::after{transition:none!important}
+}
+html.reduce-motion .app-page-header::after{transition:none!important}
