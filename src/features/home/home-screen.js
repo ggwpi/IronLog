@@ -19,8 +19,14 @@ function greeting() {
   return 'ערב טוב';
 }
 
+function isScheduled(workout) {
+  if (workout?.day === null || workout?.day === undefined || workout?.day === '') return false;
+  const day = Number(workout.day);
+  return Number.isInteger(day) && day >= 0 && day <= 6;
+}
+
 function scheduledWorkouts(workouts = []) {
-  return workouts.filter((workout) => Number.isInteger(Number(workout?.day)) && Number(workout.day) >= 0 && Number(workout.day) <= 6);
+  return workouts.filter(isScheduled);
 }
 
 function nearestWorkout(workouts = WORKOUTS) {
@@ -70,8 +76,9 @@ function sessionsByDay(workoutData = {}) {
 
 function weeklyProgress(currentDay, workouts, workoutData) {
   const sessions = sessionsByDay(workoutData);
+  const scheduled = scheduledWorkouts(workouts);
   return DAYS.map(({ jsDay, label }) => {
-    const planned = Boolean(workoutForDay(jsDay, scheduledWorkouts(workouts)));
+    const planned = Boolean(workoutForDay(jsDay, scheduled));
     const daySessions = sessions.get(jsDay) || [];
     const complete = daySessions.some((session) => session.status === 'completed');
     const active = daySessions.some((session) => session.status === 'active');
