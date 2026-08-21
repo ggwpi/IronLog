@@ -19,10 +19,11 @@ import {
 
 const app = document.querySelector('#app');
 const launchStartedAt = performance.now();
+const LEGACY_CACHE_CLEANUP_KEY = 'ironlog:legacy-cache-cleanup:v2';
 let stopTrainingSubscription = null;
 let refreshTimer = null;
-let restTimerInterval = null;
 let sessionVersion = 0;
+let refreshVersion = 0;
 
 const store = createStore({
   session: null,
@@ -51,7 +52,7 @@ function screenFor(route, state) {
     case 'statistics': return StatisticsScreen({ model: state.statistics });
     case 'settings': return SettingsScreen({ user: state.session?.user, settings: state.settings });
     case 'home':
-    default: return HomeScreen({ userName: state.session?.user?.name || 'מתאמן', workouts: state.workouts });
+    default: return HomeScreen({ userName: state.session?.user?.name || 'מתאמן', workouts: state.workouts, workoutData: state.workoutData });
   }
 }
 
@@ -64,8 +65,6 @@ function renderLoading() {
 
 function render() {
   const state = store.getState();
-  window.clearInterval(restTimerInterval);
-  restTimerInterval = null;
   applyPreferences(state.settings);
 
   if (state.authLoading) {
@@ -92,6 +91,8 @@ function render() {
 
 async function bindSession(session) {
   const version = ++sessionVersion;
+  ++refreshVersion;
+  window.clearTimeout(refreshTimer);
   stopTrainingSubscription?.();
   stopTrainingSubscription = null;
   const user = userFromSession(session);
@@ -133,8 +134,11 @@ async function bindSession(session) {
 }
 
 async function refreshData(userId) {
+  const sessionAtStart = sessionVersion;
+  const requestVersion = ++refreshVersion;
   try {
     const data = await loadAppData(userId);
+    if (requestVersion !== refreshVersion || sessionAtStart !== sessionVersion || store.getState().session?.user?.id !== userId) return;
     store.setState((state) => ({
       ...state,
       workouts: data.workouts.length ? data.workouts : state.workouts,
@@ -143,6 +147,7 @@ async function refreshData(userId) {
       dataError: '',
     }));
   } catch (error) {
+    if (requestVersion !== refreshVersion || sessionAtStart !== sessionVersion || store.getState().session?.user?.id !== userId) return;
     store.setState((state) => ({ ...state, dataError: error.message || 'שגיאת סנכרון' }));
   }
 }
@@ -191,7 +196,9 @@ function showFormError(id, error) {
 }
 
 function nullableNumber(value) {
-  return value === '' || value == null ? null : Number(value);
+  if (value === '' || value == null) return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
 }
 
 function refreshBuilderPositions() {
@@ -199,28 +206,6 @@ function refreshBuilderPositions() {
   rows.forEach((row, index) => { row.querySelector('.builder-position').textContent = String(index + 1); });
   const count = document.querySelector('#builderExerciseCount');
   if (count) count.textContent = String(rows.length);
-}
-
-function startRestTimer(seconds) {
-  const container = document.querySelector('#restTimer');
-  const value = document.querySelector('#restTimerValue');
-  if (!container || !value || !seconds) return;
-  let remaining = Number(seconds);
-  container.hidden = false;
-  const paint = () => {
-    const minutes = Math.floor(remaining / 60);
-    const rest = remaining % 60;
-    value.textContent = `${String(minutes).padStart(2, '0')}:${String(rest).padStart(2, '0')}`;
-    if (remaining <= 0) {
-      window.clearInterval(restTimerInterval);
-      restTimerInterval = null;
-      container.classList.add('is-finished');
-      return;
-    }
-    remaining -= 1;
-  };
-  paint();
-  restTimerInterval = window.setInterval(paint, 1000);
 }
 
 function bindApp() {
@@ -395,7 +380,7 @@ function bindApp() {
       event.preventDefault();
       const button = form.querySelector('button[type="submit"]');
       const data = new FormData(form);
-      button.disabled = true;
+      if (button) button.disabled = true;
       try {
         await recordWorkoutSet({
           sessionExerciseId: form.dataset.sessionExerciseId,
@@ -405,20 +390,12 @@ function bindApp() {
           restSeconds: null, notes: null,
         });
         await refreshData(store.getState().session.user.id);
-        startRestTimer(Number(form.dataset.restSeconds));
         showToast('הסט נשמר');
       } catch (error) {
-        button.disabled = false;
+        if (button) button.disabled = false;
         showToast(error.message || 'לא הצלחנו לשמור את הסט');
       }
     });
-  });
-
-  document.querySelector('#skipRestTimer')?.addEventListener('click', () => {
-    window.clearInterval(restTimerInterval);
-    restTimerInterval = null;
-    const timer = document.querySelector('#restTimer');
-    if (timer) timer.hidden = true;
   });
 
   document.querySelectorAll('[data-complete-session]').forEach((element) => {
@@ -502,13 +479,22 @@ async function boot() {
   requestAnimationFrame(() => requestAnimationFrame(finishLaunchScreen));
 }
 
-boot();
+async function cleanupLegacyBrowserCachesOnce() {
+  try {
+    if (localStorage.getItem(LEGACY_CACHE_CLEANUP_KEY) === 'done') return;
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((registration) => registration.unregister()));
+    }
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((key) => caches.delete(key)));
+    }
+    localStorage.setItem(LEGACY_CACHE_CLEANUP_KEY, 'done');
+  } catch {
+    // Cache cleanup is migration housekeeping; it must never block the app.
+  }
+}
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations()
-    .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
-    .catch(() => {});
-}
-if ('caches' in window) {
-  caches.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key)))).catch(() => {});
-}
+boot();
+cleanupLegacyBrowserCachesOnce();
