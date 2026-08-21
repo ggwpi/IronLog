@@ -1,41 +1,71 @@
-/* Active workout primary action: always anchored to the visible bottom edge. */
+/*
+ * Active workout primary action.
+ *
+ * IMPORTANT (iOS 26): do not use `position: fixed` for the bottom workout CTA.
+ * WebKit can keep bottom-fixed layers at a stale vertical viewport offset after
+ * the software keyboard closes. The active-workout screen already owns a
+ * deterministic full-height grid, so the reliable solution is to keep the CTA
+ * in normal grid flow and let the grid reserve the remaining vertical space.
+ * This file is intentionally scoped to the active workout only; it does not
+ * change the global app shell, document scrolling, or the other tabs.
+ */
 body:has(.active-workout-page){
   --aw-action-height:56px;
   --aw-action-gap:12px;
 }
 
-/* Reserve a real content lane so variable chart/empty-state data never sits behind the CTA. */
+/*
+ * When rest is hidden there are seven visible grid children:
+ * header / progress / hero / performance / form / next / action.
+ * Put the "next" row in the flexible lane so the action remains at the same
+ * physical bottom position without viewport-fixed positioning.
+ */
 .active-workout-page.live-minimal{
   box-sizing:border-box!important;
-  padding-bottom:calc(var(--aw-action-height) + var(--aw-action-gap) + 8px)!important;
+  padding-bottom:0!important;
+  grid-template-rows:auto 3px auto auto auto minmax(0,1fr) auto!important;
+  align-content:stretch!important;
+}
+
+/* Rest adds one visible child before the next/action rows. */
+.active-workout-page.live-minimal:has(.live-rest-flat:not([hidden])){
+  grid-template-rows:auto 3px auto auto auto auto minmax(0,1fr) auto!important;
+}
+
+.live-next-flat{
+  align-self:end!important;
 }
 
 .live-finish-flat{
   box-sizing:border-box!important;
-  position:fixed!important;
-  z-index:90000!important;
-  left:max(14px, env(safe-area-inset-left))!important;
-  right:max(14px, env(safe-area-inset-right))!important;
-  bottom:calc(env(safe-area-inset-bottom) + var(--aw-action-gap))!important;
-  width:auto!important;
-  max-width:724px!important;
+  position:relative!important;
+  z-index:20!important;
+  inset:auto!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  justify-self:stretch!important;
+  align-self:end!important;
+  width:100%!important;
+  max-width:none!important;
   height:var(--aw-action-height)!important;
   min-height:var(--aw-action-height)!important;
-  margin:0 auto!important;
-  transform:translateZ(0);
-  -webkit-transform:translateZ(0);
-  isolation:isolate;
+  margin:0!important;
+  transform:none!important;
+  -webkit-transform:none!important;
+  isolation:auto!important;
   box-shadow:
     0 -18px 34px rgba(7,11,12,.78),
     0 10px 26px rgba(203,255,18,.09)!important;
 }
 
 .live-finish-flat:active{
-  transform:translateZ(0) scale(.985)!important;
-  -webkit-transform:translateZ(0) scale(.985)!important;
+  transform:scale(.985)!important;
+  -webkit-transform:scale(.985)!important;
 }
 
-/* Full-screen rest owns the viewport while it is visible. */
+/* Full-screen rest owns the interaction while it is visible. */
 body:has(.live-rest-flat:not([hidden])) .live-finish-flat{
   opacity:0!important;
   pointer-events:none!important;
@@ -46,19 +76,12 @@ body:has(.live-rest-flat:not([hidden])) .live-finish-flat{
     --aw-action-height:54px;
     --aw-action-gap:10px;
   }
-  .live-finish-flat{
-    left:max(12px, env(safe-area-inset-left))!important;
-    right:max(12px, env(safe-area-inset-right))!important;
-  }
 }
 
 @media(max-height:760px){
   body:has(.active-workout-page){
     --aw-action-height:50px;
     --aw-action-gap:8px;
-  }
-  .active-workout-page.live-minimal{
-    padding-bottom:calc(var(--aw-action-height) + var(--aw-action-gap) + 5px)!important;
   }
 }
 
