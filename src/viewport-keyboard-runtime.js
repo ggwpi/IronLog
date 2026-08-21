@@ -1,11 +1,13 @@
 /*
  * IronLog global mobile keyboard / VisualViewport stabilizer.
  *
- * iOS Safari can move or resize the layout viewport while an input is focused
- * and occasionally leaves position:fixed UI at the keyboard-adjusted offset
- * after the keyboard closes. This runtime is intentionally route-agnostic:
- * every editable control and every top/bottom fixed layer is handled the same
- * way across the app.
+ * iOS Safari can pan the visual viewport while the software keyboard is open
+ * and, on some versions, keep one-edge position:fixed controls at that panned
+ * offset after the keyboard closes. The important detail is that removing our
+ * compensation immediately after dismissal can re-introduce Safari's offset.
+ *
+ * This runtime is intentionally route-agnostic. It handles every editable
+ * control and every visible top/bottom fixed layer across the app.
  */
 
 const viewport = window.visualViewport;
@@ -19,12 +21,14 @@ const EDITABLE_SELECTOR = [
   'input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="file"]):not([type="color"])',
 ].join(',');
 
-const RECOVERY_DELAYS = [0, 48, 110, 190, 300, 450, 650, 900, 1200];
+const RECOVERY_DELAYS = [0, 40, 90, 160, 250, 380, 560, 800, 1100, 1500, 2100];
+const managedFixed = new Map();
 
 let session = null;
 let recoveryTimers = [];
 let manuallyScrolled = false;
 let preFocus = null;
+let postKeyboardUntil = 0;
 
 function isEditable(element) {
   if (!(element instanceof Element)) return false;
@@ -64,10 +68,8 @@ function fixedAnchor(element) {
   if (element.dataset.ironlogViewportManaged === 'self') return null;
 
   const style = getComputedStyle(element);
-  if (style.position !== 'fixed') return null;
+  if (style.position !== 'fixed' || style.display === 'none' || style.visibility === 'hidden') return null;
 
-  // Full-viewport layers (both top and bottom set) already define their own
-  // viewport box. We only compensate one-edge fixed controls/docks.
   const hasTop = style.top !== 'auto';
   const hasBottom = style.bottom !== 'auto';
 
@@ -77,9 +79,30 @@ function fixedAnchor(element) {
 }
 
 function canUseIndividualTranslate(element) {
-  const style = getComputedStyle(element);
-  const computed = style.translate;
+  if (managedFixed.has(element)) return true;
+  const computed = getComputedStyle(element).translate;
   return !computed || computed === 'none' || computed === '0px' || computed === '0px 0px';
+}
+
+function restoreOriginalTranslate(record) {
+  const { element, originalValue, originalPriority } = record;
+  if (!element?.isConnected) return;
+  if (originalValue) element.style.setProperty('translate', originalValue, originalPriority);
+  else element.style.removeProperty('translate');
+}
+
+function applyShift(record, nextShift) {
+  if (!record.element?.isConnected || !Number.isFinite(nextShift)) return;
+
+  const rounded = Math.abs(nextShift) < 0.75 ? 0 : Math.round(nextShift * 2) / 2;
+  record.shift = rounded;
+
+  if (rounded === 0 && !record.keepManaged) {
+    restoreOriginalTranslate(record);
+    return;
+  }
+
+  record.element.style.setProperty('translate', `0px ${rounded}px`, 'important');
 }
 
 function captureFixedElement(element, baseline) {
@@ -87,23 +110,27 @@ function captureFixedElement(element, baseline) {
   if (!anchor || !canUseIndividualTranslate(element)) return null;
 
   const rect = element.getBoundingClientRect();
-  const inlineValue = element.style.getPropertyValue('translate');
-  const inlinePriority = element.style.getPropertyPriority('translate');
+  if (rect.width < 1 || rect.height < 1) return null;
 
-  return {
+  const existing = managedFixed.get(element);
+  const originalValue = existing?.originalValue ?? element.style.getPropertyValue('translate');
+  const originalPriority = existing?.originalPriority ?? element.style.getPropertyPriority('translate');
+  const shift = existing?.shift || 0;
+
+  const item = {
     element,
     anchor,
-    baselineRect: {
-      top: rect.top,
-      bottom: rect.bottom,
-    },
     baselineGap: anchor === 'bottom'
       ? baseline.bottom - rect.bottom
       : rect.top - baseline.top,
-    shift: 0,
-    inlineValue,
-    inlinePriority,
+    shift,
+    originalValue,
+    originalPriority,
+    keepManaged: true,
   };
+
+  managedFixed.set(element, item);
+  return item;
 }
 
 function captureFixedElements(baseline) {
@@ -113,6 +140,16 @@ function captureFixedElements(baseline) {
     if (item) result.push(item);
   });
   return result;
+}
+
+function refreshSessionFixedElements() {
+  if (!session) return;
+  const known = new Set(session.fixed.map((item) => item.element));
+  document.querySelectorAll('body *').forEach((element) => {
+    if (known.has(element)) return;
+    const item = captureFixedElement(element, session.baseline);
+    if (item) session.fixed.push(item);
+  });
 }
 
 function captureScrollState(target) {
@@ -147,9 +184,8 @@ function restoreScrollState() {
 
   session.scrollState.forEach(({ element, top, left }) => {
     if (!element?.isConnected) return;
-    if (typeof element.scrollTo === 'function') {
-      element.scrollTo({ top, left, behavior: 'auto' });
-    } else {
+    if (typeof element.scrollTo === 'function') element.scrollTo({ top, left, behavior: 'auto' });
+    else {
       element.scrollTop = top;
       element.scrollLeft = left;
     }
@@ -158,57 +194,49 @@ function restoreScrollState() {
   window.scrollTo(session.windowX, session.windowY);
 }
 
-function setTranslate(item, nextShift) {
-  if (!item.element?.isConnected) return;
-  if (!Number.isFinite(nextShift)) return;
-
-  // Avoid sub-pixel jitter from VisualViewport animation events.
-  const rounded = Math.abs(nextShift) < 0.75 ? 0 : Math.round(nextShift * 2) / 2;
-  item.shift = rounded;
-  item.element.style.setProperty('translate', `0px ${rounded}px`, 'important');
+function desiredEdge(item, current) {
+  return item.anchor === 'bottom'
+    ? current.bottom - item.baselineGap
+    : current.top + item.baselineGap;
 }
 
-function restoreInlineTranslate(item) {
+function syncOneFixed(item, current) {
   if (!item.element?.isConnected) return;
-  if (item.inlineValue) {
-    item.element.style.setProperty('translate', item.inlineValue, item.inlinePriority);
-  } else {
-    item.element.style.removeProperty('translate');
-  }
+  const rect = item.element.getBoundingClientRect();
+  const actual = item.anchor === 'bottom' ? rect.bottom : rect.top;
+  const desired = desiredEdge(item, current);
+  applyShift(item, item.shift + (desired - actual));
 }
 
-function syncFixedElements({ recovering = false } = {}) {
+function syncFixedElements() {
   if (!session) return;
 
+  refreshSessionFixedElements();
   const current = metrics();
   const open = keyboardIsOpen(current);
-
   if (open) session.keyboardSeen = true;
 
-  for (const item of session.fixed) {
-    if (!item.element?.isConnected) continue;
-
-    const rect = item.element.getBoundingClientRect();
-    let desired;
-
-    if (recovering || session.recovering) {
-      // Return every fixed control to the exact pre-keyboard screen position.
-      desired = item.anchor === 'bottom' ? item.baselineRect.bottom : item.baselineRect.top;
-    } else if (open) {
-      // While typing, keep the same edge gap but anchor it to the *visual*
-      // viewport so Safari's keyboard pan cannot strand the control.
-      desired = item.anchor === 'bottom'
-        ? current.bottom - item.baselineGap
-        : current.top + item.baselineGap;
-    } else {
-      desired = item.anchor === 'bottom' ? item.baselineRect.bottom : item.baselineRect.top;
-    }
-
-    const actual = item.anchor === 'bottom' ? rect.bottom : rect.top;
-    setTranslate(item, item.shift + (desired - actual));
-  }
-
+  session.fixed.forEach((item) => syncOneFixed(item, current));
   root.classList.toggle('ironlog-keyboard-open', open);
+}
+
+function pruneManagedFixed() {
+  for (const [element, record] of managedFixed) {
+    if (!element.isConnected) managedFixed.delete(element);
+    else if (!fixedAnchor(element)) {
+      restoreOriginalTranslate(record);
+      managedFixed.delete(element);
+    }
+  }
+}
+
+function syncPersistedFixed() {
+  if (session) return;
+  pruneManagedFixed();
+  if (!managedFixed.size) return;
+
+  const current = metrics();
+  for (const record of managedFixed.values()) syncOneFixed(record, current);
 }
 
 function clearRecoveryTimers() {
@@ -219,11 +247,22 @@ function clearRecoveryTimers() {
 function finishSession() {
   if (!session) return;
 
-  session.fixed.forEach(restoreInlineTranslate);
+  // Do NOT remove the final translate here. On affected iOS versions that is
+  // exactly what makes the fixed button jump back to Safari's stale offset.
+  // Keep the small residual correction and continue syncing it to the visual
+  // viewport. A later route/orientation change safely drops stale records.
+  session.fixed.forEach((item) => {
+    item.keepManaged = true;
+    managedFixed.set(item.element, item);
+  });
+
   session = null;
   manuallyScrolled = false;
+  postKeyboardUntil = performance.now() + 3500;
   clearRecoveryTimers();
   root.classList.remove('ironlog-keyboard-session', 'ironlog-keyboard-open', 'ironlog-keyboard-recovering');
+
+  requestAnimationFrame(() => requestAnimationFrame(syncPersistedFixed));
 }
 
 function beginRecovery() {
@@ -239,17 +278,14 @@ function beginRecovery() {
       if (!session) return;
 
       restoreScrollState();
-      syncFixedElements({ recovering: true });
-
-      // A layout read followed by another frame makes Safari commit its final
-      // viewport geometry instead of keeping the keyboard-sized fixed layer.
+      syncFixedElements();
       void document.documentElement.offsetHeight;
 
       if (index === RECOVERY_DELAYS.length - 1) {
         requestAnimationFrame(() => {
           if (!session) return;
           restoreScrollState();
-          syncFixedElements({ recovering: true });
+          syncFixedElements();
           requestAnimationFrame(finishSession);
         });
       }
@@ -286,26 +322,27 @@ function startSession(target) {
 }
 
 function onViewportChange() {
-  if (!session) return;
+  if (session) {
+    const current = metrics();
+    const open = keyboardIsOpen(current);
 
-  const current = metrics();
-  const open = keyboardIsOpen(current);
+    syncFixedElements();
 
-  syncFixedElements();
-
-  // iOS can dismiss the keyboard while the input remains focused (Done key).
-  // Detect the viewport returning to its baseline and run the same recovery.
-  if (
-    session.keyboardSeen
-    && !open
-    && current.height >= session.baseline.height - 36
-    && !session.recovering
-  ) {
-    beginRecovery();
+    if (
+      session.keyboardSeen
+      && !open
+      && current.height >= session.baseline.height - 36
+      && !session.recovering
+    ) {
+      beginRecovery();
+    }
+    return;
   }
+
+  if (managedFixed.size) syncPersistedFixed();
 }
 
-document.addEventListener('pointerdown', (event) => {
+function prepareFocus(event) {
   if (!isEditable(event.target) || session) return;
   preFocus = {
     target: event.target,
@@ -315,13 +352,14 @@ document.addEventListener('pointerdown', (event) => {
     windowY: window.scrollY || 0,
     at: performance.now(),
   };
-}, true);
+}
+
+document.addEventListener('pointerdown', prepareFocus, true);
+document.addEventListener('touchstart', prepareFocus, { passive: true, capture: true });
 
 document.addEventListener('focusin', (event) => {
   if (!isEditable(event.target)) return;
 
-  // Moving between inputs while the keyboard is already up must keep the
-  // original pre-keyboard baseline.
   if (session && !session.recovering) {
     session.target = event.target;
     return;
@@ -341,8 +379,6 @@ document.addEventListener('focusout', (event) => {
   }, 45);
 }, true);
 
-// If the user deliberately scrolls the form while editing, do not yank the
-// document back on keyboard dismissal. Fixed UI is still restored.
 document.addEventListener('touchmove', () => {
   if (session) manuallyScrolled = true;
 }, { passive: true, capture: true });
@@ -351,12 +387,31 @@ viewport?.addEventListener('resize', onViewportChange, { passive: true });
 viewport?.addEventListener('scroll', onViewportChange, { passive: true });
 window.addEventListener('resize', onViewportChange, { passive: true });
 
+// Safari can finish moving its toolbar after the keyboard animation itself.
+// Keep checking briefly even when it emits no final VisualViewport event.
+window.setInterval(() => {
+  if (!session && managedFixed.size && performance.now() < postKeyboardUntil) {
+    syncPersistedFixed();
+  }
+}, 120);
+
 window.addEventListener('orientationchange', () => {
   preFocus = null;
-  if (session) finishSession();
+  if (session) {
+    session.fixed.forEach((item) => {
+      restoreOriginalTranslate(item);
+      managedFixed.delete(item.element);
+    });
+    session = null;
+  }
+  for (const record of managedFixed.values()) restoreOriginalTranslate(record);
+  managedFixed.clear();
+  clearRecoveryTimers();
+  root.classList.remove('ironlog-keyboard-session', 'ironlog-keyboard-open', 'ironlog-keyboard-recovering');
 }, { passive: true });
 
 window.addEventListener('pageshow', () => {
   preFocus = null;
-  if (session) finishSession();
+  if (session) beginRecovery();
+  else syncPersistedFixed();
 });
