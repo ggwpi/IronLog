@@ -14,6 +14,10 @@ function assertResult(result, label) {
   return result.data;
 }
 
+function optionalResult(result, fallback) {
+  return result?.error ? fallback : (result?.data ?? fallback);
+}
+
 function sortByPosition(items = []) {
   return [...items].sort((a, b) => Number(a.position || 0) - Number(b.position || 0));
 }
@@ -191,18 +195,26 @@ export async function loadAppData(userId) {
     supabase.from('muscles').select('id,slug,name,name_he,region').order('name'),
     supabase.from('body_weight_measurements').select('measured_at,weight_kg').gte('measured_at', since.toISOString()).order('measured_at'),
     supabase.from('weekly_muscle_volume').select('week_start,muscle_slug,name,name_he,effective_sets,direct_sets').gte('week_start', sinceDate).order('week_start'),
-    supabase.from('exercise_performance_points').select('exercise_id,name,completed_at,load_kg,reps,rir,estimated_1rm_kg').gte('completed_at', since.toISOString()).order('completed_at', { ascending: false }),
+    supabase.from('exercise_performance_points').select('exercise_id,name,completed_at,load_kg,reps,rir,estimated_1rm_kg').gte('completed_at', since.toISOString()).order('completed_at', { ascending: true }),
     supabase.from('recovery_logs').select('log_date,sleep_minutes,readiness,fatigue,soreness,stress').gte('log_date', sinceDate).order('log_date'),
     supabase.from('training_cycles').select('id,name,starts_on,planned_weeks,status').eq('status', 'active').order('starts_on', { ascending: false }).limit(1),
     supabase.from('workout_sessions').select('id,template_id,template_name,status,started_at,completed_at').gte('started_at', since.toISOString()).order('started_at', { ascending: false }),
     supabase.from('workout_sessions').select('id,template_id,template_name,status,started_at,completed_at').eq('status', 'active').order('started_at', { ascending: false }).limit(1),
   ]);
 
+  // Workout/session data is core app state and should fail loudly if unavailable.
+  // Statistics/profile queries are supplementary: one transient analytics error
+  // must not blank the entire application.
+  const resolvedProfile = optionalResult(profile, null);
   const resolvedTemplates = assertResult(templates, 'workout templates');
   const resolvedExercises = assertResult(exercises, 'exercise library');
   const resolvedLinks = assertResult(muscleLinks, 'exercise muscles');
   const resolvedMuscles = assertResult(muscles, 'muscles');
-  const resolvedPerformance = assertResult(performance, 'exercise performance');
+  const resolvedPerformance = optionalResult(performance, []);
+  const resolvedWeights = optionalResult(weights, []);
+  const resolvedVolume = optionalResult(volume, []);
+  const resolvedRecovery = optionalResult(recovery, []);
+  const resolvedCycles = optionalResult(cycles, []);
   const resolvedSessions = assertResult(sessions, 'workout sessions');
   const activeSession = assertResult(activeSessionRows, 'active workout')[0] || null;
   const exerciseLibrary = buildExerciseLibrary(resolvedExercises, resolvedLinks, resolvedMuscles);
@@ -227,7 +239,7 @@ export async function loadAppData(userId) {
     .reduce((sum, point) => sum + Number(point.load_kg || 0) * Number(point.reps || 0), 0);
 
   return {
-    profile: assertResult(profile, 'profile'),
+    profile: resolvedProfile,
     workouts,
     workoutData: {
       exerciseLibrary,
@@ -243,11 +255,11 @@ export async function loadAppData(userId) {
       },
     },
     statisticsSource: {
-      weights: assertResult(weights, 'body weight'),
-      muscleVolume: assertResult(volume, 'muscle volume'),
+      weights: resolvedWeights,
+      muscleVolume: resolvedVolume,
       performance: resolvedPerformance,
-      recovery: assertResult(recovery, 'recovery'),
-      cycle: assertResult(cycles, 'training cycle')[0] || null,
+      recovery: resolvedRecovery,
+      cycle: resolvedCycles[0] || null,
       sessions: resolvedSessions,
     },
   };
@@ -321,6 +333,7 @@ export async function finishWorkout(sessionId, cancel = false) {
 export function subscribeToTraining(userId, callback) {
   const channel = supabase.channel(`ironlog-training-${userId}`)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'workout_sessions', filter: `user_id=eq.${userId}` }, callback)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'session_exercises', filter: `user_id=eq.${userId}` }, callback)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'performed_sets', filter: `user_id=eq.${userId}` }, callback)
     .subscribe();
   return () => { supabase.removeChannel(channel); };
