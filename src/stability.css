@@ -1,3 +1,5 @@
+@import url('/src/viewport-shell.css?v=1');
+
 /* IronLog UI stability: do not replay page-entry animations on background sync/remounts. */
 html.ironlog-ui-stable .animate-enter{
   animation:none!important;
