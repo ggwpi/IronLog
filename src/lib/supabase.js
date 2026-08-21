@@ -13,6 +13,10 @@ function requestUrl(input) {
   return typeof input === 'string' ? input : input?.url || '';
 }
 
+function cloneRequestInput(input) {
+  return input instanceof Request ? input.clone() : input;
+}
+
 async function isFutureJwtResponse(response) {
   if (response?.ok || ![401, 403].includes(Number(response?.status))) return false;
   try {
@@ -61,37 +65,36 @@ async function refreshedAccessToken() {
   return refreshPromise;
 }
 
-async function retryWithToken(input, init, token) {
-  const headers = new Headers(input instanceof Request ? input.headers : undefined);
+async function retryWithToken(seedInput, init, token) {
+  const input = cloneRequestInput(seedInput);
+  const headers = new Headers(seedInput instanceof Request ? seedInput.headers : undefined);
   if (init?.headers) new Headers(init.headers).forEach((value, key) => headers.set(key, value));
   if (token) headers.set('authorization', `Bearer ${token}`);
-  const options = { ...(init || {}), headers };
-  return nativeFetch(input, options);
+  return nativeFetch(input, { ...(init || {}), headers });
 }
 
 async function resilientFetch(input, init) {
-  // Keep an untouched clone because Request bodies can be consumed by the first fetch.
-  const retryInput = input instanceof Request ? input.clone() : input;
+  // Keep one untouched seed. Every retry clones from it so POST/RPC bodies are
+  // never re-used after a previous fetch has consumed them.
+  const retrySeed = cloneRequestInput(input);
   const retryInit = init ? { ...init } : undefined;
   const response = await nativeFetch(input, init);
   if (!(await isFutureJwtResponse(response))) return response;
 
-  // A just-issued token can briefly reach PostgREST before every Supabase edge clock
-  // agrees on its iat. Do not surface that transient infrastructure detail to the UI.
-  await sleep(retryDelay(retryInput, retryInit));
+  await sleep(retryDelay(retrySeed, retryInit));
 
-  const url = requestUrl(retryInput);
+  const url = requestUrl(retrySeed);
   if (url.includes('/auth/v1/')) {
-    return nativeFetch(retryInput, retryInit);
+    return nativeFetch(cloneRequestInput(retrySeed), retryInit);
   }
 
   const freshToken = await refreshedAccessToken();
-  let retry = await retryWithToken(retryInput, retryInit, freshToken);
+  let retry = await retryWithToken(retrySeed, retryInit, freshToken);
   if (!(await isFutureJwtResponse(retry))) return retry;
 
-  // One final short grace period covers clock skew without creating an infinite loop.
+  // One final short grace period covers small edge-clock skew without loops.
   await sleep(1600);
-  retry = await retryWithToken(retryInput, retryInit, freshToken);
+  retry = await retryWithToken(retrySeed, retryInit, freshToken);
   return retry;
 }
 
