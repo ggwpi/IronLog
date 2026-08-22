@@ -1,0 +1,278 @@
+/*
+ * Active workout motion enhancement.
+ *
+ * Initial motion is replayed when the user confirms the workout briefing, so it
+ * is actually visible instead of finishing behind the splash. Ongoing motion is
+ * intentionally ambient: it never changes layout geometry or viewport sizing.
+ */
+
+.active-workout-page.motion-ready{
+  isolation:isolate;
+}
+.active-workout-page.motion-ready::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 78% 24%,rgba(203,255,18,.055),transparent 22%),
+    radial-gradient(circle at 18% 72%,rgba(203,255,18,.025),transparent 28%);
+  opacity:.45;
+  scale:1;
+  animation:awAmbientField 9s ease-in-out infinite;
+}
+.active-workout-page.motion-ready>*{
+  position:relative;
+  z-index:1;
+}
+
+/* ---------- Initial session entrance after the briefing ---------- */
+.motion-session-enter .live-workout-header{
+  animation:awSessionTop .58s cubic-bezier(.18,.84,.2,1) both!important;
+}
+.motion-session-enter .live-total-progress{
+  animation:awSessionFade .52s ease .07s both!important;
+}
+.motion-session-enter .live-hero-flat{
+  animation:awSessionBlock .72s cubic-bezier(.16,.86,.2,1) .08s both!important;
+}
+.motion-session-enter .live-exercise-name{
+  animation:awSessionCopy .68s cubic-bezier(.16,.86,.2,1) .14s both!important;
+}
+.motion-session-enter .live-muscle-figure{
+  animation:awSessionFigure .8s cubic-bezier(.16,.9,.2,1) .12s both!important;
+}
+.motion-session-enter .live-ring{
+  animation:awSessionRing .7s cubic-bezier(.16,1.02,.24,1) .19s both!important;
+}
+.motion-session-enter .live-performance{
+  animation:awSessionBlock .72s cubic-bezier(.16,.86,.2,1) .2s both!important;
+}
+.motion-session-enter .live-entry-form{
+  animation:awSessionBlock .72s cubic-bezier(.16,.86,.2,1) .28s both!important;
+}
+.motion-session-enter .live-inline-fields>div{
+  animation:awSessionField .54s cubic-bezier(.18,.88,.2,1) both!important;
+}
+.motion-session-enter .live-inline-fields>div:nth-child(1){animation-delay:.36s!important}
+.motion-session-enter .live-inline-fields>div:nth-child(2){animation-delay:.42s!important}
+.motion-session-enter .live-inline-fields>div:nth-child(3){animation-delay:.48s!important}
+.motion-session-enter .live-next-flat{
+  animation:awSessionBlock .64s cubic-bezier(.16,.86,.2,1) .48s both!important;
+}
+.motion-session-enter .live-finish-flat{
+  animation:awSessionAction .68s cubic-bezier(.16,.9,.2,1) .56s both!important;
+}
+.motion-session-enter .live-chart-line{
+  stroke-dasharray:620;
+  stroke-dashoffset:620;
+  animation:awSessionChartDraw 1.05s cubic-bezier(.2,.76,.2,1) .34s forwards!important;
+}
+.motion-session-enter .live-set-point.done,
+.motion-session-enter .live-set-point.current{
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:awSessionPoint .5s cubic-bezier(.2,1.2,.3,1) .62s both!important;
+}
+
+/* ---------- Ongoing / ambient workout motion ---------- */
+.motion-ready #liveWorkoutElapsed{
+  display:inline-block;
+  animation:awTimerAlive 3.2s ease-in-out infinite;
+}
+
+.motion-ready .live-total-progress{
+  position:relative;
+  overflow:hidden;
+}
+.motion-ready .live-total-progress::after{
+  content:"";
+  position:absolute;
+  inset:-2px auto -2px -16%;
+  width:14%;
+  border-radius:999px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);
+  filter:blur(.2px);
+  opacity:0;
+  translate:-180% 0;
+  animation:awProgressSweep 5.8s ease-in-out 1.6s infinite;
+  pointer-events:none;
+}
+.motion-ready .live-total-progress i{
+  animation:awProgressGlow 3.8s ease-in-out infinite;
+}
+
+.motion-ready .live-hero-flat::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  width:40%;
+  max-width:190px;
+  aspect-ratio:1;
+  inset:50% 1% auto auto;
+  translate:0 -50%;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(203,255,18,.09),rgba(203,255,18,.022) 42%,transparent 70%);
+  filter:blur(6px);
+  opacity:.55;
+  animation:awMuscleAura 5.4s ease-in-out infinite;
+  pointer-events:none;
+}
+.motion-ready .live-hero-flat>*{z-index:1}
+
+.motion-ready .live-ring{
+  box-shadow:0 0 0 0 rgba(203,255,18,0);
+  animation:awRingBreathEnhanced 4s ease-in-out infinite!important;
+}
+
+.motion-ready .live-performance{
+  position:relative;
+}
+.motion-ready .live-performance::after{
+  content:"";
+  position:absolute;
+  inset:auto 12% 0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(203,255,18,.16),transparent);
+  opacity:.25;
+  scale:.72 1;
+  animation:awGraphBaseline 5.6s ease-in-out infinite;
+  pointer-events:none;
+}
+
+.motion-ready .live-entry-form{
+  position:relative;
+}
+.motion-ready .live-entry-form::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:18px;
+  border:1px solid transparent;
+  pointer-events:none;
+  animation:awEntryFrame 6.2s ease-in-out infinite;
+}
+
+.motion-ready .live-next-flat{
+  position:relative;
+  overflow:hidden;
+}
+.motion-ready .live-next-flat::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:-20%;
+  width:14%;
+  background:linear-gradient(90deg,transparent,rgba(203,255,18,.055),transparent);
+  transform:skewX(-16deg);
+  opacity:0;
+  animation:awNextSweep 6.8s ease-in-out 2.3s infinite;
+  pointer-events:none;
+}
+
+/* State motion remains stronger than ambient motion. */
+.motion-state-change .live-total-progress i,
+.is-saving-set .live-total-progress i{
+  animation:none!important;
+}
+.live-inline-fields>div.has-focus,
+.live-inline-fields>div.is-field-active{
+  animation:none!important;
+}
+
+@keyframes awSessionTop{
+  from{opacity:0;translate:0 -14px;filter:blur(2px)}
+  to{opacity:1;translate:0 0;filter:blur(0)}
+}
+@keyframes awSessionFade{from{opacity:0}to{opacity:1}}
+@keyframes awSessionBlock{
+  from{opacity:0;translate:0 20px;filter:blur(2px)}
+  to{opacity:1;translate:0 0;filter:blur(0)}
+}
+@keyframes awSessionCopy{
+  from{opacity:0;translate:18px 0}
+  to{opacity:1;translate:0 0}
+}
+@keyframes awSessionFigure{
+  from{opacity:0;translate:0 22px;scale:.94;filter:blur(3px)}
+  to{opacity:1;translate:0 0;scale:1;filter:blur(0)}
+}
+@keyframes awSessionRing{
+  0%{opacity:0;scale:.82;filter:brightness(.8)}
+  70%{opacity:1;scale:1.055;filter:brightness(1.18)}
+  100%{opacity:1;scale:1;filter:brightness(1)}
+}
+@keyframes awSessionField{
+  from{opacity:0;translate:0 12px}
+  to{opacity:1;translate:0 0}
+}
+@keyframes awSessionAction{
+  from{opacity:0;translate:0 18px;scale:.985}
+  to{opacity:1;translate:0 0;scale:1}
+}
+@keyframes awSessionChartDraw{to{stroke-dashoffset:0}}
+@keyframes awSessionPoint{
+  0%{opacity:0;transform:scale(.35)}
+  72%{opacity:1;transform:scale(1.16)}
+  100%{opacity:1;transform:scale(1)}
+}
+
+@keyframes awAmbientField{
+  0%,100%{opacity:.34;scale:.985}
+  50%{opacity:.62;scale:1.015}
+}
+@keyframes awTimerAlive{
+  0%,100%{opacity:.82;text-shadow:0 0 0 rgba(203,255,18,0)}
+  50%{opacity:1;text-shadow:0 0 11px rgba(203,255,18,.16)}
+}
+@keyframes awProgressSweep{
+  0%,76%{opacity:0;translate:-180% 0}
+  82%{opacity:.8}
+  94%,100%{opacity:0;translate:900% 0}
+}
+@keyframes awProgressGlow{
+  0%,100%{box-shadow:0 0 8px rgba(203,255,18,.12);filter:brightness(1)}
+  50%{box-shadow:0 0 15px rgba(203,255,18,.26);filter:brightness(1.08)}
+}
+@keyframes awMuscleAura{
+  0%,100%{opacity:.38;scale:.92}
+  50%{opacity:.72;scale:1.08}
+}
+@keyframes awRingBreathEnhanced{
+  0%,100%{filter:brightness(1);transform:scale(1);box-shadow:0 0 0 0 rgba(203,255,18,0)}
+  50%{filter:brightness(1.07);transform:scale(1.018);box-shadow:0 0 18px 1px rgba(203,255,18,.08)}
+}
+@keyframes awGraphBaseline{
+  0%,100%{opacity:.15;scale:.66 1}
+  50%{opacity:.42;scale:1 1}
+}
+@keyframes awEntryFrame{
+  0%,100%{border-color:rgba(203,255,18,0);box-shadow:inset 0 0 0 rgba(203,255,18,0)}
+  50%{border-color:rgba(203,255,18,.035);box-shadow:inset 0 0 28px rgba(203,255,18,.012)}
+}
+@keyframes awNextSweep{
+  0%,78%{left:-20%;opacity:0}
+  84%{opacity:.85}
+  96%,100%{left:108%;opacity:0}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .active-workout-page.motion-ready::before,
+  .active-workout-page.motion-ready *,
+  .active-workout-page.motion-ready *::before,
+  .active-workout-page.motion-ready *::after,
+  .active-workout-page.motion-session-enter *{
+    animation:none!important;
+    transition:none!important;
+  }
+}
+html.reduce-motion .active-workout-page.motion-ready::before,
+html.reduce-motion .active-workout-page.motion-ready *,
+html.reduce-motion .active-workout-page.motion-ready *::before,
+html.reduce-motion .active-workout-page.motion-ready *::after,
+html.reduce-motion .active-workout-page.motion-session-enter *{
+  animation:none!important;
+  transition:none!important;
+}
