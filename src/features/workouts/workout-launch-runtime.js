@@ -248,6 +248,14 @@ function beginLaunch(button) {
   overlay.querySelector('[data-launch-cancel]')?.addEventListener('click', cancelCurrent);
 }
 
+/* Prevent the briefing from ever becoming a scroll surface on touch devices. */
+function preventLaunchScroll(event) {
+  if (!current?.overlay) return;
+  if (current.overlay.contains(event.target)) event.preventDefault();
+}
+document.addEventListener('touchmove', preventLaunchScroll, { capture:true, passive:false });
+document.addEventListener('wheel', preventLaunchScroll, { capture:true, passive:false });
+
 /*
  * Intercept a NEW-workout click before app.js starts the backend session. The
  * briefing can therefore stay on screen indefinitely without the workout timer
