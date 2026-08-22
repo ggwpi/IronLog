@@ -1,46 +1,46 @@
-/* Generic page/screen transition. The frame moves as one surface; its children do not animate here. */
+/* Generic page/screen transition. The logical screen moves as one surface. */
 .app-screen-frame{
   width:100%;
   min-height:100%;
   view-transition-name:ironlog-screen;
-  contain:layout paint;
 }
 html.ironlog-screen-transitioning .app-screen-frame{pointer-events:none}
 
-/* Keep the document chrome stable and animate only the named screen surface. */
 ::view-transition-old(root),
 ::view-transition-new(root){
   animation:none!important;
   mix-blend-mode:normal!important;
 }
 ::view-transition-group(ironlog-screen){
-  animation-duration:250ms;
-  animation-timing-function:cubic-bezier(.22,.78,.22,1);
+  animation-duration:330ms;
+  animation-timing-function:cubic-bezier(.18,.82,.18,1);
 }
 ::view-transition-old(ironlog-screen){
-  animation:ironlogScreenOld 210ms cubic-bezier(.22,.78,.22,1) both;
+  animation:ironlogScreenOld 250ms cubic-bezier(.4,0,.2,1) both;
   mix-blend-mode:normal;
 }
 ::view-transition-new(ironlog-screen){
-  animation:ironlogScreenNew 250ms cubic-bezier(.22,.78,.22,1) both;
+  animation:ironlogScreenNew 330ms cubic-bezier(.18,.82,.18,1) both;
   mix-blend-mode:normal;
 }
 
 .app-screen-frame--enter{
-  animation:ironlogScreenFallback 250ms cubic-bezier(.22,.78,.22,1) both!important;
+  animation:ironlogScreenFallback 360ms cubic-bezier(.18,.82,.18,1) both!important;
+  transform-origin:50% 42%;
 }
 
 @keyframes ironlogScreenOld{
-  from{opacity:1;transform:translate3d(0,0,0) scale(1)}
-  to{opacity:0;transform:translate3d(0,-5px,0) scale(.997)}
+  from{opacity:1;translate:0 0;scale:1;filter:blur(0)}
+  to{opacity:0;translate:0 -7px;scale:.996;filter:blur(1.5px)}
 }
 @keyframes ironlogScreenNew{
-  from{opacity:0;transform:translate3d(0,10px,0) scale(.995)}
-  to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+  from{opacity:0;translate:0 13px;scale:.994;filter:blur(2px)}
+  to{opacity:1;translate:0 0;scale:1;filter:blur(0)}
 }
 @keyframes ironlogScreenFallback{
-  from{opacity:0;transform:translate3d(0,10px,0) scale(.995)}
-  to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+  from{opacity:.12;translate:0 14px;scale:.995;filter:blur(2px)}
+  62%{opacity:1;filter:blur(0)}
+  to{opacity:1;translate:0 0;scale:1;filter:blur(0)}
 }
 
 @media(prefers-reduced-motion:reduce){
