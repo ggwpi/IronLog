@@ -1,16 +1,21 @@
 /*
- * Active workout primary action + iOS keyboard geometry lock.
+ * Active workout primary action.
  *
- * The CTA stays in normal grid flow (never viewport-fixed). On affected iOS 26
- * builds the visual viewport itself can remain panned after keyboard dismissal,
- * so the runtime captures the pre-keyboard pixel geometry and exposes it through
- * CSS variables. These overrides are deliberately scoped to active workout only.
+ * The CTA is deliberately part of normal grid flow. It never uses
+ * position:fixed/sticky and never receives a keyboard compensation transform.
+ * iOS keyboard handling is owned by the site-wide keyboard-safe layout policy.
  */
 body:has(.active-workout-page){
   --aw-action-height:56px;
   --aw-action-gap:12px;
 }
 
+/*
+ * Seven visible rows while rest is hidden:
+ * header / progress / hero / performance / form / flexible next / action.
+ * The flexible next row consumes spare height, keeping the action at the bottom
+ * without attaching it to the visual viewport.
+ */
 .active-workout-page.live-minimal{
   box-sizing:border-box!important;
   padding-bottom:0!important;
@@ -18,26 +23,9 @@ body:has(.active-workout-page){
   align-content:stretch!important;
 }
 
+/* Rest inserts one additional row before next/action. */
 .active-workout-page.live-minimal:has(.live-rest-flat:not([hidden])){
   grid-template-rows:auto 3px auto auto auto auto minmax(0,1fr) auto!important;
-}
-
-/* Freeze exactly the geometry that existed before focus. This avoids 100dvh
-   changing the workout frame while Safari animates the software keyboard. */
-html.aw-viewport-locked body:has(.active-workout-page) .app-shell,
-html.aw-viewport-locked body:has(.active-workout-page) .app-content{
-  height:var(--aw-stable-outer-height)!important;
-  min-height:0!important;
-  max-height:var(--aw-stable-outer-height)!important;
-}
-
-html.aw-viewport-locked .active-workout-page.live-minimal{
-  position:relative!important;
-  height:var(--aw-stable-height)!important;
-  min-height:0!important;
-  max-height:var(--aw-stable-height)!important;
-  top:var(--aw-ios-pan-fix,0px)!important;
-  transition:none!important;
 }
 
 .live-next-flat{
