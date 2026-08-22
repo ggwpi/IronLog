@@ -8,8 +8,8 @@ function stableClasses(element) {
   if (!element?.classList) return '';
   return [...element.classList]
     .filter((name) => ![
-      'animate-enter', 'app-screen-frame--enter', 'motion-ready',
-      'motion-state-change', 'is-state-shift', 'is-next-refresh',
+      'animate-enter', 'app-screen-frame', 'app-screen-frame--enter', 'motion-ready',
+      'motion-state-change', 'is-state-shift', 'is-next-refresh', 'workout-launch-reveal',
     ].includes(name))
     .sort()
     .join('.');
@@ -19,7 +19,7 @@ function logicalSurface() {
   const content = document.querySelector('#appContent');
   if (content) {
     const child = [...content.children].find((element) => !element.classList.contains('data-banner')) || content;
-    return { frame: content, child };
+    return { frame: child, child };
   }
   const child = app?.firstElementChild || null;
   return { frame: child, child };
@@ -38,14 +38,15 @@ function screenKey() {
     : child.matches?.('.auth-shell') ? 'auth'
     : rootClasses || child.tagName.toLowerCase();
 
-  // Route + top-level screen identity changes for navigation/sub-pages, while
-  // normal data refreshes keep the same key and therefore do not reanimate.
   return `${route}|${mode}|${rootId}`;
 }
 
 function settleScreen() {
   scheduled = false;
   const nextKey = screenKey();
+  const { frame } = logicalSurface();
+  if (frame) frame.classList.add('app-screen-frame');
+
   if (lastScreenKey === null) {
     lastScreenKey = nextKey;
     return;
@@ -53,7 +54,6 @@ function settleScreen() {
   if (nextKey === lastScreenKey) return;
   lastScreenKey = nextKey;
 
-  const { frame } = logicalSurface();
   if (!frame || frame.closest?.('#launchScreen')) return;
   animateMountedScreen(frame);
 }
