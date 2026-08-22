@@ -1,4 +1,5 @@
 import { WORKOUTS } from './workout-catalog.js';
+import { escapeHtml } from '../../core/escape-html.js';
 
 const MIN_VISIBLE_MS = 1550;
 const READY_HOLD_MS = 430;
@@ -69,11 +70,11 @@ function contextFor(button) {
 }
 
 function metric(value, label, suffix = '') {
-  return `<div class="workout-launch__metric"><strong>${value == null ? '—' : `${value}${suffix}`}</strong><span>${label}</span></div>`;
+  return `<div class="workout-launch__metric"><strong>${value == null ? '—' : `${value}${suffix}`}</strong><span>${escapeHtml(label)}</span></div>`;
 }
 
 function htmlFor(context) {
-  const targetMarkup = context.targets.slice(0,4).map((target) => `<span>${target}</span>`).join('');
+  const targetMarkup = context.targets.slice(0,4).map((target) => `<span>${escapeHtml(target)}</span>`).join('');
   return `<div class="workout-launch" role="status" aria-live="polite" data-workout-launch>
     <div class="workout-launch__top">
       <div class="workout-launch__brand"><i aria-hidden="true"></i><span>IRONLOG / SESSION</span></div>
@@ -82,17 +83,17 @@ function htmlFor(context) {
     <div class="workout-launch__main">
       <section class="workout-launch__copy">
         <span class="workout-launch__eyebrow">האימון של היום</span>
-        <h1>${context.title}</h1>
-        <p>${context.subtitle}</p>
+        <h1>${escapeHtml(context.title)}</h1>
+        <p>${escapeHtml(context.subtitle)}</p>
         <div class="workout-launch__targets">${targetMarkup}</div>
         <div class="workout-launch__metrics">
           ${metric(context.exercises,'תרגילים')}
           ${metric(context.sets,'סטים')}
           ${metric(context.minutes,'דקות','')}
         </div>
-        <div class="workout-launch__focus"><small>דגש להיום</small><strong>${context.focus}</strong></div>
+        <div class="workout-launch__focus"><small>דגש להיום</small><strong>${escapeHtml(context.focus)}</strong></div>
       </section>
-      <div class="workout-launch__art"><img src="${context.image}" alt="" loading="eager"></div>
+      <div class="workout-launch__art"><img src="${escapeHtml(context.image)}" alt="" loading="eager"></div>
     </div>
     <div class="workout-launch__footer">
       <div class="workout-launch__progress"><i></i></div>
