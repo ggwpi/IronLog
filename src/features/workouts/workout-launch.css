@@ -1,0 +1,288 @@
+/* Workout launch briefing: a deliberate bridge from plan -> live session. */
+.workout-launch{
+  position:fixed;
+  z-index:5000;
+  inset:0;
+  box-sizing:border-box;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 74% 40%,rgba(210,255,22,.115),transparent 26%),
+    radial-gradient(circle at 50% 112%,rgba(210,255,22,.055),transparent 34%),
+    #06090a;
+  color:#f5f7f7;
+  padding:calc(env(safe-area-inset-top,0px) + 28px) 24px calc(env(safe-area-inset-bottom,0px) + 24px);
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  opacity:0;
+  animation:workoutLaunchIn .34s cubic-bezier(.2,.8,.2,1) forwards;
+  isolation:isolate;
+}
+.workout-launch::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:-16%;
+  background:linear-gradient(118deg,transparent 35%,rgba(210,255,22,.025) 48%,transparent 62%);
+  transform:translateX(-24%);
+  animation:workoutLaunchSweep 2.6s ease-in-out infinite;
+  pointer-events:none;
+}
+.workout-launch__top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  direction:ltr;
+  min-height:34px;
+}
+.workout-launch__brand{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.22em;
+  color:#e8ecea;
+}
+.workout-launch__brand i{
+  width:7px;
+  height:18px;
+  display:block;
+  background:var(--accent,#d2ff16);
+  clip-path:polygon(46% 0,100% 0,67% 41%,100% 41%,29% 100%,45% 57%,12% 57%);
+  filter:drop-shadow(0 0 8px rgba(210,255,22,.28));
+}
+.workout-launch__status{
+  color:#798387;
+  font-size:10px;
+  font-weight:650;
+  letter-spacing:.04em;
+  direction:rtl;
+  transition:color .25s ease;
+}
+.workout-launch.is-ready .workout-launch__status{color:var(--accent,#d2ff16)}
+
+.workout-launch__main{
+  width:min(100%,760px);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(138px,38%);
+  gap:18px;
+  align-items:center;
+  direction:ltr;
+}
+.workout-launch__copy{
+  min-width:0;
+  direction:rtl;
+  text-align:right;
+  opacity:0;
+  translate:0 18px;
+  animation:workoutLaunchCopy .48s cubic-bezier(.2,.8,.2,1) .13s forwards;
+}
+.workout-launch__eyebrow{
+  display:block;
+  color:var(--accent,#d2ff16);
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.11em;
+  margin-bottom:10px;
+}
+.workout-launch__copy h1{
+  margin:0;
+  direction:ltr;
+  text-align:left;
+  font-size:clamp(44px,12vw,72px);
+  line-height:.9;
+  letter-spacing:-.065em;
+  font-weight:830;
+  text-wrap:balance;
+}
+.workout-launch__copy>p{
+  margin:13px 0 0;
+  color:#9ca5a7;
+  font-size:14px;
+  line-height:1.35;
+}
+.workout-launch__targets{
+  margin-top:18px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+.workout-launch__targets span{
+  min-height:29px;
+  padding:0 11px;
+  display:inline-flex;
+  align-items:center;
+  border:1px solid rgba(210,255,22,.17);
+  border-radius:999px;
+  background:rgba(210,255,22,.035);
+  color:#ced4d3;
+  font-size:10px;
+  font-weight:650;
+}
+.workout-launch__metrics{
+  margin-top:24px;
+  padding:16px 0;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  border-top:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  direction:ltr;
+}
+.workout-launch__metric{
+  min-width:0;
+  padding:0 10px;
+  border-left:1px solid rgba(255,255,255,.07);
+  text-align:center;
+  direction:rtl;
+}
+.workout-launch__metric:first-child{border-left:0}
+.workout-launch__metric strong{
+  display:block;
+  color:#f4f6f5;
+  font-size:20px;
+  line-height:1;
+  font-weight:720;
+  direction:ltr;
+}
+.workout-launch__metric span{
+  display:block;
+  margin-top:6px;
+  color:#6f797c;
+  font-size:9px;
+  line-height:1;
+}
+.workout-launch__focus{
+  margin-top:22px;
+  padding-inline-start:14px;
+  border-inline-start:3px solid var(--accent,#d2ff16);
+}
+.workout-launch__focus small{
+  display:block;
+  color:#737d80;
+  font-size:9px;
+  font-weight:700;
+}
+.workout-launch__focus strong{
+  display:block;
+  margin-top:6px;
+  color:#d8dddc;
+  font-size:13px;
+  line-height:1.45;
+  font-weight:620;
+}
+.workout-launch__art{
+  min-width:0;
+  height:min(54vh,500px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  opacity:0;
+  translate:0 30px;
+  scale:.965;
+  animation:workoutLaunchArt .62s cubic-bezier(.18,.82,.18,1) .06s forwards;
+}
+.workout-launch__art::before{
+  content:"";
+  position:absolute;
+  width:150%;
+  aspect-ratio:1;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(210,255,22,.13),rgba(210,255,22,.035) 30%,transparent 67%);
+  filter:blur(4px);
+}
+.workout-launch__art img{
+  position:relative;
+  z-index:1;
+  display:block;
+  width:auto;
+  max-width:100%;
+  height:100%;
+  object-fit:contain;
+  filter:brightness(.94) contrast(1.08) drop-shadow(0 28px 48px rgba(0,0,0,.38));
+}
+.workout-launch__footer{
+  width:min(100%,760px);
+  margin:0 auto;
+  padding-top:20px;
+}
+.workout-launch__progress{
+  height:3px;
+  border-radius:999px;
+  overflow:hidden;
+  background:#182022;
+}
+.workout-launch__progress i{
+  display:block;
+  height:100%;
+  width:36%;
+  border-radius:inherit;
+  background:var(--accent,#d2ff16);
+  box-shadow:0 0 14px rgba(210,255,22,.24);
+  animation:workoutLaunchProgress 1.35s cubic-bezier(.2,.8,.2,1) infinite alternate;
+  transition:width .35s cubic-bezier(.2,.8,.2,1);
+}
+.workout-launch.is-ready .workout-launch__progress i{
+  width:100%;
+  animation:none;
+}
+.workout-launch__footer p{
+  margin:9px 0 0;
+  color:#667174;
+  font-size:9px;
+  text-align:center;
+  letter-spacing:.025em;
+}
+.workout-launch.is-ready .workout-launch__footer p{color:#aab2b1}
+.workout-launch.is-leaving{
+  pointer-events:none;
+  animation:workoutLaunchOut .42s cubic-bezier(.4,0,.2,1) forwards;
+}
+
+/* The live workout is already mounted under the splash. Reveal it as the splash clears. */
+.active-workout-page.workout-launch-reveal{
+  animation:workoutLiveReveal .55s cubic-bezier(.18,.82,.18,1) both!important;
+}
+
+@keyframes workoutLaunchIn{from{opacity:0}to{opacity:1}}
+@keyframes workoutLaunchOut{from{opacity:1;scale:1}to{opacity:0;scale:1.012}}
+@keyframes workoutLaunchCopy{to{opacity:1;translate:0 0}}
+@keyframes workoutLaunchArt{to{opacity:1;translate:0 0;scale:1}}
+@keyframes workoutLaunchSweep{0%,100%{transform:translateX(-28%)}50%{transform:translateX(28%)}}
+@keyframes workoutLaunchProgress{from{width:24%;translate:-16% 0}to{width:62%;translate:102% 0}}
+@keyframes workoutLiveReveal{from{opacity:.55;translate:0 14px;filter:blur(2px)}to{opacity:1;translate:0 0;filter:blur(0)}}
+
+@media(max-width:520px){
+  .workout-launch{padding-inline:20px}
+  .workout-launch__main{grid-template-columns:minmax(0,1fr) 132px;gap:8px}
+  .workout-launch__art{height:min(42vh,390px);align-self:center}
+  .workout-launch__copy h1{font-size:clamp(38px,11.5vw,54px)}
+  .workout-launch__copy>p{font-size:12.5px}
+  .workout-launch__targets{margin-top:14px;gap:5px}
+  .workout-launch__targets span{min-height:26px;padding-inline:9px;font-size:9px}
+  .workout-launch__metrics{margin-top:18px;padding-block:13px}
+  .workout-launch__metric strong{font-size:18px}
+  .workout-launch__focus{margin-top:17px}
+  .workout-launch__focus strong{font-size:11.5px}
+}
+
+@media(max-height:760px){
+  .workout-launch{padding-top:calc(env(safe-area-inset-top,0px) + 18px)}
+  .workout-launch__art{height:min(38vh,310px)}
+  .workout-launch__copy h1{font-size:40px}
+  .workout-launch__targets{margin-top:11px}
+  .workout-launch__metrics{margin-top:13px;padding-block:10px}
+  .workout-launch__focus{margin-top:12px}
+  .workout-launch__footer{padding-top:12px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .workout-launch,.workout-launch *,.active-workout-page.workout-launch-reveal{animation:none!important;transition:none!important}
+  .workout-launch{opacity:1}
+  .workout-launch__copy,.workout-launch__art{opacity:1;translate:0 0;scale:1}
+}
+html.reduce-motion .workout-launch,
+html.reduce-motion .workout-launch *,
+html.reduce-motion .active-workout-page.workout-launch-reveal{animation:none!important;transition:none!important}
