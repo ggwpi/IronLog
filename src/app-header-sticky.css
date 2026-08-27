@@ -2,12 +2,13 @@
  * IronLog shared sticky page-header glass system.
  *
  * Contract:
- *   - add `data-iron-page-header` to the page header
- *   - optionally add `data-iron-scroll-root` to a nested scrolling page surface
+ *   - page header: [data-iron-page-header]
+ *   - glass plane: [data-iron-header-glass]
+ *   - optional nested scroller: [data-iron-scroll-root]
  *
- * The runtime resolves the real scroll container automatically. This stylesheet
- * owns ALL sticky/glass presentation so feature CSS cannot accidentally turn a
- * page header into a different component.
+ * AppPageHeader renders the glass plane directly. The shared runtime injects
+ * one into custom/full-screen headers, so every page uses the exact same visual
+ * implementation instead of feature-specific pseudo elements.
  */
 
 :root{
@@ -18,8 +19,6 @@
   --iron-header-glass-border:rgba(255,255,255,.06);
 }
 
-/* Main tabs and full-screen drill-downs only provide geometry variables. The
-   visual implementation below is identical for both. */
 .app-page-header{
   --iron-header-sticky-top:calc(var(--safe-top) + var(--iron-header-top-gap));
   --iron-header-glass-top-cover:calc(var(--safe-top) + var(--iron-header-top-gap));
@@ -34,9 +33,6 @@
   --iron-header-glass-bottom-cover:10px;
 }
 
-/* One component surface. Feature-level backgrounds/backdrop filters are
-   deliberately neutralized here so Home/Workouts/Statistics/Settings cannot
-   visually diverge from one another. */
 .iron-page-header,
 [data-iron-page-header],
 .app-page-header,
@@ -58,27 +54,23 @@
   -webkit-transform:translateZ(0);
 }
 
-/* Kill legacy page-specific header surfaces. Home previously painted an opaque
-   black gradient with ::before; that was the reason it looked like a different
-   component even though the sticky logic was shared. */
+/* Feature CSS may decorate header content, but it may not own the header
+   surface. This retires legacy Home/Statistics header backgrounds. */
 .iron-page-header::before,
 [data-iron-page-header]::before,
 .app-page-header::before,
-.statistics-detail-topbar::before{
-  content:none!important;
-  display:none!important;
-  background:none!important;
-  -webkit-backdrop-filter:none!important;
-  backdrop-filter:none!important;
-}
-
-/* The single reusable glass plane. It extends through the full iOS safe area
-   to the physical top edge, and across the full content gutter. */
+.statistics-detail-topbar::before,
 .iron-page-header::after,
 [data-iron-page-header]::after,
 .app-page-header::after,
 .statistics-detail-topbar::after{
-  content:""!important;
+  content:none!important;
+  display:none!important;
+}
+
+/* The one reusable glass plane for every page. */
+.iron-header-glass,
+[data-iron-header-glass]{
   display:block!important;
   position:absolute!important;
   z-index:-1!important;
@@ -89,6 +81,7 @@
   left:calc(-1 * var(--iron-header-glass-inline-bleed,0px))!important;
   border:0!important;
   border-bottom:1px solid transparent!important;
+  border-radius:0!important;
   background:rgba(6,9,8,0)!important;
   background-image:none!important;
   box-shadow:0 10px 34px rgba(0,0,0,0)!important;
@@ -105,10 +98,8 @@
     backdrop-filter .24s ease!important;
 }
 
-.iron-page-header.is-iron-header-scrolled::after,
-[data-iron-page-header].is-iron-header-scrolled::after,
-.app-page-header.is-iron-header-scrolled::after,
-.statistics-detail-topbar.is-iron-header-scrolled::after{
+.is-iron-header-scrolled > .iron-header-glass,
+.is-iron-header-scrolled > [data-iron-header-glass]{
   opacity:1!important;
   background:var(--iron-header-glass-bg)!important;
   border-bottom-color:var(--iron-header-glass-border)!important;
@@ -117,18 +108,7 @@
   backdrop-filter:blur(var(--iron-header-glass-blur)) saturate(var(--iron-header-glass-saturation))!important;
 }
 
-/* Backward compatibility only. New code uses the per-header state above. */
-html.iron-header-scrolled .app-page-header:not(.is-iron-header-scrolled)::after{
-  opacity:1!important;
-  background:var(--iron-header-glass-bg)!important;
-  border-bottom-color:var(--iron-header-glass-border)!important;
-  box-shadow:0 10px 34px rgba(0,0,0,.16)!important;
-  -webkit-backdrop-filter:blur(var(--iron-header-glass-blur)) saturate(var(--iron-header-glass-saturation))!important;
-  backdrop-filter:blur(var(--iron-header-glass-blur)) saturate(var(--iron-header-glass-saturation))!important;
-}
-
-/* Retire the old statistics-only blur state. The shared state above is now the
-   only visual source of truth. */
+/* Old statistics-only state is deliberately visual-no-op. */
 .statistics-detail-topbar.is-scrolled{
   background:transparent!important;
   border-color:transparent!important;
@@ -138,6 +118,12 @@ html.iron-header-scrolled .app-page-header:not(.is-iron-header-scrolled)::after{
 }
 
 @media(max-width:650px){
+  /* All main tabs use one physical header origin. This overrides historical
+     feature-specific top paddings, including Statistics' old 7px variant. */
+  body:has(.app-page-header) .app-content{
+    padding-top:calc(var(--safe-top) + var(--iron-header-top-gap))!important;
+  }
+
   .app-page-header,
   .statistics-page--native .statistics-header,
   .home-editorial .app-page-header,
@@ -154,12 +140,8 @@ html.iron-header-scrolled .app-page-header:not(.is-iron-header-scrolled)::after{
 }
 
 @media(prefers-reduced-motion:reduce){
-  .iron-page-header::after,
-  [data-iron-page-header]::after,
-  .app-page-header::after,
-  .statistics-detail-topbar::after{transition:none!important}
+  .iron-header-glass,
+  [data-iron-header-glass]{transition:none!important}
 }
-html.reduce-motion .iron-page-header::after,
-html.reduce-motion [data-iron-page-header]::after,
-html.reduce-motion .app-page-header::after,
-html.reduce-motion .statistics-detail-topbar::after{transition:none!important}
+html.reduce-motion .iron-header-glass,
+html.reduce-motion [data-iron-header-glass]{transition:none!important}
