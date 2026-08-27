@@ -11,7 +11,7 @@ export function AppPageHeader({
   const safeTitle = escapeHtml(title || '');
   const safeSubtitle = escapeHtml(subtitle || '');
 
-  return `<header class="app-page-header ${rootClass}">
+  return `<header class="app-page-header ${rootClass}" data-iron-page-header>
     <div class="app-page-brand ${brandClass}" aria-label="IronLog">
       <img class="app-page-brand__bolt" src="/assets/ironlog-bolt.svg?v=2" alt="" aria-hidden="true" width="64" height="84">
       <span class="app-page-brand__text">IRONLOG</span>
