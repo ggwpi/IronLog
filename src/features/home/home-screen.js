@@ -40,10 +40,18 @@ function nearestWorkout(workouts = WORKOUTS) {
   return { ...fallback, timing: 'האימון הבא' };
 }
 
+function workoutImages(workout) {
+  if (workout?.images?.length) return workout.images;
+  const id = String(workout?.id || workout?.slug || '').toLowerCase();
+  const fallback = WORKOUTS.find((item) => item.id === id);
+  return fallback?.images?.length ? fallback.images : [];
+}
+
 function workoutArt(workout) {
-  if (!workout?.images?.length) return '';
-  const front = workout.images[0];
-  const back = workout.images[1] || workout.images[0];
+  const images = workoutImages(workout);
+  if (!images.length) return '';
+  const front = images[0];
+  const back = images[1] || images[0];
   const label = escapeHtml(`שרירי המטרה: ${(workout.targets || []).join(', ')}`);
   return `<figure class="home-workout-art" aria-label="${label}">
     <img class="home-body home-body--back" src="${escapeHtml(back)}" alt="${escapeHtml(`${workout.short} — מבט אחורי`)}" width="1024" height="1536" loading="eager" decoding="async">
