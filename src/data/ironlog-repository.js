@@ -5,6 +5,7 @@ const PLAN_IMAGES = Object.freeze({
   'legs-a': ['/assets/workout-images/plans/legs-a-front.png', '/assets/workout-images/plans/legs-a-back.png'],
   'pull-a': ['/assets/workout-images/plans/pull-a-front.png', '/assets/workout-images/plans/pull-a-back.png'],
   'push-b': ['/assets/workout-images/plans/push-b-front.png', '/assets/workout-images/plans/push-b-back.png'],
+  'pull-b': ['/assets/workout-images/plans/pull-a-front.png', '/assets/workout-images/plans/pull-a-back.png'],
   'legs-b': ['/assets/workout-images/plans/legs-b-front.png', '/assets/workout-images/plans/legs-b-back.png'],
   arms: ['/assets/workout-images/plans/arms-front.png', '/assets/workout-images/plans/arms-back.png'],
 });
