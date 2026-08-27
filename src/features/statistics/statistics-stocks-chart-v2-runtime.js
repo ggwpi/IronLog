@@ -53,6 +53,15 @@ function trendForPage(page){
   return'flat';
 }
 
+function createStop(offset,className,opacity){
+  const stop=svgElement('stop',{offset,'class':className});
+  // Keep the gradient self-contained so legacy .native-sparkline path rules
+  // cannot make it effectively transparent on Safari/PWA renders.
+  stop.style.setProperty('stop-color','var(--stocks-trend-color)');
+  stop.style.setProperty('stop-opacity',String(opacity));
+  return stop;
+}
+
 function ensureGradient(svg){
   let defs=svg.querySelector('defs[data-stocks-area-defs]');
   let gradient=defs?.querySelector('linearGradient[data-stocks-area-gradient]');
@@ -65,9 +74,9 @@ function ensureGradient(svg){
     x1:'0',x2:'0',y1:'0',y2:'1',
     'data-stocks-area-gradient':'true'
   });
-  gradient.appendChild(svgElement('stop',{offset:'0%','class':'stocks-chart-gradient-stop--top'}));
-  gradient.appendChild(svgElement('stop',{offset:'58%','class':'stocks-chart-gradient-stop--mid'}));
-  gradient.appendChild(svgElement('stop',{offset:'100%','class':'stocks-chart-gradient-stop--bottom'}));
+  gradient.appendChild(createStop('0%','stocks-chart-gradient-stop--top',.22));
+  gradient.appendChild(createStop('58%','stocks-chart-gradient-stop--mid',.07));
+  gradient.appendChild(createStop('100%','stocks-chart-gradient-stop--bottom',0));
   defs.appendChild(gradient);
   svg.insertBefore(defs,svg.firstChild);
   return gradientId;
@@ -84,28 +93,33 @@ function syncArea(svg,line,points){
   const last=points.at(-1);
   const areaD=`${source} L ${last.x.toFixed(2)} ${bottom.toFixed(2)} L ${first.x.toFixed(2)} ${bottom.toFixed(2)} Z`;
   const gradientId=ensureGradient(svg);
+  const expectedFill=`url(#${gradientId})`;
 
   let area=svg.querySelector('[data-stocks-area-fill]');
   if(!area){
     area=svgElement('path',{
       d:areaD,
-      fill:`url(#${gradientId})`,
+      fill:expectedFill,
       'class':'stocks-chart-area',
       'data-stocks-area-fill':'true'
     });
     svg.insertBefore(area,line);
   }else{
     if(area.getAttribute('d')!==areaD)area.setAttribute('d',areaD);
-    const expectedFill=`url(#${gradientId})`;
     if(area.getAttribute('fill')!==expectedFill)area.setAttribute('fill',expectedFill);
   }
 
-  // The fill is always visible. Motion must never control whether data is rendered.
-  area.classList.remove('stocks-motion-area');
+  // Critical: statistics-native.css historically applies `fill:none` to every
+  // .native-sparkline path. Presentation attributes lose to that CSS rule, so
+  // force the semantic area gradient as an inline !important declaration.
+  area.style.setProperty('fill',expectedFill,'important');
+  area.style.setProperty('stroke','none','important');
+  area.style.setProperty('opacity','1','important');
+  area.style.setProperty('visibility','visible','important');
+  area.style.setProperty('pointer-events','none','important');
   area.style.removeProperty('animation');
   area.style.removeProperty('transform');
-  area.style.opacity='1';
-  area.style.visibility='visible';
+  area.classList.remove('stocks-motion-area');
   return area;
 }
 
