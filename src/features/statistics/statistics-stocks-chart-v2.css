@@ -21,6 +21,9 @@
 .statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > path:not([data-stocks-area-fill]){
   stroke:var(--stocks-trend-color)!important;
   stroke-width:1.72!important;
+  stroke-dasharray:none!important;
+  stroke-dashoffset:0!important;
+  opacity:1!important;
   filter:drop-shadow(0 0 4px rgba(var(--stocks-trend-rgb),.06))!important;
 }
 .statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > circle:not(.stocks-chart-focus-halo):not(.stocks-chart-focus-dot){
@@ -31,13 +34,17 @@
   vector-effect:non-scaling-stroke;
 }
 
-.stocks-chart-area{
+.statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-area,
+.statistics-detail-page[data-stats-detail-page="performance"] [data-stocks-area-fill]{
   stroke:none!important;
   pointer-events:none;
-  opacity:1;
+  opacity:1!important;
+  visibility:visible!important;
+  animation:none!important;
+  transform:none!important;
 }
-.stocks-chart-gradient-stop--top{stop-color:var(--stocks-trend-color);stop-opacity:.18}
-.stocks-chart-gradient-stop--mid{stop-color:var(--stocks-trend-color);stop-opacity:.052}
+.stocks-chart-gradient-stop--top{stop-color:var(--stocks-trend-color);stop-opacity:.22}
+.stocks-chart-gradient-stop--mid{stop-color:var(--stocks-trend-color);stop-opacity:.07}
 .stocks-chart-gradient-stop--bottom{stop-color:var(--stocks-trend-color);stop-opacity:0}
 
 .statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-focus-halo{
