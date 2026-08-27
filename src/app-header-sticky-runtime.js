@@ -22,8 +22,8 @@ function canElementScroll(element) {
 function headerScrollRoot(header) {
   let node = header.parentElement;
   while (node && node !== document.body && node !== document.documentElement) {
-    if (node.hasAttribute('data-iron-scroll-root') || canElementScroll(node)) {
-      if (node.scrollHeight > node.clientHeight + 1) return node;
+    if ((node.hasAttribute('data-iron-scroll-root') || canElementScroll(node)) && node.scrollHeight > node.clientHeight + 1) {
+      return node;
     }
     node = node.parentElement;
   }
@@ -32,12 +32,28 @@ function headerScrollRoot(header) {
 
 function scrollTopForHeader(header) {
   const root = headerScrollRoot(header);
-  return root ? Math.max(0, Number(root.scrollTop || 0)) : documentScrollTop();
+  const nestedTop = root ? Math.max(0, Number(root.scrollTop || 0)) : 0;
+  /* Use the maximum so a harmless overflow declaration can never mask actual
+     document scrolling. Full-screen nested pages still work because their own
+     scrollTop wins while documentScrollTop() stays at zero. */
+  return Math.max(documentScrollTop(), nestedTop);
+}
+
+function ensureGlassLayer(header) {
+  let glass = header.querySelector(':scope > [data-iron-header-glass]');
+  if (glass) return glass;
+  glass = document.createElement('span');
+  glass.className = 'iron-header-glass';
+  glass.dataset.ironHeaderGlass = '';
+  glass.setAttribute('aria-hidden', 'true');
+  header.prepend(glass);
+  return glass;
 }
 
 function normalizeHeader(header) {
   header.classList.add('iron-page-header');
   if (!header.hasAttribute('data-iron-page-header')) header.setAttribute('data-iron-page-header', '');
+  ensureGlassLayer(header);
 
   const root = headerScrollRoot(header);
   if (root && !root.hasAttribute('data-iron-scroll-root')) root.setAttribute('data-iron-scroll-root', '');
@@ -74,7 +90,7 @@ window.addEventListener('popstate', scheduleSync);
 window.addEventListener('ironlog:navigate', scheduleSync);
 
 /* Observe the whole body because full-screen/detail pages may be mounted next
-   to #app. The same runtime then upgrades them to the exact same header system. */
+   to #app. The same runtime upgrades them to the same header component. */
 if (document.body) new MutationObserver(scheduleSync).observe(document.body, { childList: true, subtree: true });
 
 scheduleSync();
