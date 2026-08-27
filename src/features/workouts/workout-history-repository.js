@@ -11,6 +11,17 @@ function nullableNumber(value) {
   return Number.isFinite(number) ? number : null;
 }
 
+async function loadChildrenInChunks(table, select, sessionIds, label) {
+  const rows = [];
+  const chunkSize = 70;
+  for (let index = 0; index < sessionIds.length; index += chunkSize) {
+    const ids = sessionIds.slice(index, index + chunkSize);
+    const result = await supabase.from(table).select(select).in('session_id', ids);
+    rows.push(...assertResult(result, label));
+  }
+  return rows;
+}
+
 function mapHistory(sessions = [], exercises = [], sets = []) {
   const setsByExercise = new Map();
   sets.forEach((set) => {
@@ -79,24 +90,22 @@ export async function loadWorkoutHistory() {
   if (!sessions.length) return [];
   const ids = sessions.map((session) => session.id);
 
-  const [exerciseResult, setResult] = await Promise.all([
-    supabase
-      .from('session_exercises')
-      .select('id,session_id,exercise_id,exercise_name,position,planned_sets,is_skipped')
-      .in('session_id', ids)
-      .order('position'),
-    supabase
-      .from('performed_sets')
-      .select('id,session_id,session_exercise_id,set_number,set_type,load_kg,reps,rir,duration_seconds,distance_meters,rest_seconds,notes,completed,completed_at')
-      .in('session_id', ids)
-      .order('set_number'),
+  const [exercises, sets] = await Promise.all([
+    loadChildrenInChunks(
+      'session_exercises',
+      'id,session_id,exercise_id,exercise_name,position,planned_sets,is_skipped',
+      ids,
+      'history exercises',
+    ),
+    loadChildrenInChunks(
+      'performed_sets',
+      'id,session_id,session_exercise_id,set_number,set_type,load_kg,reps,rir,duration_seconds,distance_meters,rest_seconds,notes,completed,completed_at',
+      ids,
+      'history sets',
+    ),
   ]);
 
-  return mapHistory(
-    sessions,
-    assertResult(exerciseResult, 'history exercises'),
-    assertResult(setResult, 'history sets'),
-  );
+  return mapHistory(sessions, exercises, sets);
 }
 
 export async function updateHistorySet(setId, payload = {}) {
@@ -104,9 +113,11 @@ export async function updateHistorySet(setId, payload = {}) {
     load_kg: nullableNumber(payload.loadKg),
     reps: nullableNumber(payload.reps),
     rir: nullableNumber(payload.rir),
-    notes: String(payload.notes || '').trim() || null,
     updated_at: new Date().toISOString(),
   };
+  if (Object.prototype.hasOwnProperty.call(payload, 'notes')) {
+    update.notes = String(payload.notes || '').trim() || null;
+  }
   const { data, error } = await supabase
     .from('performed_sets')
     .update(update)
