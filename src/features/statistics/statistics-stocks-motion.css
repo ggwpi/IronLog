@@ -25,20 +25,38 @@
 .stocks-motion-mounted .statistics-detail-list__head{animation:stocksFadeUp .4s .52s var(--stocks-motion-ease) both}
 .stocks-motion-row{animation:stocksRowIn .42s var(--stocks-row-delay,.58s) var(--stocks-motion-ease) both}
 
-.stocks-animated-line{
-  stroke-dashoffset:var(--stocks-path-length,1000);
-  animation:stocksLineDraw .86s .24s cubic-bezier(.28,.72,.18,1) forwards,stocksLineGlow 5.8s 1.55s ease-in-out infinite;
+/* The real data line is never dashed or clipped. The draw effect runs on a temporary clone. */
+.statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > .stocks-line-base{
+  stroke-dasharray:none!important;
+  stroke-dashoffset:0!important;
+  opacity:1;
+  animation:stocksLineGlow 5.8s 1.55s ease-in-out infinite;
+  transition:opacity .22s ease,filter .24s ease,stroke .24s ease;
 }
-/* The fill waits until most of the line is drawn, so it never exposes future geometry as detached triangles. */
+.statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > .stocks-line-base.stocks-line-is-revealing{
+  opacity:.28;
+}
+.statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > .stocks-line-base.stocks-line-reveal-done{
+  opacity:1;
+}
+.statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > .stocks-line-draw-overlay{
+  fill:none!important;
+  stroke:var(--stocks-trend-color)!important;
+  stroke-width:1.78!important;
+  vector-effect:non-scaling-stroke;
+  pointer-events:none;
+  filter:drop-shadow(0 0 4px rgba(var(--stocks-trend-rgb),.08));
+}
+
 .stocks-motion-area{
   transform-box:fill-box;
   transform-origin:center top;
-  animation:stocksAreaIn .42s .88s var(--stocks-motion-ease) both,stocksAreaBreath 6.4s 1.8s ease-in-out infinite alternate;
+  animation:stocksAreaIn .4s .72s var(--stocks-motion-ease) both,stocksAreaBreath 6.4s 1.65s ease-in-out infinite alternate;
 }
 .stocks-end-dot{
   transform-box:fill-box;
   transform-origin:center;
-  animation:stocksDotIn .28s 1.02s var(--stocks-motion-ease) both,stocksDotPulse 3.6s 1.6s ease-in-out infinite;
+  animation:stocksDotIn .28s .92s var(--stocks-motion-ease) both,stocksDotPulse 3.6s 1.55s ease-in-out infinite;
 }
 .statistics-detail-selector button.is-selected .statistics-detail-selector__dot{
   animation:stocksSelectedPulse 3.4s ease-in-out infinite;
@@ -60,7 +78,6 @@
 @keyframes stocksMetricIn{from{opacity:0;transform:translate3d(0,7px,0) scale(.987)}to{opacity:1;transform:none}}
 @keyframes stocksChartIn{from{opacity:0;transform:translate3d(0,12px,0) scale(.99)}to{opacity:1;transform:none}}
 @keyframes stocksRowIn{from{opacity:0;transform:translate3d(0,10px,0)}to{opacity:1;transform:none}}
-@keyframes stocksLineDraw{from{stroke-dashoffset:var(--stocks-path-length,1000)}to{stroke-dashoffset:0}}
 @keyframes stocksAreaIn{from{opacity:0}to{opacity:1}}
 @keyframes stocksAreaBreath{from{opacity:.92}to{opacity:1}}
 @keyframes stocksLineGlow{0%,100%{filter:drop-shadow(0 0 2px rgba(var(--stocks-trend-rgb),.025))}50%{filter:drop-shadow(0 0 5px rgba(var(--stocks-trend-rgb),.09))}}
