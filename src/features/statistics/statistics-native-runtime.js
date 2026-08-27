@@ -5,8 +5,6 @@ const seen = new Set();
 let observer = null;
 let statsRouteActive = false;
 let syncQueued = false;
-let detailScrollFrame = 0;
-let pendingDetailPage = null;
 
 function isStatisticsRoute() {
   const route = location.hash.replace(/^#\/?/, '').split('?')[0];
@@ -134,23 +132,6 @@ function animateDisclosure(details, opening) {
   animation.oncancel = animation.onfinish;
 }
 
-function syncDetailStickyHeader(page) {
-  const topbar = page?.querySelector?.('.statistics-detail-topbar');
-  if (!topbar) return;
-  topbar.classList.toggle('is-scrolled', page.scrollTop > 8);
-}
-
-function scheduleDetailStickyHeader(page) {
-  pendingDetailPage = page;
-  if (detailScrollFrame) return;
-  detailScrollFrame = requestAnimationFrame(() => {
-    detailScrollFrame = 0;
-    const activePage = pendingDetailPage;
-    pendingDetailPage = null;
-    syncDetailStickyHeader(activePage);
-  });
-}
-
 document.addEventListener('click', (event) => {
   const summary = event.target.closest('.statistics-page--native .native-disclosure > summary');
   if (!summary) return;
@@ -160,12 +141,6 @@ document.addEventListener('click', (event) => {
   event.preventDefault();
   animateDisclosure(details, !details.open);
 });
-
-document.addEventListener('scroll', (event) => {
-  const target = event.target;
-  if (!(target instanceof Element) || !target.matches('.statistics-detail-page')) return;
-  scheduleDetailStickyHeader(target);
-}, true);
 
 if (app) new MutationObserver(scheduleReveal).observe(app, { childList: true, subtree: true });
 addEventListener('hashchange', scheduleReveal);
