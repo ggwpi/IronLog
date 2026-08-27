@@ -1,6 +1,7 @@
-/* Motion layer for the Stocks-inspired statistics detail. SVG geometry itself is never animated. */
+/* Stable motion for the Stocks-inspired statistics detail.
+   The data SVG never animates its geometry; only surrounding UI opacity/position does. */
 .statistics-detail-page[data-stats-detail-page="performance"]{
-  --stocks-motion-ease:cubic-bezier(.2,.78,.18,1);
+  --stocks-motion-ease:cubic-bezier(.22,.78,.18,1);
 }
 
 .statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > path,
@@ -8,24 +9,51 @@
 .statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-focus-dot,
 .statistics-detail-page[data-stats-detail-page="performance"] .stocks-performance-quote span,
 .statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-metric:nth-child(2) strong{
-  transition:stroke .22s ease,fill .22s ease,color .22s ease,filter .22s ease,opacity .16s ease;
+  transition:stroke .2s ease,fill .2s ease,color .2s ease,filter .2s ease,opacity .14s ease;
 }
 
-.stocks-motion-mounted .statistics-detail-topbar{animation:stocksHeaderIn .34s var(--stocks-motion-ease) both}
-.stocks-motion-mounted .statistics-detail-kicker{animation:stocksFadeUp .34s .02s var(--stocks-motion-ease) both}
-.stocks-motion-mounted [data-performance-hero] h1{animation:stocksFadeUp .38s .04s var(--stocks-motion-ease) both}
-.stocks-motion-mounted .stocks-performance-quote{animation:stocksQuoteIn .4s .06s var(--stocks-motion-ease) both}
-.stocks-motion-mounted .statistics-detail-metric{animation:stocksMetricIn .36s var(--stocks-motion-delay,.1s) var(--stocks-motion-ease) both}
-.stocks-motion-mounted .statistics-detail-section-label{animation:stocksFadeUp .34s .13s var(--stocks-motion-ease) both}
-/* Only the chart container gets a tiny entrance motion. The SVG line/fill are already fully rendered. */
-.stocks-motion-mounted .statistics-detail-chart{animation:stocksChartIn .34s .14s var(--stocks-motion-ease) both}
-.stocks-motion-mounted .statistics-detail-axis-copy{animation:stocksFadeUp .32s .23s var(--stocks-motion-ease) both}
-.stocks-motion-mounted .stocks-chart-hint{animation:stocksFadeUp .32s .26s var(--stocks-motion-ease) both}
-.stocks-motion-mounted .statistics-detail-note{animation:stocksFadeUp .34s .29s var(--stocks-motion-ease) both}
-.stocks-motion-mounted .statistics-detail-list__head{animation:stocksFadeUp .34s .33s var(--stocks-motion-ease) both}
-.stocks-motion-row{animation:stocksRowIn .36s var(--stocks-row-delay,.46s) var(--stocks-motion-ease) both}
+/* Entrance motion is a one-shot phase. It starts only after the detail page is visible,
+   so mutations that happen while the overlay is still hidden cannot consume the animation. */
+.statistics-detail-page.is-visible.stocks-motion-mounted.stocks-motion-initial .statistics-detail-kicker{
+  animation:stocksFadeUp .28s .02s var(--stocks-motion-ease) both;
+}
+.statistics-detail-page.is-visible.stocks-motion-mounted.stocks-motion-initial [data-performance-hero] h1{
+  animation:stocksFadeUp .32s .05s var(--stocks-motion-ease) both;
+}
+.statistics-detail-page.is-visible.stocks-motion-mounted.stocks-motion-initial .stocks-performance-quote{
+  animation:stocksQuoteIn .34s .08s var(--stocks-motion-ease) both;
+}
+.statistics-detail-page.is-visible.stocks-motion-mounted.stocks-motion-initial .statistics-detail-metric{
+  animation:stocksMetricIn .3s var(--stocks-motion-delay,.1s) var(--stocks-motion-ease) both;
+}
+.statistics-detail-page.is-visible.stocks-motion-mounted.stocks-motion-initial .statistics-detail-section-label{
+  animation:stocksFadeUp .28s .14s var(--stocks-motion-ease) both;
+}
+.statistics-detail-page.is-visible.stocks-motion-mounted.stocks-motion-initial .statistics-detail-chart{
+  animation:stocksChartIn .34s .16s var(--stocks-motion-ease) both;
+}
+.statistics-detail-page.is-visible.stocks-motion-mounted.stocks-motion-initial .statistics-detail-axis-copy{
+  animation:stocksFadeUp .26s .21s var(--stocks-motion-ease) both;
+}
+.statistics-detail-page.is-visible.stocks-motion-mounted.stocks-motion-initial .stocks-chart-hint{
+  animation:stocksFadeUp .26s .23s var(--stocks-motion-ease) both;
+}
+.statistics-detail-page.is-visible.stocks-motion-mounted.stocks-motion-initial .statistics-detail-note{
+  animation:stocksFadeUp .28s .25s var(--stocks-motion-ease) both;
+}
+.statistics-detail-page.is-visible.stocks-motion-mounted.stocks-motion-initial .statistics-detail-list__head{
+  animation:stocksFadeUp .28s .28s var(--stocks-motion-ease) both;
+}
+.statistics-detail-page.is-visible.stocks-motion-mounted.stocks-motion-initial .stocks-motion-row{
+  animation:stocksRowIn .3s var(--stocks-row-delay,.34s) var(--stocks-motion-ease) both;
+}
 
-/* Hard guarantee: old cached draw code can never leave the real path partially dashed. */
+/* The page transition already moves the navigation bar. Do not animate the header a second time. */
+.statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-topbar{
+  animation:none!important;
+}
+
+/* Hard guarantee: the real chart path can never be partially hidden by a reveal animation. */
 .statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > path:not([data-stocks-area-fill]){
   stroke-dasharray:none!important;
   stroke-dashoffset:0!important;
@@ -33,7 +61,7 @@
   animation:none!important;
 }
 
-/* The area fill is data, not motion. It is always visible as soon as it exists. */
+/* Area fill is part of the data rendering, never part of motion. */
 .statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > [data-stocks-area-fill],
 .statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-area{
   opacity:1!important;
@@ -42,37 +70,64 @@
   visibility:visible!important;
 }
 
-.stocks-end-dot{
+/* The end marker can breathe gently after the page is visible, but no initial pop is
+   allowed to start while the overlay is hidden. */
+.statistics-detail-page.is-visible[data-stats-detail-page="performance"] .stocks-end-dot{
   transform-box:fill-box;
   transform-origin:center;
-  animation:stocksDotIn .22s .34s var(--stocks-motion-ease) both,stocksDotPulse 3.8s .8s ease-in-out infinite;
+  animation:stocksDotPulse 4.4s 1s ease-in-out infinite;
 }
-.statistics-detail-selector button.is-selected .statistics-detail-selector__dot{
-  animation:stocksSelectedPulse 3.6s ease-in-out infinite;
+.statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-selector button.is-selected .statistics-detail-selector__dot{
+  animation:stocksSelectedPulse 4.2s ease-in-out infinite;
 }
 
-.statistics-detail-chart.is-scrubbing .stocks-chart-crosshair{animation:stocksCrosshairIn .1s ease-out both}
+/* Scrubbing updates SVG markers on every finger movement. Animating those freshly-created
+   nodes every frame causes visible jitter, so markers/crosshair are immediate and stable. */
+.statistics-detail-chart.is-scrubbing .stocks-chart-crosshair,
 .statistics-detail-chart.is-scrubbing .stocks-chart-focus-halo,
 .statistics-detail-chart.is-scrubbing .stocks-chart-focus-dot{
-  transform-box:fill-box;
-  transform-origin:center;
-  animation:stocksFocusPop .13s var(--stocks-motion-ease) both;
+  animation:none!important;
 }
-.statistics-detail-chart.is-scrubbing .stocks-chart-readout.is-visible{animation:stocksReadoutPop .15s var(--stocks-motion-ease) both}
-.statistics-detail-chart.is-scrubbing + .statistics-detail-axis-copy{opacity:.45;transition:opacity .16s ease}
+.statistics-detail-chart.is-scrubbing .stocks-chart-readout.is-visible{
+  animation:stocksReadoutPop .14s var(--stocks-motion-ease) both;
+}
+.statistics-detail-chart.is-scrubbing + .statistics-detail-axis-copy{
+  opacity:.45;
+  transition:opacity .14s ease;
+}
 
-@keyframes stocksHeaderIn{from{opacity:.72;transform:translate3d(0,-5px,0)}to{opacity:1;transform:none}}
-@keyframes stocksFadeUp{from{opacity:.72;transform:translate3d(0,6px,0)}to{opacity:1;transform:none}}
-@keyframes stocksQuoteIn{0%{opacity:.75;transform:translate3d(0,6px,0) scale(.99)}100%{opacity:1;transform:none}}
-@keyframes stocksMetricIn{from{opacity:.76;transform:translate3d(0,5px,0)}to{opacity:1;transform:none}}
-@keyframes stocksChartIn{from{opacity:.88;transform:translate3d(0,4px,0)}to{opacity:1;transform:none}}
-@keyframes stocksRowIn{from{opacity:.74;transform:translate3d(0,6px,0)}to{opacity:1;transform:none}}
-@keyframes stocksDotIn{from{opacity:.55;transform:scale(.75)}to{opacity:1;transform:scale(1)}}
-@keyframes stocksDotPulse{0%,100%{transform:scale(1);filter:none}50%{transform:scale(1.08);filter:drop-shadow(0 0 3px rgba(var(--stocks-trend-rgb),.16))}}
-@keyframes stocksSelectedPulse{0%,100%{box-shadow:0 0 4px rgba(var(--stocks-trend-rgb),.1);transform:scale(1)}50%{box-shadow:0 0 8px rgba(var(--stocks-trend-rgb),.2);transform:scale(1.08)}}
-@keyframes stocksCrosshairIn{from{opacity:.25}to{opacity:1}}
-@keyframes stocksFocusPop{from{opacity:.35;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
-@keyframes stocksReadoutPop{from{opacity:.55;transform:translateY(3px)}to{opacity:1;transform:none}}
+@keyframes stocksFadeUp{
+  from{opacity:0;transform:translate3d(0,7px,0)}
+  to{opacity:1;transform:none}
+}
+@keyframes stocksQuoteIn{
+  from{opacity:0;transform:translate3d(0,7px,0) scale(.992)}
+  to{opacity:1;transform:none}
+}
+@keyframes stocksMetricIn{
+  from{opacity:0;transform:translate3d(0,5px,0)}
+  to{opacity:1;transform:none}
+}
+@keyframes stocksChartIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+@keyframes stocksRowIn{
+  from{opacity:0;transform:translate3d(0,5px,0)}
+  to{opacity:1;transform:none}
+}
+@keyframes stocksDotPulse{
+  0%,100%{transform:scale(1);filter:none}
+  50%{transform:scale(1.045);filter:drop-shadow(0 0 2px rgba(var(--stocks-trend-rgb),.12))}
+}
+@keyframes stocksSelectedPulse{
+  0%,100%{box-shadow:0 0 3px rgba(var(--stocks-trend-rgb),.08);transform:scale(1)}
+  50%{box-shadow:0 0 6px rgba(var(--stocks-trend-rgb),.16);transform:scale(1.045)}
+}
+@keyframes stocksReadoutPop{
+  from{opacity:.6;transform:translateY(2px)}
+  to{opacity:1;transform:none}
+}
 
 @media(prefers-reduced-motion:reduce){
   .statistics-detail-page[data-stats-detail-page="performance"] *,
