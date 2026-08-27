@@ -20,26 +20,41 @@
 .statistics-detail-page.is-visible{opacity:1;transform:none}
 .statistics-detail-page.is-closing{opacity:0;transform:translate3d(-13px,0,0)}
 .statistics-detail-shell{
+  --detail-gutter:20px;
   box-sizing:border-box;
   width:min(100%,760px);
   min-height:100%;
   margin:0 auto;
-  padding:calc(env(safe-area-inset-top) + 10px) 20px calc(env(safe-area-inset-bottom) + 40px);
+  padding:calc(env(safe-area-inset-top) + 10px) var(--detail-gutter) calc(env(safe-area-inset-bottom) + 40px);
 }
 .statistics-detail-topbar{
+  position:-webkit-sticky;
   position:sticky;
-  z-index:10;
-  top:0;
+  z-index:40;
+  top:calc(env(safe-area-inset-top) + 8px);
   min-height:58px;
+  box-sizing:border-box;
   display:grid;
   grid-template-columns:44px minmax(0,1fr) 44px;
   align-items:center;
   gap:8px;
-  margin:0 -8px 17px;
-  padding:0 8px;
-  background:linear-gradient(180deg,rgba(6,9,8,.98) 68%,rgba(6,9,8,.86) 86%,transparent);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
+  margin:0 calc(var(--detail-gutter) * -1) 17px;
+  padding:0 var(--detail-gutter);
+  background:rgba(6,9,8,0);
+  border-bottom:1px solid transparent;
+  box-shadow:0 12px 32px rgba(0,0,0,0);
+  -webkit-backdrop-filter:blur(0) saturate(1);
+  backdrop-filter:blur(0) saturate(1);
+  isolation:isolate;
+  transform:translateZ(0);
+  transition:background-color .2s ease,border-color .2s ease,box-shadow .2s ease,-webkit-backdrop-filter .2s ease,backdrop-filter .2s ease;
+}
+.statistics-detail-topbar.is-scrolled{
+  background:rgba(6,9,8,.68);
+  border-bottom-color:rgba(255,255,255,.055);
+  box-shadow:0 12px 32px rgba(0,0,0,.18);
+  -webkit-backdrop-filter:blur(22px) saturate(1.18);
+  backdrop-filter:blur(22px) saturate(1.18);
 }
 .statistics-detail-back{
   width:44px;
@@ -176,7 +191,7 @@
 .statistics-page--native .native-volume-row:active{opacity:.78}
 
 @media(max-width:390px){
-  .statistics-detail-shell{padding-inline:17px}
+  .statistics-detail-shell{--detail-gutter:17px}
   .statistics-detail-hero h1{font-size:28px}
   .statistics-detail-metric strong{font-size:16px}
   .statistics-detail-chart{min-height:225px}
@@ -184,8 +199,9 @@
   .statistics-detail-chart .native-sparkline{height:200px!important}
 }
 @media(prefers-reduced-motion:reduce){
-  .statistics-detail-page,.statistics-detail-back,.statistics-detail-selector button{transition:none!important}
+  .statistics-detail-page,.statistics-detail-topbar,.statistics-detail-back,.statistics-detail-selector button{transition:none!important}
 }
 html.reduce-motion .statistics-detail-page,
+html.reduce-motion .statistics-detail-topbar,
 html.reduce-motion .statistics-detail-back,
 html.reduce-motion .statistics-detail-selector button{transition:none!important}
