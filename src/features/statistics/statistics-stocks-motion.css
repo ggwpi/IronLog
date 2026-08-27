@@ -9,149 +9,67 @@
 .statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-focus-dot,
 .statistics-detail-page[data-stats-detail-page="performance"] .stocks-performance-quote span,
 .statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-metric:nth-child(2) strong{
-  transition:stroke .28s ease,fill .28s ease,color .28s ease,stop-color .28s ease,filter .28s ease,opacity .2s ease;
+  transition:stroke .24s ease,fill .24s ease,color .24s ease,filter .24s ease,opacity .18s ease;
 }
 
-.stocks-motion-mounted .statistics-detail-topbar{
-  animation:stocksHeaderIn .48s var(--stocks-motion-ease) both;
-}
-.stocks-motion-mounted .statistics-detail-kicker{
-  animation:stocksFadeUp .46s .04s var(--stocks-motion-ease) both;
-}
-.stocks-motion-mounted [data-performance-hero] h1{
-  animation:stocksFadeUp .52s .08s var(--stocks-motion-ease) both;
-}
-.stocks-motion-mounted .stocks-performance-quote{
-  animation:stocksQuoteIn .58s .12s var(--stocks-motion-ease) both;
-}
-.stocks-motion-mounted .statistics-detail-metric{
-  animation:stocksMetricIn .48s var(--stocks-motion-delay,.16s) var(--stocks-motion-ease) both;
-}
-.stocks-motion-mounted .statistics-detail-section-label{
-  animation:stocksFadeUp .48s .22s var(--stocks-motion-ease) both;
-}
-.stocks-motion-mounted .statistics-detail-chart{
-  animation:stocksChartIn .62s .24s var(--stocks-motion-ease) both;
-}
-.stocks-motion-mounted .statistics-detail-axis-copy{
-  animation:stocksFadeUp .42s .48s var(--stocks-motion-ease) both;
-}
-.stocks-motion-mounted .stocks-chart-hint{
-  animation:stocksFadeUp .42s .52s var(--stocks-motion-ease) both;
-}
-.stocks-motion-mounted .statistics-detail-note{
-  animation:stocksFadeUp .46s .58s var(--stocks-motion-ease) both;
-}
-.stocks-motion-mounted .statistics-detail-list__head{
-  animation:stocksFadeUp .46s .62s var(--stocks-motion-ease) both;
-}
-.stocks-motion-row{
-  animation:stocksRowIn .48s var(--stocks-row-delay,.66s) var(--stocks-motion-ease) both;
-}
+.stocks-motion-mounted .statistics-detail-topbar{animation:stocksHeaderIn .42s var(--stocks-motion-ease) both}
+.stocks-motion-mounted .statistics-detail-kicker{animation:stocksFadeUp .4s .03s var(--stocks-motion-ease) both}
+.stocks-motion-mounted [data-performance-hero] h1{animation:stocksFadeUp .44s .055s var(--stocks-motion-ease) both}
+.stocks-motion-mounted .stocks-performance-quote{animation:stocksQuoteIn .5s .085s var(--stocks-motion-ease) both}
+.stocks-motion-mounted .statistics-detail-metric{animation:stocksMetricIn .42s var(--stocks-motion-delay,.13s) var(--stocks-motion-ease) both}
+.stocks-motion-mounted .statistics-detail-section-label{animation:stocksFadeUp .42s .17s var(--stocks-motion-ease) both}
+.stocks-motion-mounted .statistics-detail-chart{animation:stocksChartIn .5s .19s var(--stocks-motion-ease) both}
+.stocks-motion-mounted .statistics-detail-axis-copy{animation:stocksFadeUp .36s .4s var(--stocks-motion-ease) both}
+.stocks-motion-mounted .stocks-chart-hint{animation:stocksFadeUp .36s .43s var(--stocks-motion-ease) both}
+.stocks-motion-mounted .statistics-detail-note{animation:stocksFadeUp .4s .47s var(--stocks-motion-ease) both}
+.stocks-motion-mounted .statistics-detail-list__head{animation:stocksFadeUp .4s .52s var(--stocks-motion-ease) both}
+.stocks-motion-row{animation:stocksRowIn .42s var(--stocks-row-delay,.58s) var(--stocks-motion-ease) both}
 
 .stocks-animated-line{
-  stroke-dasharray:var(--stocks-path-length,1000);
   stroke-dashoffset:var(--stocks-path-length,1000);
-  animation:stocksLineDraw 1.05s .3s cubic-bezier(.3,.7,.18,1) forwards,stocksLineGlow 4.6s 1.5s ease-in-out infinite;
+  animation:stocksLineDraw .86s .24s cubic-bezier(.28,.72,.18,1) forwards,stocksLineGlow 5.8s 1.55s ease-in-out infinite;
 }
+/* The fill waits until most of the line is drawn, so it never exposes future geometry as detached triangles. */
 .stocks-motion-area{
   transform-box:fill-box;
   transform-origin:center top;
-  animation:stocksAreaIn .78s .4s var(--stocks-motion-ease) both,stocksAreaBreath 4.8s 1.45s ease-in-out infinite alternate;
+  animation:stocksAreaIn .42s .88s var(--stocks-motion-ease) both,stocksAreaBreath 6.4s 1.8s ease-in-out infinite alternate;
 }
 .stocks-end-dot{
   transform-box:fill-box;
   transform-origin:center;
-  animation:stocksDotIn .38s .86s var(--stocks-motion-ease) both,stocksDotPulse 2.8s 1.3s ease-in-out infinite;
+  animation:stocksDotIn .28s 1.02s var(--stocks-motion-ease) both,stocksDotPulse 3.6s 1.6s ease-in-out infinite;
 }
 .statistics-detail-selector button.is-selected .statistics-detail-selector__dot{
-  animation:stocksSelectedPulse 2.6s ease-in-out infinite;
+  animation:stocksSelectedPulse 3.4s ease-in-out infinite;
 }
 
-.statistics-detail-chart.is-scrubbing .stocks-chart-crosshair{
-  animation:stocksCrosshairIn .14s ease-out both;
-}
+.statistics-detail-chart.is-scrubbing .stocks-chart-crosshair{animation:stocksCrosshairIn .12s ease-out both}
 .statistics-detail-chart.is-scrubbing .stocks-chart-focus-halo,
 .statistics-detail-chart.is-scrubbing .stocks-chart-focus-dot{
   transform-box:fill-box;
   transform-origin:center;
-  animation:stocksFocusPop .18s var(--stocks-motion-ease) both;
+  animation:stocksFocusPop .15s var(--stocks-motion-ease) both;
 }
-.statistics-detail-chart.is-scrubbing .stocks-chart-readout.is-visible{
-  animation:stocksReadoutPop .2s var(--stocks-motion-ease) both;
-}
-.statistics-detail-chart.is-scrubbing + .statistics-detail-axis-copy{
-  opacity:.45;
-  transition:opacity .18s ease;
-}
+.statistics-detail-chart.is-scrubbing .stocks-chart-readout.is-visible{animation:stocksReadoutPop .17s var(--stocks-motion-ease) both}
+.statistics-detail-chart.is-scrubbing + .statistics-detail-axis-copy{opacity:.45;transition:opacity .18s ease}
 
-@keyframes stocksHeaderIn{
-  from{opacity:0;transform:translate3d(0,-10px,0)}
-  to{opacity:1;transform:none}
-}
-@keyframes stocksFadeUp{
-  from{opacity:0;transform:translate3d(0,12px,0)}
-  to{opacity:1;transform:none}
-}
-@keyframes stocksQuoteIn{
-  0%{opacity:0;transform:translate3d(0,12px,0) scale(.965)}
-  65%{opacity:1;transform:translate3d(0,-1px,0) scale(1.012)}
-  100%{opacity:1;transform:none}
-}
-@keyframes stocksMetricIn{
-  from{opacity:0;transform:translate3d(0,9px,0) scale(.98)}
-  to{opacity:1;transform:none}
-}
-@keyframes stocksChartIn{
-  from{opacity:0;transform:translate3d(0,16px,0) scale(.985)}
-  to{opacity:1;transform:none}
-}
-@keyframes stocksRowIn{
-  from{opacity:0;transform:translate3d(0,14px,0)}
-  to{opacity:1;transform:none}
-}
-@keyframes stocksLineDraw{
-  from{stroke-dashoffset:var(--stocks-path-length,1000)}
-  to{stroke-dashoffset:0}
-}
-@keyframes stocksAreaIn{
-  from{opacity:0;transform:scaleY(.78)}
-  to{opacity:1;transform:scaleY(1)}
-}
-@keyframes stocksAreaBreath{
-  from{opacity:.78}
-  to{opacity:1}
-}
-@keyframes stocksLineGlow{
-  0%,100%{filter:drop-shadow(0 0 2px rgba(var(--stocks-trend-rgb),.03))}
-  50%{filter:drop-shadow(0 0 7px rgba(var(--stocks-trend-rgb),.13))}
-}
-@keyframes stocksDotIn{
-  from{opacity:0;transform:scale(.25)}
-  70%{opacity:1;transform:scale(1.22)}
-  to{opacity:1;transform:scale(1)}
-}
-@keyframes stocksDotPulse{
-  0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(var(--stocks-trend-rgb),0))}
-  50%{transform:scale(1.2);filter:drop-shadow(0 0 5px rgba(var(--stocks-trend-rgb),.28))}
-}
-@keyframes stocksSelectedPulse{
-  0%,100%{box-shadow:0 0 7px rgba(var(--stocks-trend-rgb),.18);transform:scale(1)}
-  50%{box-shadow:0 0 13px rgba(var(--stocks-trend-rgb),.36);transform:scale(1.18)}
-}
-@keyframes stocksCrosshairIn{
-  from{opacity:0}
-  to{opacity:1}
-}
-@keyframes stocksFocusPop{
-  from{opacity:.2;transform:scale(.45)}
-  to{opacity:1;transform:scale(1)}
-}
-@keyframes stocksReadoutPop{
-  0%{opacity:0;transform:translateY(6px) scale(.96)}
-  70%{opacity:1;transform:translateY(-1px) scale(1.01)}
-  100%{opacity:1;transform:none}
-}
+@keyframes stocksHeaderIn{from{opacity:0;transform:translate3d(0,-8px,0)}to{opacity:1;transform:none}}
+@keyframes stocksFadeUp{from{opacity:0;transform:translate3d(0,9px,0)}to{opacity:1;transform:none}}
+@keyframes stocksQuoteIn{0%{opacity:0;transform:translate3d(0,10px,0) scale(.975)}70%{opacity:1;transform:translate3d(0,-1px,0) scale(1.006)}100%{opacity:1;transform:none}}
+@keyframes stocksMetricIn{from{opacity:0;transform:translate3d(0,7px,0) scale(.987)}to{opacity:1;transform:none}}
+@keyframes stocksChartIn{from{opacity:0;transform:translate3d(0,12px,0) scale(.99)}to{opacity:1;transform:none}}
+@keyframes stocksRowIn{from{opacity:0;transform:translate3d(0,10px,0)}to{opacity:1;transform:none}}
+@keyframes stocksLineDraw{from{stroke-dashoffset:var(--stocks-path-length,1000)}to{stroke-dashoffset:0}}
+@keyframes stocksAreaIn{from{opacity:0}to{opacity:1}}
+@keyframes stocksAreaBreath{from{opacity:.92}to{opacity:1}}
+@keyframes stocksLineGlow{0%,100%{filter:drop-shadow(0 0 2px rgba(var(--stocks-trend-rgb),.025))}50%{filter:drop-shadow(0 0 5px rgba(var(--stocks-trend-rgb),.09))}}
+@keyframes stocksDotIn{from{opacity:0;transform:scale(.45)}70%{opacity:1;transform:scale(1.12)}to{opacity:1;transform:scale(1)}}
+@keyframes stocksDotPulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(var(--stocks-trend-rgb),0))}50%{transform:scale(1.12);filter:drop-shadow(0 0 4px rgba(var(--stocks-trend-rgb),.2))}}
+@keyframes stocksSelectedPulse{0%,100%{box-shadow:0 0 5px rgba(var(--stocks-trend-rgb),.12);transform:scale(1)}50%{box-shadow:0 0 9px rgba(var(--stocks-trend-rgb),.24);transform:scale(1.1)}}
+@keyframes stocksCrosshairIn{from{opacity:0}to{opacity:1}}
+@keyframes stocksFocusPop{from{opacity:.25;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
+@keyframes stocksReadoutPop{0%{opacity:0;transform:translateY(5px) scale(.97)}70%{opacity:1;transform:translateY(-1px) scale(1.006)}100%{opacity:1;transform:none}}
 
 @media(prefers-reduced-motion:reduce){
   .statistics-detail-page[data-stats-detail-page="performance"] *,
