@@ -24,7 +24,7 @@ function getObserver() {
       const key = element.dataset.statsKey || `section-${[...document.querySelectorAll('[data-stats-animate]')].indexOf(element)}`;
       seen.add(key);
       element.classList.add('is-visible');
-      observer.unobserve(element);
+      observer?.unobserve(element);
     });
   }, { root: null, rootMargin: '0px 0px -7% 0px', threshold: 0.08 });
   return observer;
