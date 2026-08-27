@@ -1,23 +1,9 @@
-/* Final mobile header calibration.
-   One connected Home top bar: brand on the left, greeting/name on the right.
-   The Home surface also extends through the iPhone safe area so there is no
-   visible seam beneath the system status bar. */
+/* Home-specific content calibration only.
+   Sticky positioning, safe-area coverage, background and blur are intentionally
+   owned by the shared page-header component in app-header-sticky.css. */
 
 @media(max-width:650px){
-  /* The global app shell has a different top radial gradient. On iPhone that
-     showed through behind the status bar and created a hard horizontal cut at
-     the safe-area boundary. Make Home one uninterrupted surface instead. */
-  html:has(.home-editorial),
-  body:has(.home-editorial),
-  body:has(.home-editorial) #app,
-  body:has(.home-editorial) .app-shell{
-    background:#040605!important;
-    background-color:#040605!important;
-  }
-
   .home-editorial__header{
-    position:relative;
-    z-index:30;
     min-height:72px;
     padding:0 4px;
     display:grid;
@@ -25,25 +11,6 @@
     align-items:center;
     column-gap:18px;
     direction:ltr;
-  }
-
-  /* Extend the same Home surface above the header by the full safe-area
-     height. This deliberately paints behind the iOS status bar. */
-  .home-editorial__header::before{
-    content:"";
-    position:absolute;
-    z-index:-1;
-    left:-18px;
-    right:-18px;
-    top:calc(-1 * (var(--safe-top) + 24px));
-    bottom:-28px;
-    pointer-events:none;
-    background:linear-gradient(180deg,
-      #040605 0%,
-      #040605 72%,
-      rgba(4,6,5,.96) 82%,
-      rgba(4,6,5,.64) 91%,
-      rgba(4,6,5,0) 100%);
   }
 
   .home-brand{
