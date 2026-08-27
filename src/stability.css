@@ -22,6 +22,36 @@ html.ironlog-ui-stable .active-workout-page > .live-rest-flat:not([hidden]){
   animation:awRestScreenIn .32s cubic-bezier(.2,.8,.2,1) both!important;
 }
 
+/* Native-app interaction: ordinary UI text should never become browser-selected.
+   Editing controls remain selectable so cursor movement, copy/paste and autofill keep working. */
+html,
+body,
+#app,
+#app *,
+.statistics-detail-page,
+.statistics-detail-page *{
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none;
+}
+
+input,
+textarea,
+select,
+[contenteditable="true"],
+[contenteditable=""],
+[role="textbox"]{
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  -webkit-touch-callout:default!important;
+}
+
+img,
+svg{
+  -webkit-user-drag:none;
+  user-drag:none;
+}
+
 @media(prefers-reduced-motion:reduce){
   html.ironlog-ui-stable .active-workout-page *,
   html.ironlog-ui-stable .active-workout-page *:before,
