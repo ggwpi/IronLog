@@ -104,7 +104,7 @@
 .native-exercise-value .is-neutral{color:#7e888b}
 .native-exercise-spark{direction:ltr}
 .native-sparkline{display:block;width:96px;height:40px;overflow:visible}
-.native-sparkline path{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.native-sparkline path:not([data-stocks-area-fill]){fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
 .native-sparkline circle{fill:var(--accent)}
 
 /* Native disclosure rows keep secondary information available without making the overview dense. */
