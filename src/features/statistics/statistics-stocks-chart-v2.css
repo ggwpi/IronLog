@@ -14,20 +14,20 @@
 
 .statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-chart{
   background:
-    linear-gradient(rgba(255,255,255,.032) 1px,transparent 1px) 0 3%/100% 33.333%,
+    linear-gradient(rgba(255,255,255,.026) 1px,transparent 1px) 0 3%/100% 33.333%,
     transparent;
 }
 
-.statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > path:not(.stocks-chart-area){
+.statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > path:not([data-stocks-area-fill]){
   stroke:var(--stocks-trend-color)!important;
-  stroke-width:1.75!important;
-  filter:drop-shadow(0 0 5px rgba(var(--stocks-trend-rgb),.08))!important;
+  stroke-width:1.72!important;
+  filter:drop-shadow(0 0 4px rgba(var(--stocks-trend-rgb),.06))!important;
 }
 .statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > circle:not(.stocks-chart-focus-halo):not(.stocks-chart-focus-dot){
-  r:.82px!important;
+  r:.7px!important;
   fill:var(--stocks-trend-color)!important;
   stroke:#050706!important;
-  stroke-width:.55px!important;
+  stroke-width:.48px!important;
   vector-effect:non-scaling-stroke;
 }
 
@@ -36,40 +36,52 @@
   pointer-events:none;
   opacity:1;
 }
-.stocks-chart-gradient-stop--top{stop-color:var(--stocks-trend-color);stop-opacity:.27}
-.stocks-chart-gradient-stop--mid{stop-color:var(--stocks-trend-color);stop-opacity:.095}
+.stocks-chart-gradient-stop--top{stop-color:var(--stocks-trend-color);stop-opacity:.18}
+.stocks-chart-gradient-stop--mid{stop-color:var(--stocks-trend-color);stop-opacity:.052}
 .stocks-chart-gradient-stop--bottom{stop-color:var(--stocks-trend-color);stop-opacity:0}
 
 .statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-focus-halo{
-  r:1.55px!important;
+  r:1.36px!important;
   fill:#050706!important;
   stroke:var(--stocks-trend-color)!important;
-  stroke-width:.9px!important;
+  stroke-width:.82px!important;
 }
 .statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-focus-dot{
-  r:.68px!important;
+  r:.56px!important;
   fill:var(--stocks-trend-color)!important;
 }
 .statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-range{
-  fill:rgba(var(--stocks-trend-rgb),.055)!important;
+  fill:rgba(var(--stocks-trend-rgb),.045)!important;
 }
 .statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-chart.is-comparing .stocks-chart-readout{
-  border-color:rgba(var(--stocks-trend-rgb),.18)!important;
+  border-color:rgba(var(--stocks-trend-rgb),.16)!important;
 }
 
 .statistics-detail-page[data-stats-detail-page="performance"] .stocks-performance-quote span,
 .statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-metric:nth-child(2) strong{
   color:var(--stocks-trend-color)!important;
 }
-.statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-kicker::before,
-.statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-hint span:first-child::before{
+.statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-kicker::before{
   background:var(--stocks-trend-color)!important;
+  box-shadow:0 0 8px rgba(var(--stocks-trend-rgb),.14)!important;
+}
+.statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-hint span:first-child::before{
   color:var(--stocks-trend-color)!important;
-  box-shadow:0 0 8px rgba(var(--stocks-trend-rgb),.16)!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+.statistics-detail-page[data-stats-detail-page="performance"] .stocks-performance-quote span{
+  unicode-bidi:plaintext;
+  line-height:1.45;
+}
+.statistics-detail-page[data-stats-detail-page="performance"] [data-performance-hero] h1{
+  display:block!important;
+  min-height:1.08em;
 }
 
 .statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-readout{
-  background:rgba(16,18,18,.76);
-  border-color:rgba(255,255,255,.075);
-  box-shadow:0 12px 34px rgba(0,0,0,.22);
+  background:rgba(16,18,18,.74);
+  border-color:rgba(255,255,255,.07);
+  box-shadow:0 12px 30px rgba(0,0,0,.2);
 }
