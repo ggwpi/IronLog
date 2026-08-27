@@ -50,11 +50,13 @@ function buildArea(svg,line,points){
   gradient.appendChild(svgElement('stop',{offset:'100%','class':'stocks-chart-gradient-stop--bottom'}));
   defs.appendChild(gradient);
 
-  const first=points[0];
-  const last=points.at(-1);
-  const body=points.map((point,index)=>`${index?'L':'L'} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join(' ');
-  const area=svgElement('path',{
-    d:`M ${first.x.toFixed(2)} ${bottom.toFixed(2)} ${body} L ${last.x.toFixed(2)} ${bottom.toFixed(2)} Z`,
+  const polygonPoints=[
+    `${points[0].x.toFixed(2)},${bottom.toFixed(2)}`,
+    ...points.map(point=>`${point.x.toFixed(2)},${point.y.toFixed(2)}`),
+    `${points.at(-1).x.toFixed(2)},${bottom.toFixed(2)}`,
+  ].join(' ');
+  const area=svgElement('polygon',{
+    points:polygonPoints,
     fill:`url(#${gradientId})`,
     'class':'stocks-chart-area',
     'data-stocks-area-fill':'true',
@@ -69,7 +71,7 @@ function decoratePage(page){
   const chart=page.querySelector('[data-performance-chart] .statistics-detail-chart');
   const svg=chart?.querySelector('.native-sparkline');
   if(!chart||!svg)return;
-  const line=[...svg.children].find(node=>node.tagName?.toLowerCase()==='path'&&!node.hasAttribute('data-stocks-area-fill'));
+  const line=[...svg.children].find(node=>node.tagName?.toLowerCase()==='path');
   if(!line)return;
   const points=parsePoints(line);
   buildArea(svg,line,points);
