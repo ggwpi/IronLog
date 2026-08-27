@@ -1,51 +1,113 @@
-/* Shared sticky tab header.
-   Every main-tab AppPageHeader keeps the exact same visual origin while the
-   document scrolls. A translucent iOS-style backdrop appears only after the
-   user has moved the page, so the initial layout stays open and editorial. */
+/*
+ * IronLog shared sticky page-header glass system.
+ *
+ * Reuse on any future page by adding `data-iron-page-header` to its header and,
+ * when that page owns its own scroll surface, `data-iron-scroll-root` to that
+ * scroll container. The runtime handles both document scrolling and nested
+ * scrolling surfaces. The glass backdrop always reaches all the way through
+ * the iOS safe area to the physical top of the viewport.
+ */
 
 :root{
   --iron-header-scroll-inline:18px;
+  --iron-header-glass-bg:rgba(6,9,8,.76);
+  --iron-header-glass-blur:28px;
+  --iron-header-glass-saturation:150%;
 }
 
+/* Existing main-tab headers automatically participate in the shared system. */
 .app-page-header{
+  --iron-header-sticky-top:calc(var(--safe-top) + var(--iron-header-top-gap));
+  --iron-header-glass-top-cover:calc(var(--safe-top) + var(--iron-header-top-gap));
+  --iron-header-glass-inline-bleed:var(--iron-header-scroll-inline);
+  --iron-header-glass-bottom-cover:9px;
+}
+
+/* Extended / overlay pages use the exact same mechanism. This selector is a
+   compatibility bridge; new pages only need data-iron-page-header. */
+.statistics-detail-topbar{
+  --iron-header-sticky-top:calc(env(safe-area-inset-top) + 8px);
+  --iron-header-glass-top-cover:calc(env(safe-area-inset-top) + 8px);
+  --iron-header-glass-inline-bleed:var(--detail-gutter,20px);
+  --iron-header-glass-bottom-cover:10px;
+}
+
+.iron-page-header,
+[data-iron-page-header],
+.app-page-header,
+.statistics-detail-topbar{
+  position:-webkit-sticky!important;
   position:sticky!important;
-  top:calc(var(--safe-top) + var(--iron-header-top-gap))!important;
+  top:var(--iron-header-sticky-top,0px)!important;
   z-index:950!important;
   isolation:isolate;
+  overflow:visible!important;
   transform:translateZ(0);
   -webkit-transform:translateZ(0);
 }
 
-/* The backdrop is larger than the content column, but the title/logo geometry
-   itself never moves. It also extends into the safe-area/status-bar region. */
-.app-page-header::after{
+/* One glass plane for every page header. It deliberately extends upward by
+   the safe-area + header offset, so content can never remain readable above
+   the title while scrolling underneath the iPhone status bar. */
+.iron-page-header::after,
+[data-iron-page-header]::after,
+.app-page-header::after,
+.statistics-detail-topbar::after{
   content:"";
   position:absolute;
   z-index:-1;
   pointer-events:none;
-  top:calc(-1 * (var(--safe-top) + var(--iron-header-top-gap)));
-  right:calc(-1 * var(--iron-header-scroll-inline));
-  bottom:-9px;
-  left:calc(-1 * var(--iron-header-scroll-inline));
+  top:calc(-1 * var(--iron-header-glass-top-cover,0px) - 2px);
+  right:calc(-1 * var(--iron-header-glass-inline-bleed,0px));
+  bottom:calc(-1 * var(--iron-header-glass-bottom-cover,0px));
+  left:calc(-1 * var(--iron-header-glass-inline-bleed,0px));
   border-bottom:1px solid transparent;
   background:rgba(6,9,8,0);
+  box-shadow:0 10px 30px rgba(0,0,0,0);
   -webkit-backdrop-filter:blur(0) saturate(100%);
   backdrop-filter:blur(0) saturate(100%);
   opacity:0;
+  will-change:opacity,backdrop-filter;
   transition:
-    opacity .24s ease,
-    background-color .24s ease,
-    border-color .24s ease,
-    -webkit-backdrop-filter .28s ease;
+    opacity .22s ease,
+    background-color .22s ease,
+    border-color .22s ease,
+    box-shadow .22s ease,
+    -webkit-backdrop-filter .26s ease,
+    backdrop-filter .26s ease;
 }
 
-html.iron-header-scrolled .app-page-header::after{
+.iron-page-header.is-iron-header-scrolled::after,
+[data-iron-page-header].is-iron-header-scrolled::after,
+.app-page-header.is-iron-header-scrolled::after,
+.statistics-detail-topbar.is-iron-header-scrolled::after{
   opacity:1;
-  background:rgba(6,9,8,.72);
-  border-bottom-color:rgba(255,255,255,.07);
-  -webkit-backdrop-filter:blur(26px) saturate(155%);
-  backdrop-filter:blur(26px) saturate(155%);
-  box-shadow:0 8px 24px rgba(0,0,0,.10);
+  background:var(--iron-header-glass-bg);
+  border-bottom-color:rgba(255,255,255,.065);
+  box-shadow:0 10px 30px rgba(0,0,0,.16);
+  -webkit-backdrop-filter:blur(var(--iron-header-glass-blur)) saturate(var(--iron-header-glass-saturation));
+  backdrop-filter:blur(var(--iron-header-glass-blur)) saturate(var(--iron-header-glass-saturation));
+}
+
+/* Keep backward compatibility for code that still looks at the old root
+   state while all visuals are now controlled per-header above. */
+html.iron-header-scrolled .app-page-header:not(.is-iron-header-scrolled)::after{
+  opacity:1;
+  background:var(--iron-header-glass-bg);
+  border-bottom-color:rgba(255,255,255,.065);
+  box-shadow:0 10px 30px rgba(0,0,0,.16);
+  -webkit-backdrop-filter:blur(var(--iron-header-glass-blur)) saturate(var(--iron-header-glass-saturation));
+  backdrop-filter:blur(var(--iron-header-glass-blur)) saturate(var(--iron-header-glass-saturation));
+}
+
+/* The statistics detail page used to own a second blur implementation. The
+   shared glass plane above is now authoritative so all page headers match. */
+.statistics-detail-topbar.is-scrolled{
+  background:transparent!important;
+  border-bottom-color:transparent!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
 }
 
 /* Normalize feature-specific header height overrides so switching tabs never
@@ -63,9 +125,16 @@ html.iron-header-scrolled .app-page-header::after{
 
 @media(max-width:390px){
   :root{--iron-header-scroll-inline:14px}
+  .statistics-detail-topbar{--iron-header-glass-inline-bleed:var(--detail-gutter,17px)}
 }
 
 @media(prefers-reduced-motion:reduce){
-  .app-page-header::after{transition:none!important}
+  .iron-page-header::after,
+  [data-iron-page-header]::after,
+  .app-page-header::after,
+  .statistics-detail-topbar::after{transition:none!important}
 }
-html.reduce-motion .app-page-header::after{transition:none!important}
+html.reduce-motion .iron-page-header::after,
+html.reduce-motion [data-iron-page-header]::after,
+html.reduce-motion .app-page-header::after,
+html.reduce-motion .statistics-detail-topbar::after{transition:none!important}
