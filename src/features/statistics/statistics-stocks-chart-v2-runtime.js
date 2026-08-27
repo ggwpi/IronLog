@@ -6,7 +6,7 @@ function ensureStyles(){
   const link=document.createElement('link');
   link.id=STYLE_ID;
   link.rel='stylesheet';
-  link.href='/src/features/statistics/statistics-stocks-chart-v2.css?v=1';
+  link.href='/src/features/statistics/statistics-stocks-chart-v2.css?v=2';
   document.head.appendChild(link);
 }
 
