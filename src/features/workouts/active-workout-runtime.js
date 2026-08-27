@@ -141,7 +141,7 @@ function hydrateActiveScreen(){
 
 function rehydrate(){stopTimers();hydrateActiveScreen()}
 function scheduleHydrate(){window.clearTimeout(hydrateTimer);hydrateTimer=window.setTimeout(rehydrate,16)}
-function watchForSessionEnd(sessionId){const started=Date.now(),timer=setInterval(()=>{const page=document.querySelector('.active-workout-page');if(!page&&location.hash.includes('/workouts')){localStorage.removeItem(ACTIVE_KEY);if(sessionId){localStorage.removeItem(restKey(sessionId));localStorage.removeItem(restTotalKey(sessionId))}clearInterval(timer);return}if(Date.now()-started>12000)clearInterval(timer)},180)}
+function watchForSessionEnd(sessionId){const started=Date.now(),timer=setInterval(()=>{const page=document.querySelector('.active-workout-page');if(!page){localStorage.removeItem(ACTIVE_KEY);if(sessionId){localStorage.removeItem(restKey(sessionId));localStorage.removeItem(restTotalKey(sessionId))}clearInterval(timer);return}if(Date.now()-started>12000)clearInterval(timer)},180)}
 
 if(localStorage.getItem(ACTIVE_KEY)&&!location.hash.includes('/workouts'))history.replaceState(null,'','#/workouts');
 const appRoot=document.querySelector('#app');
