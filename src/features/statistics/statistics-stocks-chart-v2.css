@@ -1,0 +1,75 @@
+/* Stocks-style chart polish: semantic trend color, soft area fill and restrained markers. */
+.statistics-detail-page[data-stats-detail-page="performance"]{
+  --stocks-trend-color:#30d158;
+  --stocks-trend-rgb:48,209,88;
+}
+.statistics-detail-page[data-stats-detail-page="performance"][data-stocks-trend="down"]{
+  --stocks-trend-color:#ff453a;
+  --stocks-trend-rgb:255,69,58;
+}
+.statistics-detail-page[data-stats-detail-page="performance"][data-stocks-trend="flat"]{
+  --stocks-trend-color:#8e8e93;
+  --stocks-trend-rgb:142,142,147;
+}
+
+.statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-chart{
+  background:
+    linear-gradient(rgba(255,255,255,.032) 1px,transparent 1px) 0 3%/100% 33.333%,
+    transparent;
+}
+
+.statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > path:not(.stocks-chart-area){
+  stroke:var(--stocks-trend-color)!important;
+  stroke-width:1.75!important;
+  filter:drop-shadow(0 0 5px rgba(var(--stocks-trend-rgb),.08))!important;
+}
+.statistics-detail-page[data-stats-detail-page="performance"] .native-sparkline > circle:not(.stocks-chart-focus-halo):not(.stocks-chart-focus-dot){
+  r:.82px!important;
+  fill:var(--stocks-trend-color)!important;
+  stroke:#050706!important;
+  stroke-width:.55px!important;
+  vector-effect:non-scaling-stroke;
+}
+
+.stocks-chart-area{
+  stroke:none!important;
+  pointer-events:none;
+  opacity:1;
+}
+.stocks-chart-gradient-stop--top{stop-color:var(--stocks-trend-color);stop-opacity:.27}
+.stocks-chart-gradient-stop--mid{stop-color:var(--stocks-trend-color);stop-opacity:.095}
+.stocks-chart-gradient-stop--bottom{stop-color:var(--stocks-trend-color);stop-opacity:0}
+
+.statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-focus-halo{
+  r:1.55px!important;
+  fill:#050706!important;
+  stroke:var(--stocks-trend-color)!important;
+  stroke-width:.9px!important;
+}
+.statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-focus-dot{
+  r:.68px!important;
+  fill:var(--stocks-trend-color)!important;
+}
+.statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-range{
+  fill:rgba(var(--stocks-trend-rgb),.055)!important;
+}
+.statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-chart.is-comparing .stocks-chart-readout{
+  border-color:rgba(var(--stocks-trend-rgb),.18)!important;
+}
+
+.statistics-detail-page[data-stats-detail-page="performance"] .stocks-performance-quote span,
+.statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-metric:nth-child(2) strong{
+  color:var(--stocks-trend-color)!important;
+}
+.statistics-detail-page[data-stats-detail-page="performance"] .statistics-detail-kicker::before,
+.statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-hint span:first-child::before{
+  background:var(--stocks-trend-color)!important;
+  color:var(--stocks-trend-color)!important;
+  box-shadow:0 0 8px rgba(var(--stocks-trend-rgb),.16)!important;
+}
+
+.statistics-detail-page[data-stats-detail-page="performance"] .stocks-chart-readout{
+  background:rgba(16,18,18,.76);
+  border-color:rgba(255,255,255,.075);
+  box-shadow:0 12px 34px rgba(0,0,0,.22);
+}
