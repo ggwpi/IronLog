@@ -1,5 +1,58 @@
 import { supabase } from './lib/supabase.js';
 
+const ACTIVE_WORKOUT_KEY = 'ironlog:active-workout';
+
+function safeStorageGet(key) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safeStorageRemove(key) {
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // Storage may be unavailable in restricted/private browser contexts.
+  }
+}
+
+/*
+ * Restore the active-workout route before app.js creates its initial store.
+ *
+ * This used to happen in active-workout-runtime.js, which is loaded after
+ * app.js. history.replaceState() does not emit a navigation event, so the URL
+ * could become #/workouts while the store still believed it was on #/home.
+ * Doing the migration here keeps URL and application state in sync from the
+ * first render.
+ */
+function restoreActiveWorkoutRouteBeforeBoot() {
+  if (!safeStorageGet(ACTIVE_WORKOUT_KEY)) return;
+  if (location.hash.includes('/workouts')) return;
+  history.replaceState(null, '', '#/workouts');
+}
+
+/*
+ * Clear an obsolete local active-workout marker once the authenticated app has
+ * proven that there is no active workout. This prevents an old localStorage
+ * value from forcing the workouts route on every future reload.
+ */
+function reconcileActiveWorkoutMarker() {
+  const app = document.querySelector('#app');
+  if (!app) return;
+
+  const sync = () => {
+    if (!safeStorageGet(ACTIVE_WORKOUT_KEY)) return;
+    const overview = app.querySelector('.workouts-concept');
+    const activeWorkout = app.querySelector('.active-workout-page');
+    if (overview && !activeWorkout) safeStorageRemove(ACTIVE_WORKOUT_KEY);
+  };
+
+  sync();
+  new MutationObserver(sync).observe(app, { childList: true });
+}
+
 /*
  * IronLog screen stability layer.
  *
@@ -77,5 +130,7 @@ function markUiStable() {
   observer.observe(app, { childList: true });
 }
 
+restoreActiveWorkoutRouteBeforeBoot();
 stabilizeAuthEvents();
 markUiStable();
+reconcileActiveWorkoutMarker();
