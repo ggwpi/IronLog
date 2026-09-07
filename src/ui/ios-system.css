@@ -1,0 +1,427 @@
+/* IronLog iOS system
+   A single visual language for navigation, typography, surfaces and controls.
+   Loaded last so feature screens keep their data/layout logic while the app
+   shell owns the platform look and feel. */
+
+:root{
+  --ios-bg:#000;
+  --ios-surface:#1c1c1e;
+  --ios-surface-2:#242426;
+  --ios-fill:rgba(118,118,128,.24);
+  --ios-fill-strong:rgba(118,118,128,.34);
+  --ios-separator:rgba(84,84,88,.62);
+  --ios-label:#f5f5f7;
+  --ios-label-2:rgba(235,235,245,.60);
+  --ios-label-3:rgba(235,235,245,.30);
+  --ios-red:#ff453a;
+  --ios-green:#30d158;
+  --ios-radius-card:20px;
+  --ios-radius-control:14px;
+  --ios-touch:44px;
+  --ios-ease:cubic-bezier(.22,.61,.36,1);
+  --bg:var(--ios-bg);
+  --bg-elevated:var(--ios-surface);
+  --panel:var(--ios-surface);
+  --panel-2:var(--ios-surface-2);
+  --text:var(--ios-label);
+  --text-soft:rgba(235,235,245,.82);
+  --muted:var(--ios-label-2);
+  --muted-2:var(--ios-label-3);
+  --line:var(--ios-separator);
+  --line-strong:rgba(84,84,88,.78);
+  --radius-xl:24px;
+  --radius-lg:var(--ios-radius-card);
+  --radius-md:var(--ios-radius-control);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui,sans-serif;
+}
+
+html,body,#app,.app-shell{background:var(--ios-bg)!important}
+html{scroll-behavior:auto}
+body{
+  background:var(--ios-bg)!important;
+  color:var(--ios-label);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui,sans-serif!important;
+  font-size:17px;
+  letter-spacing:0;
+}
+button,input,textarea,select{font-family:inherit}
+button{min-height:var(--ios-touch);touch-action:manipulation}
+
+/* App canvas */
+.app-content{
+  width:min(100%,760px)!important;
+  margin:0 auto!important;
+  padding:calc(var(--safe-top) + 8px) 16px calc(var(--safe-bottom) + 116px)!important;
+}
+.screen,.home-editorial,.workouts-concept,.statistics-page,.settings-page{gap:20px!important}
+
+/* Native large-title header: brand belongs in content, not navigation. */
+.app-page-header.iron-page-header,
+.app-page-header{
+  position:relative!important;
+  top:auto!important;
+  z-index:20!important;
+  width:100%!important;
+  min-height:0!important;
+  height:auto!important;
+  margin:0!important;
+  padding:10px 2px 9px!important;
+  display:block!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  direction:rtl!important;
+}
+.app-page-brand{display:none!important}
+.app-page-heading,
+.app-page-heading__inner{
+  position:static!important;
+  width:100%!important;
+  min-width:0!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  direction:rtl!important;
+  text-align:right!important;
+}
+.app-page-heading h1{
+  margin:0!important;
+  padding:0!important;
+  color:var(--ios-label)!important;
+  font-family:inherit!important;
+  font-size:34px!important;
+  line-height:1.06!important;
+  font-weight:740!important;
+  letter-spacing:-.035em!important;
+  white-space:normal!important;
+}
+.app-page-subtitle{
+  position:static!important;
+  order:2;
+  display:block!important;
+  margin:5px 0 0!important;
+  padding:0!important;
+  color:var(--ios-label-2)!important;
+  font-size:13px!important;
+  line-height:1.25!important;
+  font-weight:450!important;
+  letter-spacing:0!important;
+  white-space:normal!important;
+}
+.app-page-subtitle--above{
+  order:-1!important;
+  margin:0 0 4px!important;
+  color:var(--ios-label-2)!important;
+  font-size:15px!important;
+}
+.iron-header-glass{display:none!important}
+
+/* Shared surfaces: one grouped language, no decorative gradients or glows. */
+.card,
+.settings-card,
+.home-progress-card,
+.home-activity-card,
+.training-summary,
+.training-plan,
+.training-quick__grid article,
+.native-stats-section,
+.native-summary-strip{
+  border:0!important;
+  border-radius:var(--ios-radius-card)!important;
+  background:var(--ios-surface)!important;
+  box-shadow:none!important;
+}
+.card::before,.card::after,
+.settings-card::before,.settings-card::after{display:none!important}
+
+.button,
+.home-start,
+.training-start,
+.history-save-session{
+  min-height:50px!important;
+  border:0!important;
+  border-radius:14px!important;
+  font-family:inherit!important;
+  font-size:15px!important;
+  font-weight:680!important;
+  letter-spacing:-.01em!important;
+  box-shadow:none!important;
+  transition:transform .16s var(--ios-ease),opacity .16s ease!important;
+}
+.button--primary,.home-start,.training-start,.history-save-session{
+  background:var(--accent)!important;
+  color:#0b0c08!important;
+}
+.button--secondary{
+  background:var(--ios-fill)!important;
+  color:var(--ios-label)!important;
+  border:0!important;
+}
+.button:active,.home-start:active,.training-start:active{transform:scale(.985)!important;opacity:.78!important}
+
+/* iOS 26-inspired floating tab bar: translucent navigation above content. */
+.bottom-nav{
+  position:fixed!important;
+  z-index:4000!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:max(10px,calc(var(--safe-bottom) + 4px))!important;
+  transform:translate3d(-50%,0,0)!important;
+  width:min(calc(100vw - 24px),560px)!important;
+  height:64px!important;
+  min-height:64px!important;
+  max-height:64px!important;
+  margin:0!important;
+  padding:5px 7px!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:24px!important;
+  overflow:hidden!important;
+  background:rgba(38,38,40,.66)!important;
+  -webkit-backdrop-filter:blur(30px) saturate(165%)!important;
+  backdrop-filter:blur(30px) saturate(165%)!important;
+  box-shadow:0 10px 32px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.14)!important;
+  grid-template-columns:repeat(4,1fr)!important;
+  direction:rtl!important;
+}
+.bottom-nav::before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  pointer-events:none!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent 40%)!important;
+}
+.bottom-nav::after,.bottom-nav .nav-highlight{display:none!important;content:none!important}
+.bottom-nav .nav-item{
+  position:relative!important;
+  z-index:1!important;
+  min-height:54px!important;
+  padding:2px 4px!important;
+  border:0!important;
+  border-radius:18px!important;
+  background:transparent!important;
+  color:rgba(235,235,245,.52)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:3px!important;
+  font-size:10px!important;
+  line-height:1!important;
+  font-weight:540!important;
+  text-shadow:none!important;
+  transition:color .16s ease,opacity .16s ease,transform .16s var(--ios-ease)!important;
+}
+.bottom-nav .nav-item svg,.bottom-nav .nav-item .icon{
+  width:22px!important;
+  height:22px!important;
+  color:currentColor!important;
+  opacity:1!important;
+  filter:none!important;
+  transform:none!important;
+}
+.bottom-nav .nav-item.is-active{color:var(--accent)!important;text-shadow:none!important}
+.bottom-nav .nav-item.is-active svg,.bottom-nav .nav-item.is-active .icon{color:var(--accent)!important;filter:none!important}
+.bottom-nav .nav-item:active{transform:scale(.94)!important;opacity:.62!important}
+
+/* Home: keep IronLog's workout art, remove the poster/dashboard treatment. */
+.app-content:has(.home-editorial){padding-top:calc(var(--safe-top) + 8px)!important}
+.home-editorial{padding-bottom:8px!important}
+.home-editorial__header{min-height:0!important;padding:10px 2px 8px!important;display:block!important}
+.home-user{width:100%!important;height:auto!important;display:block!important}
+.home-stage{
+  min-height:360px!important;
+  margin:0!important;
+  padding:20px!important;
+  border:0!important;
+  border-radius:24px!important;
+  overflow:hidden!important;
+  background:#111113!important;
+  box-shadow:none!important;
+}
+.home-stage::after{background:linear-gradient(180deg,transparent 34%,rgba(0,0,0,.66) 82%,rgba(0,0,0,.90))!important}
+.home-stage__smoke{opacity:.18!important;filter:blur(34px)!important}
+.home-stage__copy{
+  left:20px!important;
+  right:20px!important;
+  top:auto!important;
+  bottom:20px!important;
+  width:auto!important;
+  direction:rtl!important;
+  text-align:right!important;
+}
+.home-kicker,.home-accent-line,.home-motivation{display:none!important}
+.home-stage__copy h2{
+  margin:0!important;
+  color:#fff!important;
+  font-family:inherit!important;
+  font-size:38px!important;
+  line-height:1!important;
+  font-weight:760!important;
+  letter-spacing:-.04em!important;
+  text-transform:none!important;
+  white-space:normal!important;
+  text-shadow:0 1px 12px rgba(0,0,0,.48)!important;
+}
+.home-stage__copy p{
+  margin:5px 0 0!important;
+  color:rgba(255,255,255,.66)!important;
+  font-size:13px!important;
+  font-weight:480!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  white-space:normal!important;
+}
+.home-workout-meta{
+  width:100%!important;
+  max-width:300px!important;
+  margin-top:14px!important;
+  padding:10px 0!important;
+  border-top:1px solid rgba(255,255,255,.16)!important;
+}
+.home-workout-meta span{padding:0 10px!important;border:0!important;text-align:center!important}
+.home-workout-meta span+span{border-left:1px solid rgba(255,255,255,.14)!important}
+.home-workout-meta strong{font-family:inherit!important;font-size:18px!important;font-weight:680!important}
+.home-workout-meta small{margin-top:3px!important;color:rgba(255,255,255,.52)!important;font-size:10px!important}
+.home-start{width:100%!important;margin-top:12px!important;justify-content:center!important;gap:8px!important}
+.home-start i{display:none!important}
+.home-card-title{display:none!important}
+.home-progress-card,.home-activity-card{padding:18px!important}
+.home-card-heading{margin-bottom:14px!important}
+.home-card-heading>div>span{font-size:17px!important;font-weight:650!important;color:var(--ios-label)!important}
+.home-progress-day{border:0!important;background:transparent!important}
+.home-progress-day.is-current i,.home-progress-day.is-active i,.home-progress-day.is-complete i{background:var(--accent)!important;color:#111!important}
+.home-chart__grid i{background:rgba(84,84,88,.42)!important}
+
+/* Workouts: content first, grouped lists instead of many competing widgets. */
+.app-content:has(.workouts-concept){padding-top:calc(var(--safe-top) + 8px)!important}
+.workouts-concept{padding-bottom:8px!important}
+.training-header{min-height:0!important;margin:0!important;padding:10px 2px 8px!important}
+.training-calendar{padding:8px 2px 2px!important;background:transparent!important;border:0!important}
+.training-day{min-height:54px!important;border-radius:14px!important;background:transparent!important;border:0!important}
+.training-day.is-selected{background:var(--ios-surface)!important;color:var(--ios-label)!important}
+.training-day.is-selected strong{color:var(--accent)!important}
+.training-hero{
+  min-height:330px!important;
+  border:0!important;
+  border-radius:24px!important;
+  background:#111113!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
+.training-hero::before,.training-hero::after{opacity:.18!important}
+.training-hero__copy{z-index:3!important}
+.training-hero__copy h2{font-family:inherit!important;font-size:38px!important;line-height:1!important;font-weight:760!important;letter-spacing:-.04em!important;text-transform:none!important}
+.training-hero__copy p{font-size:13px!important;color:rgba(255,255,255,.62)!important;letter-spacing:0!important;text-transform:none!important}
+.training-hero__date{font-size:11px!important;color:rgba(255,255,255,.58)!important}
+.training-hero__date strong{color:var(--accent)!important}
+.training-hero__chips span{border:0!important;background:rgba(60,60,67,.42)!important;border-radius:999px!important;color:rgba(255,255,255,.75)!important}
+.training-start{box-shadow:none!important}
+.training-summary{padding:0 16px!important;overflow:hidden!important}
+.training-summary article{min-height:68px!important;padding:12px 0!important;background:transparent!important;border:0!important;border-radius:0!important}
+.training-summary article+article{border-top:1px solid var(--ios-separator)!important}
+.training-summary .summary-icon{background:var(--ios-fill)!important;border:0!important;color:var(--accent)!important}
+.training-plan{padding:0 16px!important;overflow:hidden!important}
+.training-plan h3,.training-quick h3{margin:0 0 10px!important;padding:0 2px!important;font-size:20px!important;font-weight:690!important;letter-spacing:-.02em!important}
+.training-plan__rows{gap:0!important}
+.training-plan-row{
+  min-height:72px!important;
+  margin:0!important;
+  padding:10px 0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.training-plan-row+.training-plan-row{border-top:1px solid var(--ios-separator)!important}
+.training-plan-row__thumb{border-radius:12px!important;background:var(--ios-fill)!important}
+.training-plan-row__copy strong{font-size:15px!important;font-weight:620!important}
+.training-plan-row__copy small,.training-plan-row__progress em{color:var(--ios-label-2)!important;font-size:11px!important}
+.training-quick__grid{gap:10px!important}
+.training-quick__grid article{min-height:96px!important;padding:14px!important}
+
+/* Statistics: Apple Health-like grouped data; charts remain the content. */
+.app-content:has(.statistics-page){padding-top:calc(var(--safe-top) + 8px)!important}
+.statistics-page{padding-bottom:8px!important}
+.statistics-header{min-height:0!important;margin:0!important;padding:10px 2px 8px!important}
+.native-summary-strip{padding:4px 8px!important;overflow:hidden!important}
+.native-summary-strip>div{min-height:70px!important;background:transparent!important;border:0!important}
+.native-summary-strip>div+div{border-right:1px solid var(--ios-separator)!important}
+.native-stats-section{padding:18px!important;margin:0!important}
+.native-stats-section__head{margin:0 0 15px!important}
+.native-stats-section__head h2{font-size:20px!important;font-weight:690!important;letter-spacing:-.02em!important}
+.native-stats-section__head p{margin-top:3px!important;color:var(--ios-label-2)!important;font-size:12px!important}
+.native-chart-guide{stroke:rgba(84,84,88,.55)!important}
+.native-exercise-row{background:transparent!important;border-radius:0!important;border:0!important}
+.native-exercise-row+.native-exercise-row{border-top:1px solid var(--ios-separator)!important}
+.native-disclosure{border-top:1px solid var(--ios-separator)!important}
+.native-disclosure summary{min-height:48px!important}
+
+/* Settings: grouped table hierarchy and a real iOS-like switch. */
+.app-content:has(.settings-page){padding-top:calc(var(--safe-top) + 8px)!important}
+.settings-page{gap:14px!important;padding-bottom:10px!important}
+.settings-app-header{min-height:0!important;margin:0!important;padding:10px 2px 8px!important}
+.settings-card{padding:16px!important}
+.profile-row{min-height:58px!important;gap:13px!important}
+.avatar--large{
+  width:52px!important;height:52px!important;border-radius:50%!important;
+  background:var(--ios-fill)!important;border:0!important;box-shadow:none!important;
+  color:var(--ios-label)!important;font-size:20px!important;font-weight:650!important;
+}
+.profile-row strong{font-size:16px!important;font-weight:620!important}
+.profile-row span{margin-top:3px!important;color:var(--ios-label-2)!important;font-size:12px!important}
+.settings-list{padding:0 16px!important}
+.setting-row{min-height:64px!important;padding:8px 0!important;gap:12px!important}
+.setting-row+.setting-row{border-top:1px solid var(--ios-separator)!important}
+.setting-row__icon{
+  width:32px!important;height:32px!important;border-radius:9px!important;
+  background:var(--ios-fill)!important;border:0!important;color:var(--ios-label)!important;
+}
+.setting-row__copy strong{font-size:15px!important;font-weight:560!important}
+.setting-row__copy span{margin-top:2px!important;color:var(--ios-label-2)!important;font-size:11px!important}
+.status-pill{padding:0!important;background:transparent!important;color:var(--ios-green)!important;font-size:12px!important;font-weight:560!important}
+.switch{width:51px!important;height:31px!important}
+.switch span{border-radius:999px!important;background:#39393d!important;box-shadow:none!important}
+.switch span::after{top:2px!important;right:2px!important;width:27px!important;height:27px!important;background:#fff!important;box-shadow:0 2px 5px rgba(0,0,0,.28)!important}
+.switch input:checked+span{background:var(--accent)!important}
+.switch input:checked+span::after{transform:translateX(-20px)!important;background:#fff!important}
+.logout-button{
+  min-height:50px!important;border:0!important;border-radius:var(--ios-radius-card)!important;
+  background:var(--ios-surface)!important;color:var(--ios-red)!important;box-shadow:none!important;font-weight:560!important;
+}
+
+/* Forms and editable controls */
+input,textarea,select{color:var(--ios-label)}
+.field-control,.history-field input,.history-field textarea,.history-set-field input{
+  border:0!important;
+  background:var(--ios-fill)!important;
+  box-shadow:none!important;
+}
+.field-control:focus-within,.history-field input:focus,.history-field textarea:focus,.history-set-field input:focus{
+  box-shadow:0 0 0 1px rgba(210,255,22,.55)!important;
+}
+
+/* Reduce decorative motion. iOS motion should explain hierarchy, not decorate it. */
+.animate-enter{animation-duration:.22s!important;animation-timing-function:var(--ios-ease)!important}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+
+@media(max-width:430px){
+  .app-content{padding-left:16px!important;padding-right:16px!important}
+  .app-page-heading h1{font-size:34px!important}
+  .bottom-nav{width:calc(100vw - 20px)!important}
+  .home-stage{min-height:350px!important;padding:18px!important}
+  .home-stage__copy{left:18px!important;right:18px!important;bottom:18px!important}
+  .home-stage__copy h2,.training-hero__copy h2{font-size:35px!important}
+  .training-quick__grid{grid-template-columns:1fr!important}
+  .training-quick__grid article{min-height:68px!important}
+}
+
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .bottom-nav{background:rgba(38,38,40,.96)!important}
+}
