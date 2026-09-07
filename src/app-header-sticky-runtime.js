@@ -1,6 +1,8 @@
 const ROOT_CLASS = 'iron-header-scrolled';
 const ACTIVE_CLASS = 'is-iron-header-scrolled';
+const GLOBAL_GLASS_ACTIVE_CLASS = 'is-active';
 const HEADER_SELECTOR = '[data-iron-page-header],.app-page-header,.statistics-detail-topbar';
+const GLOBAL_GLASS_ID = 'ironGlobalHeaderGlass';
 let frame = 0;
 
 function documentScrollTop() {
@@ -33,30 +35,77 @@ function headerScrollRoot(header) {
 function scrollTopForHeader(header) {
   const root = headerScrollRoot(header);
   const nestedTop = root ? Math.max(0, Number(root.scrollTop || 0)) : 0;
-  /* Use the maximum so a harmless overflow declaration can never mask actual
-     document scrolling. Full-screen nested pages still work because their own
-     scrollTop wins while documentScrollTop() stays at zero. */
   return Math.max(documentScrollTop(), nestedTop);
 }
 
-function ensureGlassLayer(header) {
-  let glass = header.querySelector(':scope > [data-iron-header-glass]');
+function ensureGlobalGlass() {
+  let glass = document.getElementById(GLOBAL_GLASS_ID);
   if (glass) return glass;
-  glass = document.createElement('span');
-  glass.className = 'iron-header-glass';
-  glass.dataset.ironHeaderGlass = '';
+
+  glass = document.createElement('div');
+  glass.id = GLOBAL_GLASS_ID;
+  glass.className = 'iron-global-header-glass';
+  glass.dataset.ironGlobalHeaderGlass = '';
   glass.setAttribute('aria-hidden', 'true');
-  header.prepend(glass);
+  document.body.append(glass);
   return glass;
 }
 
 function normalizeHeader(header) {
   header.classList.add('iron-page-header');
   if (!header.hasAttribute('data-iron-page-header')) header.setAttribute('data-iron-page-header', '');
-  ensureGlassLayer(header);
 
   const root = headerScrollRoot(header);
   if (root && !root.hasAttribute('data-iron-scroll-root')) root.setAttribute('data-iron-scroll-root', '');
+}
+
+function isVisibleHeader(header) {
+  if (!(header instanceof HTMLElement)) return false;
+  const style = getComputedStyle(header);
+  if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity || 1) === 0) return false;
+  const rect = header.getBoundingClientRect();
+  return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < window.innerHeight;
+}
+
+function numericZIndex(element) {
+  const value = Number.parseInt(getComputedStyle(element).zIndex, 10);
+  return Number.isFinite(value) ? value : 0;
+}
+
+function topmostHeader(headers) {
+  let winner = null;
+  let winnerZ = -Infinity;
+
+  headers.forEach((header) => {
+    if (!header.classList.contains(ACTIVE_CLASS) || !isVisibleHeader(header)) return;
+    const z = numericZIndex(header);
+    if (!winner || z >= winnerZ) {
+      winner = header;
+      winnerZ = z;
+    }
+  });
+
+  return winner;
+}
+
+function syncGlobalGlass(headers) {
+  const glass = ensureGlobalGlass();
+  const activeHeader = topmostHeader(headers);
+
+  if (!activeHeader) {
+    glass.classList.remove(GLOBAL_GLASS_ACTIVE_CLASS);
+    glass.style.setProperty('--iron-global-header-height', '0px');
+    return;
+  }
+
+  const rect = activeHeader.getBoundingClientRect();
+  const style = getComputedStyle(activeHeader);
+  const bottomCover = Number.parseFloat(style.getPropertyValue('--iron-header-glass-bottom-cover')) || 10;
+  const viewportHeight = window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight || 0;
+  const height = Math.max(0, Math.min(viewportHeight, Math.ceil(rect.bottom + bottomCover)));
+
+  glass.style.setProperty('--iron-global-header-height', `${height}px`);
+  glass.classList.add(GLOBAL_GLASS_ACTIVE_CLASS);
 }
 
 function syncHeaderState() {
@@ -72,6 +121,7 @@ function syncHeaderState() {
   });
 
   document.documentElement.classList.toggle(ROOT_CLASS, anyScrolled);
+  syncGlobalGlass(headers);
 }
 
 function scheduleSync() {
@@ -84,13 +134,12 @@ document.addEventListener('scroll', scheduleSync, { passive: true, capture: true
 window.visualViewport?.addEventListener('scroll', scheduleSync, { passive: true });
 window.visualViewport?.addEventListener('resize', scheduleSync, { passive: true });
 window.addEventListener('resize', scheduleSync, { passive: true });
+window.addEventListener('orientationchange', scheduleSync, { passive: true });
 window.addEventListener('pageshow', scheduleSync);
 window.addEventListener('hashchange', scheduleSync);
 window.addEventListener('popstate', scheduleSync);
 window.addEventListener('ironlog:navigate', scheduleSync);
 
-/* Observe the whole body because full-screen/detail pages may be mounted next
-   to #app. The same runtime upgrades them to the same header component. */
 if (document.body) new MutationObserver(scheduleSync).observe(document.body, { childList: true, subtree: true });
 
 scheduleSync();
