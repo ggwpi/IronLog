@@ -8,11 +8,10 @@ const items = [
 ];
 
 export function BottomNav(activeRoute) {
-  return `<nav class="bottom-nav" aria-label="ניווט ראשי">
-    <div class="nav-highlight" aria-hidden="true" style="--index:${items.findIndex(([route]) => route === activeRoute)}"></div>
+  return `<nav class="bottom-nav ios-tab-bar" aria-label="ניווט ראשי">
     ${items.map(([route, label, icon]) => `
-      <button type="button" class="nav-item ${activeRoute === route ? 'is-active' : ''}" data-route="${route}" aria-current="${activeRoute === route ? 'page' : 'false'}">
-        ${Icon(icon, { size: 21 })}<span>${label}</span>
+      <button type="button" class="nav-item ${activeRoute === route ? 'is-active' : ''}" data-route="${route}" aria-current="${activeRoute === route ? 'page' : 'false'}" aria-label="${label}">
+        ${Icon(icon, { size: 22 })}<span>${label}</span>
       </button>`).join('')}
   </nav>`;
 }
