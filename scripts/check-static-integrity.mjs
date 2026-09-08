@@ -106,11 +106,14 @@ async function checkIosShellContract() {
 
   const iosCssIndex = source.lastIndexOf('/src/ironlog-ios-system.css');
   const premiumCssIndex = source.lastIndexOf('/src/ironlog-premium-refinement.css');
+  const homeRebuildCssIndex = source.lastIndexOf('/src/features/home/home-rebuild.css');
   const lastStylesheetIndex = source.lastIndexOf('rel="stylesheet"');
   if (iosCssIndex < 0) errors.push('iOS contract: unified IronLog iOS stylesheet is not loaded');
   if (premiumCssIndex < 0) errors.push('premium contract: unified premium refinement is not loaded');
   else if (premiumCssIndex < iosCssIndex) errors.push('premium contract: premium refinement must load after the shared iOS system');
-  else if (premiumCssIndex < lastStylesheetIndex) errors.push('premium contract: premium refinement must be the last stylesheet');
+  if (homeRebuildCssIndex < 0) errors.push('home contract: rebuilt Home stylesheet is not loaded');
+  else if (homeRebuildCssIndex < premiumCssIndex) errors.push('home contract: rebuilt Home stylesheet must load after premium refinement');
+  else if (homeRebuildCssIndex < lastStylesheetIndex) errors.push('home contract: rebuilt Home stylesheet must be the last stylesheet');
 
   const retiredHomeStyles = [
     'home-reference-fix.css',
@@ -125,11 +128,21 @@ async function checkIosShellContract() {
 
   const premiumPath = path.join(root, 'src', 'ironlog-premium-refinement.css');
   const premiumSource = await readFile(premiumPath, 'utf8');
-  if (!premiumSource.includes('.home-body--back')) errors.push('home contract: premium layer must define rear anatomy composition');
-  if (!premiumSource.includes('.home-goal-track')) errors.push('home contract: premium layer must define weekly goal progress');
   if (!premiumSource.includes('.training-hero')) errors.push('workouts contract: premium layer must cover workout hero');
   if (!premiumSource.includes('.live-entry-form')) errors.push('active workout contract: premium layer must cover set entry');
   if (!premiumSource.includes('.statistics-page--native')) errors.push('statistics contract: premium layer must cover native statistics');
+
+  const homePath = path.join(root, 'src', 'features', 'home', 'home-rebuild.css');
+  const homeSource = await readFile(homePath, 'utf8');
+  if (!homeSource.includes('.home-body--back')) errors.push('home contract: rebuilt Home must preserve rear anatomy');
+  if (!homeSource.includes('.home-stage__visual')) errors.push('home contract: hero visual must be separated from controls');
+  if (!homeSource.includes('.home-goal-track')) errors.push('home contract: rebuilt Home must expose weekly goal progress');
+  if (!homeSource.includes('padding-bottom:calc(var(--safe-bottom) + 126px)')) errors.push('home contract: Home must reserve space above the tab bar');
+
+  const homeScreenPath = path.join(root, 'src', 'features', 'home', 'home-screen.js');
+  const homeScreenSource = await readFile(homeScreenPath, 'utf8');
+  if (!homeScreenSource.includes('home-stage__visual')) errors.push('home contract: Home markup must separate hero visual from CTA');
+  if (!homeScreenSource.includes('home-rebuild')) errors.push('home contract: Home screen must opt into rebuilt layout');
 
   const appScriptMatches = [...source.matchAll(/<script\s+type=["']module["']\s+src=["']\/src\/app\.js[^"']*["']/g)];
   if (appScriptMatches.length !== 1) errors.push(`app shell contract: expected one app.js module, found ${appScriptMatches.length}`);
