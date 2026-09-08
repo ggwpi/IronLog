@@ -106,6 +106,20 @@ function sessionsByDay(workoutData = {}) {
   return result;
 }
 
+function weeklyGoal(workouts, workoutData) {
+  const sessions = sessionsByDay(workoutData);
+  const scheduled = scheduledWorkouts(workouts);
+  const completedSessions = [...sessions.values()]
+    .flat()
+    .filter((session) => session.status === 'completed').length;
+  const fallbackTarget = Number(workoutData?.summary?.plannedWorkouts) || 0;
+  const target = scheduled.length || fallbackTarget;
+  const completed = target ? Math.min(completedSessions, target) : completedSessions;
+  const remaining = Math.max(target - completed, 0);
+  const progress = target ? Math.min(100, Math.round((completed / target) * 100)) : (completed ? 100 : 0);
+  return { completed, target, remaining, progress };
+}
+
 function weeklyProgress(currentDay, workouts, workoutData) {
   const sessions = sessionsByDay(workoutData);
   const scheduled = scheduledWorkouts(workouts);
@@ -123,23 +137,90 @@ function weeklyProgress(currentDay, workouts, workoutData) {
   }).join('');
 }
 
-function activityBars(workouts, workoutData) {
+function pointLoad(point) {
+  const load = Number(point?.load_kg || 0);
+  const reps = Number(point?.reps || 0);
+  return Number.isFinite(load) && Number.isFinite(reps) ? Math.max(0, load * reps) : 0;
+}
+
+function activityMetrics(workoutData = {}) {
+  const weekStart = startOfCurrentWeek();
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 7);
+  const previousStart = new Date(weekStart);
+  previousStart.setDate(previousStart.getDate() - 7);
+  const byDay = Array(7).fill(0);
+  let previousTotal = 0;
+
+  for (const point of workoutData.performanceHistory || []) {
+    const timestamp = new Date(point.completed_at);
+    if (Number.isNaN(timestamp.getTime())) continue;
+    const load = pointLoad(point);
+    if (timestamp >= weekStart && timestamp < weekEnd) byDay[timestamp.getDay()] += load;
+    else if (timestamp >= previousStart && timestamp < weekStart) previousTotal += load;
+  }
+
+  const total = byDay.reduce((sum, value) => sum + value, 0);
+  const max = Math.max(...byDay, 1);
+  const delta = previousTotal > 0 ? Math.round(((total - previousTotal) / previousTotal) * 100) : null;
+  return { byDay, total, previousTotal, max, delta };
+}
+
+function compactLoad(value) {
+  const number = Math.max(0, Number(value) || 0);
+  if (number >= 10000) return `${Math.round(number / 1000)}K`;
+  if (number >= 1000) return `${(number / 1000).toFixed(1).replace('.0', '')}K`;
+  return String(Math.round(number));
+}
+
+function activityBars(currentDay, workouts, workoutData, metrics) {
   const sessions = sessionsByDay(workoutData);
   const scheduled = scheduledWorkouts(workouts);
   return DAYS.map(({ jsDay, label }) => {
-    const daySessions = sessions.get(jsDay) || [];
-    const completed = daySessions.filter((session) => session.status === 'completed').length;
-    const active = daySessions.some((session) => session.status === 'active');
+    const value = metrics.byDay[jsDay] || 0;
     const planned = Boolean(workoutForDay(jsDay, scheduled));
-    const activity = completed ? 92 : active ? 62 : planned ? 18 : 5;
-    return `<div class="home-activity-bar"><i style="--activity:${activity}%"></i><span>${label}</span></div>`;
+    const daySessions = sessions.get(jsDay) || [];
+    const complete = daySessions.some((session) => session.status === 'completed');
+    const current = jsDay === currentDay;
+    const activity = value > 0
+      ? Math.round(24 + (value / metrics.max) * 76)
+      : planned ? 12 : 4;
+    const state = [value > 0 ? 'has-value' : '', planned ? 'is-planned' : '', complete ? 'is-complete' : '', current ? 'is-current' : ''].filter(Boolean).join(' ');
+    return `<div class="home-activity-bar ${state}">
+      <em>${value > 0 ? escapeHtml(compactLoad(value)) : ''}</em>
+      <i style="--activity:${activity}%"></i>
+      <span>${label}</span>
+    </div>`;
   }).join('');
+}
+
+function goalInsight(goal) {
+  if (!goal.target) return 'הוסף ימי אימון לתוכנית כדי להגדיר יעד שבועי.';
+  if (!goal.remaining) return 'היעד השבועי הושלם. עבודה מצוינת.';
+  if (goal.completed === 0) return `${goal.target} אימונים מתוכננים לשבוע הזה.`;
+  return `${goal.remaining} אימונים נשארו כדי להשלים את היעד השבועי.`;
+}
+
+function activityInsight(metrics, goal) {
+  if (metrics.total <= 0) {
+    return goal.completed > 0
+      ? 'האימון הושלם, אבל עדיין אין נתוני עומס משקולות זמינים לגרף.'
+      : 'הגרף יתמלא אוטומטית אחרי שתתחיל לרשום סטים השבוע.';
+  }
+  if (metrics.delta === null) return 'זה השבוע הראשון עם מספיק נתונים להשוואת עומס.';
+  if (metrics.delta === 0) return 'נפח האימון זהה לשבוע הקודם.';
+  return `${metrics.delta > 0 ? 'עלייה' : 'ירידה'} של ${Math.abs(metrics.delta)}% לעומת השבוע הקודם.`;
 }
 
 export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, workoutData = {} } = {}) {
   const workout = nearestWorkout(workouts);
   const currentDay = new Date().getDay();
   const heroLabel = workout.timing === 'היום' ? "TODAY'S WORKOUT" : 'NEXT WORKOUT';
+  const goal = weeklyGoal(workouts, workoutData);
+  const activity = activityMetrics(workoutData);
+  const activityTrend = activity.delta === null
+    ? (activity.total > 0 ? 'השבוע הראשון להשוואה' : 'עדיין אין נפח השבוע')
+    : `${activity.delta >= 0 ? '+' : ''}${activity.delta}% מהשבוע הקודם`;
 
   return `<div class="home-editorial animate-enter" dir="rtl">
     ${AppPageHeader({
@@ -163,18 +244,39 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
           <span><strong>${Number(workout.sets) || 0}</strong><small>סטים</small></span>
           <span><strong>${Number(workout.minutes) || 0}</strong><small>דקות</small></span>
         </div>
-        <button class="home-start" type="button" data-route="workouts"><span>פתח אימון</span><i aria-hidden="true">→</i></button>
+        <button class="home-start" type="button" data-route="workouts"><span>פתח אימון</span><i aria-hidden="true">‹</i></button>
       </div>
     </section>
 
     <section class="home-progress-card" aria-label="התקדמות שבועית">
-      <div class="home-card-heading"><span class="home-card-title">WEEKLY PROGRESS</span><div><i aria-hidden="true">⌁</i><span>התקדמות שבועית</span></div></div>
+      <div class="home-metric-heading">
+        <div class="home-metric-copy">
+          <span class="home-card-title">WEEKLY GOAL</span>
+          <h3>התקדמות שבועית</h3>
+          <p>${goal.target ? `${goal.completed} מתוך ${goal.target} אימונים הושלמו` : 'עדיין לא הוגדר יעד שבועי'}</p>
+        </div>
+        <div class="home-progress-ring" style="--weekly-progress:${goal.progress}%" aria-label="${goal.progress}% מהיעד הושלם">
+          <strong>${goal.progress}</strong><span>%</span>
+        </div>
+      </div>
       <div class="home-progress-days">${weeklyProgress(currentDay, workouts, workoutData)}</div>
+      <div class="home-widget-insight"><span>${escapeHtml(goalInsight(goal))}</span><strong>${goal.remaining ? `${goal.remaining} נותרו` : goal.target ? 'הושלם' : 'ללא יעד'}</strong></div>
     </section>
 
-    <section class="home-activity-card" aria-label="פעילות שבועית">
-      <div class="home-card-heading"><span class="home-card-title">ACTIVITY</span><div><span>פעילות</span></div></div>
-      <div class="home-chart"><div class="home-chart__grid" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="home-chart__bars">${activityBars(workouts, workoutData)}</div></div>
+    <section class="home-activity-card" aria-label="נפח אימון שבועי">
+      <div class="home-metric-heading home-metric-heading--activity">
+        <div class="home-metric-copy">
+          <span class="home-card-title">TRAINING LOAD</span>
+          <h3>נפח השבוע</h3>
+          <p>${escapeHtml(activityTrend)}</p>
+        </div>
+        <div class="home-volume-total" dir="ltr"><strong>${escapeHtml(compactLoad(activity.total))}</strong><span>KG</span></div>
+      </div>
+      <div class="home-chart">
+        <div class="home-chart__grid" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="home-chart__bars">${activityBars(currentDay, workouts, workoutData, activity)}</div>
+      </div>
+      <div class="home-widget-insight"><span>${escapeHtml(activityInsight(activity, goal))}</span><strong>${goal.completed} אימונים</strong></div>
     </section>
   </div>`;
 }
