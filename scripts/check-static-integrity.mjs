@@ -30,9 +30,7 @@ async function exists(filePath) {
 async function assertReference(reference, fromFile, kind) {
   const target = localPath(reference, fromFile);
   if (!target) return;
-  if (!(await exists(target))) {
-    errors.push(`${kind}: ${path.relative(root, fromFile)} -> ${reference}`);
-  }
+  if (!(await exists(target))) errors.push(`${kind}: ${path.relative(root, fromFile)} -> ${reference}`);
 }
 
 async function walk(directory, extension, output = []) {
@@ -49,9 +47,7 @@ async function checkIndexReferences() {
   const indexPath = path.join(root, 'index.html');
   const source = await readFile(indexPath, 'utf8');
   const referencePattern = /\b(?:src|href)=["']([^"']+)["']/g;
-  for (const match of source.matchAll(referencePattern)) {
-    await assertReference(match[1], indexPath, 'index reference');
-  }
+  for (const match of source.matchAll(referencePattern)) await assertReference(match[1], indexPath, 'index reference');
 }
 
 async function checkModuleImports() {
@@ -65,9 +61,7 @@ async function checkModuleImports() {
   for (const file of files) {
     const source = await readFile(file, 'utf8');
     for (const pattern of patterns) {
-      for (const match of source.matchAll(pattern)) {
-        await assertReference(match[1], file, 'module import');
-      }
+      for (const match of source.matchAll(pattern)) await assertReference(match[1], file, 'module import');
     }
   }
 }
@@ -100,9 +94,7 @@ async function checkJavaScriptSyntax() {
 async function checkManifestIcons() {
   const manifestPath = path.join(root, 'manifest.webmanifest');
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-  for (const icon of manifest.icons || []) {
-    await assertReference(icon.src, manifestPath, 'manifest icon');
-  }
+  for (const icon of manifest.icons || []) await assertReference(icon.src, manifestPath, 'manifest icon');
 }
 
 async function checkIosShellContract() {
@@ -113,9 +105,22 @@ async function checkIosShellContract() {
   if (/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/i.test(viewport)) errors.push('iOS contract: viewport must not disable user zoom');
 
   const iosCssIndex = source.lastIndexOf('/src/ironlog-ios-system.css');
+  const homeCssIndex = source.lastIndexOf('/src/features/home/home-ios-final.css');
   const lastStylesheetIndex = source.lastIndexOf('rel="stylesheet"');
   if (iosCssIndex < 0) errors.push('iOS contract: unified IronLog iOS stylesheet is not loaded');
-  else if (iosCssIndex < lastStylesheetIndex) errors.push('iOS contract: unified IronLog iOS stylesheet must be the final stylesheet authority');
+  if (homeCssIndex < 0) errors.push('home contract: final iOS Home stylesheet is not loaded');
+  else if (homeCssIndex < iosCssIndex) errors.push('home contract: final Home stylesheet must load after the shared iOS system');
+  else if (homeCssIndex < lastStylesheetIndex) errors.push('home contract: final Home stylesheet must be the last stylesheet');
+
+  const retiredHomeStyles = [
+    'home-reference-fix.css',
+    'home-anatomy-tune.css',
+    'home-header-tune.css',
+    'home-greeting-final.css',
+  ];
+  retiredHomeStyles.forEach((file) => {
+    if (source.includes(file)) errors.push(`home contract: retired stylesheet is still loaded -> ${file}`);
+  });
 
   const appScriptMatches = [...source.matchAll(/<script\s+type=["']module["']\s+src=["']\/src\/app\.js[^"']*["']/g)];
   if (appScriptMatches.length !== 1) errors.push(`app shell contract: expected one app.js module, found ${appScriptMatches.length}`);
