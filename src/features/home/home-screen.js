@@ -12,6 +12,21 @@ const DAYS = Object.freeze([
   { jsDay: 6, label: 'ש׳' },
 ]);
 
+const TARGET_LABELS = Object.freeze({
+  Chest: 'חזה',
+  Shoulders: 'כתפיים',
+  Delts: 'כתפיים',
+  'Rear Delts': 'כתף אחורית',
+  Triceps: 'טרייספס',
+  Biceps: 'בייספס',
+  Back: 'גב',
+  Quads: 'ארבע־ראשי',
+  Hamstrings: 'המסטרינג',
+  Glutes: 'ישבן',
+  Calves: 'תאומים',
+  Core: 'ליבה',
+});
+
 function greeting() {
   const hour = new Date().getHours();
   if (hour < 12) return 'בוקר טוב';
@@ -57,6 +72,15 @@ function workoutArt(workout) {
     <img class="home-body home-body--back" src="${escapeHtml(back)}" alt="${escapeHtml(`${workout.short} — מבט אחורי`)}" width="1024" height="1536" loading="eager" decoding="async">
     <img class="home-body home-body--front" src="${escapeHtml(front)}" alt="${escapeHtml(`${workout.short} — מבט קדמי`)}" width="1024" height="1536" loading="eager" decoding="async">
   </figure>`;
+}
+
+function heroSubtitle(workout) {
+  const targets = (workout?.targets || [])
+    .map((target) => TARGET_LABELS[target] || target)
+    .filter(Boolean)
+    .slice(0, 3);
+  if (targets.length) return targets.join(' · ');
+  return workout?.description || workout?.title || 'אימון אישי';
 }
 
 function startOfCurrentWeek() {
@@ -133,9 +157,7 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
       <div class="home-stage__copy">
         <span class="home-kicker">${heroLabel}</span>
         <h2>${escapeHtml(workout.short || workout.title || 'אימון')}</h2>
-        <p>${escapeHtml(workout.title || '')}</p>
-        <span class="home-accent-line" aria-hidden="true"></span>
-        <div class="home-motivation"><span>חוזק בכל חזרה.</span><span>שליטה בכל תנועה.</span></div>
+        <p>${escapeHtml(heroSubtitle(workout))}</p>
         <div class="home-workout-meta" aria-label="פרטי האימון">
           <span><strong>${String(Number(workout.exercises) || 0).padStart(2, '0')}</strong><small>תרגילים</small></span>
           <span><strong>${Number(workout.sets) || 0}</strong><small>סטים</small></span>
