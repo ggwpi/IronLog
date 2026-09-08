@@ -105,22 +105,31 @@ async function checkIosShellContract() {
   if (/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/i.test(viewport)) errors.push('iOS contract: viewport must not disable user zoom');
 
   const iosCssIndex = source.lastIndexOf('/src/ironlog-ios-system.css');
-  const homeCssIndex = source.lastIndexOf('/src/features/home/home-ios-final.css');
+  const premiumCssIndex = source.lastIndexOf('/src/ironlog-premium-refinement.css');
   const lastStylesheetIndex = source.lastIndexOf('rel="stylesheet"');
   if (iosCssIndex < 0) errors.push('iOS contract: unified IronLog iOS stylesheet is not loaded');
-  if (homeCssIndex < 0) errors.push('home contract: final iOS Home stylesheet is not loaded');
-  else if (homeCssIndex < iosCssIndex) errors.push('home contract: final Home stylesheet must load after the shared iOS system');
-  else if (homeCssIndex < lastStylesheetIndex) errors.push('home contract: final Home stylesheet must be the last stylesheet');
+  if (premiumCssIndex < 0) errors.push('premium contract: unified premium refinement is not loaded');
+  else if (premiumCssIndex < iosCssIndex) errors.push('premium contract: premium refinement must load after the shared iOS system');
+  else if (premiumCssIndex < lastStylesheetIndex) errors.push('premium contract: premium refinement must be the last stylesheet');
 
   const retiredHomeStyles = [
     'home-reference-fix.css',
     'home-anatomy-tune.css',
     'home-header-tune.css',
     'home-greeting-final.css',
+    'home-ios-final.css',
   ];
   retiredHomeStyles.forEach((file) => {
     if (source.includes(file)) errors.push(`home contract: retired stylesheet is still loaded -> ${file}`);
   });
+
+  const premiumPath = path.join(root, 'src', 'ironlog-premium-refinement.css');
+  const premiumSource = await readFile(premiumPath, 'utf8');
+  if (!premiumSource.includes('.home-body--back')) errors.push('home contract: premium layer must define rear anatomy composition');
+  if (!premiumSource.includes('.home-goal-track')) errors.push('home contract: premium layer must define weekly goal progress');
+  if (!premiumSource.includes('.training-hero')) errors.push('workouts contract: premium layer must cover workout hero');
+  if (!premiumSource.includes('.live-entry-form')) errors.push('active workout contract: premium layer must cover set entry');
+  if (!premiumSource.includes('.statistics-page--native')) errors.push('statistics contract: premium layer must cover native statistics');
 
   const appScriptMatches = [...source.matchAll(/<script\s+type=["']module["']\s+src=["']\/src\/app\.js[^"']*["']/g)];
   if (appScriptMatches.length !== 1) errors.push(`app shell contract: expected one app.js module, found ${appScriptMatches.length}`);
