@@ -221,6 +221,7 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
   const activityTrend = activity.delta === null
     ? (activity.total > 0 ? 'השבוע הראשון להשוואה' : 'עדיין אין נפח השבוע')
     : `${activity.delta >= 0 ? '+' : ''}${activity.delta}% מהשבוע הקודם`;
+  const activityDelta = activity.delta === null ? '—' : `${activity.delta >= 0 ? '+' : ''}${activity.delta}%`;
 
   return `<div class="home-editorial animate-enter" dir="rtl">
     ${AppPageHeader({
@@ -255,12 +256,11 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
           <h3>התקדמות שבועית</h3>
           <p>${goal.target ? `${goal.completed} מתוך ${goal.target} אימונים הושלמו` : 'עדיין לא הוגדר יעד שבועי'}</p>
         </div>
-        <div class="home-progress-ring" style="--weekly-progress:${goal.progress}%" aria-label="${goal.progress}% מהיעד הושלם">
-          <strong>${goal.progress}</strong><span>%</span>
-        </div>
+        <div class="home-goal-amount" dir="ltr"><strong>${goal.completed}</strong><span>/ ${goal.target || '—'}</span></div>
       </div>
+      <div class="home-goal-track" style="--weekly-progress:${goal.progress}%" aria-label="${goal.progress}% מהיעד הושלם"><i></i></div>
       <div class="home-progress-days">${weeklyProgress(currentDay, workouts, workoutData)}</div>
-      <div class="home-widget-insight"><span>${escapeHtml(goalInsight(goal))}</span><strong>${goal.remaining ? `${goal.remaining} נותרו` : goal.target ? 'הושלם' : 'ללא יעד'}</strong></div>
+      <div class="home-widget-insight"><span>${escapeHtml(goalInsight(goal))}</span><strong>${goal.progress}%</strong></div>
     </section>
 
     <section class="home-activity-card" aria-label="נפח אימון שבועי">
@@ -271,6 +271,11 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
           <p>${escapeHtml(activityTrend)}</p>
         </div>
         <div class="home-volume-total" dir="ltr"><strong>${escapeHtml(compactLoad(activity.total))}</strong><span>KG</span></div>
+      </div>
+      <div class="home-activity-summary" aria-label="סיכום פעילות שבועית">
+        <span><small>אימונים</small><strong>${goal.completed}</strong></span>
+        <span><small>נפח כולל</small><strong>${escapeHtml(compactLoad(activity.total))} ק״ג</strong></span>
+        <span><small>מול שבוע קודם</small><strong>${escapeHtml(activityDelta)}</strong></span>
       </div>
       <div class="home-chart">
         <div class="home-chart__grid" aria-hidden="true"><i></i><i></i><i></i></div>
