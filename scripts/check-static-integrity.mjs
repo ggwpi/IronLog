@@ -1,6 +1,7 @@
 import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import { spawn } from 'node:child_process';
 
 const root = process.cwd();
 const errors = [];
@@ -71,6 +72,31 @@ async function checkModuleImports() {
   }
 }
 
+function nodeCheck(file) {
+  return new Promise((resolve) => {
+    const child = spawn(process.execPath, ['--check', file], { stdio: ['ignore', 'ignore', 'pipe'] });
+    let stderr = '';
+    child.stderr.setEncoding('utf8');
+    child.stderr.on('data', (chunk) => { stderr += chunk; });
+    child.on('error', (error) => {
+      errors.push(`javascript syntax: ${path.relative(root, file)} -> ${error.message}`);
+      resolve();
+    });
+    child.on('close', (code) => {
+      if (code !== 0) {
+        const detail = stderr.trim().split('\n').slice(-2).join(' ');
+        errors.push(`javascript syntax: ${path.relative(root, file)}${detail ? ` -> ${detail}` : ''}`);
+      }
+      resolve();
+    });
+  });
+}
+
+async function checkJavaScriptSyntax() {
+  const files = await walk(path.join(root, 'src'), '.js');
+  await Promise.all(files.map(nodeCheck));
+}
+
 async function checkManifestIcons() {
   const manifestPath = path.join(root, 'manifest.webmanifest');
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
@@ -79,10 +105,28 @@ async function checkManifestIcons() {
   }
 }
 
+async function checkIosShellContract() {
+  const indexPath = path.join(root, 'index.html');
+  const source = await readFile(indexPath, 'utf8');
+  const viewport = source.match(/<meta\s+name=["']viewport["']\s+content=["']([^"']+)["']/i)?.[1] || '';
+  if (!viewport.includes('viewport-fit=cover')) errors.push('iOS contract: viewport-fit=cover is required');
+  if (/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/i.test(viewport)) errors.push('iOS contract: viewport must not disable user zoom');
+
+  const iosCssIndex = source.lastIndexOf('/src/ironlog-ios-system.css');
+  const lastStylesheetIndex = source.lastIndexOf('rel="stylesheet"');
+  if (iosCssIndex < 0) errors.push('iOS contract: unified IronLog iOS stylesheet is not loaded');
+  else if (iosCssIndex < lastStylesheetIndex) errors.push('iOS contract: unified IronLog iOS stylesheet must be the final stylesheet authority');
+
+  const appScriptMatches = [...source.matchAll(/<script\s+type=["']module["']\s+src=["']\/src\/app\.js[^"']*["']/g)];
+  if (appScriptMatches.length !== 1) errors.push(`app shell contract: expected one app.js module, found ${appScriptMatches.length}`);
+}
+
 await Promise.all([
   checkIndexReferences(),
   checkModuleImports(),
+  checkJavaScriptSyntax(),
   checkManifestIcons(),
+  checkIosShellContract(),
 ]);
 
 if (errors.length) {
