@@ -56,6 +56,13 @@ body:has(.active-workout-page){
     0 10px 26px rgba(203,255,18,.09)!important;
 }
 
+/* app.js guards the workout-completion action, while active-workout-runtime
+ * deliberately reuses this same control as the per-set CTA before 100%.
+ * Keep the visual control available so "Finish Set" can never disappear. */
+.active-workout-page .live-finish-flat[hidden]{
+  display:flex!important;
+}
+
 .live-finish-flat:active{
   transform:scale(.985)!important;
   -webkit-transform:scale(.985)!important;
