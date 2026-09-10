@@ -137,7 +137,7 @@ async function checkIosShellContract() {
   if (!homeSource.includes('.home-body--back')) errors.push('home contract: rebuilt Home must preserve rear anatomy');
   if (!homeSource.includes('.home-stage__visual')) errors.push('home contract: hero visual must be separated from controls');
   if (!homeSource.includes('.home-goal-track')) errors.push('home contract: rebuilt Home must expose weekly goal progress');
-  if (!homeSource.includes('padding-bottom:calc(var(--safe-bottom) + 126px)')) errors.push('home contract: Home must reserve space above the tab bar');
+  if (!homeSource.includes('padding-bottom:calc(var(--safe-bottom) + 176px)')) errors.push('home contract: Home must reserve space above the tab bar');
 
   const homeScreenPath = path.join(root, 'src', 'features', 'home', 'home-screen.js');
   const homeScreenSource = await readFile(homeScreenPath, 'utf8');
