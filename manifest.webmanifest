@@ -1,7 +1,8 @@
 {
   "name": "IronLog",
   "short_name": "IronLog",
-  "start_url": "/",
+  "id": "/",
+  "start_url": "/?build=home-ref-20260911-01#/home",
   "display": "standalone",
   "background_color": "#040605",
   "theme_color": "#040605",
