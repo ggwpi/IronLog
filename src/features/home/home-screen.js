@@ -12,21 +12,6 @@ const DAYS = Object.freeze([
   { jsDay: 6, label: 'ש׳' },
 ]);
 
-const TARGET_LABELS = Object.freeze({
-  Chest: 'חזה',
-  Shoulders: 'כתפיים',
-  Delts: 'כתפיים',
-  'Rear Delts': 'כתף אחורית',
-  Triceps: 'טרייספס',
-  Biceps: 'בייספס',
-  Back: 'גב',
-  Quads: 'ארבע־ראשי',
-  Hamstrings: 'המסטרינג',
-  Glutes: 'ישבן',
-  Calves: 'תאומים',
-  Core: 'ליבה',
-});
-
 function greeting() {
   const hour = new Date().getHours();
   if (hour < 12) return 'בוקר טוב';
@@ -62,25 +47,35 @@ function workoutImages(workout) {
   return fallback?.images?.length ? fallback.images : [];
 }
 
+function prefersBackView(workout) {
+  const targets = new Set(workout?.targets || []);
+  return ['Back', 'Rear Delts', 'Hamstrings', 'Glutes'].some((target) => targets.has(target));
+}
+
 function workoutArt(workout) {
   const images = workoutImages(workout);
   if (!images.length) return '';
   const front = images[0];
   const back = images[1] || images[0];
-  const label = escapeHtml(`שרירי המטרה: ${(workout.targets || []).join(', ')}`);
-  return `<figure class="home-workout-art" aria-label="${label}">
-    <img class="home-body home-body--back" src="${escapeHtml(back)}" alt="${escapeHtml(`${workout.short} — מבט אחורי`)}" width="1024" height="1536" loading="eager" decoding="async">
-    <img class="home-body home-body--front" src="${escapeHtml(front)}" alt="${escapeHtml(`${workout.short} — מבט קדמי`)}" width="1024" height="1536" loading="eager" decoding="async">
+  const useBack = prefersBackView(workout);
+  const primary = useBack ? back : front;
+  const secondary = useBack ? front : back;
+  const primaryClass = useBack ? 'home-body--back' : 'home-body--front';
+  const secondaryClass = useBack ? 'home-body--front' : 'home-body--back';
+  const primaryLabel = useBack ? 'מבט אחורי' : 'מבט קדמי';
+  const secondaryLabel = useBack ? 'מבט קדמי' : 'מבט אחורי';
+  const targetLabel = escapeHtml(`שרירי המטרה: ${(workout.targets || []).join(', ')}`);
+
+  return `<figure class="home-workout-art" aria-label="${targetLabel}" data-primary-view="${useBack ? 'back' : 'front'}">
+    <img class="home-body home-body--ghost ${secondaryClass}" src="${escapeHtml(secondary)}" alt="${escapeHtml(`${workout.short} — ${secondaryLabel}`)}" width="1024" height="1536" loading="eager" decoding="async">
+    <img class="home-body home-body--primary ${primaryClass}" src="${escapeHtml(primary)}" alt="${escapeHtml(`${workout.short} — ${primaryLabel}`)}" width="1024" height="1536" loading="eager" decoding="async">
   </figure>`;
 }
 
 function heroSubtitle(workout) {
-  const targets = (workout?.targets || [])
-    .map((target) => TARGET_LABELS[target] || target)
-    .filter(Boolean)
-    .slice(0, 3);
-  if (targets.length) return targets.join(' · ');
-  return workout?.description || workout?.title || 'אימון אישי';
+  const title = String(workout?.title || workout?.description || 'Personal Workout').trim();
+  const prefix = String(workout?.short || '').trim();
+  return `${prefix}${prefix && title ? ' — ' : ''}${title}`.toUpperCase();
 }
 
 function startOfCurrentWeek() {
@@ -95,6 +90,7 @@ function sessionsByDay(workoutData = {}) {
   const end = new Date(start);
   end.setDate(end.getDate() + 7);
   const result = new Map();
+
   for (const session of workoutData.sessions || []) {
     const timestamp = new Date(session.completed_at || session.started_at);
     if (Number.isNaN(timestamp.getTime()) || timestamp < start || timestamp >= end) continue;
@@ -123,16 +119,24 @@ function weeklyGoal(workouts, workoutData) {
 function weeklyProgress(currentDay, workouts, workoutData) {
   const sessions = sessionsByDay(workoutData);
   const scheduled = scheduledWorkouts(workouts);
+
   return DAYS.map(({ jsDay, label }) => {
     const planned = Boolean(workoutForDay(jsDay, scheduled));
     const daySessions = sessions.get(jsDay) || [];
     const complete = daySessions.some((session) => session.status === 'completed');
     const active = daySessions.some((session) => session.status === 'active');
     const current = jsDay === currentDay;
-    const state = [planned ? 'is-planned' : '', current ? 'is-current' : '', complete ? 'is-complete' : '', active ? 'is-active' : ''].filter(Boolean).join(' ');
-    return `<div class="home-progress-day ${state}">
+    const fill = complete ? 100 : active ? 84 : current && planned ? 76 : planned ? 38 : 14;
+    const state = [
+      planned ? 'is-planned' : '',
+      current ? 'is-current' : '',
+      complete ? 'is-complete' : '',
+      active ? 'is-active' : '',
+    ].filter(Boolean).join(' ');
+
+    return `<div class="home-progress-day ${state}" style="--day-fill:${fill}%">
+      <i aria-hidden="true"><b></b></i>
       <span>${label}</span>
-      <i>${complete ? '✓' : active || current ? '•' : ''}</i>
     </div>`;
   }).join('');
 }
@@ -173,41 +177,32 @@ function compactLoad(value) {
   return String(Math.round(number));
 }
 
-function activityBars(currentDay, workouts, workoutData, metrics) {
+function activityBars(workoutData, metrics) {
   const sessions = sessionsByDay(workoutData);
-  const scheduled = scheduledWorkouts(workouts);
-  return DAYS.map(({ jsDay, label }) => {
+  const fragments = [];
+  const multipliers = [0.48, 1, 0.68];
+
+  DAYS.forEach(({ jsDay }) => {
     const value = metrics.byDay[jsDay] || 0;
-    const planned = Boolean(workoutForDay(jsDay, scheduled));
-    const daySessions = sessions.get(jsDay) || [];
-    const complete = daySessions.some((session) => session.status === 'completed');
-    const current = jsDay === currentDay;
-    const activity = value > 0 ? Math.round(22 + (value / metrics.max) * 78) : planned ? 10 : 3;
-    const state = [value > 0 ? 'has-value' : '', planned ? 'is-planned' : '', complete ? 'is-complete' : '', current ? 'is-current' : ''].filter(Boolean).join(' ');
-    return `<div class="home-activity-bar ${state}">
-      <em>${value > 0 ? escapeHtml(compactLoad(value)) : ''}</em>
-      <i style="--activity:${activity}%"></i>
-      <span>${label}</span>
-    </div>`;
-  }).join('');
+    const hasSession = (sessions.get(jsDay) || []).length > 0;
+    multipliers.forEach((multiplier, index) => {
+      const normalized = value > 0 ? Math.max(12, Math.round((value / metrics.max) * 86 * multiplier)) : (hasSession ? 12 + index * 5 : 5 + index * 2);
+      const className = value > 0 ? 'has-value' : hasSession ? 'has-session' : 'is-empty';
+      fragments.push(`<i class="${className}" style="--activity:${normalized}%" aria-hidden="true"></i>`);
+    });
+  });
+
+  return fragments.join('');
 }
 
-function goalInsight(goal) {
-  if (!goal.target) return 'הוסף ימי אימון לתוכנית כדי להגדיר יעד שבועי.';
-  if (!goal.remaining) return 'היעד השבועי הושלם.';
-  if (goal.completed === 0) return `${goal.target} אימונים מתוכננים השבוע.`;
-  return `${goal.remaining} אימונים נשארו להשלמת היעד.`;
+function activityTrend(metrics) {
+  if (metrics.delta === null) return metrics.total > 0 ? 'BASELINE WEEK' : 'THIS WEEK';
+  if (metrics.delta === 0) return 'SAME AS LAST WEEK';
+  return `${metrics.delta > 0 ? '+' : ''}${metrics.delta}% VS LAST WEEK`;
 }
 
-function activityInsight(metrics, goal) {
-  if (metrics.total <= 0) {
-    return goal.completed > 0
-      ? 'האימון הושלם, אך עדיין אין מספיק נתוני משקל לגרף.'
-      : 'הנפח יופיע כאן אוטומטית לאחר רישום סטים.';
-  }
-  if (metrics.delta === null) return 'נבנית נקודת בסיס להשוואה לשבוע הבא.';
-  if (metrics.delta === 0) return 'נפח האימון זהה לשבוע הקודם.';
-  return `${metrics.delta > 0 ? 'עלייה' : 'ירידה'} של ${Math.abs(metrics.delta)}% לעומת השבוע הקודם.`;
+function miniBarsIcon() {
+  return '<span class="home-mini-bars" aria-hidden="true"><i></i><i></i><i></i></span>';
 }
 
 export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, workoutData = {} } = {}) {
@@ -216,10 +211,6 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
   const heroLabel = workout.timing === 'היום' ? "TODAY'S WORKOUT" : 'NEXT WORKOUT';
   const goal = weeklyGoal(workouts, workoutData);
   const activity = activityMetrics(workoutData);
-  const activityTrend = activity.delta === null
-    ? (activity.total > 0 ? 'השבוע הראשון להשוואה' : 'עדיין אין נפח השבוע')
-    : `${activity.delta >= 0 ? '+' : ''}${activity.delta}% מהשבוע הקודם`;
-  const activityDelta = activity.delta === null ? '—' : `${activity.delta >= 0 ? '+' : ''}${activity.delta}%`;
 
   return `<div class="home-editorial home-rebuild animate-enter" dir="rtl">
     ${AppPageHeader({
@@ -233,55 +224,63 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
 
     <section class="home-stage" aria-label="האימון הקרוב">
       <div class="home-stage__visual">
-        <div class="home-stage__smoke" aria-hidden="true"></div>
+        <div class="home-stage__aura" aria-hidden="true"></div>
         ${workoutArt(workout)}
+
         <div class="home-stage__copy">
           <span class="home-kicker">${heroLabel}</span>
           <h2>${escapeHtml(workout.short || workout.title || 'אימון')}</h2>
           <p>${escapeHtml(heroSubtitle(workout))}</p>
+
+          <div class="home-workout-meta" aria-label="פרטי האימון">
+            <span><strong>${String(Number(workout.exercises) || 0).padStart(2, '0')}</strong><small>תרגילים</small></span>
+            <span><strong>${Number(workout.sets) || 0}</strong><small>סטים</small></span>
+            <span><strong>${Number(workout.minutes) || 0}</strong><small>דקות</small></span>
+          </div>
+
+          <button class="home-start" type="button" data-route="workouts">
+            <span>פתח אימון</span><i aria-hidden="true">→</i>
+          </button>
         </div>
+
+        <p class="home-stage__motto" aria-hidden="true">Stronger<br>Than<br>Yesterday</p>
       </div>
-      <div class="home-workout-meta" aria-label="פרטי האימון">
-        <span><strong>${String(Number(workout.exercises) || 0).padStart(2, '0')}</strong><small>תרגילים</small></span>
-        <span><strong>${Number(workout.sets) || 0}</strong><small>סטים</small></span>
-        <span><strong>${Number(workout.minutes) || 0}</strong><small>דקות</small></span>
-      </div>
-      <button class="home-start" type="button" data-route="workouts"><span>פתח אימון</span><i aria-hidden="true">‹</i></button>
     </section>
 
-    <section class="home-progress-card" aria-label="התקדמות שבועית">
-      <div class="home-metric-heading">
-        <div class="home-metric-copy">
-          <span class="home-card-title">WEEKLY GOAL</span>
-          <h3>התקדמות שבועית</h3>
-          <p>${goal.target ? `${goal.completed} מתוך ${goal.target} אימונים` : 'עדיין לא הוגדר יעד שבועי'}</p>
+    <section class="home-progress-card home-section" aria-label="התקדמות שבועית">
+      <div class="home-section-heading">
+        <div class="home-section-copy">
+          <div class="home-section-title-row"><h3>התקדמות שבועית</h3>${miniBarsIcon()}</div>
+          <p>WEEKLY PROGRESS</p>
         </div>
-        <div class="home-goal-amount" dir="ltr"><strong>${goal.progress}</strong><span>%</span></div>
+        <span class="home-section-action" dir="ltr">${goal.target ? `${goal.completed}/${goal.target}` : 'SEE ALL'} <b>›</b></span>
       </div>
-      <div class="home-goal-track" style="--weekly-progress:${goal.progress}%" aria-label="${goal.progress}% מהיעד הושלם"><i></i></div>
-      <div class="home-progress-days">${weeklyProgress(currentDay, workouts, workoutData)}</div>
-      <div class="home-widget-insight"><span>${escapeHtml(goalInsight(goal))}</span><strong>${goal.remaining ? `${goal.remaining} נותרו` : goal.target ? 'הושלם' : 'ללא יעד'}</strong></div>
+
+      <div class="home-progress-days" aria-label="התקדמות לפי ימים">
+        ${weeklyProgress(currentDay, workouts, workoutData)}
+      </div>
     </section>
 
-    <section class="home-activity-card" aria-label="נפח אימון שבועי">
-      <div class="home-metric-heading home-metric-heading--activity">
-        <div class="home-metric-copy">
-          <span class="home-card-title">TRAINING LOAD</span>
-          <h3>נפח השבוע</h3>
-          <p>${escapeHtml(activityTrend)}</p>
+    <section class="home-activity-card home-section" aria-label="פעילות שבועית">
+      <div class="home-section-heading">
+        <div class="home-section-copy">
+          <div class="home-section-title-row"><h3>פעילות</h3>${miniBarsIcon()}</div>
+          <p>ACTIVITY</p>
         </div>
-        <div class="home-volume-total" dir="ltr"><strong>${escapeHtml(compactLoad(activity.total))}</strong><span>KG</span></div>
+        <span class="home-section-action home-section-action--period" dir="ltr">THIS WEEK <b>⌄</b></span>
       </div>
-      <div class="home-activity-summary" aria-label="סיכום פעילות שבועית">
-        <span><small>אימונים</small><strong>${goal.completed}</strong></span>
-        <span><small>נפח</small><strong>${escapeHtml(compactLoad(activity.total))} ק״ג</strong></span>
-        <span><small>שינוי</small><strong>${escapeHtml(activityDelta)}</strong></span>
+
+      <div class="home-activity-layout">
+        <div class="home-chart" aria-label="גרף נפח אימון שבועי">
+          <div class="home-chart__baseline" aria-hidden="true"></div>
+          <div class="home-chart__bars">${activityBars(workoutData, activity)}</div>
+        </div>
+        <div class="home-activity-total">
+          <strong>${goal.completed}</strong>
+          <span>אימונים<br>השבוע</span>
+          <small>${escapeHtml(activityTrend(activity))}</small>
+        </div>
       </div>
-      <div class="home-chart">
-        <div class="home-chart__grid" aria-hidden="true"><i></i><i></i><i></i></div>
-        <div class="home-chart__bars">${activityBars(currentDay, workouts, workoutData, activity)}</div>
-      </div>
-      <div class="home-widget-insight"><span>${escapeHtml(activityInsight(activity, goal))}</span><strong>${goal.completed} אימונים</strong></div>
     </section>
   </div>`;
 }
