@@ -135,14 +135,17 @@ async function checkIosShellContract() {
   const homePath = path.join(root, 'src', 'features', 'home', 'home-rebuild.css');
   const homeSource = await readFile(homePath, 'utf8');
   if (!homeSource.includes('.home-body--back')) errors.push('home contract: rebuilt Home must preserve rear anatomy');
-  if (!homeSource.includes('.home-stage__visual')) errors.push('home contract: hero visual must be separated from controls');
-  if (!homeSource.includes('.home-goal-track')) errors.push('home contract: rebuilt Home must expose weekly goal progress');
-  if (!homeSource.includes('padding-bottom:calc(var(--safe-bottom) + 176px)')) errors.push('home contract: Home must reserve space above the tab bar');
+  if (!homeSource.includes('.home-stage__visual')) errors.push('home contract: Home must have a dedicated visual hero scene');
+  if (!homeSource.includes('.home-progress-day>i')) errors.push('home contract: weekly progress must use vertical day bars');
+  if (!homeSource.includes('.home-chart__bars')) errors.push('home contract: activity must expose the histogram rail');
+  if (!homeSource.includes('padding-bottom:calc(var(--safe-bottom) + 164px)')) errors.push('home contract: Home must reserve space above the tab bar');
 
   const homeScreenPath = path.join(root, 'src', 'features', 'home', 'home-screen.js');
   const homeScreenSource = await readFile(homeScreenPath, 'utf8');
-  if (!homeScreenSource.includes('home-stage__visual')) errors.push('home contract: Home markup must separate hero visual from CTA');
+  if (!homeScreenSource.includes('home-stage__visual')) errors.push('home contract: Home markup must expose the hero visual');
   if (!homeScreenSource.includes('home-rebuild')) errors.push('home contract: Home screen must opt into rebuilt layout');
+  if (!homeScreenSource.includes('home-section-heading')) errors.push('home contract: analytics sections must use shared headings');
+  if (!homeScreenSource.includes('home-activity-layout')) errors.push('home contract: activity must use the reference layout');
 
   const appScriptMatches = [...source.matchAll(/<script\s+type=["']module["']\s+src=["']\/src\/app\.js[^"']*["']/g)];
   if (appScriptMatches.length !== 1) errors.push(`app shell contract: expected one app.js module, found ${appScriptMatches.length}`);
