@@ -1,4 +1,9 @@
-/* IronLog global iOS dock — restrained glass, tint-only selection. */
+/* IronLog global iOS dock — compact glass with one shared clearance contract. */
+
+:root{
+  --iron-bottom-nav-height:68px;
+  --iron-bottom-nav-clearance:calc(var(--safe-bottom) + 108px);
+}
 
 .bottom-nav{
   position:fixed!important;
@@ -6,29 +11,29 @@
   left:50%!important;
   right:auto!important;
   top:auto!important;
-  bottom:max(18px,calc(var(--safe-bottom) + 7px))!important;
+  bottom:max(10px,calc(var(--safe-bottom) + 4px))!important;
   transform:translate3d(-50%,0,0)!important;
-  width:min(calc(100vw - 28px),720px)!important;
-  height:74px!important;
-  min-height:74px!important;
-  max-height:74px!important;
+  width:min(calc(100vw - 32px),720px)!important;
+  height:var(--iron-bottom-nav-height)!important;
+  min-height:var(--iron-bottom-nav-height)!important;
+  max-height:var(--iron-bottom-nav-height)!important;
   margin:0!important;
-  padding:8px 10px!important;
+  padding:6px 9px!important;
   overflow:hidden!important;
   display:grid!important;
   grid-template-columns:repeat(4,1fr)!important;
   direction:rtl!important;
   isolation:isolate!important;
-  border:1px solid rgba(255,255,255,.12)!important;
-  border-radius:28px!important;
-  background:rgba(20,23,22,.62)!important;
-  -webkit-backdrop-filter:blur(34px) saturate(145%) brightness(.95)!important;
-  backdrop-filter:blur(34px) saturate(145%) brightness(.95)!important;
+  border:1px solid rgba(255,255,255,.105)!important;
+  border-radius:25px!important;
+  background:rgba(18,21,20,.60)!important;
+  -webkit-backdrop-filter:blur(30px) saturate(138%) brightness(.94)!important;
+  backdrop-filter:blur(30px) saturate(138%) brightness(.94)!important;
   box-shadow:
-    0 20px 42px rgba(0,0,0,.36),
-    0 4px 12px rgba(0,0,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.17),
-    inset 0 -1px 0 rgba(255,255,255,.025)!important;
+    0 16px 34px rgba(0,0,0,.34),
+    0 3px 10px rgba(0,0,0,.17),
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -1px 0 rgba(255,255,255,.02)!important;
 }
 
 .bottom-nav::before{
@@ -39,18 +44,12 @@
   pointer-events:none!important;
   border-radius:inherit!important;
   background:
-    linear-gradient(180deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,.018) 30%,transparent 58%),
-    radial-gradient(ellipse 52% 62% at 18% -22%,rgba(255,255,255,.08),transparent 72%)!important;
+    linear-gradient(180deg,rgba(255,255,255,.055) 0%,rgba(255,255,255,.014) 34%,transparent 62%),
+    radial-gradient(ellipse 48% 58% at 18% -22%,rgba(255,255,255,.065),transparent 72%)!important;
 }
 .bottom-nav::after{content:none!important;display:none!important}
 
-.bottom-nav .nav-highlight{
-  display:none!important;
-  opacity:0!important;
-  background:none!important;
-  border:0!important;
-  box-shadow:none!important;
-}
+.bottom-nav .nav-highlight{display:none!important;opacity:0!important;background:none!important;border:0!important;box-shadow:none!important}
 
 .bottom-nav .nav-item{
   position:relative!important;
@@ -63,73 +62,61 @@
   flex-direction:column!important;
   align-items:center!important;
   justify-content:center!important;
-  gap:5px!important;
+  gap:4px!important;
   border:0!important;
   border-radius:0!important;
   background:transparent!important;
-  color:rgba(235,239,236,.48)!important;
-  font-size:8.5px!important;
+  color:rgba(235,239,236,.44)!important;
+  font-size:8px!important;
   line-height:1!important;
-  font-weight:620!important;
+  font-weight:610!important;
   letter-spacing:0!important;
-  text-shadow:0 1px 7px rgba(0,0,0,.24)!important;
+  text-shadow:0 1px 6px rgba(0,0,0,.22)!important;
   transition:color .16s ease,opacity .16s ease!important;
   -webkit-tap-highlight-color:transparent!important;
 }
 .bottom-nav .nav-item .icon,
 .bottom-nav .nav-item svg{
-  width:24px!important;
-  height:24px!important;
-  opacity:.68!important;
-  color:rgba(236,240,237,.70)!important;
-  filter:drop-shadow(0 1px 5px rgba(0,0,0,.20))!important;
+  width:22px!important;
+  height:22px!important;
+  opacity:.64!important;
+  color:rgba(236,240,237,.66)!important;
+  filter:drop-shadow(0 1px 4px rgba(0,0,0,.18))!important;
   transform:none!important;
   transition:opacity .16s ease,color .16s ease,filter .16s ease!important;
 }
 .bottom-nav .nav-item.is-active{
   color:#d4ff1d!important;
-  text-shadow:0 0 10px rgba(210,255,22,.10)!important;
+  text-shadow:0 0 9px rgba(210,255,22,.08)!important;
 }
 .bottom-nav .nav-item.is-active .icon,
 .bottom-nav .nav-item.is-active svg{
   color:#d4ff1d!important;
   opacity:1!important;
-  filter:drop-shadow(0 0 6px rgba(210,255,22,.17)) drop-shadow(0 1px 4px rgba(0,0,0,.18))!important;
+  filter:drop-shadow(0 0 5px rgba(210,255,22,.14))!important;
 }
 .bottom-nav .nav-item::before,
 .bottom-nav .nav-item::after,
 .bottom-nav .nav-item.is-active::before,
-.bottom-nav .nav-item.is-active::after{
-  content:none!important;
-  display:none!important;
-}
-.bottom-nav .nav-item:active{
-  transform:scale(.97)!important;
-  opacity:.72!important;
-}
+.bottom-nav .nav-item.is-active::after{content:none!important;display:none!important}
+.bottom-nav .nav-item:active{transform:scale(.97)!important;opacity:.72!important}
 
-/* Every route keeps content clear of the floating dock. */
-.app-content{
-  padding-bottom:calc(var(--safe-bottom) + 142px)!important;
-}
-body:has(.home-rebuild) .app-content{
-  padding-bottom:calc(var(--safe-bottom) + 164px)!important;
-}
+/* Every route reserves the dock once; feature screens can add a few pixels, never guess its full height. */
+.app-content{padding-bottom:var(--iron-bottom-nav-clearance)!important}
+body:has(.home-rebuild) .app-content{padding-bottom:calc(var(--safe-bottom) + 122px)!important}
 
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
-  .bottom-nav{background:rgba(20,23,22,.94)!important}
+  .bottom-nav{background:rgba(18,21,20,.94)!important}
 }
 
 @media(max-width:390px){
+  :root{--iron-bottom-nav-height:66px}
   .bottom-nav{
-    width:calc(100vw - 26px)!important;
-    height:72px!important;
-    min-height:72px!important;
-    max-height:72px!important;
-    bottom:max(17px,calc(var(--safe-bottom) + 6px))!important;
-    border-radius:27px!important;
+    width:calc(100vw - 28px)!important;
+    bottom:max(9px,calc(var(--safe-bottom) + 3px))!important;
+    border-radius:24px!important;
   }
-  .bottom-nav .nav-item{font-size:8px!important}
+  .bottom-nav .nav-item{font-size:7.8px!important}
   .bottom-nav .nav-item .icon,
-  .bottom-nav .nav-item svg{width:23px!important;height:23px!important}
+  .bottom-nav .nav-item svg{width:21px!important;height:21px!important}
 }
