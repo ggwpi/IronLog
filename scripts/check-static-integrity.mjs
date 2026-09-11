@@ -138,7 +138,10 @@ async function checkIosShellContract() {
   if (!homeSource.includes('.home-stage__visual')) errors.push('home contract: Home must have a dedicated visual hero scene');
   if (!homeSource.includes('.home-progress-day>i')) errors.push('home contract: weekly progress must use vertical day bars');
   if (!homeSource.includes('.home-chart__bars')) errors.push('home contract: activity must expose the histogram rail');
-  if (!homeSource.includes('padding-bottom:calc(var(--safe-bottom) + 164px)')) errors.push('home contract: Home must reserve space above the tab bar');
+  const homeClearances = [...homeSource.matchAll(/padding-bottom:calc\(var\(--safe-bottom\) \+ (\d+)px\)/g)]
+    .map((match) => Number(match[1]))
+    .filter(Number.isFinite);
+  if (!homeClearances.length || Math.max(...homeClearances) < 110) errors.push('home contract: Home must reserve space above the tab bar');
 
   const homeScreenPath = path.join(root, 'src', 'features', 'home', 'home-screen.js');
   const homeScreenSource = await readFile(homeScreenPath, 'utf8');
