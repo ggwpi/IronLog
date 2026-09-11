@@ -73,9 +73,16 @@ function workoutArt(workout) {
 }
 
 function heroSubtitle(workout) {
-  const title = String(workout?.title || workout?.description || 'Personal Workout').trim();
-  const prefix = String(workout?.short || '').trim();
-  return `${prefix}${prefix && title ? ' — ' : ''}${title}`.toUpperCase();
+  const short = String(workout?.short || '').trim();
+  let title = String(workout?.title || workout?.description || '').trim();
+
+  if (short && title.toLocaleUpperCase().startsWith(short.toLocaleUpperCase())) {
+    title = title.slice(short.length).replace(/^\s*[—–:\-]+\s*/, '').trim();
+  }
+
+  if (!title) title = (workout?.targets || []).join(', ');
+  if (!title) title = 'PERSONAL WORKOUT';
+  return title.toUpperCase();
 }
 
 function startOfCurrentWeek() {
@@ -111,9 +118,7 @@ function weeklyGoal(workouts, workoutData) {
   const fallbackTarget = Number(workoutData?.summary?.plannedWorkouts) || 0;
   const target = scheduled.length || fallbackTarget;
   const completed = target ? Math.min(completedSessions, target) : completedSessions;
-  const remaining = Math.max(target - completed, 0);
-  const progress = target ? Math.min(100, Math.round((completed / target) * 100)) : (completed ? 100 : 0);
-  return { completed, target, remaining, progress };
+  return { completed, target };
 }
 
 function weeklyProgress(currentDay, workouts, workoutData) {
@@ -126,7 +131,7 @@ function weeklyProgress(currentDay, workouts, workoutData) {
     const complete = daySessions.some((session) => session.status === 'completed');
     const active = daySessions.some((session) => session.status === 'active');
     const current = jsDay === currentDay;
-    const fill = complete ? 100 : active ? 84 : current && planned ? 76 : planned ? 38 : 14;
+    const fill = complete ? 100 : active ? 84 : current && planned ? 68 : planned ? 34 : 10;
     const state = [
       planned ? 'is-planned' : '',
       current ? 'is-current' : '',
@@ -170,23 +175,18 @@ function activityMetrics(workoutData = {}) {
   return { byDay, total, previousTotal, max, delta };
 }
 
-function compactLoad(value) {
-  const number = Math.max(0, Number(value) || 0);
-  if (number >= 10000) return `${Math.round(number / 1000)}K`;
-  if (number >= 1000) return `${(number / 1000).toFixed(1).replace('.0', '')}K`;
-  return String(Math.round(number));
-}
-
 function activityBars(workoutData, metrics) {
   const sessions = sessionsByDay(workoutData);
   const fragments = [];
-  const multipliers = [0.48, 1, 0.68];
+  const multipliers = [0.46, 1, 0.66];
 
   DAYS.forEach(({ jsDay }) => {
     const value = metrics.byDay[jsDay] || 0;
     const hasSession = (sessions.get(jsDay) || []).length > 0;
     multipliers.forEach((multiplier, index) => {
-      const normalized = value > 0 ? Math.max(12, Math.round((value / metrics.max) * 86 * multiplier)) : (hasSession ? 12 + index * 5 : 5 + index * 2);
+      const normalized = value > 0
+        ? Math.max(12, Math.round((value / metrics.max) * 82 * multiplier))
+        : (hasSession ? 11 + index * 4 : 4 + index * 2);
       const className = value > 0 ? 'has-value' : hasSession ? 'has-session' : 'is-empty';
       fragments.push(`<i class="${className}" style="--activity:${normalized}%" aria-hidden="true"></i>`);
     });
@@ -239,11 +239,9 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
           </div>
 
           <button class="home-start" type="button" data-route="workouts">
-            <span>פתח אימון</span><i aria-hidden="true">→</i>
+            <span>פתח אימון</span><i aria-hidden="true">←</i>
           </button>
         </div>
-
-        <p class="home-stage__motto" aria-hidden="true">Stronger<br>Than<br>Yesterday</p>
       </div>
     </section>
 
@@ -253,7 +251,7 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
           <div class="home-section-title-row"><h3>התקדמות שבועית</h3>${miniBarsIcon()}</div>
           <p>WEEKLY PROGRESS</p>
         </div>
-        <span class="home-section-action" dir="ltr">${goal.target ? `${goal.completed}/${goal.target}` : 'SEE ALL'} <b>›</b></span>
+        <span class="home-section-action" dir="ltr">${goal.target ? `${goal.completed}/${goal.target}` : '—'}</span>
       </div>
 
       <div class="home-progress-days" aria-label="התקדמות לפי ימים">
@@ -267,7 +265,7 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
           <div class="home-section-title-row"><h3>פעילות</h3>${miniBarsIcon()}</div>
           <p>ACTIVITY</p>
         </div>
-        <span class="home-section-action home-section-action--period" dir="ltr">THIS WEEK <b>⌄</b></span>
+        <span class="home-section-action home-section-action--period" dir="ltr">THIS WEEK</span>
       </div>
 
       <div class="home-activity-layout">
