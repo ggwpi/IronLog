@@ -8,11 +8,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="IronLog">
   <meta name="description" content="IronLog — your training, clearly tracked.">
-  <meta name="ironlog-build" content="home-ref-20260911-01">
+  <meta name="ironlog-build" content="home-ref-20260911-02">
   <title>IronLog</title>
   <script>
     (function () {
-      var BUILD = 'home-ref-20260911-01';
+      var BUILD = 'home-ref-20260911-02';
       window.__IRONLOG_BUILD__ = BUILD;
 
       function withBuild(url, build) {
@@ -40,19 +40,26 @@
         }
       }
 
-      window.addEventListener('pageshow', function (event) {
-        if (event.persisted) checkForNewBuild();
-      });
+      window.addEventListener('pageshow', function () { checkForNewBuild(); });
+      window.addEventListener('focus', checkForNewBuild);
       document.addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'visible') checkForNewBuild();
       });
     })();
   </script>
+  <script type="importmap">
+    {
+      "imports": {
+        "/src/features/home/home-screen.js": "/src/features/home/home-screen.js?build=home-ref-20260911-02",
+        "/src/components/bottom-nav.js": "/src/components/bottom-nav.js?build=home-ref-20260911-02"
+      }
+    }
+  </script>
   <link rel="icon" type="image/svg+xml" href="/assets/ironlog-app-icon.svg?v=3">
   <link rel="shortcut icon" href="/assets/ironlog-app-icon.svg?v=3">
   <link rel="mask-icon" href="/assets/ironlog-bolt.svg?v=3" color="#D2FF16">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=3">
-  <link rel="manifest" href="/manifest.webmanifest?v=4">
+  <link rel="manifest" href="/manifest.webmanifest?v=5">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="stylesheet" href="/src/components/bottom-sheet.css?v=1">
   <link rel="stylesheet" href="/src/components/screen-transition.css?v=2">
@@ -73,7 +80,7 @@
   <link rel="stylesheet" href="/src/features/workouts/workout-set-editor.css?v=1">
   <link rel="stylesheet" href="/src/features/statistics/statistics.css">
   <link rel="stylesheet" href="/src/nav-glass.css">
-  <link rel="stylesheet" href="/src/nav-fixed.css?v=4">
+  <link rel="stylesheet" href="/src/nav-fixed.css?v=5">
   <link rel="stylesheet" href="/src/motion.css">
   <link rel="stylesheet" href="/src/features/statistics/statistics-reference-tune.css">
   <link rel="stylesheet" href="/src/features/statistics/statistics-concept-fix.css">
@@ -91,7 +98,7 @@
   <link rel="stylesheet" href="/src/keyboard-safe-layout.css?v=1">
   <link rel="stylesheet" href="/src/ironlog-ios-system.css?v=1">
   <link rel="stylesheet" href="/src/ironlog-premium-refinement.css?v=1">
-  <link rel="stylesheet" href="/src/features/home/home-rebuild.css?v=6">
+  <link rel="stylesheet" href="/src/features/home/home-rebuild.css?v=7">
   <style>html,body{touch-action:manipulation;-webkit-text-size-adjust:100%}</style>
 </head>
 <body>
@@ -107,7 +114,7 @@
   <script type="module" src="/src/app-header-sticky-runtime.js?v=5"></script>
   <script type="module" src="/src/keyboard-safe-runtime.js?v=1"></script>
   <script type="module" src="/src/features/workouts/workout-launch-runtime.js?v=4"></script>
-  <script type="module" src="/src/app.js?v=23"></script>
+  <script type="module" src="/src/app.js?v=24"></script>
   <script type="module" src="/src/features/statistics/statistics-native-runtime.js?v=7"></script>
   <script type="module" src="/src/features/statistics/statistics-trend-fix-runtime.js?v=1"></script>
   <script type="module" src="/src/features/statistics/statistics-stocks-runtime.js?v=1"></script>
