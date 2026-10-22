@@ -15,7 +15,7 @@
   padding:6px 9px!important;
   overflow:hidden!important;
   display:grid!important;
-  grid-template-columns:repeat(4,1fr)!important;
+  grid-template-columns:repeat(5,1fr)!important;
   direction:rtl!important;
   isolation:isolate!important;
   border:1px solid rgba(255,255,255,.105)!important;
@@ -45,7 +45,7 @@
 
 #tabbar.bottom-nav .nav-highlight{display:none!important;opacity:0!important;background:none!important;border:0!important;box-shadow:none!important}
 
-#tabbar.bottom-nav .nav-item{
+#tabbar.bottom-nav button{
   position:relative!important;
   z-index:2!important;
   min-width:0!important;
@@ -69,8 +69,8 @@
   transition:color .16s ease,opacity .16s ease!important;
   -webkit-tap-highlight-color:transparent!important;
 }
-#tabbar.bottom-nav .nav-item .icon,
-#tabbar.bottom-nav .nav-item svg{
+#tabbar.bottom-nav button .icon,
+#tabbar.bottom-nav button svg{
   width:22px!important;
   height:22px!important;
   opacity:.64!important;
@@ -79,21 +79,29 @@
   transform:none!important;
   transition:opacity .16s ease,color .16s ease,filter .16s ease!important;
 }
-#tabbar.bottom-nav .nav-item.is-active{
+#tabbar.bottom-nav button.on{
   color:#d4ff1d!important;
   text-shadow:0 0 9px rgba(210,255,22,.08)!important;
 }
-#tabbar.bottom-nav .nav-item.is-active .icon,
-#tabbar.bottom-nav .nav-item.is-active svg{
+#tabbar.bottom-nav button.on .icon,
+#tabbar.bottom-nav button.on svg{
   color:#d4ff1d!important;
   opacity:1!important;
   filter:drop-shadow(0 0 5px rgba(210,255,22,.14))!important;
 }
-#tabbar.bottom-nav .nav-item::before,
-#tabbar.bottom-nav .nav-item::after,
-#tabbar.bottom-nav .nav-item.is-active::before,
-#tabbar.bottom-nav .nav-item.is-active::after{content:none!important;display:none!important}
-#tabbar.bottom-nav .nav-item:active{transform:scale(.97)!important;opacity:.72!important}
+#tabbar.bottom-nav button::before,
+#tabbar.bottom-nav button::after,
+#tabbar.bottom-nav button.on::before,
+#tabbar.bottom-nav button.on::after{content:none!important;display:none!important}
+#tabbar.bottom-nav button:active{transform:scale(.97)!important;opacity:.72!important}
 
 
 @media(max-width:390px){#tabbar.bottom-nav{width:calc(100vw - 28px)!important;height:66px!important;min-height:66px!important;max-height:66px!important;border-radius:24px!important}}
+
+/* Keep upstream Start/Resume behavior inside the original compact glass dock. */
+#tabbar.bottom-nav button.start{margin-top:0!important}
+#tabbar.bottom-nav button.start .cir{width:22px;height:22px;background:transparent;box-shadow:none;color:inherit}
+#tabbar.bottom-nav button.start>span{color:inherit;font-weight:inherit}
+#tabbar.bottom-nav button.start.rec{color:var(--orange)!important}
+#tabbar.bottom-nav button.start.rec .icn{color:var(--orange)!important;opacity:1!important}
+#tabbar.bottom-nav button.start.rec .cir::after{display:none}
