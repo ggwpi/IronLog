@@ -49,9 +49,12 @@ describe('compact navigation viewport anchoring',()=>{
 
 
 describe('installed-app cold launch with both browser heights stale',()=>{
- const phone = () => ({innerWidth:390,innerHeight:810,visualViewport:{height:810,offsetTop:0},navigator:{standalone:true},screen:{width:390,height:844,orientation:{type:'portrait-primary'}}})
+ const phone = () => ({innerWidth:390,innerHeight:810,visualViewport:{height:810,offsetTop:0},navigator:{standalone:true,userAgent:'iPhone'},screen:{width:390,height:844,orientation:{type:'portrait-primary'}}})
  it('anchors to the full screen immediately even if both heights stay short and no event fires',()=>{
   expect(navigationBottom(phone())).toBe(844)
+ })
+ it('does not use screen bounds in a desktop installed window',()=>{
+  const win=phone();win.navigator.userAgent='Mozilla/5.0 Desktop';expect(navigationBottom(win)).toBe(810)
  })
  it('does not include Safari browser chrome in a normal tab',()=>{
   const win=phone();win.navigator.standalone=false

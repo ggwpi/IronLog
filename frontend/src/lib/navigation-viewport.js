@@ -8,6 +8,9 @@ export function navigationBottom(win) {
   const standalone = win.navigator?.standalone || win.matchMedia?.('(display-mode: standalone)').matches
   if (!standalone) return visualBottom
   let bottom = Math.max(win.innerHeight, visualBottom)
+  const ios = /iP(hone|ad|od)/.test(win.navigator?.userAgent || '')
+    || (win.navigator?.platform === 'MacIntel' && win.navigator?.maxTouchPoints > 1)
+  if (!ios) return bottom
   const screen = win.screen
   if (!(screen?.width > 0 && screen?.height > 0 && win.innerWidth > 0)) return bottom
   const landscape = screen.orientation?.type?.startsWith('landscape')
