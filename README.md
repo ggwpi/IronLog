@@ -33,7 +33,7 @@ npm ci --ignore-scripts --prefix frontend
 npm run build
 ```
 
-Output is `frontend/dist`, including the exercise media. `vercel.json` uses this build. Static hosting supports guest/local training. Account sync, passkeys, uploads and the server-side coach require the included Node API behind a same-origin `/api` proxy; static hosting alone does not provide those endpoints.
+Output is `frontend/dist`, including the exercise media. `vercel.json` explicitly uses the static builder, so the self-hosted `api/` source is not incorrectly deployed as individual serverless functions. Static hosting supports guest/local training. Account sync, passkeys, uploads and the server-side coach require the included Node API behind a same-origin `/api` proxy; static hosting alone does not provide those endpoints.
 
 ## IronLog UI and widgets
 

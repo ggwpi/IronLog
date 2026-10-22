@@ -6,6 +6,7 @@
     "dev": "npm run dev --prefix frontend -- --host 0.0.0.0",
     "build": "npm run build --prefix frontend && node scripts/catalogue/stage-media.mjs frontend/dist",
     "test": "npm test --prefix frontend",
-    "start:api": "npm start --prefix api"
+    "start:api": "npm start --prefix api",
+    "vercel-build": "npm ci --ignore-scripts --prefix frontend && npm run build"
   }
 }
