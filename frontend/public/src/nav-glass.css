@@ -1,0 +1,81 @@
+.bottom-nav{
+  position:fixed;
+  z-index:40;
+  left:50%;
+  bottom:calc(var(--safe-bottom) + 10px);
+  transform:translateX(-50%);
+  width:min(calc(100vw - 22px),720px);
+  height:74px;
+  padding:7px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:26px;
+  background:linear-gradient(180deg,rgba(22,27,25,.40),rgba(8,12,10,.28));
+  -webkit-backdrop-filter:blur(30px) saturate(175%);
+  backdrop-filter:blur(30px) saturate(175%);
+  box-shadow:0 18px 60px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(255,255,255,.025);
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  direction:rtl;
+  isolation:isolate;
+}
+
+.bottom-nav::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  background:radial-gradient(circle at 22% -20%,rgba(255,255,255,.12),transparent 42%),linear-gradient(90deg,rgba(255,255,255,.025),rgba(210,255,22,.018),rgba(255,255,255,.02));
+  pointer-events:none;
+}
+
+.bottom-nav::after{
+  content:"";
+  position:absolute;
+  inset:1px;
+  z-index:-1;
+  border-radius:25px;
+  background:rgba(5,8,7,.10);
+  pointer-events:none;
+}
+
+.nav-item{
+  position:relative;
+  z-index:2;
+  border:0;
+  background:transparent;
+  color:rgba(220,225,222,.48);
+  border-radius:20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  font-size:9px;
+  font-weight:750;
+  transition:color .22s ease,transform .16s ease,text-shadow .22s ease;
+}
+
+.nav-item .icon{filter:drop-shadow(0 1px 8px rgba(0,0,0,.3));}
+.nav-item:active{transform:scale(.93)}
+.nav-item.is-active{color:var(--accent);text-shadow:0 0 16px rgba(210,255,22,.24)}
+
+.nav-highlight{
+  position:absolute;
+  z-index:1;
+  top:7px;
+  bottom:7px;
+  right:calc(7px + (100% - 14px)/4 * var(--index));
+  width:calc((100% - 14px)/4);
+  border:1px solid rgba(210,255,22,.10);
+  border-radius:19px;
+  background:linear-gradient(180deg,rgba(210,255,22,.10),rgba(210,255,22,.025));
+  -webkit-backdrop-filter:blur(10px) saturate(140%);
+  backdrop-filter:blur(10px) saturate(140%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 8px 20px rgba(0,0,0,.16);
+  transition:right .34s cubic-bezier(.2,.8,.2,1),background .22s ease;
+}
+
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .bottom-nav{background:rgba(13,18,15,.94)}
+}

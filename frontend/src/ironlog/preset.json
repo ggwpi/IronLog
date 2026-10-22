@@ -1,0 +1,1180 @@
+{
+  "customEx": [
+    {
+      "id": "ironlog-incline-smith",
+      "n": "Incline Smith Press",
+      "eq": "smith machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "upper-chest": 1.0,
+        "triceps": 0.5,
+        "front-delts": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "chest"
+      ],
+      "secondaries": [
+        "triceps",
+        "deltoids"
+      ],
+      "tg": "chest",
+      "sm": [
+        "triceps",
+        "deltoids"
+      ],
+      "bp": "chest"
+    },
+    {
+      "id": "ironlog-chest-press-machine",
+      "n": "Chest Press Machine",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "chest": 1.0,
+        "triceps": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "chest"
+      ],
+      "secondaries": [
+        "triceps"
+      ],
+      "tg": "chest",
+      "sm": [
+        "triceps"
+      ],
+      "bp": "chest"
+    },
+    {
+      "id": "ironlog-pec-deck",
+      "n": "Pec Deck",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "chest": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "chest"
+      ],
+      "secondaries": [],
+      "tg": "chest",
+      "sm": [],
+      "bp": "chest"
+    },
+    {
+      "id": "ironlog-cable-fly",
+      "n": "Cable Fly",
+      "eq": "cable",
+      "custom": true,
+      "ironlogMuscles": {
+        "chest": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "chest"
+      ],
+      "secondaries": [],
+      "tg": "chest",
+      "sm": [],
+      "bp": "chest"
+    },
+    {
+      "id": "ironlog-ez-curl",
+      "n": "EZ Bar Curl",
+      "eq": "barbell",
+      "custom": true,
+      "ironlogMuscles": {
+        "biceps": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "biceps"
+      ],
+      "secondaries": [],
+      "tg": "biceps",
+      "sm": [],
+      "bp": "upper arms"
+    },
+    {
+      "id": "ironlog-incline-db-curl",
+      "n": "Incline Dumbbell Curl",
+      "eq": "dumbbell",
+      "custom": true,
+      "ironlogMuscles": {
+        "biceps": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "biceps"
+      ],
+      "secondaries": [],
+      "tg": "biceps",
+      "sm": [],
+      "bp": "upper arms"
+    },
+    {
+      "id": "ironlog-hammer-curl",
+      "n": "Hammer Curl",
+      "eq": "dumbbell",
+      "custom": true,
+      "ironlogMuscles": {
+        "biceps": 1.0,
+        "forearms": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "biceps"
+      ],
+      "secondaries": [
+        "forearm"
+      ],
+      "tg": "biceps",
+      "sm": [
+        "forearm"
+      ],
+      "bp": "upper arms"
+    },
+    {
+      "id": "ironlog-hack-squat",
+      "n": "Hack Squat",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "quads": 1.0,
+        "glutes": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "quadriceps"
+      ],
+      "secondaries": [
+        "gluteal"
+      ],
+      "tg": "quadriceps",
+      "sm": [
+        "gluteal"
+      ],
+      "bp": "upper legs"
+    },
+    {
+      "id": "ironlog-romanian-deadlift",
+      "n": "Romanian Deadlift",
+      "eq": "barbell",
+      "custom": true,
+      "ironlogMuscles": {
+        "hamstrings": 1.0,
+        "glutes": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "hamstring"
+      ],
+      "secondaries": [
+        "gluteal"
+      ],
+      "tg": "hamstring",
+      "sm": [
+        "gluteal"
+      ],
+      "bp": "upper legs"
+    },
+    {
+      "id": "ironlog-leg-press",
+      "n": "Leg Press",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "quads": 1.0,
+        "glutes": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "quadriceps"
+      ],
+      "secondaries": [
+        "gluteal"
+      ],
+      "tg": "quadriceps",
+      "sm": [
+        "gluteal"
+      ],
+      "bp": "upper legs"
+    },
+    {
+      "id": "ironlog-bulgarian-split-squat",
+      "n": "Bulgarian Split Squat",
+      "eq": "dumbbell",
+      "custom": true,
+      "ironlogMuscles": {
+        "quads": 1.0,
+        "glutes": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "quadriceps"
+      ],
+      "secondaries": [
+        "gluteal"
+      ],
+      "tg": "quadriceps",
+      "sm": [
+        "gluteal"
+      ],
+      "bp": "upper legs"
+    },
+    {
+      "id": "ironlog-lying-leg-curl",
+      "n": "Lying Leg Curl",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "hamstrings": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "hamstring"
+      ],
+      "secondaries": [],
+      "tg": "hamstring",
+      "sm": [],
+      "bp": "upper legs"
+    },
+    {
+      "id": "ironlog-standing-calf-raise",
+      "n": "Standing Calf Raise",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "calves": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "calves"
+      ],
+      "secondaries": [],
+      "tg": "calves",
+      "sm": [],
+      "bp": "back"
+    },
+    {
+      "id": "ironlog-hanging-leg-raise",
+      "n": "Hanging Leg Raise",
+      "eq": "body weight",
+      "custom": true,
+      "ironlogMuscles": {
+        "core": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "abs"
+      ],
+      "secondaries": [],
+      "tg": "abs",
+      "sm": [],
+      "bp": "waist"
+    },
+    {
+      "id": "ironlog-cable-crunch",
+      "n": "Cable Crunch",
+      "eq": "cable",
+      "custom": true,
+      "ironlogMuscles": {
+        "core": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "abs"
+      ],
+      "secondaries": [],
+      "tg": "abs",
+      "sm": [],
+      "bp": "waist"
+    },
+    {
+      "id": "ironlog-pull-up",
+      "n": "Pull-up",
+      "eq": "body weight",
+      "custom": true,
+      "ironlogMuscles": {
+        "lats": 1.0,
+        "biceps": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "upper-back"
+      ],
+      "secondaries": [
+        "biceps"
+      ],
+      "tg": "upper-back",
+      "sm": [
+        "biceps"
+      ],
+      "bp": "back"
+    },
+    {
+      "id": "ironlog-chest-supported-row",
+      "n": "Chest Supported Row",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "upper-back": 1.0,
+        "biceps": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "upper-back"
+      ],
+      "secondaries": [
+        "biceps"
+      ],
+      "tg": "upper-back",
+      "sm": [
+        "biceps"
+      ],
+      "bp": "back"
+    },
+    {
+      "id": "ironlog-lat-pulldown",
+      "n": "Lat Pulldown",
+      "eq": "cable",
+      "custom": true,
+      "ironlogMuscles": {
+        "lats": 1.0,
+        "biceps": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "upper-back"
+      ],
+      "secondaries": [
+        "biceps"
+      ],
+      "tg": "upper-back",
+      "sm": [
+        "biceps"
+      ],
+      "bp": "back"
+    },
+    {
+      "id": "ironlog-seated-cable-row",
+      "n": "Seated Cable Row",
+      "eq": "cable",
+      "custom": true,
+      "ironlogMuscles": {
+        "upper-back": 1.0,
+        "biceps": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "upper-back"
+      ],
+      "secondaries": [
+        "biceps"
+      ],
+      "tg": "upper-back",
+      "sm": [
+        "biceps"
+      ],
+      "bp": "back"
+    },
+    {
+      "id": "ironlog-face-pull",
+      "n": "Face Pull",
+      "eq": "cable",
+      "custom": true,
+      "ironlogMuscles": {
+        "rear-delts": 1.0,
+        "upper-back": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "deltoids"
+      ],
+      "secondaries": [
+        "upper-back"
+      ],
+      "tg": "deltoids",
+      "sm": [
+        "upper-back"
+      ],
+      "bp": "back"
+    },
+    {
+      "id": "ironlog-rope-pushdown",
+      "n": "Rope Pushdown",
+      "eq": "cable",
+      "custom": true,
+      "ironlogMuscles": {
+        "triceps": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "triceps"
+      ],
+      "secondaries": [],
+      "tg": "triceps",
+      "sm": [],
+      "bp": "upper arms"
+    },
+    {
+      "id": "ironlog-overhead-cable-extension",
+      "n": "Overhead Cable Extension",
+      "eq": "cable",
+      "custom": true,
+      "ironlogMuscles": {
+        "triceps": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "triceps"
+      ],
+      "secondaries": [],
+      "tg": "triceps",
+      "sm": [],
+      "bp": "upper arms"
+    },
+    {
+      "id": "ironlog-machine-dip",
+      "n": "Machine Dip",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "triceps": 1.0,
+        "chest": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "triceps"
+      ],
+      "secondaries": [
+        "chest"
+      ],
+      "tg": "triceps",
+      "sm": [
+        "chest"
+      ],
+      "bp": "upper arms"
+    },
+    {
+      "id": "ironlog-shoulder-press-machine",
+      "n": "Shoulder Press Machine",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "front-delts": 1.0,
+        "triceps": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "deltoids"
+      ],
+      "secondaries": [
+        "triceps"
+      ],
+      "tg": "deltoids",
+      "sm": [
+        "triceps"
+      ],
+      "bp": "back"
+    },
+    {
+      "id": "ironlog-cable-lateral-raise",
+      "n": "Cable Lateral Raise",
+      "eq": "cable",
+      "custom": true,
+      "ironlogMuscles": {
+        "side-delts": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "deltoids"
+      ],
+      "secondaries": [],
+      "tg": "deltoids",
+      "sm": [],
+      "bp": "back"
+    },
+    {
+      "id": "ironlog-rear-delt-fly-machine",
+      "n": "Rear Delt Fly Machine",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "rear-delts": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "deltoids"
+      ],
+      "secondaries": [],
+      "tg": "deltoids",
+      "sm": [],
+      "bp": "back"
+    },
+    {
+      "id": "ironlog-incline-chest-press-machine",
+      "n": "Incline Chest Press Machine",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "upper-chest": 1.0,
+        "triceps": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "chest"
+      ],
+      "secondaries": [
+        "triceps"
+      ],
+      "tg": "chest",
+      "sm": [
+        "triceps"
+      ],
+      "bp": "chest"
+    },
+    {
+      "id": "ironlog-leg-extension",
+      "n": "Leg Extension",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "quads": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "quadriceps"
+      ],
+      "secondaries": [],
+      "tg": "quadriceps",
+      "sm": [],
+      "bp": "upper legs"
+    },
+    {
+      "id": "ironlog-seated-leg-curl",
+      "n": "Seated Leg Curl",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "hamstrings": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "hamstring"
+      ],
+      "secondaries": [],
+      "tg": "hamstring",
+      "sm": [],
+      "bp": "upper legs"
+    },
+    {
+      "id": "ironlog-walking-lunge",
+      "n": "Walking Lunge",
+      "eq": "dumbbell",
+      "custom": true,
+      "ironlogMuscles": {
+        "quads": 1.0,
+        "glutes": 0.5
+      },
+      "mode": "reps",
+      "primaries": [
+        "quadriceps"
+      ],
+      "secondaries": [
+        "gluteal"
+      ],
+      "tg": "quadriceps",
+      "sm": [
+        "gluteal"
+      ],
+      "bp": "upper legs"
+    },
+    {
+      "id": "ironlog-seated-calf-raise",
+      "n": "Seated Calf Raise",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "calves": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "calves"
+      ],
+      "secondaries": [],
+      "tg": "calves",
+      "sm": [],
+      "bp": "back"
+    },
+    {
+      "id": "ironlog-ab-wheel",
+      "n": "Ab Wheel",
+      "eq": "body weight",
+      "custom": true,
+      "ironlogMuscles": {
+        "core": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "abs"
+      ],
+      "secondaries": [],
+      "tg": "abs",
+      "sm": [],
+      "bp": "waist"
+    },
+    {
+      "id": "ironlog-plank",
+      "n": "Plank",
+      "eq": "body weight",
+      "custom": true,
+      "ironlogMuscles": {
+        "core": 1.0
+      },
+      "mode": "time",
+      "primaries": [
+        "abs"
+      ],
+      "secondaries": [],
+      "tg": "abs",
+      "sm": [],
+      "bp": "waist"
+    },
+    {
+      "id": "ironlog-barbell-curl",
+      "n": "Barbell Curl",
+      "eq": "barbell",
+      "custom": true,
+      "ironlogMuscles": {
+        "biceps": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "biceps"
+      ],
+      "secondaries": [],
+      "tg": "biceps",
+      "sm": [],
+      "bp": "upper arms"
+    },
+    {
+      "id": "ironlog-preacher-curl",
+      "n": "Preacher Curl",
+      "eq": "leverage machine",
+      "custom": true,
+      "ironlogMuscles": {
+        "biceps": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "biceps"
+      ],
+      "secondaries": [],
+      "tg": "biceps",
+      "sm": [],
+      "bp": "upper arms"
+    },
+    {
+      "id": "ironlog-cable-curl",
+      "n": "Cable Curl",
+      "eq": "cable",
+      "custom": true,
+      "ironlogMuscles": {
+        "biceps": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "biceps"
+      ],
+      "secondaries": [],
+      "tg": "biceps",
+      "sm": [],
+      "bp": "upper arms"
+    },
+    {
+      "id": "ironlog-ez-skull-crusher",
+      "n": "EZ Bar Skull Crusher",
+      "eq": "barbell",
+      "custom": true,
+      "ironlogMuscles": {
+        "triceps": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "triceps"
+      ],
+      "secondaries": [],
+      "tg": "triceps",
+      "sm": [],
+      "bp": "upper arms"
+    },
+    {
+      "id": "ironlog-dumbbell-lateral-raise",
+      "n": "Dumbbell Lateral Raise",
+      "eq": "dumbbell",
+      "custom": true,
+      "ironlogMuscles": {
+        "side-delts": 1.0
+      },
+      "mode": "reps",
+      "primaries": [
+        "deltoids"
+      ],
+      "secondaries": [],
+      "tg": "deltoids",
+      "sm": [],
+      "bp": "back"
+    }
+  ],
+  "routines": [
+    {
+      "name": "PUSH A",
+      "note": "חזה + יד קדמית",
+      "day": 1,
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "ironlog-incline-smith",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 150,
+          "note": "8–10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-chest-press-machine",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 135,
+          "note": "8–12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-pec-deck",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 90,
+          "note": "12–15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-cable-fly",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15–20 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-ez-curl",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 120,
+          "note": "8–10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-incline-db-curl",
+          "sets": 3,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 90,
+          "note": "10–12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-hammer-curl",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 90,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        }
+      ]
+    },
+    {
+      "name": "LEGS A",
+      "note": "רגליים כבד + בטן",
+      "day": 2,
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "ironlog-hack-squat",
+          "sets": 4,
+          "reps": 6,
+          "weight": 0,
+          "restSec": 180,
+          "note": "6–8 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-romanian-deadlift",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 180,
+          "note": "8 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-leg-press",
+          "sets": 4,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 165,
+          "note": "10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-bulgarian-split-squat",
+          "sets": 3,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 150,
+          "note": "10 / leg · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-lying-leg-curl",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 90,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-standing-calf-raise",
+          "sets": 5,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 75,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-hanging-leg-raise",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 60,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-cable-crunch",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 60,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        }
+      ]
+    },
+    {
+      "name": "PULL A",
+      "note": "גב + יד אחורית",
+      "day": 3,
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "ironlog-pull-up",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 150,
+          "note": "AMRAP · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-chest-supported-row",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 150,
+          "note": "8–10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-lat-pulldown",
+          "sets": 3,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 120,
+          "note": "10–12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-seated-cable-row",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 120,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-face-pull",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-rope-pushdown",
+          "sets": 4,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 90,
+          "note": "10–12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-overhead-cable-extension",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 90,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-machine-dip",
+          "sets": 3,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 120,
+          "note": "10–12 · RIR 1–2",
+          "mode": "reps"
+        }
+      ]
+    },
+    {
+      "name": "PUSH B",
+      "note": "כתפיים + חזה",
+      "day": 4,
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "ironlog-shoulder-press-machine",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 150,
+          "note": "8–10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-cable-lateral-raise",
+          "sets": 5,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 60,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-rear-delt-fly-machine",
+          "sets": 4,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-incline-chest-press-machine",
+          "sets": 4,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 135,
+          "note": "10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-cable-fly",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        }
+      ]
+    },
+    {
+      "name": "LEGS B",
+      "note": "רגליים נפח + בטן",
+      "day": 5,
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "ironlog-hack-squat",
+          "sets": 4,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 150,
+          "note": "10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-leg-press",
+          "sets": 4,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 135,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-leg-extension",
+          "sets": 4,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-seated-leg-curl",
+          "sets": 4,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-walking-lunge",
+          "sets": 3,
+          "reps": 20,
+          "weight": 0,
+          "restSec": 120,
+          "note": "20 steps · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-seated-calf-raise",
+          "sets": 5,
+          "reps": 20,
+          "weight": 0,
+          "restSec": 60,
+          "note": "20 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-ab-wheel",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 60,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-plank",
+          "sets": 3,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 60,
+          "note": "duration · RIR 1–2",
+          "mode": "time",
+          "sec": 30
+        }
+      ]
+    },
+    {
+      "name": "ARMS",
+      "note": "ידיים + כתפיים",
+      "day": 6,
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "ironlog-barbell-curl",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 120,
+          "note": "8 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-preacher-curl",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 90,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-cable-curl",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-ez-skull-crusher",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 120,
+          "note": "8 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-rope-pushdown",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-overhead-cable-extension",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 90,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-dumbbell-lateral-raise",
+          "sets": 4,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 60,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "ironlog-rear-delt-fly-machine",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        }
+      ]
+    }
+  ]
+}

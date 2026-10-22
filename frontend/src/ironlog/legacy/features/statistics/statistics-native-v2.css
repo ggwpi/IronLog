@@ -1,0 +1,252 @@
+/* Statistics native v3: clearer section hierarchy, RTL disclosures and slower native interaction. */
+.statistics-page--native .statistics-header{
+  height:64px!important;
+  min-height:64px!important;
+  padding:0 2px!important;
+  margin:0!important;
+  align-items:start!important;
+}
+.statistics-page--native .native-weight-section{
+  margin-top:-2px!important;
+  padding-top:2px!important;
+}
+
+/* Section titles are intentionally stronger than the data below them.
+   The small accent rail gives every analytics block one predictable visual anchor. */
+.statistics-page--native .native-stats-section__head{
+  position:relative!important;
+  min-height:36px;
+  margin-bottom:17px!important;
+  padding-inline-start:15px!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:flex-start!important;
+  text-align:right!important;
+  direction:rtl!important;
+}
+.statistics-page--native .native-stats-section__head::before{
+  content:"";
+  position:absolute;
+  inset-inline-start:0;
+  top:1px;
+  width:3px;
+  height:31px;
+  border-radius:999px;
+  background:var(--accent);
+  box-shadow:0 0 13px rgba(210,255,22,.12);
+  opacity:.94;
+}
+.statistics-page--native .native-stats-section__head>div{min-width:0;width:100%;text-align:right!important}
+.statistics-page--native .native-stats-section__head h2{
+  margin:0!important;
+  color:#f3f5f5!important;
+  font-size:21px!important;
+  line-height:1.02!important;
+  font-weight:800!important;
+  letter-spacing:-.035em!important;
+}
+.statistics-page--native .native-stats-section__head p{
+  margin:6px 0 0!important;
+  color:#727d80!important;
+  font-size:9.5px!important;
+  line-height:1.25!important;
+  font-weight:520!important;
+}
+.statistics-page--native .native-stats-section:not(.native-weight-section){padding-top:29px!important}
+.statistics-page--native .native-weight-section .native-stats-section__head{margin-bottom:12px!important}
+
+/* Summary metrics behave like a native status strip, not four mini cards. */
+.statistics-page--native .native-summary-strip{
+  padding:14px 0 13px!important;
+  align-items:start;
+}
+.statistics-page--native .native-summary-strip>div{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:0;
+  padding:0 7px!important;
+}
+.statistics-page--native .native-summary-icon{
+  width:22px;
+  height:22px;
+  margin:0 0 8px;
+  display:grid;
+  place-items:center;
+  color:var(--accent);
+  opacity:.92;
+}
+.statistics-page--native .native-summary-icon svg{
+  width:21px;
+  height:21px;
+  display:block;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.65;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.statistics-page--native .native-summary-strip strong{
+  font-size:16px!important;
+  line-height:1!important;
+  font-weight:720!important;
+}
+.statistics-page--native .native-summary-strip span:not(.native-summary-icon){
+  margin-top:6px!important;
+  color:#748084!important;
+  font-size:8px!important;
+  line-height:1.18!important;
+}
+
+/* Disclosures are native continuation rows. Copy is anchored to the RIGHT;
+   the chevron lives on the left and the expansion is animated by the runtime. */
+.statistics-page--native .native-disclosure{
+  margin-top:9px!important;
+  border-top:1px solid rgba(255,255,255,.075)!important;
+}
+.statistics-page--native .native-disclosure summary{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-height:62px!important;
+  padding:8px 2px 7px!important;
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+  direction:rtl!important;
+  color:inherit!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  text-align:right!important;
+}
+.statistics-page--native .native-disclosure summary:before{display:none!important;content:none!important}
+.statistics-page--native .native-disclosure-copy{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  display:block!important;
+  direction:rtl!important;
+  text-align:right!important;
+}
+.statistics-page--native .native-disclosure-copy b{
+  display:block!important;
+  width:100%;
+  color:#dfe3e4;
+  font-size:12px;
+  line-height:1.2;
+  font-weight:680;
+  text-align:right!important;
+}
+.statistics-page--native .native-disclosure-copy small{
+  display:block!important;
+  width:100%;
+  margin-top:5px;
+  color:#657074;
+  font-size:8.5px;
+  line-height:1.38;
+  font-weight:500;
+  text-align:right!important;
+}
+.statistics-page--native .native-disclosure .when-open{display:none}
+.statistics-page--native .native-disclosure[open] .when-closed{display:none}
+.statistics-page--native .native-disclosure[open] .when-open{display:inline}
+.statistics-page--native .native-disclosure-chevron{
+  flex:0 0 30px!important;
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  color:#778286;
+}
+.statistics-page--native .native-disclosure-chevron svg{
+  width:18px;
+  height:18px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  transition:transform .46s cubic-bezier(.16,.82,.18,1),color .3s ease;
+}
+.statistics-page--native .native-disclosure[open]:not(.is-closing) .native-disclosure-chevron svg{
+  transform:rotate(180deg);
+  color:var(--accent);
+}
+.statistics-page--native .native-disclosure-body{
+  overflow:hidden!important;
+  transform-origin:top center;
+  will-change:height,opacity,transform;
+}
+/* Runtime owns the height animation so the page cannot jump open. */
+.statistics-page--native .native-disclosure[open] .native-disclosure-body{animation:none!important}
+.statistics-page--native .native-disclosure summary:active .native-disclosure-copy{transform:translateY(1px)}
+.statistics-page--native .native-disclosure summary:active .native-disclosure-chevron{transform:scale(.92)}
+
+/* Give data rows a native touch response without making them card-like. */
+.statistics-page--native .native-exercise-row,
+.statistics-page--native .native-volume-row,
+.statistics-page--native .native-recovery-list>div{
+  transition:background-color .18s ease,transform .18s ease,opacity .18s ease;
+}
+.statistics-page--native .native-exercise-row:active,
+.statistics-page--native .native-volume-row:active,
+.statistics-page--native .native-recovery-list>div:active{
+  background:rgba(255,255,255,.018);
+  transform:scale(.995);
+}
+.statistics-page--native .native-summary-strip>div{
+  transition:transform .2s cubic-bezier(.2,.8,.2,1),opacity .2s ease;
+}
+
+/* Slightly cleaner weight hero rhythm. */
+.statistics-page--native .native-weight-summary{margin-bottom:2px!important}
+.statistics-page--native .native-weight-chart-wrap{margin-top:0!important}
+.statistics-page--native .native-chart-legend{margin-top:-6px!important}
+
+@media(max-width:650px){
+  body:has(.statistics-page--native) .app-content{
+    padding-top:calc(var(--safe-top) + 7px)!important;
+  }
+  .statistics-page--native .statistics-header{
+    height:60px!important;
+    min-height:60px!important;
+  }
+  .statistics-page--native .native-weight-section{
+    margin-top:-5px!important;
+    padding-top:0!important;
+    padding-bottom:17px!important;
+  }
+  .statistics-page--native .native-stats-section:not(.native-weight-section){padding-top:26px!important}
+  .statistics-page--native .native-stats-section__head{
+    min-height:34px;
+    margin-bottom:15px!important;
+    padding-inline-start:13px!important;
+  }
+  .statistics-page--native .native-stats-section__head::before{width:2.5px;height:29px;top:1px}
+  .statistics-page--native .native-weight-section .native-stats-section__head{margin-bottom:10px!important}
+  .statistics-page--native .native-stats-section__head h2{font-size:19px!important}
+  .statistics-page--native .native-stats-section__head p{font-size:8.7px!important;margin-top:5px!important}
+  .statistics-page--native .native-summary-strip{padding-block:12px 11px!important}
+  .statistics-page--native .native-summary-icon{width:20px;height:20px;margin-bottom:7px}
+  .statistics-page--native .native-summary-icon svg{width:19px;height:19px}
+  .statistics-page--native .native-summary-strip strong{font-size:15px!important}
+  .statistics-page--native .native-summary-strip span:not(.native-summary-icon){font-size:7.4px!important}
+  .statistics-page--native .native-disclosure summary{min-height:60px!important;padding-block:8px!important}
+  .statistics-page--native .native-disclosure-copy b{font-size:11.5px}
+  .statistics-page--native .native-disclosure-copy small{font-size:8px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .statistics-page--native .native-disclosure-chevron svg,
+  .statistics-page--native .native-exercise-row,
+  .statistics-page--native .native-volume-row,
+  .statistics-page--native .native-recovery-list>div,
+  .statistics-page--native .native-summary-strip>div{transition:none!important}
+}
+html.reduce-motion .statistics-page--native .native-disclosure-chevron svg,
+html.reduce-motion .statistics-page--native .native-exercise-row,
+html.reduce-motion .statistics-page--native .native-volume-row,
+html.reduce-motion .statistics-page--native .native-recovery-list>div,
+html.reduce-motion .statistics-page--native .native-summary-strip>div{transition:none!important}

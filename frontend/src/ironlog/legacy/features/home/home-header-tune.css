@@ -1,0 +1,80 @@
+/* Home-specific content calibration only.
+   Sticky positioning, safe-area coverage, background and blur are intentionally
+   owned by the shared page-header component in app-header-sticky.css. */
+
+@media(max-width:650px){
+  .home-editorial__header{
+    min-height:72px;
+    padding:0 4px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;
+    column-gap:18px;
+    direction:ltr;
+  }
+
+  .home-brand{
+    margin-top:0;
+    align-self:center;
+  }
+
+  .home-user{
+    position:relative;
+    width:auto;
+    height:auto;
+    min-width:86px;
+    display:block;
+    direction:rtl;
+  }
+
+  .home-user>div{
+    position:static;
+    top:auto;
+    right:auto;
+    min-width:78px;
+    display:grid;
+    gap:2px;
+    align-content:center;
+    direction:rtl;
+    text-align:right;
+  }
+
+  .home-user>div>span{
+    font-size:10.5px;
+    line-height:1.05;
+  }
+
+  .home-user h1{
+    margin:0;
+    font-size:29px;
+    line-height:.94;
+    letter-spacing:-.045em;
+  }
+
+  .home-stage{
+    margin-top:-34px;
+  }
+
+  .home-stage__smoke{
+    top:2%;
+  }
+}
+
+@media(max-width:390px){
+  .home-editorial__header{
+    min-height:68px;
+    column-gap:14px;
+  }
+
+  .home-user{
+    min-width:82px;
+  }
+
+  .home-user h1{
+    font-size:27px;
+  }
+
+  .home-stage{
+    margin-top:-32px;
+  }
+}

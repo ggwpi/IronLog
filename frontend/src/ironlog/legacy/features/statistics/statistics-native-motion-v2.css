@@ -1,0 +1,143 @@
+/* Statistics native motion v2: progressive reveal without replaying on data refreshes. */
+.statistics-page--native [data-stats-animate]{
+  opacity:0;
+  transform:translateY(10px);
+}
+.statistics-page--native [data-stats-animate].is-visible{
+  opacity:1;
+  transform:none;
+  transition:opacity .46s cubic-bezier(.2,.8,.2,1),transform .52s cubic-bezier(.2,.8,.2,1);
+}
+
+.statistics-page--native .native-weight-section.is-visible .native-stats-section__head,
+.statistics-page--native .native-weight-section.is-visible .native-weight-summary,
+.statistics-page--native .native-weight-section.is-visible .native-chart-legend{
+  animation:statsNativeSoftIn .48s cubic-bezier(.2,.8,.2,1) both;
+}
+.statistics-page--native .native-weight-section.is-visible .native-weight-summary{animation-delay:.08s}
+.statistics-page--native .native-weight-section.is-visible .native-chart-legend{animation-delay:.62s}
+.statistics-page--native .native-weight-section.is-visible .native-target-band{
+  animation:statsNativeBandIn .52s ease .10s both;
+}
+.statistics-page--native .native-weight-section.is-visible .native-target-edge{
+  stroke-dasharray:900;
+  stroke-dashoffset:900;
+  animation:statsNativeLineDraw .72s cubic-bezier(.18,.75,.22,1) .14s forwards;
+}
+.statistics-page--native .native-weight-section.is-visible .native-weight-line{
+  stroke-dasharray:1000;
+  stroke-dashoffset:1000;
+  animation:statsNativeLineDraw .92s cubic-bezier(.18,.75,.22,1) .20s forwards;
+}
+.statistics-page--native .native-weight-section.is-visible .native-weight-dot{
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:statsNativeDotIn .36s cubic-bezier(.2,.8,.2,1) .88s both;
+}
+.statistics-page--native .native-weight-section.is-visible .native-chart-guide,
+.statistics-page--native .native-weight-section.is-visible .native-chart-label{
+  animation:statsNativeFade .36s ease .12s both;
+}
+
+.statistics-page--native .native-summary-strip.is-visible>div{
+  animation:statsNativeMetricIn .46s cubic-bezier(.2,.8,.2,1) both;
+}
+.statistics-page--native .native-summary-strip.is-visible>div:nth-child(1){animation-delay:.04s}
+.statistics-page--native .native-summary-strip.is-visible>div:nth-child(2){animation-delay:.10s}
+.statistics-page--native .native-summary-strip.is-visible>div:nth-child(3){animation-delay:.16s}
+.statistics-page--native .native-summary-strip.is-visible>div:nth-child(4){animation-delay:.22s}
+.statistics-page--native .native-summary-strip.is-visible .native-summary-icon{
+  animation:statsNativeIconIn .46s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.statistics-page--native [data-stats-key="performance"].is-visible .native-exercise-row{
+  animation:statsNativeRowIn .46s cubic-bezier(.2,.8,.2,1) both;
+}
+.statistics-page--native [data-stats-key="performance"].is-visible .native-exercise-row:nth-child(1){animation-delay:.05s}
+.statistics-page--native [data-stats-key="performance"].is-visible .native-exercise-row:nth-child(2){animation-delay:.11s}
+.statistics-page--native [data-stats-key="performance"].is-visible .native-exercise-row:nth-child(3){animation-delay:.17s}
+.statistics-page--native [data-stats-key="performance"].is-visible .native-sparkline path{
+  stroke-dasharray:260;
+  stroke-dashoffset:260;
+  animation:statsNativeSparkDraw .68s cubic-bezier(.18,.75,.22,1) .20s forwards;
+}
+.statistics-page--native [data-stats-key="performance"].is-visible .native-sparkline circle{
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:statsNativeDotIn .32s cubic-bezier(.2,.8,.2,1) .70s both;
+}
+
+.statistics-page--native [data-stats-key="volume"].is-visible .native-volume-row{
+  animation:statsNativeRowIn .42s cubic-bezier(.2,.8,.2,1) both;
+}
+.statistics-page--native [data-stats-key="volume"].is-visible .native-volume-row:nth-child(1){animation-delay:.04s}
+.statistics-page--native [data-stats-key="volume"].is-visible .native-volume-row:nth-child(2){animation-delay:.08s}
+.statistics-page--native [data-stats-key="volume"].is-visible .native-volume-row:nth-child(3){animation-delay:.12s}
+.statistics-page--native [data-stats-key="volume"].is-visible .native-volume-row:nth-child(4){animation-delay:.16s}
+.statistics-page--native [data-stats-key="volume"].is-visible .native-volume-row:nth-child(5){animation-delay:.20s}
+.statistics-page--native [data-stats-key="volume"].is-visible .native-volume-track b,
+.statistics-page--native [data-stats-key="volume"].is-visible .native-volume-target{
+  transform-origin:left center;
+  animation:statsNativeBarGrow .68s cubic-bezier(.2,.8,.2,1) .18s both;
+}
+
+.statistics-page--native [data-stats-key="recovery"].is-visible .native-recovery-overview,
+.statistics-page--native [data-stats-key="recovery"].is-visible .native-recovery-list>div{
+  animation:statsNativeRowIn .44s cubic-bezier(.2,.8,.2,1) both;
+}
+.statistics-page--native [data-stats-key="recovery"].is-visible .native-recovery-list>div:nth-child(1){animation-delay:.08s}
+.statistics-page--native [data-stats-key="recovery"].is-visible .native-recovery-list>div:nth-child(2){animation-delay:.13s}
+.statistics-page--native [data-stats-key="recovery"].is-visible .native-recovery-list>div:nth-child(3){animation-delay:.18s}
+
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span{
+  animation:statsNativeWeekIn .38s cubic-bezier(.2,.8,.2,1) both;
+}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span:nth-child(1){animation-delay:.03s}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span:nth-child(2){animation-delay:.06s}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span:nth-child(3){animation-delay:.09s}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span:nth-child(4){animation-delay:.12s}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span:nth-child(5){animation-delay:.15s}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span:nth-child(6){animation-delay:.18s}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span:nth-child(7){animation-delay:.21s}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span:nth-child(8){animation-delay:.24s}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span:nth-child(9){animation-delay:.27s}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span:nth-child(10){animation-delay:.30s}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span:nth-child(11){animation-delay:.33s}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span:nth-child(12){animation-delay:.36s}
+.statistics-page--native [data-stats-key="cycle"].is-visible .native-cycle-weeks span.is-current{
+  box-shadow:0 0 0 2px rgba(210,255,22,.04);
+}
+
+/* Gentle ongoing feedback only where it conveys state. */
+.statistics-page--native .native-weight-dot{filter:drop-shadow(0 0 5px rgba(210,255,22,.28))}
+.statistics-page--native .native-cycle-weeks span.is-current{
+  animation:statsNativeCurrentPulse 3.2s ease-in-out infinite;
+}
+.statistics-page--native .native-summary-icon{transition:transform .2s cubic-bezier(.2,.8,.2,1),filter .2s ease}
+.statistics-page--native .native-summary-strip>div:active .native-summary-icon{transform:scale(.9);filter:brightness(1.18)}
+
+@keyframes statsNativeSoftIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes statsNativeFade{from{opacity:0}to{opacity:1}}
+@keyframes statsNativeBandIn{from{opacity:0}to{opacity:1}}
+@keyframes statsNativeLineDraw{to{stroke-dashoffset:0}}
+@keyframes statsNativeSparkDraw{to{stroke-dashoffset:0}}
+@keyframes statsNativeDotIn{from{opacity:0;transform:scale(.45)}to{opacity:1;transform:scale(1)}}
+@keyframes statsNativeMetricIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes statsNativeIconIn{from{opacity:0;transform:scale(.75) rotate(-7deg)}to{opacity:.92;transform:none}}
+@keyframes statsNativeRowIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
+@keyframes statsNativeBarGrow{from{transform:scaleX(0);opacity:.35}to{transform:scaleX(1);opacity:1}}
+@keyframes statsNativeWeekIn{from{opacity:0;transform:translateY(5px) scale(.82)}to{opacity:1;transform:none}}
+@keyframes statsNativeCurrentPulse{0%,100%{filter:none}50%{filter:drop-shadow(0 0 6px rgba(210,255,22,.22))}}
+
+@media(prefers-reduced-motion:reduce){
+  .statistics-page--native [data-stats-animate],
+  .statistics-page--native [data-stats-animate].is-visible{opacity:1!important;transform:none!important;transition:none!important}
+  .statistics-page--native *,
+  .statistics-page--native *:before,
+  .statistics-page--native *:after{animation:none!important;transition:none!important}
+}
+html.reduce-motion .statistics-page--native [data-stats-animate],
+html.reduce-motion .statistics-page--native [data-stats-animate].is-visible{opacity:1!important;transform:none!important;transition:none!important}
+html.reduce-motion .statistics-page--native *,
+html.reduce-motion .statistics-page--native *:before,
+html.reduce-motion .statistics-page--native *:after{animation:none!important;transition:none!important}

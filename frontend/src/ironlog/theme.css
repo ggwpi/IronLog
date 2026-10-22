@@ -1,0 +1,16 @@
+/* IronLog's graphite surfaces, lime accent and editorial typography. */
+:root[data-theme="dark"] { --bg:#07090b; --bg-el:#0b0f12; --surface:#0e1317; --surface-2:#11181d; --surface-3:#20282e; --label:#f6f8f9; --label-2:#c3cbd0; --label-3:#79848c; }
+.ironlog-original { display:block; margin-bottom:24px; }
+.ironlog-main > .hdr > div:first-child > h1 { font-weight:850; letter-spacing:-1px; }
+.ironlog-home > .hdr > div:first-child { display:none; }
+.ironlog-home > .hdr { justify-content:flex-end; }
+.card { border-radius:24px; }
+#tabbar { border-radius:26px 26px 0 0; backdrop-filter:blur(24px); }
+.ironlog-source { text-align:center; font-size:12px; padding:20px; color:var(--label-3); }
+.ironlog-source a { color:var(--acc); margin:0 8px; }
+.ironlog-form { display:grid; gap:12px; margin-top:20px; }
+.ironlog-form label { display:grid; gap:6px; }
+.ironlog-form input { width:100%; padding:12px; background:var(--surface-2); color:var(--label); border:1px solid var(--surface-3); border-radius:12px; }
+.ironlog-form button { padding:12px; }
+
+.ironlog-settings>.sp-root-title{display:none}

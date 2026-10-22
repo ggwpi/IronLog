@@ -1,0 +1,5 @@
+/* Ensure all muscle-volume rows reveal after their parent card becomes visible. */
+.statistics-page.animate-enter .volume-row:nth-child(9){animation-delay:.66s}
+.statistics-page.animate-enter .volume-row:nth-child(10){animation-delay:.70s}
+.statistics-page.animate-enter .volume-row:nth-child(11){animation-delay:.74s}
+.statistics-page.animate-enter .volume-row:nth-child(12){animation-delay:.78s}

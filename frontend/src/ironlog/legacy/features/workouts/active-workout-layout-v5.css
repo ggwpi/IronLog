@@ -1,0 +1,309 @@
+/* Active workout v5: corrected set status + compact graph with a real empty state. */
+
+/* Keep useful content near the exercise instead of stretching the graph row downward. */
+.active-workout-page.live-minimal{
+  grid-template-rows:auto 3px auto auto auto auto auto minmax(50px,1fr)!important;
+  align-content:stretch!important;
+}
+.active-workout-page.live-minimal>.live-finish-flat{align-self:end!important}
+
+/* Exercise identity: the set state belongs with the exercise title, not in a clipped side rail. */
+.live-hero-flat{
+  min-height:126px!important;
+  max-height:148px!important;
+  grid-template-columns:minmax(0,1fr) 92px!important;
+  gap:18px!important;
+  padding:10px 0 12px!important;
+  align-items:center!important;
+  border-bottom:1px solid rgba(255,255,255,.075)!important;
+  direction:ltr!important;
+}
+.live-exercise-name{
+  min-width:0!important;
+  align-self:center!important;
+  text-align:left!important;
+  direction:ltr!important;
+}
+.live-ring{
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0 0 8px!important;
+  padding:0!important;
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:baseline!important;
+  justify-content:flex-start!important;
+  gap:7px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#fff!important;
+  text-align:left!important;
+  direction:ltr!important;
+  cursor:default!important;
+  transform:none!important;
+  filter:none!important;
+}
+.live-ring:before,.live-ring:after{display:none!important}
+.live-ring span{
+  color:#7d878a!important;
+  font-size:10.5px!important;
+  font-weight:560!important;
+  line-height:1!important;
+  direction:rtl!important;
+}
+.live-ring b{
+  display:flex!important;
+  align-items:baseline!important;
+  gap:3px!important;
+  margin:0!important;
+  color:#cfd5d6!important;
+  font-size:13px!important;
+  font-weight:470!important;
+  line-height:1!important;
+  letter-spacing:-.02em!important;
+  direction:ltr!important;
+}
+.live-ring b em{
+  color:var(--accent)!important;
+  font-size:15px!important;
+  font-weight:760!important;
+  font-style:normal!important;
+}
+.live-ring b i{
+  color:#626d70!important;
+  font-style:normal!important;
+  font-weight:380!important;
+}
+.motion-ready .live-ring{animation:none!important}
+.live-exercise-name h1{
+  margin:0!important;
+  max-width:100%!important;
+  color:#f5f7f7!important;
+  font-size:clamp(24px,6.2vw,30px)!important;
+  line-height:1.01!important;
+  font-weight:780!important;
+  letter-spacing:-.05em!important;
+  text-align:left!important;
+  white-space:normal!important;
+  text-wrap:balance!important;
+}
+.live-exercise-name p{
+  margin:8px 0 0!important;
+  padding:0!important;
+  color:#788285!important;
+  font-size:11px!important;
+  line-height:1.1!important;
+  text-align:left!important;
+  direction:rtl!important;
+}
+.live-muscle-figure{
+  width:92px!important;
+  height:126px!important;
+  min-height:0!important;
+  max-height:126px!important;
+  justify-self:end!important;
+  background:radial-gradient(circle at 50% 48%,rgba(203,255,18,.11),rgba(203,255,18,.018) 44%,transparent 72%)!important;
+  overflow:visible!important;
+}
+.live-muscle-figure img{
+  width:auto!important;
+  height:100%!important;
+  max-height:126px!important;
+  transform:none!important;
+}
+.motion-ready .live-muscle-figure img{animation:awFigureFloatV5 5.8s ease-in-out infinite!important}
+@keyframes awFigureFloatV5{0%,100%{transform:translateY(1px)}50%{transform:translateY(-2px)}}
+
+/* The graph is now a compact secondary view. It never owns a giant flexible blank region. */
+.live-performance{
+  box-sizing:border-box!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  overflow:visible!important;
+  align-self:start!important;
+}
+.live-performance.has-data{
+  min-height:132px!important;
+  max-height:150px!important;
+  display:grid!important;
+  grid-template-rows:auto 1fr auto!important;
+  gap:4px!important;
+  padding:10px 0 7px!important;
+  border-bottom:1px solid rgba(255,255,255,.07)!important;
+}
+.live-performance-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  min-height:16px!important;
+  direction:rtl!important;
+}
+.live-performance-head span{
+  color:#a2aaad!important;
+  font-size:10.5px!important;
+  font-weight:620!important;
+}
+.live-performance-head small{
+  color:#626d70!important;
+  font-size:9.5px!important;
+  font-weight:500!important;
+}
+.live-chart{
+  width:100%!important;
+  height:92px!important;
+  max-width:none!important;
+  max-height:92px!important;
+  margin:0!important;
+  align-self:center!important;
+  justify-self:stretch!important;
+  overflow:visible!important;
+}
+.live-grid-line{
+  stroke:#273033!important;
+  stroke-width:1!important;
+  opacity:.22!important;
+}
+.live-chart-baseline{
+  stroke:#30393c!important;
+  stroke-width:1!important;
+  opacity:.48!important;
+  vector-effect:non-scaling-stroke!important;
+}
+.live-chart-line{
+  stroke:var(--accent)!important;
+  stroke-width:1.8!important;
+  opacity:.96!important;
+}
+.live-set-point.done{filter:none!important}
+.live-set-point.current{fill:#070b0c!important;stroke:var(--accent)!important;stroke-width:1.6!important}
+.live-set-point.future{fill:#070b0c!important;stroke:#465155!important;stroke-width:1!important;stroke-dasharray:2.5 2.5!important;opacity:.58!important}
+.live-x-label{
+  fill:#667174!important;
+  font-size:9.5px!important;
+}
+.live-x-label.is-current{fill:#d3d9da!important;font-weight:650!important}
+.live-value-label{
+  fill:#eef2f2!important;
+  font-size:10px!important;
+  font-weight:650!important;
+}
+.live-y-label,.live-chart-history,.live-history-point{display:none!important}
+.live-fire-note{
+  width:auto!important;
+  max-width:none!important;
+  min-height:13px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:#6f797c!important;
+  font-size:9.5px!important;
+  line-height:1.15!important;
+  text-align:right!important;
+  white-space:normal!important;
+}
+.motion-ready .live-fire-note{animation:none!important}
+
+/* No data: don't draw a fake graph template. Show one compact, useful reference instead. */
+.live-performance.is-empty{
+  min-height:78px!important;
+  max-height:88px!important;
+  display:block!important;
+  padding:11px 0 9px!important;
+  border-bottom:1px solid rgba(255,255,255,.07)!important;
+}
+.live-performance-empty{
+  width:100%!important;
+  min-height:58px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+  direction:ltr!important;
+}
+.live-performance-empty>div{
+  min-width:0!important;
+  text-align:left!important;
+  direction:rtl!important;
+}
+.live-performance-empty span{
+  display:block!important;
+  color:#737e81!important;
+  font-size:9.5px!important;
+  font-weight:600!important;
+  line-height:1!important;
+}
+.live-performance-empty strong{
+  display:block!important;
+  margin-top:5px!important;
+  color:#dfe4e5!important;
+  font-size:13px!important;
+  font-weight:650!important;
+  line-height:1.1!important;
+}
+.live-performance-empty small{
+  display:block!important;
+  margin-top:5px!important;
+  color:#5f696c!important;
+  font-size:9.5px!important;
+  line-height:1.1!important;
+}
+.live-performance-empty>i{
+  flex:0 0 auto!important;
+  width:34px!important;
+  height:34px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid rgba(203,255,18,.16)!important;
+  border-radius:50%!important;
+  color:var(--accent)!important;
+  background:rgba(203,255,18,.025)!important;
+  font-size:16px!important;
+  font-style:normal!important;
+  font-weight:420!important;
+}
+
+/* Inputs and next action stay attached directly under the graph/empty state. */
+.live-entry-form{border-top:0!important}
+.live-next-flat{margin-top:0!important}
+.live-finish-flat{margin-top:0!important}
+
+@media(max-width:390px){
+  .active-workout-page.live-minimal{gap:7px!important}
+  .live-hero-flat{grid-template-columns:minmax(0,1fr) 80px!important;gap:12px!important;min-height:116px!important;max-height:136px!important;padding-block:8px 10px!important}
+  .live-ring{margin-bottom:7px!important}
+  .live-exercise-name h1{font-size:22px!important}
+  .live-muscle-figure{width:80px!important;height:114px!important;max-height:114px!important}
+  .live-muscle-figure img{max-height:114px!important}
+  .live-performance.has-data{min-height:122px!important;max-height:138px!important;padding-top:8px!important}
+  .live-chart{height:84px!important;max-height:84px!important}
+  .live-performance.is-empty{min-height:72px!important;max-height:80px!important;padding-block:9px 7px!important}
+  .live-performance-empty{min-height:52px!important}
+  .live-performance-empty strong{font-size:12.5px!important}
+}
+
+@media(max-height:760px){
+  .active-workout-page.live-minimal{grid-template-rows:auto 3px auto auto auto auto auto minmax(44px,1fr)!important;gap:5px!important}
+  .live-hero-flat{min-height:100px!important;max-height:112px!important;padding-block:5px 7px!important}
+  .live-ring{margin-bottom:5px!important}
+  .live-exercise-name h1{font-size:21px!important}
+  .live-exercise-name p{margin-top:5px!important}
+  .live-muscle-figure{height:96px!important;max-height:96px!important}
+  .live-muscle-figure img{max-height:96px!important}
+  .live-performance.has-data{min-height:104px!important;max-height:116px!important;padding:6px 0 5px!important}
+  .live-chart{height:70px!important;max-height:70px!important}
+  .live-performance.is-empty{min-height:62px!important;max-height:68px!important;padding-block:6px!important}
+  .live-performance-empty{min-height:48px!important}
+  .live-performance-empty>i{width:30px!important;height:30px!important;font-size:14px!important}
+}
+
+@media(prefers-reduced-motion:reduce){.motion-ready .live-muscle-figure img{animation:none!important}}
+html.reduce-motion .motion-ready .live-muscle-figure img{animation:none!important}
