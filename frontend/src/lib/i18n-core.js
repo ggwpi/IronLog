@@ -1,10 +1,12 @@
+import { ORIGINAL_EXERCISE_NAMES_HE } from '../ironlog/exercise-names-he.js'
+import ORIGINAL_NAMES from '../ironlog/original-exercise-names.json' with { type: 'json' }
 // Runtime-agnostic core of the i18n module: state, constants and readers (t, dateLocale,
 // instrFor, exerciseNameFor, getLang). Plain Node-loadable — the browser-only pieces
 // (import.meta.glob lazy
 // loads, the React subscription hook) live in i18n.js and re-export from here.
 
 export const LANGS = {
-  en: 'English', de: 'Deutsch', 'de-CH': 'Deutsch (Schweiz)', es: 'Español', fr: 'Français',
+  he: 'עברית', en: 'English', de: 'Deutsch', 'de-CH': 'Deutsch (Schweiz)', es: 'Español', fr: 'Français',
   it: 'Italiano', pt: 'Português (Portugal)', 'pt-BR': 'Português (Brasil)', pl: 'Polski',
   tr: 'Türkçe', ru: 'Русский', uk: 'Українська', zh: '简体中文', 'zh-TW': '繁體中文',
   ko: '한국어', hi: 'हिन्दी', bn: 'বাংলা', th: 'ไทย', hu: 'Magyar', ar: 'العربية'
@@ -14,9 +16,9 @@ export const LANGS = {
 import { INSTR_LANGS, EXERCISE_NAME_LANGS } from './catalogue-langs.js'
 export { INSTR_LANGS, EXERCISE_NAME_LANGS }
 // Languages rendered right-to-left; i18n.js setLang applies the direction from this.
-export const RTL_LANGS = new Set(['ar'])
+export const RTL_LANGS = new Set(['ar', 'he'])
 export const DATE_LOCALES = {
-  en: 'en-GB', de: 'de-DE', 'de-CH': 'de-CH', es: 'es-ES', fr: 'fr-FR', it: 'it-IT',
+  he: 'he-IL', en: 'en-GB', de: 'de-DE', 'de-CH': 'de-CH', es: 'es-ES', fr: 'fr-FR', it: 'it-IT',
   pt: 'pt-PT', 'pt-BR': 'pt-BR',
   pl: 'pl-PL', tr: 'tr-TR', ru: 'ru-RU', uk: 'uk-UA', zh: 'zh-CN', 'zh-TW': 'zh-TW', ko: 'ko-KR', hi: 'hi-IN', bn: 'bn-BD-u-nu-latn', th: 'th-TH', hu: 'hu-HU', ar: 'ar-u-nu-latn'
 }
@@ -75,6 +77,14 @@ export const dateLocale = () => DATE_LOCALES[lang] || 'en-GB'
 export const getVersion = () => version
 
 // Translate a source string; {0},{1}… are replaced with args (also on the English fallback).
+const argumentText = value => {
+  const raw = String(value)
+  const text = lang === 'he' ? ({ kg: 'ק״ג', lb: 'ליברות', km: 'ק״מ', 'km/h': 'קמ״ש', min: 'דקות', sec: 'שניות' }[raw] || raw) : raw
+  if (lang !== 'he' || !/[A-Za-z0-9]/.test(text)) return text
+  // Latin names and signed measurements are isolated from surrounding Hebrew punctuation.
+  const open = /^[\d\s+−–\-.,:/%×]+$/.test(text) ? '\u2066' : '\u2068'
+  return open + text + '\u2069'
+}
 export function t(s, ...args) {
   let v = dict[s] || s
   // A plural key (an object of forms, read by tn()) reached through plain t() — a call site
@@ -83,7 +93,7 @@ export function t(s, ...args) {
     const forms = v
     v = (typeof args[0] === 'number' && forms[pluralCategory(args[0])]) || forms.other || forms.many || forms.one || s
   }
-  for (let i = 0; i < args.length; i++) v = v.replaceAll('{' + i + '}', args[i])
+  for (let i = 0; i < args.length; i++) v = v.replaceAll('{' + i + '}', () => argumentText(args[i]))
   return v
 }
 
@@ -120,7 +130,7 @@ export function tn(one, other, n, ...rest) {
     if (form) {
       let v = form
       const args = [n, ...rest]
-      for (let i = 0; i < args.length; i++) v = v.replaceAll('{' + i + '}', args[i])
+      for (let i = 0; i < args.length; i++) v = v.replaceAll('{' + i + '}', () => argumentText(args[i]))
       return v
     }
   }
@@ -203,6 +213,7 @@ export function _setDetails(newEnInstr, newEnDescs, newDescs, forLang = lang) {
 export const exerciseNameFor = ex => {
   // A language that chose "English names only" sees the canonical catalogue title, not the
   // translation — and never the parenthetical either. Custom exercises keep their exact name.
+  if (lang === 'he' && ORIGINAL_NAMES[ex?.id] === ex?.n) return ORIGINAL_EXERCISE_NAMES_HE[ex.id]
   if (enOnly) return ex?.n || ''
   const translated = exerciseNames && ex && exerciseNames[ex.id]
   if (!translated) return ex?.n || ''

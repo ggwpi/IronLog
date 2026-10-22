@@ -81,7 +81,7 @@ function heroSubtitle(workout) {
   }
 
   if (!title) title = (workout?.targets || []).join(', ');
-  if (!title) title = 'PERSONAL WORKOUT';
+  if (!title) title = 'אימון אישי';
   return title.toUpperCase();
 }
 
@@ -196,9 +196,9 @@ function activityBars(workoutData, metrics) {
 }
 
 function activityTrend(metrics) {
-  if (metrics.delta === null) return metrics.total > 0 ? 'BASELINE WEEK' : 'THIS WEEK';
-  if (metrics.delta === 0) return 'SAME AS LAST WEEK';
-  return `${metrics.delta > 0 ? '+' : ''}${metrics.delta}% VS LAST WEEK`;
+  if (metrics.delta === null) return metrics.total > 0 ? 'שבוע בסיס' : 'השבוע';
+  if (metrics.delta === 0) return 'ללא שינוי מהשבוע שעבר';
+  return `${metrics.delta > 0 ? '+' : ''}${metrics.delta}% לעומת השבוע שעבר`;
 }
 
 function miniBarsIcon() {
@@ -208,7 +208,7 @@ function miniBarsIcon() {
 export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, workoutData = {} } = {}) {
   const workout = nearestWorkout(workouts);
   const currentDay = new Date().getDay();
-  const heroLabel = workout.timing === 'היום' ? "TODAY'S WORKOUT" : 'NEXT WORKOUT';
+  const heroLabel = workout.timing === 'היום' ? "האימון של היום" : 'האימון הבא';
   const goal = weeklyGoal(workouts, workoutData);
   const activity = activityMetrics(workoutData);
 
@@ -249,7 +249,7 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
       <div class="home-section-heading">
         <div class="home-section-copy">
           <div class="home-section-title-row"><h3>התקדמות שבועית</h3>${miniBarsIcon()}</div>
-          <p>WEEKLY PROGRESS</p>
+          <p>התקדמות שבועית</p>
         </div>
         <span class="home-section-action" dir="ltr">${goal.target ? `${goal.completed}/${goal.target}` : '–'}</span>
       </div>
@@ -263,9 +263,9 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
       <div class="home-section-heading">
         <div class="home-section-copy">
           <div class="home-section-title-row"><h3>פעילות</h3>${miniBarsIcon()}</div>
-          <p>ACTIVITY</p>
+          <p>פעילות</p>
         </div>
-        <span class="home-section-action home-section-action--period" dir="ltr">THIS WEEK</span>
+        <span class="home-section-action home-section-action--period" dir="ltr">השבוע</span>
       </div>
 
       <div class="home-activity-layout">

@@ -1,6 +1,6 @@
 import { EXIDX } from '../lib/exercises.js'
 import { effectiveRoutines, workoutAt } from '../lib/history.js'
-import { todayISO } from '../lib/format.js'
+import { todayISO, exerciseNameText } from '../lib/format.js'
 import { completedVolumeOf, isWarmupRow } from '../lib/workout-model.js'
 import { musclesOf } from '../lib/muscles.js'
 import { rirOf } from '../lib/effort.js'
@@ -31,7 +31,7 @@ export function ironModel(input, now = new Date()) {
       const sets = doneSets(entry)
       const estimate = best1RM({ ...S, workouts: [w] }, entry.id)?.est
       sets.forEach((set, index) => performance.push({
-        exercise_id: entry.id, name: ex.n || entry.n || entry.id, completed_at: at,
+        exercise_id: entry.id, name: exerciseNameText(ex) || entry.n || entry.id, completed_at: at,
         load_kg: Number(set.w || 0) * kg, reps: Number(set.r || 0), rir: rirOf(set),
         estimated_1rm_kg: index === 0 && estimate != null ? estimate * kg : null,
         volume_kg: completedVolumeOf(set) * kg,
@@ -50,10 +50,12 @@ export function ironModel(input, now = new Date()) {
   const workouts = (S.routines || []).map((routine, index) => {
     const days = Object.entries(S.week || {}).filter(([, ids]) => (Array.isArray(ids) ? ids : [ids]).includes(routine.id)).map(([d]) => Number(d))
     const name = routine.name || 'אימון'
-    const art = WORKOUTS.find(w => name.toLowerCase().includes(w.short.toLowerCase())) || WORKOUTS.find(w => name.toLowerCase().includes(w.short.split(' ')[0].toLowerCase()))
+    const presetSlug = ({ 1: 'push-a', 2: 'legs-a', 3: 'pull-a', 4: 'push-b', 5: 'legs-b', 6: 'arms' })[routine.ironlogPresetDay]
+    const translatedKind = name.includes('דחיפה') ? 'push-a' : name.includes('משיכה') ? 'pull-a' : name.includes('רגליים') ? 'legs-a' : null
+    const art = WORKOUTS.find(w => w.id === (presetSlug || translatedKind)) || WORKOUTS.find(w => name.toLowerCase().includes(w.short.toLowerCase())) || WORKOUTS.find(w => name.toLowerCase().includes(w.short.split(' ')[0].toLowerCase()))
     return { id: routine.id, databaseId: index + 1, day: days[0] ?? null, short: name, title: name,
       description: routine.note || '', exercises: (routine.ex || []).length,
-      sets: (routine.ex || []).reduce((n,e) => n + (Number(e.sets) || 0), 0), minutes: 0, targets: [], images: art?.images || [] }
+      sets: (routine.ex || []).reduce((n,e) => n + (Number(e.sets) || 0), 0), minutes: 0, targets: [], images: presetSlug === 'arms' ? ['/assets/workout-images/plans/arms-front.png', '/assets/workout-images/plans/arms-back.png'] : art?.images || [] }
   })
   const model = buildStatisticsModel({
     weights: (S.bodyweight || []).map(p => ({ measured_at: p.d, weight_kg: Number(p.w) * kg })),

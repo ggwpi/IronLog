@@ -831,11 +831,10 @@ export default function Settings({ page = null, find = null, via = null }) {
           build there is no address bar and no about box, so without this there is no way to tell
           which build you are running, or whether an update actually installed. */}
       <div className="dim small sp-version">
-        IronLog · openGym v{__APP_VERSION__} · {t('free & open source (AGPL v3)')}<br />
-        <a href="/classic/">Classic IronLog · החשבון הקודם</a><br /><a href="https://github.com/ggwpi/IronLog" target="_blank" rel="noopener">{t('Source code')}</a> · <a href="https://github.com/DuarteSantos8/openGym" target="_blank" rel="noopener">openGym</a><br />
+        IronLog · מבוסס openGym · גרסה {__APP_VERSION__} · {t('free & open source (AGPL v3)')}<br />
+        <a href="/classic/">IronLog הקודם · החשבון הקודם</a><br /><a href="https://github.com/ggwpi/IronLog" target="_blank" rel="noopener">{t('Source code')}</a> · <a href="https://github.com/DuarteSantos8/openGym" target="_blank" rel="noopener">openGym</a><br />
         {/* Attribution the media licence asks for word for word (agreement §8c), so it is not translated */}
-        Exercise media © Aliaksandr Makatserchyk, <a href="https://gymvisual.com/" target="_blank" rel="noopener">Gym visual</a>, gymvisual.com.
-        Media licensed for use in openGym only; see <a href="https://github.com/DuarteSantos8/openGym/blob/main/NOTICE.md" target="_blank" rel="noopener">NOTICE.md</a>
+        {t("Exercise media © Aliaksandr Makatserchyk,")} <a href="https://gymvisual.com/" target="_blank" rel="noopener">Gym visual</a>{t(", gymvisual.com. Media licensed for use in openGym only; see")} <a href="https://github.com/DuarteSantos8/openGym/blob/main/NOTICE.md" target="_blank" rel="noopener">NOTICE.md</a>
       </div>
     </>,
 
@@ -964,7 +963,7 @@ function SettingsRoot({ ctx, preview, open, user, sync, home, go }) {
             value={preview[id]?.() || null} accessory="chevron" onClick={() => open(id)} className="sp-root-row" />)}
         </Section>
       ))}
-      <div className="dim small sp-version">IronLog · openGym v{__APP_VERSION__}</div>
+      <div className="dim small sp-version">IronLog · מבוסס openGym · גרסה {__APP_VERSION__}</div>
     </>}
   </div>
 }

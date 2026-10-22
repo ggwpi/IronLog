@@ -5900,3 +5900,9 @@ body:has(.home-rebuild) .app-content::-webkit-scrollbar{display:none!important;w
 /* The old document-level animation runtime is not mounted inside this isolated view. */
 *,*::before,*::after{animation:none!important}
 .home-rebuild>.home-section,.home-stage__copy,.home-stage__copy>*,.home-section-heading,.home-progress-days,.home-activity-layout{opacity:1!important;filter:none!important;translate:none!important}
+
+/* Hebrew editorial content is aligned to its reading edge. Brand and numeric graphics isolate themselves. */
+.home-rebuild .home-stage__copy{direction:rtl!important;text-align:right!important}
+.home-rebuild .home-stage__copy>p{direction:rtl!important;text-align:right!important}
+.app-page-brand{direction:ltr;unicode-bidi:isolate}
+.home-workout-meta strong,.native-cycle-weeks,.native-performance-value,.native-weight-chart{direction:ltr;unicode-bidi:isolate}
