@@ -1,5 +1,3 @@
-import BodyMap from '../components/BodyMap.jsx'
-import { loadOfRoutine } from '../lib/muscles.js'
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
@@ -162,7 +160,7 @@ export default function Plan() {
 
   const mode = scheduleModeOf(S)
 
-  return <div className="narrow plan ironlog-main ironlog-plan">
+  return <div className="narrow plan">
     <div className="hdr">
       <div><h1>{t('Plan')}</h1><div className="sub">{mode === 'rotation' ? t('Your routines in a loop') : t('Your weekly routine')}</div></div>
       <div className="hdr-actions">
@@ -419,7 +417,6 @@ function Routines({ S, update, nav }) {
   // The weekdays a routine is on, short, in the order the week runs.
   const order = weekOrder(weekStartOf(S))
   const daysOf = id => order.filter(d => [].concat(S.week[d] || []).includes(id)).map(d => t(DAYS[d]))
-  const customExercises = Object.fromEntries((S.customEx || []).map(ex => [ex.id, ex]))
   const sub = r => [exCount(r.ex.length), daysOf(r.id).join(', ')].filter(Boolean).join(' · ')
 
   return <>
@@ -443,7 +440,6 @@ function Routines({ S, update, nav }) {
           const row = <div key={r.id} className="item plan-routine" {...tappable(() => nav('/plan/r/' + r.id))}>
             <span className="lrow-i"><Icon name={glyphOf(r.emoji)} /></span>
             <div className="grow"><div className="tt">{r.name}</div><div className="ss">{sub(r)}</div></div>
-            {r.ex.length > 0 && <div className="iron-routine-map" aria-hidden="true"><BodyMap load={loadOfRoutine(r, customExercises)} body={S.body} /></div>}
             <Icon name="chevronRight" className="chev" /></div>
           // Swipe (v1.3.11, Settings → Swipe actions): toward the start deletes with an Undo,
           // toward the end duplicates. Edit's minus and the routine's own page stay the way in

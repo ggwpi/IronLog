@@ -6,21 +6,7 @@ import { useStore } from './store/useStore.js'
 import { startMediaSync } from './lib/media-sync.js'
 import { startNativeKeyboard } from './lib/native-keyboard.js'
 import './index.css'
-import './ironlog/theme.css'
-import './ironlog/rtl.css'
-import he from './locales/he.js'
-import { _setLangState } from './lib/i18n-core.js'
-import { applyHebrewPreferences, needsHebrewPreferences } from './ironlog/hebrew-preferences.js'
-
-// Translate the first rendered frame, before the lazy exercise packs are fetched.
-if (needsHebrewPreferences(useStore.getState().S)) {
-  useStore.getState().update(applyHebrewPreferences)
-}
-if (useStore.getState().S.lang === 'he') {
-  _setLangState('he', he, null, null, false, false)
-  document.documentElement.lang = 'he'
-  document.documentElement.dir = 'rtl'
-}
+import './ironlog-brand.css'
 
 // App.jsx restores per-route scroll itself; the browser's own attempt races it.
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual'

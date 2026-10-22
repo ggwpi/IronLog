@@ -485,7 +485,7 @@ function Insights({ S, window: win, compact }) {
       <div className="ins-h">
         <span>{t('Body weight')}</span>
         <span className={'ins-delta' + (bw.delta > 0 ? ' up' : bw.delta < 0 ? ' down' : '')}>
-          {bw.delta > 0 ? '+' : ''}{fmtNum(bw.delta)} {t(S.unit)}{bw.goal != null ? ` · ${t('goal')} ${fmtNum(bw.goal)}` : ''}
+          {bw.delta > 0 ? '+' : ''}{fmtNum(bw.delta)} {S.unit}{bw.goal != null ? ` · ${t('goal')} ${fmtNum(bw.goal)}` : ''}
         </span>
       </div>
       <div className="chart"><LineChart points={bw.points} h={compact ? 96 : 120} unit={S.unit} goal={bw.goal} axes={!compact} /></div>
@@ -717,7 +717,7 @@ function CohortSheet({ S, update, toast }) {
         <Tile v={d.rankPct != null ? d.rankPct + '%' : '–'} l={t('Your strength rank')} />
       </div>
       {!!d.exercises.length && <div className="ins-block">
-        <div className="ins-h"><span>{t('Estimated 1RM, you vs. median')}</span><span className="dim">{t(S.unit)}</span></div>
+        <div className="ins-h"><span>{t('Estimated 1RM, you vs. median')}</span><span className="dim">{S.unit}</span></div>
         {d.exercises.map(x => {
           const max = Math.max(x.median, x.you || 0) || 1
           return <div key={x.id} className="cmp">

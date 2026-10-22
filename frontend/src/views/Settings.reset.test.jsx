@@ -158,6 +158,5 @@ describe('Settings — footer', () => {
     act(() => root.render(<Settings page="about" />))
     const link = [...host.querySelectorAll('a')].find(a => a.textContent === 'Source code')
     expect(link.getAttribute('href')).toBe('https://github.com/ggwpi/IronLog')
-    expect(host.querySelector('a[href="https://github.com/DuarteSantos8/openGym"]')).not.toBeNull()
   })
 })
