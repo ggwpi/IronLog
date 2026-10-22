@@ -191,7 +191,7 @@ function VolumeSection(volume) {
 
 function RecoverySection(recovery) {
   const metrics = [recovery.sleep, recovery.rirAdherence, recovery.readiness];
-  const measured = metrics.filter((metric) => metric.value !== '—');
+  const measured = metrics.filter((metric) => metric.value !== '–');
   const good = measured.filter((metric) => metric.tone === 'good').length;
   const overall = !measured.length ? 'אין מספיק נתונים' : good === measured.length ? 'טובה' : good ? 'מעורבת' : 'דורשת שיפור';
   return `<section class="native-stats-section" data-stats-animate data-stats-key="recovery">

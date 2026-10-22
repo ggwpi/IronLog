@@ -84,7 +84,7 @@ function durationMinutes(session) {
 
 function durationLabel(session) {
   const minutes = durationMinutes(session);
-  if (!minutes) return '—';
+  if (!minutes) return '–';
   if (minutes < 60) return `${minutes} דק׳`;
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
@@ -93,7 +93,7 @@ function durationLabel(session) {
 
 function formatVolume(value) {
   const number = Math.round(Number(value) || 0);
-  return number ? `${number.toLocaleString('he-IL')} ק״ג` : '—';
+  return number ? `${number.toLocaleString('he-IL')} ק״ג` : '–';
 }
 
 function statusLabel(status) {

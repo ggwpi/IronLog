@@ -37,7 +37,7 @@ export default function IronPages({ page }) {
       if (button.hasAttribute('data-start-workout')) {
         const id = data.workouts.find(w => w.databaseId === Number(button.dataset.startWorkout))?.id
         if (S.active) navigate('/workout')
-        else if (id) startFlow([id])
+        else if (id) { startFlow([id]); navigate('/workout') }
         else navigate('/workout')
       } else if (button.hasAttribute('data-open-workout') || button.hasAttribute('data-edit-workout')) {
         const id = data.workouts.find(w => w.databaseId === Number(button.dataset.openWorkout || button.dataset.editWorkout))?.id

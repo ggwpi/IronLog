@@ -17,11 +17,11 @@ function numeric(value) {
 }
 
 function formatKg(value) {
-  return Number.isFinite(value) ? `${value.toFixed(1)} ק״ג` : '—';
+  return Number.isFinite(value) ? `${value.toFixed(1)} ק״ג` : '–';
 }
 
 function signed(value, digits = 1) {
-  if (!Number.isFinite(value)) return '—';
+  if (!Number.isFinite(value)) return '–';
   const sign = value > 0 ? '+' : value < 0 ? '−' : '';
   return `${sign}${Math.abs(value).toFixed(digits)}`;
 }
@@ -140,7 +140,7 @@ function setQuote(page, value, changeText) {
   const valueNode = quote.querySelector('[data-stocks-quote-value]');
   const changeNode = quote.querySelector('[data-stocks-quote-change]');
   if (valueNode) valueNode.textContent = formatKg(value);
-  if (changeNode) changeNode.textContent = changeText || '—';
+  if (changeNode) changeNode.textContent = changeText || '–';
 }
 
 function defaultChangeText(values) {
@@ -239,7 +239,7 @@ function showTwoPoints(page, chart, svg, points, values, firstIndex, secondIndex
   setQuote(page, delta, Number.isFinite(delta) ? `${signed(pct)}% בין שתי המדידות` : 'השוואת שתי נקודות');
   const readout = ensureReadout(chart);
   readout.querySelector('span').textContent = `מדידות ${a + 1}–${b + 1}`;
-  readout.querySelector('strong').textContent = Number.isFinite(delta) ? `${signed(delta)} ק״ג` : '—';
+  readout.querySelector('strong').textContent = Number.isFinite(delta) ? `${signed(delta)} ק״ג` : '–';
   readout.querySelector('em').textContent = Number.isFinite(pct) ? `${signed(pct)}% שינוי` : '';
 }
 

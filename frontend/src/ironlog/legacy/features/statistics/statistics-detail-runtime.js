@@ -31,7 +31,7 @@ function numeric(value) {
 }
 
 function metric(value, label) {
-  return `<div class="statistics-detail-metric"><strong>${escapeHtml(value || '—')}</strong><span>${escapeHtml(label)}</span></div>`;
+  return `<div class="statistics-detail-metric"><strong>${escapeHtml(value || '–')}</strong><span>${escapeHtml(label)}</span></div>`;
 }
 
 function cloneSvg(element) {
@@ -120,7 +120,7 @@ function performanceHero(item) {
   const trend = item.deltaPct == null ? 'אין שינוי מחושב'
     : item.deltaPct > 0 ? 'מגמת עלייה'
       : item.deltaPct < 0 ? 'מגמת ירידה' : 'ללא שינוי';
-  const baseline = item.baseline == null ? '—' : `${item.baseline.toFixed(1)} ק״ג`;
+  const baseline = item.baseline == null ? '–' : `${item.baseline.toFixed(1)} ק״ג`;
   return `<section class="statistics-detail-hero" data-performance-hero>
     <span class="statistics-detail-kicker">${escapeHtml(item.metricLabel)}</span>
     <h1>${escapeHtml(item.name)}</h1>

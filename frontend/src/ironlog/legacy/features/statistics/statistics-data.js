@@ -110,15 +110,15 @@ function buildRecovery(rows, performanceRows) {
   const sleepMinutes = sleep ? Math.round(sleep) : 0;
   const sleepValue = sleepMinutes
     ? `${Math.floor(sleepMinutes / 60)}:${String(sleepMinutes % 60).padStart(2, '0')}`
-    : '—';
+    : '–';
   const readiness = average(recent.filter((row) => row.readiness != null).map((row) => Number(row.readiness)));
   const rirRows = performanceRows.filter((row) => row.rir != null);
   const rirAdherence = rirRows.length ? rirRows.filter((row) => Number(row.rir) >= 1 && Number(row.rir) <= 2).length / rirRows.length * 100 : 0;
   return {
     hasData: recent.length > 0 || rirRows.length > 0,
     sleep: { label: 'שינה', value: sleepValue, unit: sleep ? 'שעות' : '', status: sleep >= 450 ? 'טוב' : sleep ? 'נמוך' : 'אין נתונים', tone: sleep >= 450 ? 'good' : 'medium' },
-    rirAdherence: { label: 'עמידה ב־RIR', value: rirRows.length ? `${Math.round(rirAdherence)}%` : '—', status: rirRows.length ? (rirAdherence >= 75 ? 'טוב' : 'לשיפור') : 'אין נתונים', tone: rirAdherence >= 75 ? 'good' : 'medium' },
-    readiness: { label: 'מוכנות', value: readiness ? `${round(readiness)} / 7` : '—', status: readiness >= 5 ? 'טוב' : readiness ? 'בינוני' : 'אין נתונים', tone: readiness >= 5 ? 'good' : 'medium' },
+    rirAdherence: { label: 'עמידה ב־RIR', value: rirRows.length ? `${Math.round(rirAdherence)}%` : '–', status: rirRows.length ? (rirAdherence >= 75 ? 'טוב' : 'לשיפור') : 'אין נתונים', tone: rirAdherence >= 75 ? 'good' : 'medium' },
+    readiness: { label: 'מוכנות', value: readiness ? `${round(readiness)} / 7` : '–', status: readiness >= 5 ? 'טוב' : readiness ? 'בינוני' : 'אין נתונים', tone: readiness >= 5 ? 'good' : 'medium' },
   };
 }
 

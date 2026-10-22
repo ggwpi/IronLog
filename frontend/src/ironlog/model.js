@@ -71,7 +71,7 @@ export function ironModel(input, now = new Date()) {
   // Original widget renderer requires a cycle object; display a truthful unconfigured state.
   if (!model.mesocycle) model.mesocycle = { totalWeeks: 0, currentWeek: 0, completedWeeks: [], deloadWeeks: [], phaseLabel: 'טרם הוגדר מחזור' }
   return { model, workouts, todayIds: effectiveRoutines(S, todayISO()).map(r => r.id), workoutData: {
-    sessions: sessions.map(w => ({ status: 'completed', started_at: atISO(w), completed_at: atISO(w), template_id: workouts.find(r => r.id === w.routineId)?.databaseId })),
+    sessions: sessions.map(w => ({ status: 'completed', started_at: atISO(w), completed_at: atISO(w), template_id: workouts.find(r => r.id === (w.routineId || w.routineIds?.[0]))?.databaseId })),
     performanceHistory: performance.map(p => ({ ...p, load_kg: p.volume_kg, reps: 1 })), summary: { plannedWorkouts: Object.keys(S.week || {}).filter(d => S.week[d]?.length).length },
   } }
 }

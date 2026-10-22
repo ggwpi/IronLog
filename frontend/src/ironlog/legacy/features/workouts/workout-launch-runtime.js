@@ -71,7 +71,7 @@ function contextFor(button) {
 }
 
 function metric(value, label) {
-  return `<div class="workout-launch__metric"><strong>${value == null ? '—' : value}</strong><span>${escapeHtml(label)}</span></div>`;
+  return `<div class="workout-launch__metric"><strong>${value == null ? '–' : value}</strong><span>${escapeHtml(label)}</span></div>`;
 }
 
 function htmlFor(context) {

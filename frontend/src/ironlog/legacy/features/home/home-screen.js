@@ -251,7 +251,7 @@ export function HomeScreen({ userName = 'מתאמן', workouts = WORKOUTS, worko
           <div class="home-section-title-row"><h3>התקדמות שבועית</h3>${miniBarsIcon()}</div>
           <p>WEEKLY PROGRESS</p>
         </div>
-        <span class="home-section-action" dir="ltr">${goal.target ? `${goal.completed}/${goal.target}` : '—'}</span>
+        <span class="home-section-action" dir="ltr">${goal.target ? `${goal.completed}/${goal.target}` : '–'}</span>
       </div>
 
       <div class="home-progress-days" aria-label="התקדמות לפי ימים">
