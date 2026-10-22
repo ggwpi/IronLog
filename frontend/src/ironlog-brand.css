@@ -1,18 +1,19 @@
 /* Reuse the same track, selected pill and motion as the Stats segmented chooser. */
 #tabbar.navigation-segments {
-  inset-inline:16px;
-  bottom:max(10px,calc(var(--sab) + 4px));
-  width:calc(100% - 32px);
+  inset-inline:0;
+  bottom:0;
+  width:100%;
   max-width:560px;
   margin-inline:auto;
-  padding:2px;
+  padding:2px 2px calc(2px + var(--sab));
   border:0;
-  border-radius:9px;
+  border-radius:9px 9px 0 0;
   background:var(--surface-3);
   backdrop-filter:none;
   -webkit-backdrop-filter:none;
   align-items:stretch;
 }
+#tabbar.navigation-segments .seg-sel { bottom:calc(2px + var(--sab)); }
 :root[data-theme="light"] #tabbar.navigation-segments { background:rgba(118,118,128,.12); }
 #tabbar.navigation-segments > button {
   position:relative;
