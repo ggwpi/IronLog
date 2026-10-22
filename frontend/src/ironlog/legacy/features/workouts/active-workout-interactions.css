@@ -1,0 +1,317 @@
+/* Active workout v4: lighter inputs + full-screen rest mode. */
+
+/* Header gains one quiet manual-rest affordance immediately beside the overflow menu. */
+.live-workout-header{
+  grid-template-columns:36px minmax(0,1fr) 34px 36px!important;
+  column-gap:3px!important;
+}
+.live-manual-rest{
+  width:34px!important;
+  height:34px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:var(--accent)!important;
+  box-shadow:none!important;
+  cursor:pointer;
+}
+.live-manual-rest svg{
+  display:block;
+  width:21px;
+  height:21px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  filter:drop-shadow(0 0 6px rgba(203,255,18,.11));
+}
+.live-manual-rest:active{transform:scale(.86)!important;opacity:.76}
+
+/* Inputs should read like values, not like three giant buttons/cards. */
+.live-entry-form{
+  min-height:112px!important;
+  max-height:132px!important;
+  padding-top:10px!important;
+}
+.live-inline-fields{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:12px!important;
+  align-items:start!important;
+}
+.live-inline-fields>div,
+.motion-ready .live-inline-fields>div,
+.motion-ready .live-inline-fields>div.has-focus,
+.motion-ready .live-inline-fields>div.is-field-active{
+  min-width:0!important;
+  padding:0 2px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+.live-inline-fields label{
+  margin:0!important;
+  color:#7d878a!important;
+  font-size:10.5px!important;
+  font-weight:520!important;
+  line-height:1!important;
+  letter-spacing:.01em!important;
+}
+.live-inline-fields input{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  height:48px!important;
+  margin:5px 0 0!important;
+  padding:0 0 5px!important;
+  border:0!important;
+  border-bottom:1px solid rgba(255,255,255,.07)!important;
+  border-radius:0!important;
+  outline:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#f4f6f6!important;
+  text-shadow:none!important;
+  text-align:center!important;
+  font-size:clamp(31px,8vw,37px)!important;
+  font-weight:360!important;
+  line-height:1!important;
+  font-variant-numeric:tabular-nums!important;
+  caret-color:var(--accent)!important;
+  -webkit-appearance:none!important;
+  appearance:textfield!important;
+}
+.live-inline-fields input:focus{
+  border-bottom-color:rgba(203,255,18,.42)!important;
+  color:#fff!important;
+  text-shadow:none!important;
+}
+.live-inline-fields p{
+  margin:7px auto 0!important;
+  display:flex!important;
+  justify-content:center!important;
+  gap:18px!important;
+}
+.live-inline-fields button{
+  width:24px!important;
+  height:24px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#8e989b!important;
+  font-size:21px!important;
+  font-weight:300!important;
+  line-height:1!important;
+  opacity:.82;
+}
+.live-inline-fields button:last-child{color:var(--accent)!important;opacity:1}
+.live-inline-fields button:active{transform:scale(.78)!important;filter:none!important}
+
+/* Rest is a distinct mode, not another row inside the workout screen. */
+.active-workout-page>.live-rest-flat[hidden]{display:none!important}
+.live-rest-flat:not([hidden]){
+  --rest-progress:100%;
+  box-sizing:border-box!important;
+  position:fixed!important;
+  z-index:100000!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  min-width:0!important;
+  max-width:none!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 30px)!important;
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  grid-template-rows:auto 1fr auto!important;
+  gap:0!important;
+  direction:rtl!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:0!important;
+  background:
+    radial-gradient(circle at 50% 43%,rgba(203,255,18,.085),rgba(203,255,18,.018) 28%,transparent 57%),
+    linear-gradient(180deg,#070b0c 0%,#050808 100%)!important;
+  box-shadow:none!important;
+  opacity:1!important;
+}
+.live-rest-top{
+  width:100%;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  direction:rtl!important;
+}
+.live-rest-kicker{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  color:#d9ddde!important;
+  font-size:13px!important;
+  font-weight:680!important;
+  letter-spacing:.01em;
+}
+.live-rest-kicker i{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 14px rgba(203,255,18,.38);
+}
+.live-rest-top>button{
+  width:auto!important;
+  height:34px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#8c9699!important;
+  font-size:12px!important;
+  font-weight:570!important;
+}
+.live-rest-top>button:active{color:#fff!important;transform:scale(.97)}
+.live-rest-center{
+  align-self:center!important;
+  justify-self:stretch!important;
+  width:min(100%,430px)!important;
+  margin:auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  text-align:center!important;
+  direction:rtl!important;
+}
+.live-rest-center>span{
+  color:#7d878a!important;
+  font-size:13px!important;
+  font-weight:500!important;
+  line-height:1!important;
+}
+.live-rest-center>strong{
+  display:block!important;
+  margin:16px 0 18px!important;
+  color:#f5f7f7!important;
+  font-size:clamp(74px,20vw,96px)!important;
+  font-weight:270!important;
+  line-height:.92!important;
+  letter-spacing:-.055em!important;
+  font-variant-numeric:tabular-nums!important;
+  direction:ltr!important;
+  text-shadow:0 0 28px rgba(203,255,18,.035);
+}
+.live-rest-progress{
+  position:relative!important;
+  width:min(78vw,330px)!important;
+  height:3px!important;
+  border-radius:999px!important;
+  overflow:hidden!important;
+  background:#182022!important;
+}
+.live-rest-progress i{
+  position:absolute!important;
+  inset:0 auto 0 0!important;
+  width:var(--rest-progress)!important;
+  height:100%!important;
+  border-radius:999px!important;
+  background:var(--accent)!important;
+  box-shadow:0 0 12px rgba(203,255,18,.18)!important;
+  transition:width .25s linear!important;
+}
+.live-rest-center>small{
+  margin-top:14px!important;
+  color:#606b6e!important;
+  font-size:10.5px!important;
+  line-height:1!important;
+}
+.live-rest-actions{
+  width:100%;
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+}
+.live-rest-actions>button{
+  min-width:118px!important;
+  height:46px!important;
+  padding:0 18px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  border:1px solid rgba(203,255,18,.25)!important;
+  border-radius:14px!important;
+  background:rgba(203,255,18,.035)!important;
+  box-shadow:none!important;
+  color:var(--accent)!important;
+  font:inherit!important;
+}
+.live-rest-actions>button b{
+  color:var(--accent)!important;
+  font-size:21px!important;
+  font-weight:300!important;
+  line-height:1!important;
+}
+.live-rest-actions>button span{
+  color:#dce3cf!important;
+  font-size:12.5px!important;
+  font-weight:650!important;
+}
+.live-rest-actions>button:active{transform:scale(.97)!important;background:rgba(203,255,18,.065)!important}
+.live-rest-flat.is-finished .live-rest-center>strong{color:var(--accent)!important}
+.live-rest-flat.is-finished .live-rest-center>span:after{content:" · מוכן";color:var(--accent)}
+body:has(.live-rest-flat:not([hidden])) .live-motion-toast{display:none!important}
+
+/* Motion layer used to make fields look like cards; explicitly neutralize that here. */
+.motion-ready .live-inline-fields>div.has-focus,
+.motion-ready .live-inline-fields>div.is-field-active{
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.motion-ready .live-rest-flat:not([hidden]){
+  animation:awRestScreenIn .32s cubic-bezier(.2,.8,.2,1) both!important;
+}
+@keyframes awRestScreenIn{
+  from{opacity:0;transform:scale(1.01)}
+  to{opacity:1;transform:none}
+}
+
+@media(max-width:390px){
+  .live-workout-header{grid-template-columns:34px minmax(0,1fr) 32px 34px!important;column-gap:2px!important}
+  .live-manual-rest{width:32px!important;height:32px!important}
+  .live-manual-rest svg{width:19px;height:19px}
+  .live-inline-fields{gap:7px!important}
+  .live-inline-fields input{font-size:29px!important;height:44px!important}
+  .live-inline-fields p{gap:14px!important;margin-top:6px!important}
+  .live-inline-fields button{width:22px!important;height:22px!important;font-size:19px!important}
+  .live-rest-flat:not([hidden]){padding-inline:20px!important}
+  .live-rest-center>strong{font-size:72px!important}
+}
+
+@media(max-height:760px){
+  .live-entry-form{min-height:88px!important;max-height:100px!important;padding-top:6px!important}
+  .live-inline-fields input{height:39px!important;margin-top:3px!important;font-size:26px!important;padding-bottom:3px!important}
+  .live-inline-fields p{margin-top:4px!important}
+  .live-inline-fields button{height:20px!important;font-size:18px!important}
+  .live-rest-flat:not([hidden]){padding-top:calc(env(safe-area-inset-top) + 18px)!important;padding-bottom:calc(env(safe-area-inset-bottom) + 22px)!important}
+  .live-rest-center>strong{margin:11px 0 14px!important;font-size:68px!important}
+  .live-rest-actions>button{height:42px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .live-rest-flat:not([hidden]),.live-rest-progress i,.live-manual-rest,.live-rest-actions>button{animation:none!important;transition:none!important}
+}
+html.reduce-motion .live-rest-flat:not([hidden]),
+html.reduce-motion .live-rest-progress i,
+html.reduce-motion .live-manual-rest,
+html.reduce-motion .live-rest-actions>button{animation:none!important;transition:none!important}

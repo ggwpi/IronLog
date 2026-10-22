@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="IronLog app icon">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="42%" r="62%">
+      <stop offset="0" stop-color="#12180c"/>
+      <stop offset="0.58" stop-color="#070a08"/>
+      <stop offset="1" stop-color="#030504"/>
+    </radialGradient>
+    <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
+      <feGaussianBlur stdDeviation="14" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="118" fill="url(#g)"/>
+  <rect x="10" y="10" width="492" height="492" rx="108" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="2"/>
+  <path filter="url(#glow)" fill="#D2FF16" d="M302 75 147 310h101l-39 127 166-241H274L302 75Z"/>
+</svg>

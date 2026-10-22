@@ -1,0 +1,103 @@
+/*
+ * IronLog keyboard-safe layout policy.
+ *
+ * iOS/WebKit does not resize the layout viewport for the software keyboard.
+ * Instead it pans/shrinks the visual viewport. Locking html/body/app containers
+ * to a viewport height while also using overflow:hidden is therefore unsafe:
+ * WebKit may pan a document that reports scrollTop=0, and iOS 26 can leave that
+ * visual pan behind after the keyboard closes.
+ *
+ * This file never applies pixel offsets. While any editable control owns a
+ * keyboard session, it temporarily changes the app from a locked-viewport model
+ * to normal document flow. If WebKit restores its viewport correctly, the class
+ * is removed and the original layout returns. If WebKit leaves a stale viewport,
+ * the flow layout remains active so content cannot be clipped at the screen edge.
+ */
+
+/* Unlock the document before WebKit performs its focus/keyboard pan. */
+html.ironlog-keyboard-session,
+html.ironlog-keyboard-recovery,
+html.ironlog-keyboard-session body,
+html.ironlog-keyboard-recovery body{
+  height:auto!important;
+  min-height:100%!important;
+  max-height:none!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+}
+
+html.ironlog-keyboard-session body .app-shell,
+html.ironlog-keyboard-recovery body .app-shell{
+  height:auto!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+
+html.ironlog-keyboard-session body .app-content,
+html.ironlog-keyboard-recovery body .app-content{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+
+/*
+ * Full-height screens must be allowed to grow while the keyboard is involved.
+ * The active workout previously used height + max-height + overflow:hidden,
+ * which is the exact shape of the WebKit keyboard-panning regression.
+ */
+html.ironlog-keyboard-session .active-workout-page,
+html.ironlog-keyboard-recovery .active-workout-page{
+  height:auto!important;
+  min-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 18px)!important;
+  max-height:none!important;
+  overflow:visible!important;
+  top:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  -webkit-transform:none!important;
+}
+
+/*
+ * App-level bottom chrome must not stay viewport-fixed while WebKit is moving
+ * the visual viewport. It remains visually identical, but participates in flow
+ * for the duration of the keyboard session/recovery.
+ */
+html.ironlog-keyboard-session .bottom-nav,
+html.ironlog-keyboard-recovery .bottom-nav{
+  position:relative!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  -webkit-transform:none!important;
+  width:min(calc(100% - 30px),720px)!important;
+  margin:12px auto max(10px,var(--safe-bottom))!important;
+}
+
+html.ironlog-keyboard-session .app-content,
+html.ironlog-keyboard-recovery .app-content{
+  padding-bottom:calc(var(--safe-bottom) + 24px)!important;
+}
+
+/* Let the browser move an editable into view by scrolling real content instead
+   of forcing a viewport pan against a clipped document. */
+html.ironlog-keyboard-session :is(input,textarea,select,[contenteditable="true"]),
+html.ironlog-keyboard-recovery :is(input,textarea,select,[contenteditable="true"]){
+  scroll-margin-top:calc(var(--safe-top) + 22px);
+  scroll-margin-bottom:calc(var(--safe-bottom) + 28px);
+}
+
+/* iOS auto-zooms text controls below 16px, which creates a second visual-
+   viewport transform on top of the keyboard transform. Prevent that globally
+   without changing controls that are already larger than 16px. */
+@media (hover:none) and (pointer:coarse){
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+  textarea,
+  select{
+    font-size:max(16px,1em);
+  }
+}

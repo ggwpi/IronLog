@@ -1,0 +1,175 @@
+/* Statistics visual fix — calibrated against the iPhone layout.
+   Keep the screen airy without letting the floating navigation obscure the
+   final analytics rows. Loaded after the existing native statistics layers. */
+
+.statistics-page.statistics-page--native{
+  padding-bottom:calc(var(--safe-bottom) + 150px)!important;
+  scroll-padding-bottom:calc(var(--safe-bottom) + 130px);
+}
+
+/* The native-v2 layer compressed the shared 72px app header to 60px. That
+   makes the first section feel glued to the subtitle. Restore the shared
+   rhythm and leave a small intentional gap before the weight block. */
+.statistics-page--native .statistics-header{
+  height:76px!important;
+  min-height:76px!important;
+}
+.statistics-page--native .native-weight-section{
+  margin-top:4px!important;
+  padding-top:5px!important;
+  padding-bottom:20px!important;
+}
+.statistics-page--native .native-weight-section .native-stats-section__head{
+  margin-bottom:15px!important;
+}
+
+/* Weight hero: give the number, target copy and weekly change a little more
+   breathing room, while keeping the graph visually connected to the data. */
+.statistics-page--native .native-weight-summary{
+  column-gap:16px!important;
+  row-gap:8px!important;
+  margin-bottom:7px!important;
+}
+.statistics-page--native .native-weight-current{
+  gap:6px!important;
+}
+.statistics-page--native .native-weight-status span{
+  margin-top:6px!important;
+  white-space:nowrap;
+}
+.statistics-page--native .native-weight-delta{
+  margin-top:0!important;
+}
+.statistics-page--native .native-weight-delta.is-flat strong{
+  font-size:0!important;
+}
+.statistics-page--native .native-weight-delta.is-flat strong::after{
+  content:'ללא שינוי';
+  font-size:12px;
+  line-height:1;
+  font-weight:680;
+  color:#9aa2a5;
+}
+.statistics-page--native .native-weight-chart-wrap{
+  margin-top:4px!important;
+}
+.statistics-page--native .native-chart-legend{
+  margin-top:-2px!important;
+  min-height:22px;
+  row-gap:7px;
+}
+
+/* Summary and section rhythm. */
+.statistics-page--native .native-summary-strip{
+  margin-top:3px!important;
+  padding-block:14px 13px!important;
+}
+.statistics-page--native .native-stats-section:not(.native-weight-section){
+  padding-top:30px!important;
+  padding-bottom:24px!important;
+}
+.statistics-page--native .native-stats-section__head{
+  margin-bottom:17px!important;
+}
+
+/* Exercise rows were visually squeezed between three columns. Preserve the
+   native list feel but make the text/value columns read as one deliberate row. */
+.statistics-page--native .native-exercise-row{
+  min-height:74px!important;
+  gap:10px!important;
+  padding-block:11px!important;
+}
+.statistics-page--native .native-exercise-copy strong{
+  line-height:1.22!important;
+}
+.statistics-page--native .native-exercise-copy span{
+  margin-top:6px!important;
+}
+.statistics-page--native .native-exercise-value{
+  min-width:70px!important;
+}
+.statistics-page--native .native-exercise-value .is-neutral{
+  font-size:0!important;
+}
+.statistics-page--native .native-exercise-value .is-neutral::after{
+  content:'ללא שינוי';
+  font-size:9px;
+  color:#7e888b;
+}
+
+/* Make the continuation row readable when it reaches the floating dock and
+   ensure the final section can always be scrolled fully above it. */
+.statistics-page--native .native-disclosure summary{
+  padding-block:10px!important;
+}
+.statistics-page--native .native-cycle-section{
+  padding-bottom:34px!important;
+}
+
+@media(max-width:650px){
+  body:has(.statistics-page--native) .app-content{
+    padding-top:calc(var(--safe-top) + 8px)!important;
+    padding-bottom:calc(var(--safe-bottom) + 140px)!important;
+  }
+  .statistics-page--native .statistics-header{
+    height:74px!important;
+    min-height:74px!important;
+  }
+  .statistics-page--native .native-weight-section{
+    margin-top:5px!important;
+    padding-top:4px!important;
+    padding-bottom:19px!important;
+  }
+  .statistics-page--native .native-weight-summary{
+    gap:15px 13px!important;
+  }
+  .statistics-page--native .native-weight-current strong{
+    font-size:41px!important;
+  }
+  .statistics-page--native .native-weight-delta{
+    margin-top:1px!important;
+    gap:8px!important;
+  }
+  .statistics-page--native .native-summary-strip{
+    padding-block:13px 12px!important;
+  }
+  .statistics-page--native .native-stats-section:not(.native-weight-section){
+    padding-top:28px!important;
+    padding-bottom:22px!important;
+  }
+  .statistics-page--native .native-stats-section__head{
+    margin-bottom:16px!important;
+  }
+  .statistics-page--native .native-exercise-row{
+    grid-template-columns:minmax(0,1fr) 70px 78px!important;
+    min-height:70px!important;
+    gap:9px!important;
+    padding-block:10px!important;
+  }
+  .statistics-page--native .native-exercise-copy strong{
+    font-size:12px!important;
+  }
+  .statistics-page--native .native-exercise-value>strong{
+    font-size:14.5px!important;
+  }
+  .statistics-page--native .native-disclosure summary{
+    min-height:64px!important;
+  }
+}
+
+@media(max-width:390px){
+  .statistics-page--native .statistics-header{
+    height:72px!important;
+    min-height:72px!important;
+  }
+  .statistics-page--native .native-weight-current strong{
+    font-size:39px!important;
+  }
+  .statistics-page--native .native-exercise-row{
+    grid-template-columns:minmax(0,1fr) 66px 72px!important;
+    gap:8px!important;
+  }
+  .statistics-page--native .native-sparkline{
+    width:72px!important;
+  }
+}

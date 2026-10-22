@@ -1,0 +1,417 @@
+/* Mobile reference calibration for the approved Statistics concept.
+   Keeps statistics-data.js and all SVG/chart logic untouched. */
+
+@media (max-width: 650px) {
+  body:has(.statistics-page) .app-content {
+    padding-top: calc(var(--safe-top) + 9px);
+    padding-inline: 9px;
+  }
+
+  .statistics-page {
+    gap: 7px;
+  }
+
+  /* Use the same compact IronLog lockup language as Home / Workouts. */
+  .statistics-header {
+    min-height: 58px;
+    padding: 0 4px 2px;
+    align-items: flex-start;
+  }
+
+  .statistics-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 8px;
+  }
+
+  .statistics-brand::before {
+    content: "";
+    width: 20px;
+    height: 8px;
+    flex: 0 0 auto;
+    background: var(--accent);
+    clip-path: polygon(0 0,72% 46%,48% 48%,100% 100%,28% 62%,51% 58%);
+    filter: drop-shadow(0 0 8px rgba(210,255,22,.16));
+  }
+
+  .statistics-brand strong {
+    font-size: 13px;
+    line-height: 1;
+    letter-spacing: .21em;
+    font-style: normal;
+    font-weight: 800;
+    transform: none;
+    white-space: nowrap;
+  }
+
+  .statistics-brand strong span {
+    color: inherit;
+  }
+
+  .statistics-brand small {
+    display: none;
+  }
+
+  .statistics-heading {
+    padding-top: 0;
+  }
+
+  .statistics-heading h1 {
+    font-size: 31px;
+    line-height: .96;
+    letter-spacing: -.045em;
+  }
+
+  .statistics-heading p {
+    margin-top: 5px;
+    font-size: 9.5px;
+  }
+
+  /* Weight hero: same information, but at the concept's compact proportions. */
+  .weight-card {
+    padding: 10px 10px 8px;
+    border-radius: 16px;
+  }
+
+  .stats-card-title {
+    gap: 5px;
+  }
+
+  .stats-card-title h2 {
+    font-size: 13px;
+  }
+
+  .stats-title-icon {
+    width: 23px;
+    height: 23px;
+    font-size: 12px;
+  }
+
+  .stats-info {
+    width: 13px;
+    height: 13px;
+    font-size: 7px;
+  }
+
+  .status-chip {
+    height: 25px;
+    padding-inline: 9px;
+    gap: 5px;
+    font-size: 8px;
+  }
+
+  .status-chip b {
+    width: 13px;
+    height: 13px;
+    font-size: 8px;
+  }
+
+  .weight-card__filter {
+    margin-top: 6px;
+    padding: 6px 8px;
+    border-radius: 9px;
+    font-size: 8px;
+  }
+
+  .weight-card__body {
+    grid-template-columns: minmax(0,1fr) 100px;
+    gap: 5px;
+  }
+
+  .weight-chart-wrap {
+    padding-top: 2px;
+  }
+
+  .weight-unit {
+    top: 17px;
+    font-size: 7px;
+  }
+
+  .stats-axis-label,
+  .stats-x-label {
+    font-size: 8px;
+  }
+
+  .weight-delta {
+    margin-top: -5px;
+    margin-inline: 2px;
+    gap: 5px;
+    font-size: 8px;
+  }
+
+  .weight-delta strong {
+    font-size: 11px;
+  }
+
+  .weight-summary {
+    padding: 11px 0 5px 7px;
+    gap: 10px;
+  }
+
+  .weight-summary span {
+    font-size: 8px;
+  }
+
+  .weight-summary strong {
+    font-size: 27px;
+  }
+
+  .weight-summary small {
+    margin-top: 2px;
+    font-size: 7px;
+  }
+
+  .weight-summary__target strong {
+    font-size: 14px;
+  }
+
+  .weight-legend {
+    gap: 5px;
+  }
+
+  .weight-legend p {
+    gap: 5px;
+    font-size: 7px;
+  }
+
+  .legend-line {
+    width: 17px;
+  }
+
+  .legend-band {
+    width: 18px;
+    height: 9px;
+    border-radius: 4px;
+  }
+
+  /* Remove the old oversized 397px mobile card minimums. */
+  .statistics-dashboard-grid {
+    gap: 7px;
+  }
+
+  .volume-card,
+  .exercise-card {
+    min-height: 0;
+    padding: 9px 7px 7px;
+    border-radius: 15px;
+  }
+
+  .recovery-card,
+  .cycle-card {
+    min-height: 0;
+    padding: 9px 8px 7px;
+    border-radius: 15px;
+  }
+
+  .compact-card-heading {
+    margin-bottom: 7px;
+  }
+
+  .compact-card-heading h2 {
+    font-size: 13px;
+  }
+
+  .compact-card-heading p {
+    margin-top: 3px;
+    font-size: 6.5px;
+  }
+
+  /* Effective-volume panel */
+  .volume-table-head {
+    grid-template-columns: 47px minmax(42px,1fr) 16px 31px;
+    gap: 3px;
+    margin-bottom: 5px;
+    font-size: 5.5px;
+  }
+
+  .volume-list {
+    gap: 4px;
+  }
+
+  .volume-row {
+    grid-template-columns: 47px minmax(42px,1fr) 16px 31px;
+    gap: 3px;
+  }
+
+  .volume-name {
+    gap: 3px;
+    font-size: 7px;
+  }
+
+  .volume-name i {
+    width: 10px;
+    font-size: 9px;
+  }
+
+  .volume-track {
+    height: 9px;
+  }
+
+  .volume-actual {
+    top: 1px;
+    bottom: 1px;
+  }
+
+  .volume-row > strong {
+    font-size: 8.5px;
+  }
+
+  .volume-range {
+    font-size: 7px;
+  }
+
+  .volume-legend {
+    margin: 7px 0 5px;
+    gap: 3px;
+    font-size: 5.5px;
+  }
+
+  .volume-legend i {
+    width: 6px;
+    height: 6px;
+  }
+
+  /* Exercise trends */
+  .exercise-list {
+    gap: 5px;
+  }
+
+  .exercise-row {
+    min-height: 61px;
+    padding: 5px 5px;
+    border-radius: 10px;
+    grid-template-columns: 60px minmax(0,1fr);
+    gap: 3px;
+  }
+
+  .exercise-copy h3 {
+    font-size: 9px;
+  }
+
+  .exercise-copy > span {
+    font-size: 5.5px;
+  }
+
+  .exercise-copy > strong {
+    margin-top: 3px;
+    font-size: 15px;
+  }
+
+  .exercise-copy > strong small,
+  .exercise-copy > em {
+    font-size: 5.5px;
+  }
+
+  .exercise-copy > em {
+    margin-top: 2px;
+  }
+
+  .exercise-chart > div {
+    font-size: 5px;
+  }
+
+  .stats-card-action {
+    height: 27px;
+    margin-top: 6px;
+    border-radius: 9px;
+    font-size: 7px;
+  }
+
+  .stats-card-action span {
+    font-size: 14px;
+  }
+
+  /* Recovery + mesocycle bottom row */
+  .recovery-grid {
+    margin-top: 1px;
+  }
+
+  .recovery-metric {
+    padding: 1px 3px 3px;
+  }
+
+  .recovery-metric > span {
+    height: 19px;
+    font-size: 6px;
+  }
+
+  .recovery-metric > i {
+    height: 19px;
+    font-size: 18px;
+  }
+
+  .recovery-metric > strong {
+    margin-top: 3px;
+    font-size: 17px;
+  }
+
+  .recovery-metric > small {
+    margin-top: 1px;
+    font-size: 5.5px;
+  }
+
+  .recovery-metric > em {
+    margin-top: 2px;
+    font-size: 7px;
+  }
+
+  .cycle-weeks {
+    margin: 8px 0 6px;
+    min-height: 31px;
+  }
+
+  .cycle-week {
+    min-width: 13px;
+  }
+
+  .cycle-week > span {
+    width: 15px;
+    height: 15px;
+    font-size: 5.5px;
+  }
+
+  .cycle-week small {
+    top: 19px;
+    font-size: 4px;
+  }
+
+  .cycle-legend {
+    gap: 5px;
+    margin: 2px 0 7px;
+    font-size: 5px;
+  }
+
+  .cycle-legend i {
+    width: 6px;
+    height: 6px;
+  }
+
+  .cycle-footer {
+    margin-top: 5px;
+  }
+
+  .cycle-footer > div span {
+    font-size: 5.5px;
+  }
+
+  .cycle-footer > div strong {
+    margin-top: 2px;
+    font-size: 8.5px;
+  }
+
+  .stats-card-action--compact {
+    min-width: 68px;
+    height: 25px;
+    padding-inline: 8px;
+  }
+}
+
+@media (max-width: 390px) {
+  .statistics-heading h1 { font-size: 29px; }
+  .statistics-brand strong { font-size: 12px; }
+  .statistics-brand::before { width: 18px; }
+  .weight-card__body { grid-template-columns: minmax(0,1fr) 94px; }
+  .stats-card-title h2 { font-size: 12px; }
+  .compact-card-heading h2 { font-size: 12px; }
+}

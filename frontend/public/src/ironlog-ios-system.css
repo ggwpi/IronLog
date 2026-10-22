@@ -1,0 +1,493 @@
+/*
+ * IronLog iOS system — September 2026
+ *
+ * One final visual authority for spacing, typography, materials and interaction.
+ * Feature styles can provide structure; this layer normalizes them into a quiet,
+ * consistent iPhone interface with IronLog's dark + electric-lime identity.
+ */
+
+:root{
+  --ios-bg:#050606;
+  --ios-surface:#0d0f10;
+  --ios-surface-2:#131617;
+  --ios-fill:rgba(255,255,255,.055);
+  --ios-fill-strong:rgba(255,255,255,.085);
+  --ios-separator:rgba(255,255,255,.105);
+  --ios-separator-soft:rgba(255,255,255,.065);
+  --ios-label:#f5f5f7;
+  --ios-secondary:#a1a1a6;
+  --ios-tertiary:#6e6e73;
+  --ios-accent:#d2ff16;
+  --ios-danger:#ff6961;
+  --ios-radius:18px;
+  --ios-radius-large:24px;
+  --ios-control-height:50px;
+  --ios-content-inline:18px;
+  --ios-tab-height:72px;
+  --ios-ease:cubic-bezier(.22,.8,.24,1);
+
+  --bg:var(--ios-bg);
+  --bg-elevated:var(--ios-surface);
+  --panel:var(--ios-surface);
+  --panel-2:var(--ios-surface-2);
+  --panel-3:var(--ios-surface-2);
+  --text:var(--ios-label);
+  --text-soft:#d1d1d6;
+  --muted:var(--ios-secondary);
+  --muted-2:var(--ios-tertiary);
+  --line:var(--ios-separator-soft);
+  --line-strong:var(--ios-separator);
+  --accent:var(--ios-accent);
+  --accent-strong:#c9f30f;
+  --accent-soft:rgba(210,255,22,.09);
+  --accent-glow:rgba(210,255,22,.12);
+  --radius-xl:var(--ios-radius-large);
+  --radius-lg:var(--ios-radius);
+  --radius-md:14px;
+  --shadow:none;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui,sans-serif;
+  color-scheme:dark;
+}
+
+html{background:var(--ios-bg);scroll-behavior:auto}
+body{
+  background:var(--ios-bg)!important;
+  color:var(--ios-label);
+  letter-spacing:-.006em;
+  overscroll-behavior-y:auto;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+button,input,textarea,select{font:inherit}
+button{min-width:44px;min-height:44px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+a,[role="button"],summary{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+input,textarea,select{min-height:44px}
+:focus-visible{outline:3px solid rgba(210,255,22,.55)!important;outline-offset:2px!important}
+
+/* Do not allow decorative micro-type to become unreadable. */
+small,.section-caption,.eyebrow,.badge,.home-card-title,.native-chart-label,.live-workout-menu small{font-size:max(11px,1em)}
+
+.app-shell{min-height:100dvh;background:var(--ios-bg)}
+.app-content{
+  width:min(100%,720px)!important;
+  margin:0 auto!important;
+  padding-inline:var(--ios-content-inline)!important;
+  padding-bottom:calc(var(--safe-bottom) + 106px)!important;
+}
+
+/* Shared page header: large content, restrained glass only when it becomes chrome. */
+.app-page-header,.statistics-detail-topbar{
+  min-height:auto!important;
+  padding-inline:0!important;
+}
+.app-page-header h1,.statistics-heading,.home-user{
+  color:var(--ios-label)!important;
+  font-size:clamp(30px,8.3vw,36px)!important;
+  line-height:1.04!important;
+  font-weight:720!important;
+  letter-spacing:-.045em!important;
+}
+.app-page-header p,.app-page-header span,.statistics-header p{
+  color:var(--ios-secondary)!important;
+  font-size:13px!important;
+  font-weight:430!important;
+  letter-spacing:-.01em!important;
+}
+.iron-global-header-glass{
+  --iron-header-glass-bg:rgba(8,9,9,.68);
+  --iron-header-glass-blur:24px;
+  --iron-header-glass-saturation:125%;
+  border-bottom-color:var(--ios-separator-soft)!important;
+  box-shadow:none!important;
+}
+
+/* Persistent iOS-style tab bar. No glowing selection capsule. */
+.bottom-nav{
+  left:50%!important;
+  bottom:calc(var(--safe-bottom) + 8px)!important;
+  width:min(calc(100vw - 20px),700px)!important;
+  height:var(--ios-tab-height)!important;
+  padding:5px 7px!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  border-radius:24px!important;
+  background:rgba(18,20,20,.78)!important;
+  -webkit-backdrop-filter:blur(26px) saturate(130%)!important;
+  backdrop-filter:blur(26px) saturate(130%)!important;
+  box-shadow:0 8px 30px rgba(0,0,0,.22)!important;
+}
+.nav-highlight{display:none!important}
+.nav-item{
+  min-height:58px!important;
+  gap:4px!important;
+  border-radius:18px!important;
+  color:#777b7d!important;
+  font-size:11px!important;
+  font-weight:560!important;
+  transition:color .16s ease,transform .12s ease!important;
+}
+.nav-item.is-active{color:var(--ios-accent)!important}
+.nav-item:active{transform:scale(.96)!important}
+.nav-item svg{width:22px!important;height:22px!important}
+
+/* Generic surfaces: borders only where hierarchy actually needs them. */
+.card,.overview-card,.summary-strip,.chart-card,.settings-card,.auth-panel{
+  background:var(--ios-surface)!important;
+  background-image:none!important;
+  border-color:var(--ios-separator-soft)!important;
+  box-shadow:none!important;
+}
+.card{border-radius:var(--ios-radius)!important}
+.button{
+  min-height:var(--ios-control-height)!important;
+  border-radius:15px!important;
+  font-size:16px!important;
+  font-weight:650!important;
+  letter-spacing:-.015em!important;
+  box-shadow:none!important;
+}
+.button--primary{
+  background:var(--ios-accent)!important;
+  color:#080a04!important;
+}
+.button--secondary{background:var(--ios-fill)!important;border-color:var(--ios-separator)!important}
+
+/* HOME — editorial, open, one strong visual instead of stacked cards. */
+.home-editorial{gap:26px!important}
+.home-stage{
+  min-height:430px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
+.home-stage__smoke{opacity:.28!important;filter:blur(34px)!important}
+.home-stage__copy{padding-inline:0!important}
+.home-kicker{font-size:12px!important;font-weight:650!important;color:var(--ios-accent)!important;letter-spacing:.08em!important}
+.home-stage h2{font-size:clamp(42px,13vw,58px)!important;font-weight:760!important;letter-spacing:-.06em!important}
+.home-stage__copy>p{font-size:15px!important;color:var(--ios-secondary)!important}
+.home-motivation{color:var(--ios-secondary)!important;font-size:13px!important}
+.home-workout-meta{
+  border-top:1px solid var(--ios-separator-soft)!important;
+  border-bottom:1px solid var(--ios-separator-soft)!important;
+  padding-block:14px!important;
+}
+.home-workout-meta strong{font-size:20px!important;font-weight:650!important}
+.home-workout-meta small{font-size:11px!important;color:var(--ios-tertiary)!important}
+.home-start{
+  min-height:52px!important;
+  border:0!important;
+  border-radius:16px!important;
+  background:var(--ios-accent)!important;
+  color:#090b05!important;
+  font-size:16px!important;
+  font-weight:700!important;
+  box-shadow:none!important;
+}
+.home-progress-card,.home-activity-card{
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.home-card-heading{margin-bottom:14px!important}
+.home-card-heading>div>span{font-size:18px!important;font-weight:650!important}
+.home-card-title{font-size:11px!important;color:var(--ios-tertiary)!important}
+.home-progress-days{padding-block:4px 16px!important;border-bottom:1px solid var(--ios-separator-soft)!important}
+.home-progress-day span{font-size:12px!important;color:var(--ios-secondary)!important}
+.home-progress-day i{box-shadow:none!important}
+.home-chart{border:0!important;background:transparent!important}
+
+/* WORKOUTS — one hero + a native list, not a dashboard of cards. */
+.workouts-concept{gap:24px!important}
+.training-week{margin-block:0 4px!important}
+.training-day{min-height:52px!important;background:transparent!important;border:0!important;border-radius:12px!important}
+.training-day span{font-size:11px!important;color:var(--ios-tertiary)!important}
+.training-day strong{font-size:15px!important;font-weight:580!important}
+.training-day.is-selected{background:var(--ios-fill)!important;color:var(--ios-label)!important}
+.training-day.is-selected i{background:var(--ios-accent)!important;box-shadow:none!important}
+.training-hero{
+  min-height:310px!important;
+  padding:24px 0 18px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.training-hero__date strong{color:var(--ios-accent)!important;font-size:12px!important}
+.training-hero__date span{color:var(--ios-secondary)!important;font-size:12px!important}
+.training-hero h2{font-size:clamp(44px,13vw,62px)!important;font-weight:760!important;letter-spacing:-.065em!important}
+.training-hero__copy>p{font-size:15px!important;color:var(--ios-secondary)!important}
+.training-hero__chips span{
+  min-height:30px!important;
+  border:0!important;
+  background:var(--ios-fill)!important;
+  color:var(--ios-secondary)!important;
+  font-size:12px!important;
+}
+.training-start{
+  min-height:52px!important;
+  border-radius:16px!important;
+  background:var(--ios-accent)!important;
+  color:#080a04!important;
+  font-size:16px!important;
+  font-weight:700!important;
+  box-shadow:none!important;
+}
+.training-summary{
+  gap:0!important;
+  padding:0!important;
+  border-top:1px solid var(--ios-separator-soft)!important;
+  border-bottom:1px solid var(--ios-separator-soft)!important;
+  background:transparent!important;
+}
+.training-summary article{
+  min-height:74px!important;
+  padding:12px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.training-summary article+article{border-inline-start:1px solid var(--ios-separator-soft)!important}
+.training-summary strong{font-size:18px!important;font-weight:650!important}
+.training-summary span,.training-summary small{font-size:11px!important;color:var(--ios-secondary)!important}
+.summary-icon{display:none!important}
+.training-plan,.training-quick{padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.training-plan h3,.training-quick h3{font-size:20px!important;font-weight:680!important;letter-spacing:-.03em!important}
+.training-plan__rows{border-top:1px solid var(--ios-separator-soft)!important}
+.training-plan-row{
+  min-height:76px!important;
+  padding:10px 0!important;
+  border:0!important;
+  border-bottom:1px solid var(--ios-separator-soft)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.training-plan-row:active{background:rgba(255,255,255,.035)!important;transform:none!important}
+.training-plan-row__copy strong{font-size:17px!important;font-weight:620!important}
+.training-plan-row__copy small{font-size:12px!important;color:var(--ios-secondary)!important}
+.training-plan-row__progress em{font-size:11px!important;color:var(--ios-tertiary)!important}
+.training-plan-row.is-next .training-plan-row__progress em,.training-plan-row.is-complete .training-plan-row__state{color:var(--ios-accent)!important}
+.training-quick__grid{gap:0!important;border-top:1px solid var(--ios-separator-soft)!important;border-bottom:1px solid var(--ios-separator-soft)!important}
+.training-quick article{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding:15px 10px!important}
+.training-quick article+article{border-inline-start:1px solid var(--ios-separator-soft)!important}
+.training-quick article>i{display:none!important}
+.training-quick strong{font-size:20px!important;font-weight:650!important}
+.training-quick span{font-size:11px!important;color:var(--ios-secondary)!important}
+
+/* ACTIVE WORKOUT — the core product. Data entry owns the hierarchy. */
+body:has(.active-workout-page),body:has(.active-workout-page) .app-shell,body:has(.active-workout-page) .app-content{background:var(--ios-bg)!important}
+body:has(.active-workout-page) .app-content{padding-inline:18px!important}
+.active-workout-page.live-minimal{
+  row-gap:10px!important;
+  color:var(--ios-label)!important;
+  background:var(--ios-bg)!important;
+}
+.live-workout-header{min-height:54px!important;max-height:64px!important}
+.live-workout-header button{width:44px!important;height:44px!important;border-radius:50%!important;font-size:24px!important}
+.live-workout-header button:active{background:var(--ios-fill)!important}
+.live-workout-header strong{font-size:20px!important;font-weight:650!important;letter-spacing:-.03em!important}
+.live-workout-header span{margin-top:4px!important;font-size:11px!important;color:var(--ios-tertiary)!important}
+.live-total-progress{height:3px!important;background:var(--ios-fill-strong)!important}
+.live-total-progress i{background:var(--ios-accent)!important;box-shadow:none!important}
+.live-hero-flat{
+  min-height:128px!important;
+  max-height:152px!important;
+  padding:12px 0!important;
+  border-bottom:1px solid var(--ios-separator-soft)!important;
+}
+.live-ring{background:none!important;border:0!important;box-shadow:none!important;filter:none!important;cursor:default!important}
+.live-ring b{font-size:14px!important;font-weight:500!important;color:var(--ios-secondary)!important}
+.live-ring b em{font-size:17px!important;font-weight:700!important;color:var(--ios-accent)!important}
+.live-ring span{font-size:11px!important;color:var(--ios-tertiary)!important}
+.live-exercise-name h1{font-size:clamp(27px,7.7vw,34px)!important;font-weight:720!important;letter-spacing:-.045em!important}
+.live-exercise-name p{font-size:13px!important;color:var(--ios-secondary)!important}
+.live-muscle-figure{max-height:132px!important;opacity:.92!important}
+.live-performance{
+  min-height:72px!important;
+  max-height:112px!important;
+  padding:6px 0 10px!important;
+  border-bottom:1px solid var(--ios-separator-soft)!important;
+  overflow:hidden!important;
+}
+.live-performance.has-data{min-height:92px!important;max-height:112px!important;padding:4px 0 8px!important}
+.live-chart{height:72px!important;max-height:72px!important;opacity:.78!important}
+.live-grid-line{stroke:rgba(255,255,255,.08)!important}
+.live-fire-note{border:0!important;background:transparent!important;padding:4px 0!important;font-size:12px!important;color:var(--ios-secondary)!important}
+.live-performance.is-empty{min-height:58px!important;max-height:72px!important;padding:4px 0!important}
+.live-performance-empty{min-height:50px!important;padding:0!important;gap:0!important}
+.live-performance-empty:before{display:none!important}
+.live-performance-empty strong{font-size:13px!important;color:var(--ios-secondary)!important}
+.live-performance-empty span,.live-performance-empty small{font-size:11px!important;color:var(--ios-tertiary)!important}
+.live-entry-form{
+  min-height:138px!important;
+  max-height:158px!important;
+  padding:0!important;
+  border-bottom:1px solid var(--ios-separator-soft)!important;
+}
+.live-inline-fields{gap:0!important}
+.live-inline-fields>div{padding:12px 4px!important;border-left-color:var(--ios-separator-soft)!important}
+.live-inline-fields label{font-size:12px!important;color:var(--ios-secondary)!important}
+.live-inline-fields input{
+  min-height:58px!important;
+  margin-top:5px!important;
+  color:var(--ios-label)!important;
+  font-size:clamp(38px,10vw,46px)!important;
+  font-weight:570!important;
+  caret-color:var(--ios-accent)!important;
+}
+.live-inline-fields p{margin-top:5px!important;gap:32px!important}
+.live-inline-fields button{width:44px!important;height:44px!important;border-radius:50%!important;font-size:25px!important}
+.live-inline-fields button:active{background:var(--ios-fill)!important}
+.live-rest-flat{
+  min-height:76px!important;
+  border-color:var(--ios-separator-soft)!important;
+  background:transparent!important;
+}
+.live-rest-ring{background:var(--ios-fill-strong)!important}
+.live-rest-ring:before{background:var(--ios-bg)!important}
+.live-rest-ring button{background:var(--ios-fill)!important}
+.live-next-flat{min-height:58px!important;max-height:66px!important;border-color:var(--ios-separator-soft)!important}
+.live-next-flat small,.live-next-flat span{font-size:11px!important;color:var(--ios-tertiary)!important}
+.live-next-flat strong{font-size:16px!important;font-weight:620!important}
+.live-finish-flat{
+  width:100%!important;
+  min-height:52px!important;
+  margin:2px 0 0!important;
+  border-radius:16px!important;
+  background:var(--ios-accent)!important;
+  color:#080a04!important;
+  font-size:16px!important;
+  font-weight:720!important;
+}
+.live-workout-menu{
+  width:min(250px,72vw)!important;
+  padding:6px!important;
+  border:1px solid var(--ios-separator)!important;
+  border-radius:18px!important;
+  background:rgba(28,30,30,.92)!important;
+  -webkit-backdrop-filter:blur(24px)!important;
+  backdrop-filter:blur(24px)!important;
+  box-shadow:0 12px 40px rgba(0,0,0,.34)!important;
+}
+.live-workout-menu button{min-height:52px!important;border-radius:13px!important}
+
+/* STATISTICS — summary first, detail progressively disclosed. */
+.statistics-page--native{gap:26px!important}
+.native-summary-strip{
+  padding:0!important;
+  border-top:1px solid var(--ios-separator-soft)!important;
+  border-bottom:1px solid var(--ios-separator-soft)!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.native-summary-strip>div{padding:14px 8px!important;border:0!important;background:transparent!important}
+.native-summary-strip>div+div{border-inline-start:1px solid var(--ios-separator-soft)!important}
+.native-summary-icon{display:none!important}
+.native-summary-strip strong{font-size:19px!important;font-weight:650!important}
+.native-summary-strip span{font-size:11px!important;color:var(--ios-secondary)!important}
+.native-stats-section{
+  padding:0 0 22px!important;
+  border:0!important;
+  border-bottom:1px solid var(--ios-separator-soft)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.native-stats-section__head h2{font-size:21px!important;font-weight:680!important;letter-spacing:-.035em!important}
+.native-stats-section__head p{font-size:12px!important;color:var(--ios-secondary)!important}
+.native-weight-current strong{font-size:42px!important;font-weight:620!important;letter-spacing:-.055em!important}
+.native-weight-status b,.native-weight-delta strong{font-size:13px!important}
+.native-weight-status span,.native-weight-delta span{font-size:11px!important;color:var(--ios-secondary)!important}
+.native-exercise-row{
+  min-height:70px!important;
+  padding:10px 0!important;
+  border:0!important;
+  border-bottom:1px solid var(--ios-separator-soft)!important;
+  border-radius:0!important;
+  background:transparent!important;
+}
+.native-exercise-copy strong{font-size:16px!important;font-weight:610!important}
+.native-exercise-copy span,.native-exercise-value span{font-size:11px!important}
+.native-disclosure summary{min-height:50px!important;border-radius:13px!important;background:var(--ios-fill)!important}
+.native-empty-state{border:0!important;background:var(--ios-fill)!important;border-radius:16px!important}
+
+/* SETTINGS — standard grouped-list rhythm. */
+.settings-page{gap:22px!important}
+.settings-card{padding:0!important;border:0!important;background:transparent!important}
+.profile-row{padding:14px 0 18px!important;border-bottom:1px solid var(--ios-separator-soft)!important}
+.profile-row strong{font-size:18px!important;font-weight:650!important}
+.profile-row span{font-size:12px!important;color:var(--ios-secondary)!important}
+.settings-list{padding:0!important}
+.setting-row{min-height:62px!important;padding:9px 0!important;border-color:var(--ios-separator-soft)!important}
+.setting-row__icon{width:34px!important;height:34px!important;border:0!important;border-radius:9px!important;background:var(--ios-fill)!important;color:var(--ios-secondary)!important}
+.setting-row__copy strong{font-size:16px!important;font-weight:560!important}
+.setting-row__copy span{font-size:11px!important;color:var(--ios-secondary)!important}
+.switch{width:51px!important;height:31px!important}
+.switch span{background:#343638!important}
+.switch input:checked+span{background:var(--ios-accent)!important}
+.logout-button{min-height:50px!important;border:0!important;background:rgba(255,105,97,.10)!important;color:var(--ios-danger)!important;border-radius:15px!important}
+
+/* Native replacement for browser confirm(). */
+.ios-confirm-host{position:fixed;inset:0;z-index:3000;pointer-events:none}
+.ios-confirm-backdrop{
+  position:absolute;inset:0;display:grid;place-items:end center;padding:20px 14px calc(var(--safe-bottom) + 14px);
+  background:rgba(0,0,0,.38);opacity:0;pointer-events:auto;transition:opacity .2s ease;
+}
+.ios-confirm-backdrop.is-visible{opacity:1}
+.ios-confirm-sheet{
+  width:min(100%,500px);padding:20px 16px 10px;border:1px solid var(--ios-separator);
+  border-radius:24px;background:rgba(28,30,30,.94);-webkit-backdrop-filter:blur(28px) saturate(125%);backdrop-filter:blur(28px) saturate(125%);
+  box-shadow:0 18px 50px rgba(0,0,0,.35);transform:translateY(24px);transition:transform .24s var(--ios-ease);
+}
+.ios-confirm-backdrop.is-visible .ios-confirm-sheet{transform:none}
+.ios-confirm-sheet h2{margin:0;text-align:center;font-size:18px;font-weight:680;letter-spacing:-.025em}
+.ios-confirm-sheet p{margin:8px auto 18px;max-width:360px;text-align:center;color:var(--ios-secondary);font-size:13px;line-height:1.45}
+.ios-confirm-actions{display:grid;gap:8px}
+.ios-confirm-actions button{width:100%;min-height:50px;border:0;border-radius:15px;background:var(--ios-fill-strong);color:var(--ios-label);font-size:16px;font-weight:620}
+.ios-confirm-actions .is-destructive{background:rgba(255,105,97,.12);color:var(--ios-danger)}
+.ios-confirm-actions .is-primary{background:var(--ios-accent);color:#080a04}
+
+.toast-region{z-index:2500!important}
+.toast{
+  border:1px solid var(--ios-separator)!important;
+  border-radius:15px!important;
+  background:rgba(34,36,36,.88)!important;
+  -webkit-backdrop-filter:blur(22px)!important;
+  backdrop-filter:blur(22px)!important;
+  box-shadow:0 10px 32px rgba(0,0,0,.25)!important;
+  font-size:13px!important;
+}
+
+/* Keep motion purposeful. State changes can animate, static content should not shimmer. */
+@media (prefers-reduced-motion:no-preference){
+  .button,.training-start,.home-start,.live-finish-flat,.nav-item{transition:transform .12s ease,opacity .16s ease,background .16s ease,color .16s ease!important}
+  .button:active,.training-start:active,.home-start:active,.live-finish-flat:active{transform:scale(.985)!important}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{animation:none!important;transition:none!important}
+
+@media(max-width:390px){
+  :root{--ios-content-inline:15px}
+  .home-stage{min-height:390px!important}
+  .training-hero{min-height:285px!important}
+  .training-summary article{padding-inline:7px!important}
+  .active-workout-page.live-minimal{row-gap:7px!important}
+  .live-entry-form{min-height:128px!important;max-height:145px!important}
+}
+
+@media(max-height:760px){
+  .active-workout-page.live-minimal{row-gap:5px!important}
+  .live-hero-flat{min-height:105px!important;max-height:120px!important}
+  .live-performance{min-height:52px!important;max-height:72px!important}
+  .live-performance.has-data{min-height:68px!important;max-height:78px!important}
+  .live-chart{height:52px!important;max-height:52px!important}
+  .live-entry-form{min-height:110px!important;max-height:125px!important}
+  .live-finish-flat{min-height:48px!important}
+}
