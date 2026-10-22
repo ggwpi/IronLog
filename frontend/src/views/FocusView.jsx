@@ -68,16 +68,16 @@ function Prescription({ entry, setIdx, unit, fallbackRest, children }) {
   const target = entry.target || {}
   const reps = target.repsMin > 0 ? `${target.repsMin}–${target.reps}` : target.reps > 0 ? String(target.reps) : ''
   const load = target.weight > 0
-    ? `@ ${fmtNum(target.weight)}${target.weightMax > target.weight ? `–${fmtNum(target.weightMax)}` : ''} ${unit}`
+    ? `@ ${fmtNum(target.weight)}${target.weightMax > target.weight ? `–${fmtNum(target.weightMax)}` : ''} ${t(unit)}`
     : ''
   const rpe = target.rpeMin > 0
-    ? `RPE ${fmtNum(target.rpeMin)}${target.rpeMax > target.rpeMin ? `–${fmtNum(target.rpeMax)}` : ''}`
+    ? `${t('RPE')} ${fmtNum(target.rpeMin)}${target.rpeMax > target.rpeMin ? `–${fmtNum(target.rpeMax)}` : ''}`
     : ''
-  const rest = target.restSec > 0 ? `Rest ${target.restSec}s` : fallbackRest > 0 ? `Rest ${fallbackRest}s` : ''
-  const badges = [reps && `${reps} Reps`, load, rpe, rest, target.tempo].filter(Boolean)
+  const rest = target.restSec > 0 ? t('Rest {0}s', target.restSec) : fallbackRest > 0 ? t('Rest {0}s', fallbackRest) : ''
+  const badges = [reps && t('{0} Reps', reps), load, rpe, rest, target.tempo].filter(Boolean)
 
   return <div className="focus-prescription">
-    <span className="focus-badge focus-progress">{setIdx + 1}/{entry.sets.length}</span>
+    <span className="focus-badge focus-progress" dir="ltr">{setIdx + 1}/{entry.sets.length}</span>
     {badges.map(label => <span className="focus-badge" key={label}>{label}</span>)}
     {children}
   </div>
@@ -193,7 +193,7 @@ export default function FocusView({
           <span>{t('Burst {0}', index + 1)}</span>
           <Stepper label={t('Reps')} ariaLabel="reps" value={burst.r || 0} step={1} decimal={false} disabled={readOnly || sideSet.done}
             onChange={value => onMutateSet(setIdx, row => setSideClusterAt(row, side, index, value))} />
-          <span className="dim small">{burst.restSec}s</span>
+          <span className="dim small">{t('{0}s', burst.restSec)}</span>
         </div>)}
       </div>
     </section>
@@ -323,7 +323,7 @@ export default function FocusView({
                 const delta = (Number(value) || 0) - (clustersOf(row)[index]?.r ?? row.clusters?.[index]?.r ?? 0)
                 return { ...setClusterAt(row, index, { r: value }), r: Math.max(0, (row.r || 0) + delta) }
               })} />
-            <span className="dim small">{burst.restSec}s</span>
+            <span className="dim small">{t('{0}s', burst.restSec)}</span>
           </div>)}
         </div>
         {mode === 'reps' && effortField && <button className={'effcell focus-effort' + (effortValue == null ? ' is-empty' : '')}

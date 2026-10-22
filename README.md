@@ -35,6 +35,10 @@ npm run build
 
 Output is `frontend/dist`, including the exercise media. `vercel.json` explicitly uses the static builder, so the self-hosted `api/` source is not incorrectly deployed as individual serverless functions. Static hosting supports guest/local training. Account sync, passkeys, uploads and the server-side coach require the included Node API behind a same-origin `/api` proxy; static hosting alone does not provide those endpoints.
 
+## Hebrew
+
+The app starts in Hebrew with full RTL layout, Hebrew exercise names and details, localized dates and counts, and isolated LTR numeric fields and timers. Existing installs receive a one-time language upgrade while keeping their workout data. See [Hebrew support](docs/HEBREW.md).
+
 ## IronLog UI and widgets
 
 - The original page renderers and CSS are preserved in `frontend/src/ironlog/legacy` and `original.css`. A shadow root isolates their styling from openGym's session editor.

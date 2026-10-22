@@ -86,7 +86,7 @@ function buildPerformance(rows) {
     return {
       id: group.id,
       label: group.label,
-      metric: '1RM משוער',
+      metric: 'חזרה מרבית משוערת',
       unit: 'ק״ג',
       current,
       delta: current - baseline,
@@ -117,7 +117,7 @@ function buildRecovery(rows, performanceRows) {
   return {
     hasData: recent.length > 0 || rirRows.length > 0,
     sleep: { label: 'שינה', value: sleepValue, unit: sleep ? 'שעות' : '', status: sleep >= 450 ? 'טוב' : sleep ? 'נמוך' : 'אין נתונים', tone: sleep >= 450 ? 'good' : 'medium' },
-    rirAdherence: { label: 'עמידה ב־RIR', value: rirRows.length ? `${Math.round(rirAdherence)}%` : '–', status: rirRows.length ? (rirAdherence >= 75 ? 'טוב' : 'לשיפור') : 'אין נתונים', tone: rirAdherence >= 75 ? 'good' : 'medium' },
+    rirAdherence: { label: 'עמידה ביעד הרזרבה', value: rirRows.length ? `${Math.round(rirAdherence)}%` : '–', status: rirRows.length ? (rirAdherence >= 75 ? 'טוב' : 'לשיפור') : 'אין נתונים', tone: rirAdherence >= 75 ? 'good' : 'medium' },
     readiness: { label: 'מוכנות', value: readiness ? `${round(readiness)} / 7` : '–', status: readiness >= 5 ? 'טוב' : readiness ? 'בינוני' : 'אין נתונים', tone: readiness >= 5 ? 'good' : 'medium' },
   };
 }

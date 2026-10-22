@@ -153,14 +153,14 @@ function disclosure(labelClosed, labelOpen, helper, body, kind) {
 
 function ExerciseSection(performance) {
   if (!performance.hasData) {
-    return `<section class="native-stats-section" data-stats-animate data-stats-key="performance">${SectionHeader('ביצועי תרגילים', '1RM משוער לאורך זמן')}<div class="native-empty-state"><strong>אין עדיין גרף ביצועים</strong><span>סטים עם משקל וחזרות ייצרו את המגמה.</span></div></section>`;
+    return `<section class="native-stats-section" data-stats-animate data-stats-key="performance">${SectionHeader('ביצועי תרגילים', 'חזרה מרבית משוערת לאורך זמן')}<div class="native-empty-state"><strong>אין עדיין גרף ביצועים</strong><span>סטים עם משקל וחזרות ייצרו את המגמה.</span></div></section>`;
   }
   const all = performance.allExercises || performance.exercises || [];
   const primary = all.slice(0, 3);
   const rest = all.slice(3);
   const more = rest.length ? disclosure(`עוד ${rest.length} תרגילים`, 'הצג פחות', 'כל נתוני הביצועים נשארים כאן בלי להעמיס על הסקירה', `<div class="native-exercise-list native-exercise-list--extra">${rest.map(exerciseRow).join('')}</div>`, 'exercises') : '';
   return `<section class="native-stats-section" data-stats-animate data-stats-key="performance">
-    ${SectionHeader('ביצועי תרגילים', performance.periodLabel || '1RM משוער לאורך זמן')}
+    ${SectionHeader('ביצועי תרגילים', performance.periodLabel || 'חזרה מרבית משוערת לאורך זמן')}
     <div class="native-exercise-list">${primary.map(exerciseRow).join('')}</div>
     ${more}
   </section>`;
@@ -216,7 +216,7 @@ function CycleSection(cycle) {
       }).join('')}
     </div>
     <div class="native-cycle-meta"><strong>${escapeHtml(cycle.phaseLabel)}</strong><span>שבוע ${cycle.currentWeek} מתוך ${cycle.totalWeeks}</span></div>
-    <div class="native-cycle-deload">${cycle.deloadWeeks.length ? `Deload: שבועות ${cycle.deloadWeeks.join(', ')}` : 'ללא שבוע Deload מתוכנן'}</div>
+    <div class="native-cycle-deload">${cycle.deloadWeeks.length ? `הפחתת עומס: שבועות ${cycle.deloadWeeks.join(', ')}` : 'ללא שבוע הפחתת עומס מתוכנן'}</div>
   </section>`;
 }
 

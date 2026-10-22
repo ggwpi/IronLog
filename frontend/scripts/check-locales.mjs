@@ -35,7 +35,10 @@ for (const file of files) {
 // How many locales carry each key — 1 means the key was added to a single file only,
 // which is the usual shape of the bug and worth naming separately from plain gaps.
 const seen = new Map()
-for (const dict of locales.values()) for (const k of Object.keys(dict)) seen.set(k, (seen.get(k) || 0) + 1)
+for (const [lang, dict] of locales) {
+  if (lang === 'he') continue // IronLog also translates operator-only and fork-specific copy.
+  for (const k of Object.keys(dict)) seen.set(k, (seen.get(k) || 0) + 1)
+}
 const union = [...seen.keys()]
 
 // t('…{0}…', x) substitutes by index, so a translation that loses a {0} drops the number out of
@@ -48,7 +51,7 @@ let failed = false
 for (const [lang, dict] of locales) {
   const keys = new Set(Object.keys(dict))
   const missing = union.filter(k => !keys.has(k))
-  const orphans = union.filter(k => keys.has(k) && seen.get(k) === 1)
+  const orphans = lang === 'he' ? [] : union.filter(k => keys.has(k) && seen.get(k) === 1)
   // A blank value is worse than no translation: the English fallback only runs for a key that
   // is ABSENT, so an empty string reaches the screen as an empty screen.
   // A plural entry (tn()) answers with the forms of a language that needs more than two —
