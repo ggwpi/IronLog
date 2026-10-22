@@ -1,3 +1,5 @@
+import { useLayoutEffect, useRef } from 'react'
+import { startNavigationViewport } from '../lib/navigation-viewport.js'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { effectiveRoutineIds, effectiveRoutines } from '../lib/history.js'
@@ -28,7 +30,10 @@ export default function TabBar({ onStart }) {
   // With the connection banner switched off, a sync problem shows as a dot on Home, the tab
   // Settings lives under (#369, #330).
   const trouble = useConnectionTrouble()
-  if (!user && !isGuest) return null
+  const dock = useRef(null)
+  const visible = !!user || isGuest
+  useLayoutEffect(() => visible ? startNavigationViewport(dock.current) : undefined, [visible])
+  if (!visible) return null
   const cur = loc.pathname.split('/')[1] || 'home'
   const on = k => cur === k || (cur === 'history' && k === 'stats') || (cur === 'settings' && k === 'home') || (cur === 'muscles' && k === 'library') || (cur === 'structural-balance' && k === 'stats')
 
@@ -45,7 +50,7 @@ export default function TabBar({ onStart }) {
   }
 
   return (
-    <nav id="tabbar" className="seg navigation-segments" aria-label="IronLog" style={{ '--n': 5, '--i': Math.max(0, selected) }}>
+    <nav ref={dock} id="tabbar" className="seg navigation-segments" aria-label="IronLog" style={{ '--n': 5, '--i': Math.max(0, selected) }}>
       <span className="seg-sel" aria-hidden="true" hidden={selected < 0} />
       <Tab active={on('home')} icon="house" label={t('Home')} dot={trouble} onClick={() => nav('/home')} />
       <Tab active={on('plan')} icon="calendar" label={t('Plan')} onClick={() => nav('/plan')} />
