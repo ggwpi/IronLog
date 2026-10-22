@@ -2,7 +2,7 @@
 
 IronLog starts in Hebrew (`he`, `he-IL`) with `dir="rtl"`, including the first HTML paint and the sign-in screen. The Hebrew UI dictionary is bundled with the shell; exercise names, instructions and descriptions are loaded in separate catalogue chunks.
 
-Existing installations receive a one-time `ironlogHebrewVersion` preference update. It selects Hebrew, disables English-only names and English parenthetical names, and preserves workouts, set values, exercise identifiers and user-written content. The bundled IronLog programme's original English titles are localized only when its preset metadata and original title still match. A later language choice in Settings is respected. New, empty profiles start their week on Sunday; an existing training schedule is preserved.
+Existing installations receive a one-time `ironlogHebrewVersion` preference update. It selects Hebrew, disables English-only names and English parenthetical names, and preserves workouts, set values, exercise identifiers and user-written content. Previously added IronLog programme titles are localized only when its preset metadata and original title still match. A later language choice in Settings is respected. New, empty profiles start their week on Sunday; an existing training schedule is preserved.
 
 ## Direction and input
 
@@ -16,7 +16,7 @@ Existing installations receive a one-time `ironlogHebrewVersion` preference upda
 
 - `frontend/src/locales/he.js`: interface strings, including accessibility labels, dialogs, operator screens and fork-specific copy. It is a superset of upstream locale keys.
 - `catalogue/i18n/he.json`: all 5,632 exercise names, descriptions and instruction arrays. Generated app packs are produced by `node scripts/catalogue/build.mjs`.
-- `frontend/src/ironlog/exercise-names-he.js`: names for the 38 exercises bundled with the original IronLog programme. A user-renamed exercise retains its name.
+- `frontend/src/ironlog/exercise-names-he.js`: names for the 38 original IronLog exercise IDs, retained for existing profiles. A user-renamed exercise retains its name.
 
 The catalogue's English text was machine translated, with terminology normalization and manual corrections to common exercise names and untranslated terms. The entire catalogue has not received a human biomechanics review. The primary UI and workout flows have been reviewed in Hebrew. No translation service is called by the running application.
 

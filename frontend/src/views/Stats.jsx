@@ -1,5 +1,5 @@
+import { VolumeReference, EffortTarget, WeightTrend, RecoveryCheckIn, TrainingCycle } from '../ironlog/Dashboard.jsx'
 import TheorySettings from '../ironlog/TheorySettings.jsx'
-import IronPages from '../ironlog/IronPages.jsx'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
@@ -376,6 +376,7 @@ function EffortCard({ S }) {
         {t('Most working sets belong close to failure, not at it. Half at the floor and half at the top still average out to a healthy-looking middle.')}
       </div>
     </>}
+    <EffortTarget S={S} />
   </div>
 }
 
@@ -403,6 +404,7 @@ export function WeeklyPlanVolume({ S }) {
       <Button className="weekly-plan-toggle" trailingIcon={all ? 'chevronUp' : 'chevronDown'} aria-expanded={all}
         onClick={() => setAll(v => !v)}>{t(all ? 'Show less' : 'Show more')}</Button>
     </>}
+    <VolumeReference S={S} />
   </div>
 }
 
@@ -635,8 +637,6 @@ export default function Stats() {
   if (showMax) exOpts.push({ value: 'max', label: t('Max reps') })
 
   return <>
-    <IronPages page="stats" />
-    <TheorySettings />
     <div className="hdr"><div><h1>{t('Stats')}</h1><div className="sub">{t('Progress & history')}</div></div>
       <button className="iconbtn" onClick={() => nav('/history')} aria-label={t('History')}><Icon name="history" /></button></div>
 
@@ -679,6 +679,9 @@ export default function Stats() {
     </div>
     {(hasEffort(S) || hasEstimableEffort(S)) && <EffortCard S={S} />}
 
+    <div className="card"><RecoveryCheckIn S={S} /><TheorySettings /></div>
+    <TrainingCycle S={S} />
+
     <div className="cols">
       <div className="card">
         <div className="row between bw-head" style={{ marginBottom: 8 }}>
@@ -695,6 +698,7 @@ export default function Stats() {
         {S.bodyweight.length > 0 && <div className="row" style={{ justifyContent: 'flex-end', marginTop: 4 }}>
           <Button size="sm" variant="ghost" trailingIcon="chevronRight" onClick={weighInsSheet}>{t('All weigh-ins')}</Button>
         </div>}
+        <WeightTrend S={S} />
       </div>
 
       <div className="card">
