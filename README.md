@@ -1,6 +1,6 @@
 # IronLog
 
-This fork restores [openGym](https://github.com/DuarteSantos8/openGym) at `e348fc17c42c7e9a211c5972e573ad3698190ee2`, with only IronLog branding, the original lightning logo, and IronLog's original glass navigation styling with openGym's five native options: Home, Plan, Start/Resume, Stats and Exercises. All five act directly, without a Workouts submenu.
+This fork restores [openGym](https://github.com/DuarteSantos8/openGym) at `e348fc17c42c7e9a211c5972e573ad3698190ee2`, with only IronLog branding, the original lightning logo, and the same segmented-control styling as the Muscle balance / Fatigue / Strength chooser, with openGym's five native options: Home, Plan, Start/Resume, Stats and Exercises. All five act directly, without a Workouts submenu.
 
 The custom IronLog pages, widgets, Hebrew packs, programme injector and classic app have been removed. Training behavior, pages, widgets, themes, exercise data, storage and API source are upstream. Existing browser training records are not deleted or reseeded.
 

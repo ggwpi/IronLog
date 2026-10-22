@@ -32,6 +32,8 @@ export default function TabBar({ onStart }) {
   const cur = loc.pathname.split('/')[1] || 'home'
   const on = k => cur === k || (cur === 'history' && k === 'stats') || (cur === 'settings' && k === 'home') || (cur === 'muscles' && k === 'library') || (cur === 'structural-balance' && k === 'stats')
 
+  const selected = on('home') ? 0 : on('plan') ? 1 : cur === 'workout' ? 2 : on('stats') ? 3 : on('library') ? 4 : -1
+
   const running = !!S.active && cur !== 'workout' && !S.active.editingWorkoutId && !S.active.backfill && S.active.start > 0
   const startWorkout = () => {
     if (!S.active) {
@@ -43,7 +45,8 @@ export default function TabBar({ onStart }) {
   }
 
   return (
-    <nav id="tabbar" className="bottom-nav" aria-label="IronLog">
+    <nav id="tabbar" className="seg navigation-segments" aria-label="IronLog" style={{ '--n': 5, '--i': Math.max(0, selected) }}>
+      <span className="seg-sel" aria-hidden="true" hidden={selected < 0} />
       <Tab active={on('home')} icon="house" label={t('Home')} dot={trouble} onClick={() => nav('/home')} />
       <Tab active={on('plan')} icon="calendar" label={t('Plan')} onClick={() => nav('/plan')} />
       {/* On the workout screen itself there is nothing to resume, so the button reads as the
