@@ -1,6 +1,6 @@
 # IronLog
 
-IronLog now uses [openGym](https://github.com/DuarteSantos8/openGym)'s full training application as its foundation, with the original IronLog Hebrew home, workouts and statistics UI and theory widgets. The upstream planning, rotation, progression, exercise catalogue, guided sessions, rest timer, imports, offline storage, passkeys and sync remain available.
+IronLog now uses [openGym](https://github.com/DuarteSantos8/openGym)'s full training application as its foundation, with one Hebrew/RTL interface styled for IronLog and theory insights integrated into the native widgets. The upstream planning, rotation, progression, exercise catalogue, guided sessions, rest timer, imports, offline storage, passkeys and sync remain available.
 
 ## Run locally
 
@@ -41,13 +41,13 @@ The app starts in Hebrew with full RTL layout, Hebrew exercise names and details
 
 ## IronLog UI and widgets
 
-- The original page renderers and CSS are preserved in `frontend/src/ironlog/legacy` and `original.css`. A shadow root isolates their styling from openGym's session editor.
-- `model.js` adapts completed workouts, set effort, weights and routines to the original widgets. Both interfaces read the same training history.
-- The statistics page retains IronLog's weight target band, estimated 1RM, weekly effective muscle sets, RIR adherence, sleep/readiness and mesocycle widgets, followed by openGym's charts and body maps.
-- Expand **IronLog · התאוששות ומחזור אימון** in Stats to log sleep/readiness or configure a cycle. These are persisted through the same store and backup system. Deload weeks 4/8/12 are reminders, not automatic changes to your routines.
-- Original weight-gain and volume targets are planning heuristics. Unsupported sub-muscle distinctions are omitted rather than inferred from broader catalogue groups.
-- Plan also offers the original six-day IronLog programme, including all 38 original exercises, rest times and specific muscle-credit metadata. Adding it preserves existing routines.
-- Routine editing, weekday and rotation planning remain in Plan, below the original workout cards.
+- A single React interface uses openGym's native screens and shared store, with IronLog's graphite/lime surfaces, Hebrew typography, anatomy previews and five-tab navigation. The duplicate legacy pages, Shadow DOM and their positioning rules have been removed.
+- Home reads today's actual plan through openGym's scheduling helpers, including rotations, overrides, completed sessions and active workouts. No programme or session is generated as fallback content.
+- Volume references are integrated into the native weekly-volume card, RIR target adherence into the effort card, and the seven-day weight trend into the bodyweight chart. Both native charts and IronLog insights use the same completed working sets and muscle-credit functions.
+- Recovery check-ins supplement the native fatigue map without replacing or changing its calculation. They are entered explicitly and stored with the profile; absent measurements stay empty.
+- A configured training cycle displays actual logged sessions per week. Time elapsed never marks a week as trained, and no deload weeks are invented.
+- Original volume and mass-gain ranges are labelled planning references. Catalogue muscle groups are used directly; unsupported sub-muscle distinctions are not inferred.
+- Routine editing, weekday/rotation planning, starter-plan selection, exercise details and workout logging remain openGym's native flows. The previous IronLog programme injector has been removed; existing user plans remain intact.
 
 ## Existing IronLog account and data
 
@@ -60,7 +60,7 @@ npm test
 npm test --prefix api
 ```
 
-Upstream frontend/API tests are retained. `frontend/src/ironlog/model.test.js` checks the data adapter's unit conversion, completed working sets, secondary muscle credit, empty data and stale check-ins.
+Upstream frontend/API tests are retained. `frontend/src/ironlog/training.test.js` checks parity with native muscle credits, week boundaries, rotations, completed working sets, missing/rated effort, weight windows, check-ins and actual cycle history.
 
 ## Source and licensing
 
