@@ -1,4 +1,3 @@
-import { applyHebrewPreferences, needsHebrewPreferences } from './ironlog/hebrew-preferences.js'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { HashRouter, Routes, Route, Navigate, useNavigate, useLocation, useNavigationType } from 'react-router-dom'
 import { useStore } from './store/useStore.js'
@@ -113,11 +112,8 @@ function Shell() {
   // A profile that never picked a language follows the instance default or the browser (#303) —
   // worked out here, on this device, and never written into the synced state (lib/default-lang.js).
   const config = useStore(s => s.config)
-  const lang = needsHebrewPreferences(S) ? 'he' : effectiveLang(S, config)
-  useEffect(() => {
-    if (needsHebrewPreferences(S)) useStore.getState().update(applyHebrewPreferences)
-  }, [S])
-  useEffect(() => { setLang(lang, S.enParens?.[baseLang(lang)] ?? (lang !== 'he'), S.enOnly?.[baseLang(lang)] === true) }, [lang, S.enParens, S.enOnly])
+  const lang = effectiveLang(S, config)
+  useEffect(() => { setLang(lang, S.enParens?.[baseLang(lang)] ?? true, S.enOnly?.[baseLang(lang)] === true) }, [lang, S.enParens, S.enOnly])
   // Same shape as the language: a module-level display setting, pushed when it changes (#139).
   useEffect(() => { setWeightDecimals(S.wdec) }, [S.wdec])
   useEffect(() => { document.documentElement.lang = lang }, [langV, lang])
@@ -209,8 +205,6 @@ function Shell() {
           {!authed ? <Login /> : needsMobileOnboarding ? <MobileOnboarding /> : (
             <Routes>
               <Route path="/home" element={<Home />} />
-              <Route path="/workouts" element={<Navigate to="/plan" replace />} />
-              <Route path="/statistics" element={<Navigate to="/stats" replace />} />
               {/* Gym check-in — switched off in Settings, the route falls through to the
                   catch-all redirect below. */}
               {S.checkIn !== false && <Route path="/checkin" element={<CheckIn />} />}

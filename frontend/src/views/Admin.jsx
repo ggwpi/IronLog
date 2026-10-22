@@ -1,4 +1,3 @@
-import { t } from '../lib/i18n.js'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
@@ -35,13 +34,13 @@ const dur = ms => { const m = Math.max(0, Math.floor(ms / 60000)); return m < 60
 // before it has been copied or written down.
 function ResetCodeSheet({ name, email, code, expires, close }) {
   const toast = useUI(s => s.toast)
-  const copy = () => { navigator.clipboard?.writeText(code).catch(() => {}); toast(t("Copied")) }
+  const copy = () => { navigator.clipboard?.writeText(code).catch(() => {}); toast('Copied') }
   return <>
-    <h3>{t("Reset code for")} {name}</h3>
-    <div className="adm-lead">{t("Give them this code. They choose “Sign in with password” → “Have a reset code from your admin?”, enter their name")} <b>{name}</b>{email && <> {t("(or their sign-in e-mail")} <b>{email}</b>)</>}{t(", the code and a new password. It works once, until")} {new Date(expires).toLocaleString()}{t(", and will not be shown again.")}</div>
-    <button className="adm-code" style={{ fontSize: 22, width: '100%', padding: '14px 0' }} onClick={copy} aria-label={t("copy code")}>{code}</button>
+    <h3>Reset code for {name}</h3>
+    <div className="adm-lead">Give them this code. They choose “Sign in with password” → “Have a reset code from your admin?”, enter their name <b>{name}</b>{email && <> (or their sign-in e-mail <b>{email}</b>)</>}, the code and a new password. It works once, until {new Date(expires).toLocaleString()}, and will not be shown again.</div>
+    <button className="adm-code" style={{ fontSize: 22, width: '100%', padding: '14px 0' }} onClick={copy} aria-label="copy code">{code}</button>
     <div style={{ height: 12 }} />
-    <Button variant="primary" onClick={close}>{t("Done")}</Button>
+    <Button variant="primary" onClick={close}>Done</Button>
   </>
 }
 
@@ -50,7 +49,7 @@ function UserDetail({ id, onChanged, close }) {
   const toast = useUI(s => s.toast)
   const openSheet = useUI(s => s.openSheet)
   useEffect(() => { api('/api/admin/user?id=' + encodeURIComponent(id)).then(setD).catch(e => toast(e.message)) }, [id])
-  if (!d) return <div className="muted small">{t("Loading…")}</div>
+  if (!d) return <div className="muted small">Loading…</div>
   const u = d.user
   // The document comes straight off the user's state file. PUT /api/data drops null and
   // shapeless entries now, but a file written before it did still answers with them, and this
@@ -69,21 +68,21 @@ function UserDetail({ id, onChanged, close }) {
   }
   const doDelete = () => {
     api('/api/admin/user/delete', { method: 'POST', body: JSON.stringify({ id: u.id }) })
-      .then(() => { toast(t("Account deleted")); onChanged(); close() })
+      .then(() => { toast('Account deleted'); onChanged(); close() })
       .catch(e => toast(e.message))
   }
   const setDisabled = disabled => {
     api('/api/admin/user/disable', { method: 'POST', body: JSON.stringify({ id: u.id, disabled }) })
-      .then(() => { toast(disabled ? t("User disabled") : t("User enabled")); onChanged(); close() })
+      .then(() => { toast(disabled ? 'User disabled' : 'User enabled'); onChanged(); close() })
       .catch(e => toast(e.message))
   }
   // Password sign-in (#118): the server only sends `password` when the instance offers it. The
   // code comes back once, is shown once, and is never stored anywhere but as a hash.
   const pwInstance = typeof u.password === 'boolean'
   const resetPassword = () => confirmSheet({
-    title: t('Reset {0}’s password?', u.name),
-    message: t("You get a one-time code to hand them. Their current password stops working now and they are signed out everywhere; their passkeys keep working. They set a new password with the code under “Sign in with password”. It is shown once and is valid for 24 hours."),
-    confirmText: t("Create reset code"),
+    title: 'Reset ' + u.name + '’s password?',
+    message: 'You get a one-time code to hand them. Their current password stops working now and they are signed out everywhere; their passkeys keep working. They set a new password with the code under “Sign in with password”. It is shown once and is valid for 24 hours.',
+    confirmText: 'Create reset code',
     danger: true,
     onConfirm: () => api('/api/admin/user/password-reset', { method: 'POST', body: JSON.stringify({ id: u.id }) })
       .then(r => { onChanged(); close(); openSheet(done => <ResetCodeSheet name={r.name} email={u.email} code={r.code} expires={r.expires} close={done} />, { locked: true }) })
@@ -92,62 +91,62 @@ function UserDetail({ id, onChanged, close }) {
   return <>
     <h3 className="capitalize">{u.name}</h3>
     <div className="row" style={{ gap: 6, flexWrap: 'wrap', margin: '8px 0 12px' }}>
-      {u.admin && <span className="adm-pill acc">{t("admin")}</span>}
-      {u.disabled && <span className="adm-pill bad">{t("disabled")}</span>}
-      {u.invitedBy && <span className="adm-pill">{t("invite")} {u.invitedBy}</span>}
-      {u.password && <span className="adm-pill">{t("password")}</span>}
+      {u.admin && <span className="adm-pill acc">admin</span>}
+      {u.disabled && <span className="adm-pill bad">disabled</span>}
+      {u.invitedBy && <span className="adm-pill">invite {u.invitedBy}</span>}
+      {u.password && <span className="adm-pill">password</span>}
       {/* The sign-in e-mail (password instances only): shown to admins and nobody else. */}
-      {u.email && <span className="adm-pill" title={t("sign-in e-mail")}>{u.email}</span>}
-      {u.resetUntil && <span className="adm-pill acc">{t("reset code until")} {new Date(u.resetUntil).toLocaleString()}</span>}
-      <span className="adm-pill">{t("joined")} {u.created ? fmtDate(u.created.slice(0, 10)) : '–'}</span>
+      {u.email && <span className="adm-pill" title="sign-in e-mail">{u.email}</span>}
+      {u.resetUntil && <span className="adm-pill acc">reset code until {new Date(u.resetUntil).toLocaleString()}</span>}
+      <span className="adm-pill">joined {u.created ? fmtDate(u.created.slice(0, 10)) : '–'}</span>
     </div>
     <div className="tiles" style={{ textAlign: 'start' }}>
-      <div className="tile"><div className="l">{t("Workouts")}</div><div className="v" style={{ fontSize: '1.1rem' }}>{workouts.length}</div></div>
-      <div className="tile"><div className="l">{t("Weigh-ins")}</div><div className="v" style={{ fontSize: '1.1rem' }}>{d.bodyweight.length}</div></div>
-      <div className="tile"><div className="l">{t("Measurements")}</div><div className="v" style={{ fontSize: '1.1rem' }}>{(d.measurements || []).length}</div></div>
-      <div className="tile"><div className="l">{t("Routines")}</div><div className="v" style={{ fontSize: '1.1rem' }}>{d.routines.length}</div></div>
-      <div className="tile"><div className="l">{t("Last sync")}</div><div className="v" style={{ fontSize: '.95rem' }}>{rel(d.lastSync)}</div></div>
+      <div className="tile"><div className="l">Workouts</div><div className="v" style={{ fontSize: '1.1rem' }}>{workouts.length}</div></div>
+      <div className="tile"><div className="l">Weigh-ins</div><div className="v" style={{ fontSize: '1.1rem' }}>{d.bodyweight.length}</div></div>
+      <div className="tile"><div className="l">Measurements</div><div className="v" style={{ fontSize: '1.1rem' }}>{(d.measurements || []).length}</div></div>
+      <div className="tile"><div className="l">Routines</div><div className="v" style={{ fontSize: '1.1rem' }}>{d.routines.length}</div></div>
+      <div className="tile"><div className="l">Last sync</div><div className="v" style={{ fontSize: '.95rem' }}>{rel(d.lastSync)}</div></div>
     </div>
     {!u.admin && <>
       <button className={'btn ' + (u.disabled ? 'primary' : 'danger')} style={{ margin: '12px 0 4px' }}
         onClick={() => u.disabled ? setDisabled(false)
-          : confirmSheet({ title: t('Disable {0}?', u.name), message: t("They are signed out everywhere and can no longer sync or log in until re-enabled. Their data stays."), confirmText: t("Disable"), danger: true, onConfirm: () => setDisabled(true) })}>
-        {u.disabled ? t("Enable account") : t("Disable account")}</button>
-      <div className="adm-hint">{u.disabled ? t("Enabling lets them sign in and sync again.") : t("Disabling signs them out everywhere and blocks sign-in. Nothing is deleted.")}</div>
+          : confirmSheet({ title: 'Disable ' + u.name + '?', message: 'They are signed out everywhere and can no longer sync or log in until re-enabled. Their data stays.', confirmText: 'Disable', danger: true, onConfirm: () => setDisabled(true) })}>
+        {u.disabled ? 'Enable account' : 'Disable account'}</button>
+      <div className="adm-hint">{u.disabled ? 'Enabling lets them sign in and sync again.' : 'Disabling signs them out everywhere and blocks sign-in. Nothing is deleted.'}</div>
       {/* The one destructive action in the app (issue #107), so it asks twice and offers the
           export first — that history is theirs. The second step names the account again, because
           the first sheet can be dismissed by anyone who was not reading. */}
       <button className="btn danger" style={{ margin: '14px 0 4px' }}
         onClick={() => confirmSheet({
-          title: t('Delete {0}?', u.name),
-          message: t("Everything goes: their workouts, weigh-ins, routines, passkeys and notifications. This cannot be undone, and the invite code they joined with stays used. Download their data first if they might want it."),
-          confirmText: t("Continue"),
+          title: 'Delete ' + u.name + '?',
+          message: 'Everything goes: their workouts, weigh-ins, routines, passkeys and notifications. This cannot be undone, and the invite code they joined with stays used. Download their data first if they might want it.',
+          confirmText: 'Continue',
           danger: true,
           onConfirm: () => confirmSheet({
             title: 'Delete ' + u.name + ' for good?',
-            message: t("Last chance. There’s no undo and no backup of this on the server."),
-            confirmText: t("Delete account"),
+            message: 'Last chance. There’s no undo and no backup of this on the server.',
+            confirmText: 'Delete account',
             danger: true,
             onConfirm: doDelete,
           }),
-        })}>{t("Delete account")}</button>
-      <button className="btn" style={{ marginBottom: 4 }} onClick={exportUser}>{t("Download their data")}</button>
-      <div className="adm-hint">{t("Deleting removes the account and every trace of its training history from this server.")}</div>
+        })}>Delete account</button>
+      <button className="btn" style={{ marginBottom: 4 }} onClick={exportUser}>Download their data</button>
+      <div className="adm-hint">Deleting removes the account and every trace of its training history from this server.</div>
       {pwInstance && <>
-        <button className="btn" style={{ margin: '14px 0 4px' }} onClick={resetPassword}>{t("Reset password")}</button>
+        <button className="btn" style={{ margin: '14px 0 4px' }} onClick={resetPassword}>Reset password</button>
         <div className="adm-hint">{u.password
-          ? t("For a forgotten password: a one-time code lets them choose a new one. Their current password stops working at once.")
-          : t("No password yet. A one-time code lets them set one. That’s the way back in after losing their only passkey.")}</div>
+          ? 'For a forgotten password: a one-time code lets them choose a new one. Their current password stops working at once.'
+          : 'No password yet. A one-time code lets them set one. That’s the way back in after losing their only passkey.'}</div>
       </>}
     </>}
-    <h4 className="sec">{t("Workout history")}</h4>
+    <h4 className="sec">Workout history</h4>
     {workouts.length ? <div className="list" style={{ gap: 0 }}>
       {workouts.slice(0, 60).map(w => <div key={w.id} className="row between" style={{ padding: '9px 2px', borderBottom: '1px solid var(--sep)' }}>
         <div><div className="small" style={{ fontWeight: 600 }}>{w.name}</div>
-          <div className="dim" style={{ fontSize: '.72rem' }}>{fmtDate(w.d, true)} · {fmtDur((w.end || w.start) - w.start)} · {setsDone(w)} {t("sets")}{w.prs?.length ? ' · ' + w.prs.length + ' PR' : ''}</div></div>
+          <div className="dim" style={{ fontSize: '.72rem' }}>{fmtDate(w.d, true)} · {fmtDur((w.end || w.start) - w.start)} · {setsDone(w)} sets{w.prs?.length ? ' · ' + w.prs.length + ' PR' : ''}</div></div>
         <span className="small muted">{fmtVol(w.vol ?? workoutVolume(w), d.unit)}</span>
       </div>)}
-    </div> : <div className="adm-empty">{t("No workouts logged.")}</div>}
+    </div> : <div className="adm-empty">No workouts logged.</div>}
   </>
 }
 
@@ -157,39 +156,39 @@ function InvitesCard({ invites, reload, inviteOnly }) {
     .then(({ invite }) => { navigator.clipboard?.writeText(invite.code).catch(() => {}); toast('Code ' + invite.code + ' created & copied'); reload() })
     .catch(e => toast(e.message))
   const revoke = code => confirmSheet({
-    title: 'Revoke code ' + code + '?', message: t("Anyone who has it can no longer use it. People who already signed up with it are not affected."),
-    confirmText: t("Revoke"), danger: true,
+    title: 'Revoke code ' + code + '?', message: 'Anyone who has it can no longer use it. People who already signed up with it are not affected.',
+    confirmText: 'Revoke', danger: true,
     onConfirm: () => api('/api/admin/invites/revoke', { method: 'POST', body: JSON.stringify({ code }) })
-      .then(() => { toast(t("Code revoked")); reload() }).catch(e => toast(e.message))
+      .then(() => { toast('Code revoked'); reload() }).catch(e => toast(e.message))
   })
   const copy = code => { navigator.clipboard?.writeText(code).catch(() => {}); toast('Copied ' + code) }
   const open = (invites || []).filter(i => !i.usedBy)
   const used = (invites || []).filter(i => i.usedBy)
   return <div className="card">
-    <div className="row between"><h2 style={{ margin: 0 }}>{t("Invite codes")}</h2>
-      <Button variant="primary" size="sm" onClick={gen} icon="plus">{t("New code")}</Button></div>
+    <div className="row between"><h2 style={{ margin: 0 }}>Invite codes</h2>
+      <Button variant="primary" size="sm" onClick={gen} icon="plus">New code</Button></div>
     <div className="adm-lead">
       {inviteOnly
-        ? t("Sign-up is invite-only: someone needs one of these codes to create a profile. Each code works once.")
-        : t("Sign-up is open, so codes are optional here. They only record who invited whom.")}
+        ? 'Sign-up is invite-only: someone needs one of these codes to create a profile. Each code works once.'
+        : 'Sign-up is open, so codes are optional here. They only record who invited whom.'}
     </div>
     {open.length ? <>
-      <div className="adm-group-t">{t("Unused · tap to copy")}</div>
+      <div className="adm-group-t">Unused · tap to copy</div>
       {open.map(i => <div key={i.code} className="row between" style={{ padding: '6px 0', borderBottom: 'var(--hair) solid var(--sep)' }}>
         <button className="adm-code" onClick={() => copy(i.code)} aria-label={'copy ' + i.code}>{i.code}</button>
         <div className="row" style={{ gap: 4 }}>
-          <button className="iconbtn adm-iconbtn" onClick={() => copy(i.code)} aria-label={t("copy")}><Icon name="copy" /></button>
-          <button className="iconbtn adm-iconbtn" style={{ color: 'var(--red)' }} onClick={() => revoke(i.code)} aria-label={t("revoke")}><Icon name="trash" /></button>
+          <button className="iconbtn adm-iconbtn" onClick={() => copy(i.code)} aria-label="copy"><Icon name="copy" /></button>
+          <button className="iconbtn adm-iconbtn" style={{ color: 'var(--red)' }} onClick={() => revoke(i.code)} aria-label="revoke"><Icon name="trash" /></button>
         </div>
       </div>)}
     </> : null}
     {used.length ? <>
-      <div className="adm-group-t" style={{ marginTop: open.length ? 12 : 0 }}>{t("Already used")}</div>
+      <div className="adm-group-t" style={{ marginTop: open.length ? 12 : 0 }}>Already used</div>
       {used.map(i => <div key={i.code} className="row between dim" style={{ padding: '6px 0', fontSize: '.82rem' }}>
         <span style={{ fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', letterSpacing: '.06em' }}>{i.code}</span><span>→ {i.usedByName || 'used'}</span>
       </div>)}
     </> : null}
-    {!open.length && !used.length && <div className="adm-empty">{t("No codes yet. \"New code\" makes one and copies it to your clipboard.")}</div>}
+    {!open.length && !used.length && <div className="adm-empty">No codes yet. "New code" makes one and copies it to your clipboard.</div>}
   </div>
 }
 
@@ -211,23 +210,23 @@ function AuditCard({ tick }) {
   useEffect(() => { load(cat) }, [tick])
 
   const clear = () => confirmSheet({
-    title: t("Clear the activity log?"),
-    message: t("Every recorded event is deleted. The clear itself is logged, so the gap stays visible."),
-    confirmText: t("Clear"), danger: true,
+    title: 'Clear the activity log?',
+    message: 'Every recorded event is deleted. The clear itself is logged, so the gap stays visible.',
+    confirmText: 'Clear', danger: true,
     onConfirm: () => api('/api/admin/audit/clear', { method: 'POST', body: '{}' })
-      .then(() => { toast(t("Activity log cleared")); pick(cat) }).catch(e => toast(e.message))
+      .then(() => { toast('Activity log cleared'); pick(cat) }).catch(e => toast(e.message))
   })
 
   if (meta && !meta.enabled) return null      // AUDIT_LOG=0 — the card isn't there at all
 
   return <div className="card">
-    <div className="row between"><h2 style={{ margin: 0 }}>{t("Activity log")}</h2>
-      <button className="iconbtn adm-iconbtn" style={{ color: 'var(--red)' }} onClick={clear} aria-label={t("clear log")}><Icon name="trash" /></button></div>
+    <div className="row between"><h2 style={{ margin: 0 }}>Activity log</h2>
+      <button className="iconbtn adm-iconbtn" style={{ color: 'var(--red)' }} onClick={clear} aria-label="clear log"><Icon name="trash" /></button></div>
     <div className="adm-lead">
-      {t("Who signed in, what failed, and what an admin changed.")}
+      Who signed in, what failed, and what an admin changed.
       {meta ? ' ' + fmtNum(meta.total) + ' events'
         + (meta.retention.days ? ', kept for ' + meta.retention.days + ' days' : '')
-        + (meta.ip_mode === 'off' ? t(", without IP addresses") : '') + '.' : ''}
+        + (meta.ip_mode === 'off' ? ', without IP addresses' : '') + '.' : ''}
     </div>
     <div className="chips" style={{ marginBottom: 10 }}>
       {[['', 'All'], ['auth', 'Sign-ins'], ['admin', 'Admin'], ['fail', 'Failed']].map(([v, l]) =>
@@ -239,16 +238,16 @@ function AuditCard({ tick }) {
         <div className="grow">
           <div className="small" style={{ fontWeight: 600 }}>{line.title}
             {/* a red pill, not a red row: twenty fumbled Face IDs in a row shouldn't read as an incident */}
-            {!e.ok && <span className="adm-pill bad" style={{ marginInlineStart: 6 }}>{t("failed")}</span>}
-            {auditCat(e.ev) === 'admin' && <span className="adm-pill acc" style={{ marginInlineStart: 6 }}>{t("admin")}</span>}</div>
+            {!e.ok && <span className="adm-pill bad" style={{ marginInlineStart: 6 }}>failed</span>}
+            {auditCat(e.ev) === 'admin' && <span className="adm-pill acc" style={{ marginInlineStart: 6 }}>admin</span>}</div>
           {line.sub && <div className="dim" style={{ fontSize: '.72rem' }}>{line.sub}</div>}
         </div>
         <span className="small muted" style={{ flex: 'none', marginInlineStart: 8 }}>{fmtWhen(e.ts, meta?.now)}</span>
       </div>
     })}
-    {meta && !rows.length && <div className="adm-empty">{t("Nothing logged yet.")}</div>}
+    {meta && !rows.length && <div className="adm-empty">Nothing logged yet.</div>}
     {meta?.nextBefore && <div style={{ marginTop: 10 }}>
-      <Button size="sm" onClick={() => load(cat, meta.nextBefore)}>{t("Show more")}</Button></div>}
+      <Button size="sm" onClick={() => load(cat, meta.nextBefore)}>Show more</Button></div>}
   </div>
 }
 
@@ -284,36 +283,36 @@ export default function Admin() {
 
   return <div className="narrow">
     <div className="hdr">
-      <button className="iconbtn" onClick={() => nav('/settings/account')} aria-label={t("Back")}><Icon name="chevronLeft" /></button>
-      <div style={{ flex: 1, marginInlineStart: 8 }}><h1 style={{ margin: 0 }}>{t("Admin")}</h1>
-        <div className="sub">{users ? users.length + ' users · ' + activeCount + ' active this week' : usersErr ? t("Could not load") : t("Loading…")}</div></div>
-      <button className="iconbtn" onClick={() => { loadUsers(); loadInvites(); setTick(n => n + 1) }} aria-label={t("refresh")}>↻</button>
+      <button className="iconbtn" onClick={() => nav('/settings/account')} aria-label="Back"><Icon name="chevronLeft" /></button>
+      <div style={{ flex: 1, marginInlineStart: 8 }}><h1 style={{ margin: 0 }}>Admin</h1>
+        <div className="sub">{users ? users.length + ' users · ' + activeCount + ' active this week' : usersErr ? 'Could not load' : 'Loading…'}</div></div>
+      <button className="iconbtn" onClick={() => { loadUsers(); loadInvites(); setTick(n => n + 1) }} aria-label="refresh">↻</button>
     </div>
     <div className="adm-intro">
-      {t("Everything about running this instance: who uses it, how they get in, the AI Coach, and what has happened on it. Nothing here shows anyone's training data beyond counts.")}
+      Everything about running this instance: who uses it, how they get in, the AI Coach, and what has happened on it. Nothing here shows anyone's training data beyond counts.
     </div>
 
     {usersErr && <div className="card" role="alert" style={{ borderColor: 'var(--red)' }}>
-      <div className="row between"><h2 style={{ margin: 0 }}>{users ? t("The last update failed") : t("Could not load the users")}</h2>
-        <Button size="sm" icon="reset" onClick={loadUsers}>{t("Try again")}</Button></div>
+      <div className="row between"><h2 style={{ margin: 0 }}>{users ? 'The last update failed' : 'Could not load the users'}</h2>
+        <Button size="sm" icon="reset" onClick={loadUsers}>Try again</Button></div>
       <div className="adm-lead" style={{ marginBottom: 0 }}>
-        {usersErr} {users ? t("The list below is the last one that loaded.") : t("It tries again every 15 seconds.")}
+        {usersErr} {users ? 'The list below is the last one that loaded.' : 'It tries again every 15 seconds.'}
       </div>
     </div>}
 
     <div className="tiles" style={{ marginBottom: 12 }}>
-      <div className="tile"><div className="l">{t("Users")}</div><div className="v">{users ? users.length : '–'}</div></div>
-      <div className="tile"><div className="l">{t("Training now")}</div><div className="v" style={{ color: liveUsers.length ? 'var(--acc)' : undefined }}>{users ? liveUsers.length : '–'}</div></div>
-      <div className="tile"><div className="l">{t("Active 7 days")}</div><div className="v">{users ? activeCount : '–'}</div></div>
-      <div className="tile"><div className="l">{t("Disabled")}</div><div className="v">{users ? disabledCount : '–'}</div></div>
+      <div className="tile"><div className="l">Users</div><div className="v">{users ? users.length : '–'}</div></div>
+      <div className="tile"><div className="l">Training now</div><div className="v" style={{ color: liveUsers.length ? 'var(--acc)' : undefined }}>{users ? liveUsers.length : '–'}</div></div>
+      <div className="tile"><div className="l">Active 7 days</div><div className="v">{users ? activeCount : '–'}</div></div>
+      <div className="tile"><div className="l">Disabled</div><div className="v">{users ? disabledCount : '–'}</div></div>
     </div>
 
     {liveUsers.length > 0 && <div className="card" style={{ borderColor: 'var(--acc)' }}>
-      <h2 className="row" style={{ margin: '0 0 2px', gap: 6 }}><Icon name="dot" style={{ fontSize: 10, color: 'var(--green)' }} />{t("Training now")}</h2>
-      <div className="adm-lead">{t("Sessions running at this moment. Tap a name for details.")}</div>
+      <h2 className="row" style={{ margin: '0 0 2px', gap: 6 }}><Icon name="dot" style={{ fontSize: 10, color: 'var(--green)' }} />Training now</h2>
+      <div className="adm-lead">Sessions running at this moment. Tap a name for details.</div>
       {liveUsers.map(u => <div key={u.id} className="row between" style={{ padding: '8px 2px', borderBottom: 'var(--hair) solid var(--sep)' }} onClick={() => openUser(u.id)}>
         <div><div className="small" style={{ fontWeight: 600 }}>{u.name}</div>
-          <div className="dim" style={{ fontSize: '.72rem' }}>{u.live.name} {t("· exercise")} {u.live.exIdx} of {u.live.exTotal} · {u.live.setsDone}/{u.live.setsTotal} {t("sets")}</div></div>
+          <div className="dim" style={{ fontSize: '.72rem' }}>{u.live.name} · exercise {u.live.exIdx} of {u.live.exTotal} · {u.live.setsDone}/{u.live.setsTotal} sets</div></div>
         <span className="adm-pill acc">{dur(Date.now() - u.live.startedAt)}</span>
       </div>)}
     </div>}
@@ -325,16 +324,16 @@ export default function Admin() {
     <InvitesCard invites={invites} reload={loadInvites} inviteOnly={inviteOnly} />
 
     <div className="card">
-      <h2 style={{ margin: 0 }}>{t("Users")}</h2>
-      <div className="adm-lead">{t("Everyone with a profile on this instance. Tap one to see their activity, to disable the account (nothing is deleted) or to delete it with all their data for good.")}</div>
+      <h2 style={{ margin: 0 }}>Users</h2>
+      <div className="adm-lead">Everyone with a profile on this instance. Tap one to see their activity, to disable the account (nothing is deleted) or to delete it with all their data for good.</div>
       <div className="list">
         {(users || []).map(u => <div key={u.id} className="item" onClick={() => openUser(u.id)} style={u.disabled ? { opacity: .55 } : null}>
-          <div className="grow"><div className="tt">{u.live && <Icon name="dot" style={{ fontSize: 9, color: 'var(--green)', display: 'inline-block', marginInlineEnd: 5 }} />}{u.name} {u.admin && <span className="adm-pill acc" style={{ marginInlineStart: 4 }}>{t("admin")}</span>}{u.disabled && <span className="adm-pill bad" style={{ marginInlineStart: 4 }}>{t("disabled")}</span>}</div>
+          <div className="grow"><div className="tt">{u.live && <Icon name="dot" style={{ fontSize: 9, color: 'var(--green)', display: 'inline-block', marginInlineEnd: 5 }} />}{u.name} {u.admin && <span className="adm-pill acc" style={{ marginInlineStart: 4 }}>admin</span>}{u.disabled && <span className="adm-pill bad" style={{ marginInlineStart: 4 }}>disabled</span>}</div>
             <div className="ss">{u.live ? 'training now · ' + u.live.name : u.workouts + ' workouts' + (u.lastWorkout ? ' · last ' + fmtDate(u.lastWorkout) : '') + ' · last sync ' + rel(u.lastSync)}</div>
-            {u.email && <div className="ss" title={t("sign-in e-mail")}>{u.email}</div>}</div>
-          {u.hasPush && <Icon name="bell" title={t("push notifications on")} style={{ fontSize: 15, color: 'var(--label-3)' }} />}<Icon name="chevronRight" className="chev" />
+            {u.email && <div className="ss" title="sign-in e-mail">{u.email}</div>}</div>
+          {u.hasPush && <Icon name="bell" title="push notifications on" style={{ fontSize: 15, color: 'var(--label-3)' }} />}<Icon name="chevronRight" className="chev" />
         </div>)}
-        {users && !users.length && <div className="adm-empty">{t("No users yet.")}</div>}
+        {users && !users.length && <div className="adm-empty">No users yet.</div>}
       </div>
     </div>
 

@@ -1,5 +1,3 @@
-import { VolumeReference, EffortTarget, WeightTrend, RecoveryCheckIn, TrainingCycle } from '../ironlog/Dashboard.jsx'
-import TheorySettings from '../ironlog/TheorySettings.jsx'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
@@ -278,12 +276,12 @@ function MuscleBalance({ S }) {
                   ? <span className="dim" style={{ fontSize: 11, marginInlineStart: 6 }}>{t('primary')}</span>
                   : <span className="dim" style={{ fontSize: 11, marginInlineStart: 6 }}>{t('secondary')}</span>}
               </span>
-              <span className="small dim" style={{ display: 'block', fontWeight: 400 }}>{t('Est. 1RM')}: {fmtNum(row.est)} {t(S.unit)} · {fmtDate(row.estDate, true)}</span>
+              <span className="small dim" style={{ display: 'block', fontWeight: 400 }}>{t('Est. 1RM')}: {fmtNum(row.est)} {S.unit} · {fmtDate(row.estDate, true)}</span>
             </span>
             {/* Filled by width, like the bars around it, rather than a 'to right' gradient: a block
                 starts at the inline start, so in right-to-left it fills from the right. */}
             <span className="bar" style={{ alignSelf: 'center' }}><i style={{ width: Math.round(row.decay * 100) + '%' }} /></span>
-            <span className="v" style={{ alignSelf: 'center' }}>{fmtNum(row.current)} {t(S.unit)}<span className="dim"> · {Math.round(row.decay * 100)}%</span></span>
+            <span className="v" style={{ alignSelf: 'center' }}>{fmtNum(row.current)} {S.unit}<span className="dim"> · {Math.round(row.decay * 100)}%</span></span>
           </div>
         )) : <div className="muted small">{t('No exercises with an estimated 1RM yet.')}</div>}
       </>}
@@ -376,7 +374,6 @@ function EffortCard({ S }) {
         {t('Most working sets belong close to failure, not at it. Half at the floor and half at the top still average out to a healthy-looking middle.')}
       </div>
     </>}
-    <EffortTarget S={S} />
   </div>
 }
 
@@ -404,7 +401,6 @@ export function WeeklyPlanVolume({ S }) {
       <Button className="weekly-plan-toggle" trailingIcon={all ? 'chevronUp' : 'chevronDown'} aria-expanded={all}
         onClick={() => setAll(v => !v)}>{t(all ? 'Show less' : 'Show more')}</Button>
     </>}
-    <VolumeReference S={S} />
   </div>
 }
 
@@ -679,9 +675,6 @@ export default function Stats() {
     </div>
     {(hasEffort(S) || hasEstimableEffort(S)) && <EffortCard S={S} />}
 
-    <div className="card"><RecoveryCheckIn S={S} /><TheorySettings /></div>
-    <TrainingCycle S={S} />
-
     <div className="cols">
       <div className="card">
         <div className="row between bw-head" style={{ marginBottom: 8 }}>
@@ -698,7 +691,6 @@ export default function Stats() {
         {S.bodyweight.length > 0 && <div className="row" style={{ justifyContent: 'flex-end', marginTop: 4 }}>
           <Button size="sm" variant="ghost" trailingIcon="chevronRight" onClick={weighInsSheet}>{t('All weigh-ins')}</Button>
         </div>}
-        <WeightTrend S={S} />
       </div>
 
       <div className="card">

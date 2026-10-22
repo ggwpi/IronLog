@@ -58,7 +58,6 @@ export function NumberField({ value, onChange, decimal = true, nullable = false,
   return (
     <input
       type="text"
-      dir="ltr"
       inputMode={decimal ? 'decimal' : 'numeric'}
       className={'num ' + className}
       value={shown}
@@ -76,18 +75,18 @@ export function NumberField({ value, onChange, decimal = true, nullable = false,
 
 // forwardRef so callers can focus it or read its value imperatively
 export const TextField = forwardRef(function TextField({ className = '', ...rest }, ref) {
-  return <input ref={ref} dir={rest.type === 'email' || rest.type === 'url' || rest.type === 'password' ? 'ltr' : 'auto'} className={'field ' + className} {...rest} />
+  return <input ref={ref} className={'field ' + className} {...rest} />
 })
 
 export function TextArea({ className = '', ...rest }) {
-  return <textarea dir="auto" className={'field area ' + className} {...rest} />
+  return <textarea className={'field area ' + className} {...rest} />
 }
 
 export const SearchField = forwardRef(function SearchField({ value, onChange, onClear, ...rest }, ref) {
   return (
     <div className="searchf">
       <Icon name="magnifier" className="lead" />
-      <input ref={ref} dir="auto" className="field" value={value} onChange={onChange} {...rest} />
+      <input ref={ref} className="field" value={value} onChange={onChange} {...rest} />
       {!!value && (
         <button className="clear" onClick={onClear} aria-label={t('Clear')}>
           <Icon name="xmark" />
@@ -183,12 +182,12 @@ export function Stepper({ value, step = 1, min = 0, max = Infinity, onChange, de
   })
   const inner = (
     <div className={'stp ' + className}>
-      <button {...holdProps(-1)} aria-label={ariaLabel ? t('Decrease {0}', ariaLabel) : t('Decrease')} disabled={disabled}><Icon name="minus" /></button>
+      <button {...holdProps(-1)} aria-label={ariaLabel ? `Decrease ${ariaLabel}` : t('Decrease')} disabled={disabled}><Icon name="minus" /></button>
       <span className="val" onBlur={() => { const v = +value || 0; if (clamp(v) !== v) onChange(clamp(v)) }}>
         <NumberField value={value} decimal={decimal} onChange={onChange} disabled={disabled} aria-invalid={invalid ? 'true' : undefined} />
         {unit && <i>{unit}</i>}
       </span>
-      <button {...holdProps(1)} aria-label={ariaLabel ? t('Increase {0}', ariaLabel) : t('Increase')} disabled={disabled}><Icon name="plus" /></button>
+      <button {...holdProps(1)} aria-label={ariaLabel ? `Increase ${ariaLabel}` : t('Increase')} disabled={disabled}><Icon name="plus" /></button>
     </div>
   )
   if (!label) return inner

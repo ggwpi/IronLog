@@ -1,4 +1,3 @@
-import hebrewInterface from '../locales/he.js'
 // Browser-only shell of the i18n module. The runtime-agnostic state and readers live
 // in i18n-core.js (plain Node-loadable); this file adds the two pieces that genuinely need
 // the browser: `setLang` (which lazy-loads locale packs via import.meta.glob) and the React
@@ -53,10 +52,9 @@ const notify = () => { subs.forEach(f => f()) }
 let lastShowEn = undefined
 let lastEnOnly = undefined
 
-let languageRequest = 0
 export async function setLang(l, showEn, enOnly) {
   if (!LANGS[l]) l = 'en'
-  const show = showEn === undefined ? l !== 'he' : showEn !== false
+  const show = showEn !== false
   const only = enOnly === true
   // Both display switches participate in the early-exit, so toggling the parens or the
   // English-only switch re-applies state even when l did not change.
@@ -66,20 +64,16 @@ export async function setLang(l, showEn, enOnly) {
   // dateLocale() still reports de-CH and formats numbers Swiss-style.
   lastShowEn = show
   lastEnOnly = only
-  const request = ++languageRequest
-  // Direction follows the requested language immediately, even on a slow first pack load.
-  document.documentElement.lang = l
-  document.documentElement.dir = RTL_LANGS.has(l) ? 'rtl' : 'ltr'
   const base = baseLang(l)
-  const read = async (packs, key) => { try { return packs[key] ? (await packs[key]()).default : null } catch { return null } }
-  const [dict, instr, exerciseNames] = await Promise.all([
-    base === 'en' ? {} : read(localePacks, '../locales/' + base + '.js'),
-    base === 'en' || !INSTR_LANGS.includes(base) ? null : read(instrPacks, '../instr/' + base + '.js'),
-    base === 'en' || !EXERCISE_NAME_LANGS.includes(base) ? null : read(exerciseNamePacks, '../exercise-names/' + base + '.js'),
-  ])
-  // A slower previous language request must never replace the latest selection.
-  if (request !== languageRequest) return
-  _setLangState(l, derivePack(l, dict || (l === 'he' ? hebrewInterface : {})), derivePack(l, instr), derivePack(l, exerciseNames), show, only)
+  let dict = {}, instr = null, exerciseNames = null
+  try { dict = base === 'en' ? {} : (await localePacks['../locales/' + base + '.js']()).default } catch (e) { dict = {} }
+  try { instr = base === 'en' || !INSTR_LANGS.includes(base) ? null : (await instrPacks['../instr/' + base + '.js']()).default } catch (e) { instr = null }
+  try {
+    exerciseNames = base === 'en' || !EXERCISE_NAME_LANGS.includes(base)
+      ? null
+      : (await exerciseNamePacks['../exercise-names/' + base + '.js']()).default
+  } catch (e) { exerciseNames = null }
+  _setLangState(l, derivePack(l, dict), derivePack(l, instr), derivePack(l, exerciseNames), show, only)
   if (detailsLoaded) loadDetails()
   document.documentElement.lang = l
   document.documentElement.dir = RTL_LANGS.has(l) ? 'rtl' : 'ltr'
