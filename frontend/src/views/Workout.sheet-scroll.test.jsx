@@ -57,6 +57,7 @@ beforeEach(() => {
   useUI.setState({ sheets: [], timer: null, work: null, toastMsg: '' })
 
   host = document.createElement('div')
+  host.id = 'root'
   document.body.appendChild(host)
   root = createRoot(host)
 })
@@ -93,7 +94,8 @@ describe('rating a superset set closes a sheet and moves the marker in one tap',
     // The RIR cell of the first set of the first exercise.
     await click(host.querySelector('.setrow .effcell.is-empty'))
     expect(useUI.getState().sheets.length).toBe(1)
-    expect(document.body.style.position).toBe('fixed')       // the page is pinned behind the sheet
+    expect(host.style.position).toBe('fixed')
+    expect(document.body.style.position).not.toBe('fixed')       // the page is pinned behind the sheet
     await runFrames()
     scrolls.length = 0
 

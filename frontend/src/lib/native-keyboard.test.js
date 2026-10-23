@@ -123,11 +123,10 @@ describe('the two halves agree', () => {
   })
 
   it('every sheet stands on the keyboard and the picker takes the larger lift', () => {
-    expect(css).toMatch(/:root\[data-native-kb\] \.sheet\{\s*bottom:max\(var\(--modal-keyboard-bottom,0px\),var\(--picker-keyboard-bottom,0px\),var\(--native-kb,0px\)\);/)
+    expect(css).toMatch(/:root\[data-native-kb\] \.sheet\{\s*bottom:max\(var\(--picker-keyboard-bottom,0px\),var\(--native-kb,0px\)\);/)
     // The connect sheet (.kb-lift) stands on the keyboard the way the picker does.
-    expect(css).toMatch(/\.sheet:has\(\.picker-search\),\.sheet:has\(\.kb-lift\)\{\s*bottom:max\(var\(--modal-keyboard-bottom,0px\),var\(--picker-keyboard-bottom,0px\),var\(--native-kb,0px\)\);/)
-    expect(css).toContain('calc(var(--modal-usable-height) - var(--sat) - 8px)')
-    expect(css).toContain('--modal-usable-height:min(var(--modal-available-height,100dvh),calc(var(--modal-height,100dvh) - var(--native-kb,0px)))')
+    expect(css).toMatch(/\.sheet:has\(\.picker-search\),\.sheet:has\(\.kb-lift\)\{\s*bottom:max\(var\(--picker-keyboard-bottom,0px\),var\(--native-kb,0px\)\);/)
+    expect(css).toMatch(/max-height:min\(90vh,calc\(100dvh - var\(--sat\) - 8px - var\(--native-kb,0px\)\)\)/)
   })
 
   it('the tab bar is left under the keyboard', () => {
