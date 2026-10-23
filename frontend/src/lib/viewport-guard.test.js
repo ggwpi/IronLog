@@ -82,6 +82,16 @@ describe('viewport guard', () => {
     expect(realignPinned(fakeWindow())).toBe(false)   // nothing pinned, nothing to do
   })
 
+  it('realigns a frozen app root while leaving the body unfixed', () => {
+    const root = {style: {position: 'fixed', top: '-240px'}}
+    const w = fakeWindow({offsetTop: 190})
+    w.document.getElementById = () => root
+    expect(realign(w)).toBe(true)
+    expect(w.scrollTo).toHaveBeenCalledWith(0, 240)
+    expect(root.style.position).toBe('fixed')
+    expect(w.document.body.style.position).not.toBe('fixed')
+  })
+
   it('fires when the keyboard has just closed, again after its animation, and on focusout', async () => {
     vi.useFakeTimers()
     const w = fakeWindow({ vvHeight: 480 })

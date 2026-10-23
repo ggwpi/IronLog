@@ -163,9 +163,17 @@ describe('Modals sheet history accounting', () => {
 })
 
 describe('Modals scroll restoration', () => {
-  it('uses the body offset corrected by a workout layout change', async () => {
+  it('portals outside the frozen app and never fixes the body', async () => {
+    await setSheets([sheet('calendar')])
+    expect(document.getElementById('modal-root').parentElement).toBe(document.body)
+    expect(document.body.style.position).not.toBe('fixed')
+    expect(document.getElementById('root').hasAttribute('inert')).toBe(true)
+    await setSheets([])
+    expect(document.getElementById('root').hasAttribute('inert')).toBe(false)
+  })
+  it('uses the page offset corrected by a workout layout change', async () => {
     await setSheets([sheet('layout')])
-    document.body.style.top = '-240px'
+    document.getElementById('root').style.top = '-240px'
     await setSheets([])
     expect(window.scrollTo).toHaveBeenLastCalledWith(0, 240)
   })
@@ -174,7 +182,7 @@ describe('Modals scroll restoration', () => {
     vi.useFakeTimers()
     try {
       await setSheets([sheet('layout')])
-      document.body.style.top = '-800px'
+      document.getElementById('root').style.top = '-800px'
       await setSheets([])
       window.scrollTo.mockClear()
       window.dispatchEvent(new dom.Event('workout-scroll-anchor'))
@@ -189,8 +197,8 @@ describe('Modals mouse dragging', () => {
     await setSheets([sheet('slider', {
       render: () => React.createElement('input', { type: 'range' }),
     })])
-    const sheetEl = container.querySelector('.sheet')
-    const slider = container.querySelector('input[type="range"]')
+    const sheetEl = document.querySelector('.sheet')
+    const slider = document.querySelector('input[type="range"]')
     sheetEl.scrollTop = 0
 
     await act(async () => {
@@ -208,7 +216,7 @@ describe('Modals mouse dragging', () => {
     let now = 0
     vi.spyOn(performance, 'now').mockImplementation(() => now)
     await setSheets([sheet('drag')])
-    const sheetEl = container.querySelector('.sheet')
+    const sheetEl = document.querySelector('.sheet')
     sheetEl.scrollTop = 0
 
     await act(async () => {
@@ -229,7 +237,7 @@ describe('Modals mouse dragging', () => {
 describe('Modals drag axis lock and dismiss', () => {
   it('ignores a sideways gesture instead of wobbling the sheet', async () => {
     await setSheets([sheet('x')])
-    const sheetEl = container.querySelector('.sheet')
+    const sheetEl = document.querySelector('.sheet')
     sheetEl.scrollTop = 0
 
     await act(async () => {
@@ -247,11 +255,11 @@ describe('Modals drag axis lock and dismiss', () => {
     await setSheets([sheet('chips', {
       render: () => React.createElement('div', { className: 'chips' }, React.createElement('button', { className: 'chip' }, 'a')),
     })])
-    const sheetEl = container.querySelector('.sheet')
+    const sheetEl = document.querySelector('.sheet')
     sheetEl.scrollTop = 0
 
     await act(async () => {
-      mouse(container.querySelector('.chip'), 'mousedown', 10)
+      mouse(document.querySelector('.chip'), 'mousedown', 10)
       mouse(sheetEl, 'mousemove', 150)
       window.dispatchEvent(new dom.Event('mouseup'))
     })
@@ -261,7 +269,7 @@ describe('Modals drag axis lock and dismiss', () => {
 
   it('snaps back to zero when the pull reverses instead of scrolling while offset', async () => {
     await setSheets([sheet('rev')])
-    const sheetEl = container.querySelector('.sheet')
+    const sheetEl = document.querySelector('.sheet')
     sheetEl.scrollTop = 0
 
     await act(async () => {
@@ -283,7 +291,7 @@ describe('Modals drag axis lock and dismiss', () => {
     let now = 0
     vi.spyOn(performance, 'now').mockImplementation(() => now)
     await setSheets([sheet('flick')])
-    const sheetEl = container.querySelector('.sheet')
+    const sheetEl = document.querySelector('.sheet')
     sheetEl.scrollTop = 0
 
     await act(async () => {
@@ -302,7 +310,7 @@ describe('Modals drag axis lock and dismiss', () => {
     let now = 0
     vi.spyOn(performance, 'now').mockImplementation(() => now)
     await setSheets([sheet('slow')])
-    const sheetEl = container.querySelector('.sheet')
+    const sheetEl = document.querySelector('.sheet')
     sheetEl.scrollTop = 0
 
     await act(async () => {
@@ -322,7 +330,7 @@ describe('Modals scroll restore on close', () => {
   async function openAndClose() {
     dom.scrollY = 320
     await setSheets([sheet('menu')])
-    expect(document.body.style.position).toBe('fixed')
+    expect(document.getElementById('root').style.position).toBe('fixed')
     dom.scrollTo.mockClear()
     await setSheets([])
   }
@@ -350,7 +358,7 @@ describe('Modals scroll restore on close', () => {
   })
 })
 
-// The page behind a sheet is pinned (body fixed, shifted by the scroll position) and put back
+// The page behind a sheet is pinned (app root fixed, shifted by the scroll position) and put back
 // where it was when the sheet goes — in the same commit, so there is no frame at scroll 0.
 describe('pinning the page behind a sheet', () => {
   it('pins on open with the scroll position folded in, and restores it on close, three times over', async () => {
@@ -362,11 +370,11 @@ describe('pinning the page behind a sheet', () => {
     const rafs = []
     dom.requestAnimationFrame = fn => { rafs.push(fn); return rafs.length }
     await setSheets([sheet('a')])
-    expect(document.body.style.position).toBe('fixed')
-    expect(document.body.style.top).toBe('-343px')
+    expect(document.getElementById('root').style.position).toBe('fixed')
+    expect(document.getElementById('root').style.top).toBe('-343px')
     expect(dom.scrollTo).not.toHaveBeenCalled()
     await setSheets([])
-    expect(document.body.style.position).toBe('')
+    expect(document.getElementById('root').style.position).toBe('')
     expect(dom.scrollTo).toHaveBeenCalledTimes(1)              // at once, in the same commit
     expect(dom.scrollTo).toHaveBeenCalledWith(0, 343)
     rafs.forEach(fn => fn())
@@ -502,7 +510,7 @@ describe('the restore window under StrictMode', () => {
     // effect, all in the one commit, with the sheet open throughout.
     mocks.state.sheets = [sheet('already-open')]
     await act(async () => { root.render(React.createElement(React.StrictMode, null, React.createElement(Modals))) })
-    expect(document.body.style.position).toBe('fixed')         // the page is pinned, not restoring
+    expect(document.getElementById('root').style.position).toBe('fixed')         // the page is pinned, not restoring
 
     const onOpen = vi.fn()
     afterScrollRestore(onOpen)
@@ -515,27 +523,5 @@ describe('the restore window under StrictMode', () => {
     vi.advanceTimersByTime(400)
     expect(onClose).toHaveBeenCalledTimes(1)
     vi.useRealTimers()
-  })
-})
-
-describe('native dialog close requests', () => {
-  it('dismisses only the top sheet through the existing history path', async () => {
-    await setSheets([sheet('under'), sheet('top')])
-    const dialog = document.getElementById('modal-root')
-    expect(dialog.tagName).toBe('DIALOG')
-    const event = new dom.Event('cancel', { cancelable: true })
-    await act(async () => { dialog.dispatchEvent(event) })
-    expect(event.defaultPrevented).toBe(true)
-    expect(mocks.state.sheets.map(s => s.id)).toEqual(['under'])
-    expect(historyMock.go).toHaveBeenCalledTimes(1)
-    expect(historyMock.go).toHaveBeenCalledWith(-1)
-  })
-  it('prevents the native browser from closing a locked sheet', async () => {
-    await setSheets([sheet('locked', { locked: true })])
-    const event = new dom.Event('cancel', { cancelable: true })
-    await act(async () => { document.getElementById('modal-root').dispatchEvent(event) })
-    expect(event.defaultPrevented).toBe(true)
-    expect(mocks.state.sheets.map(s => s.id)).toEqual(['locked'])
-    expect(historyMock.go).not.toHaveBeenCalled()
   })
 })

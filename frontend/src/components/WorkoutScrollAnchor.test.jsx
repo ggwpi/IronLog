@@ -22,7 +22,8 @@ beforeEach(() => {
   dom.scrollTo = vi.fn(({ top }) => { scrollY = top })
   dom.Element.prototype.getBoundingClientRect = function () {
     if (this.className === 'whdr') return { top: 0, bottom: 80 }
-    const offset = document.body.style.position === 'fixed' ? parseFloat(document.body.style.top) : -window.scrollY
+    const pinned = document.getElementById('root').style.position === 'fixed' ? document.getElementById('root').style : document.body.style
+    const offset = pinned.position === 'fixed' ? parseFloat(pinned.top) : -window.scrollY
     const top = Number(this.dataset.top || 0) + offset + (parseFloat(this.style.marginTop) || 0)
     return { top, bottom: top + Number(this.dataset.height || 0) }
   }
@@ -86,13 +87,13 @@ it('holds the next tile at the page start when shrinking would require a negativ
   expect(container.querySelector('[data-unit-key="1"]').style.marginTop).toBe('')
 })
 
-it('updates the locked body offset while the Layout sheet is open', async () => {
-  document.body.style.position = 'fixed'; document.body.style.top = '-800px'
+it('updates the locked page offset while the Layout sheet is open', async () => {
+  container.style.position = 'fixed'; container.style.top = '-800px'
   await render('', [['0', 100, 700], ['1', 800, 650]])
   const top = tileTop('1')
   await render('0', [['0', 100, 200], ['1', 300, 650]])
   expect(tileTop('1')).toBe(top)
-  expect(document.body.style.top).toBe('-300px')
+  expect(container.style.top).toBe('-300px')
   expect(window.scrollTo).not.toHaveBeenCalled()
 })
 
@@ -114,4 +115,18 @@ it('cancels an older sheet correction when restoring the workout anchor', async 
   await render('', [['0', 100, 700], ['1', 800, 650]])
   await render('0', [['0', 100, 200], ['1', 300, 650]])
   expect(cancel).toHaveBeenCalledOnce()
+})
+
+it('adjusts a frozen app root without fixing or moving the body', async () => {
+  await render('', [['0', 100, 700], ['1', 800, 650]])
+  container.style.position = 'fixed'; container.style.top = '-800px'
+  Object.defineProperty(document.body, 'scrollHeight', {configurable: true, get: () => 600})
+  Object.defineProperty(document.documentElement, 'scrollHeight', {configurable: true, get: () => 600})
+  Object.defineProperty(container, 'scrollHeight', {configurable: true, get: height})
+  scrollY = 0
+  const top = tileTop('1')
+  await render('0', [['0', 100, 200], ['1', 300, 650]])
+  expect(tileTop('1')).toBe(top)
+  expect(container.style.top).toBe('-300px')
+  expect(document.body.style.position).not.toBe('fixed')
 })

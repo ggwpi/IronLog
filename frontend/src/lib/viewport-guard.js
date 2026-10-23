@@ -1,7 +1,9 @@
+import { pageIsPinned, pinnedPageStyle } from './page-scroll-lock.js'
+
 /* The iOS keyboard leaves the page displaced.
  *
  * On iOS Safari (and the home-screen PWA) the keyboard does not resize the layout viewport;
- * it scrolls the page so the focused field is visible, even when the body is pinned by an
+ * it scrolls the page so the focused field is visible, even when the application content is pinned by an
  * open sheet. When the keyboard goes away again, the scroll it made is not always undone:
  * the layout viewport stays offset inside the screen, everything `position:fixed` — the tab
  * bar, the rest timer — sits where the layout viewport ends, i.e. mid-screen, and the page's
@@ -48,20 +50,18 @@ export function realign(win = window) {
   // iOS actually needs it, and the two cases the blur was written for let go of the field
   // themselves — Workout.jsx blurs when a set is ticked, Modals.jsx when a sheet opens.
   if (isText(win.document.activeElement)) return false
-  if (bodyPinned(win)) return realignPinned(win)
+  if (pageIsPinned(win)) return realignPinned(win)
   win.scrollTo(win.scrollX || 0, win.scrollY || 0)
   return true
 }
 
-const bodyPinned = win => win.document.body?.style?.position === 'fixed'
-
-/** The same correction while Modals.jsx has the body pinned (`position:fixed; top:-y`): the
+/** The same correction while Modals.jsx has the page content pinned (`position:fixed; top:-y`): the
  *  document has no scroll range then, so asking for the current position is a no-op and iOS
  *  keeps the offset — the picker sheet left open after the keyboard closed. Let the page scroll
  *  for one call, land it where the pin says it was, and pin it again. */
 export function realignPinned(win = window) {
-  const b = win.document.body?.style
-  if (!b || b.position !== 'fixed') return false
+  const b = pinnedPageStyle(win)
+  if (!b) return false
   const top = b.top
   const y = Math.max(0, -parseFloat(top || '0') || 0)
   b.position = ''

@@ -1,8 +1,7 @@
+import { createPortal } from 'react-dom'
+import { lockPage, pageIsPinned } from '../lib/page-scroll-lock.js'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useUI } from '../store/useUI.js'
-import Toast from './Toast.jsx'
-import { openModalLayer } from '../lib/modal-layer.js'
-import { startModalViewport } from '../lib/modal-viewport.js'
 import { keyboardOpen } from '../lib/viewport-guard.js'
 
 // Putting the page back after a sheet closes takes up to three goes (see the un-pin below): now,
@@ -38,7 +37,7 @@ export const scrollRestorePending = () => restoreUntil - Date.now() > 0
 // (its own last re-assert drains it), or the page is pinned again behind a newly opened sheet,
 // where a scroll would be meaningless; that sheet's own un-pin comes with a fresh sequence.
 const drainScrollRestore = close => {
-  if (!close || close !== closes || document.body.style.position === 'fixed') return
+  if (!close || close !== closes || pageIsPinned()) return
   restoreUntil = 0
   const queue = waiting
   waiting = []
@@ -152,10 +151,6 @@ function Sheet({ sheet }) {
 export default function Modals() {
   const sheets = useUI(s => s.sheets)
   const closeSheet = useUI(s => s.closeSheet)
-  const viewportRoot = useRef(null)
-  const open = sheets.length > 0
-  useLayoutEffect(() => open ? startModalViewport(viewportRoot.current) : undefined, [open])
-  useLayoutEffect(() => open ? openModalLayer(viewportRoot.current) : undefined, [open])
   const prevLen = useRef(0)
   const suppressPop = useRef(false)
   const pushedEntries = useRef(0)
@@ -209,16 +204,16 @@ export default function Modals() {
     return () => window.removeEventListener('popstate', onPop)
   }, [sheets, closeSheet])
 
-  // lock the page behind any open sheet (iOS-safe)
+  // Lock only application content; the body remains the browser drawing surface.
   useEffect(() => {
     if (!sheets.length) return
-    const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); const top = useUI.getState().sheets[useUI.getState().sheets.length - 1]; if (top && !top.locked) useUI.getState().closeSheet(top.id) } }
+    const onKey = e => { if (e.key === 'Escape') { const top = useUI.getState().sheets[useUI.getState().sheets.length - 1]; if (top && !top.locked) useUI.getState().closeSheet(top.id) } }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [sheets.length])
   // A layout effect, not a passive one: the pin and, above all, the un-pin plus the scroll
   // restore have to land in the same frame as the sheet's own mount/unmount. Run after paint,
-  // iOS showed a frame with the body un-pinned at scroll 0 — the page "jumped down and back" on
+  // iOS showed a frame with the page un-pinned at scroll 0 — the page "jumped down and back" on
   // every RIR pick, which closes the sheet and starts a rest in one tap (2026-09-18).
   useLayoutEffect(() => {
     if (!sheets.length) return
@@ -228,13 +223,11 @@ export default function Modals() {
     // sheet owns the screen now; a field inside the sheet (the picker search) is left alone.
     const a = document.activeElement
     if (a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.isContentEditable) && !a.closest?.('#modal-root')) a.blur?.()
-    const y = window.scrollY || 0
-    const b = document.body.style
-    b.position = 'fixed'; b.top = -y + 'px'; b.left = '0'; b.right = '0'; b.width = '100%'
+    const { style: lockedStyle, release } = lockPage()
     return () => {
       // A workout layout change can move the anchor while this sheet is open.
-      const restoreY = -(parseFloat(b.top) || 0)
-      b.position = b.top = b.left = b.right = b.width = ''
+      const restoreY = -(parseFloat(lockedStyle.top) || 0)
+      release()
       // Tell anything that scrolls for its own reasons how long this will go on (afterScrollRestore),
       // but only when a sheet really did close. React StrictMode runs this cleanup immediately after
       // the effect when Modals mounts with a sheet already up, and arming the window there would make
@@ -245,7 +238,7 @@ export default function Modals() {
       window.scrollTo(0, restoreY)
       // iOS scrolls asynchronously; a restore issued in the same task as the un-pin can be applied
       // a frame late or against the still-short layout. Say it once more on the next frame.
-      if (typeof window.requestAnimationFrame === 'function') window.requestAnimationFrame(() => { if (document.body.style.position !== 'fixed') window.scrollTo(0, restoreY) })
+      if (typeof window.requestAnimationFrame === 'function') window.requestAnimationFrame(() => { if (!pageIsPinned()) window.scrollTo(0, restoreY) })
       // If the sheet closed with the keyboard still up (tap "+" in the picker, then finish),
       // iOS scrolls the page again while the keyboard dismisses — after the line above ran.
       // Ask once more when that animation is over. The window-level guard in
@@ -269,23 +262,16 @@ export default function Modals() {
       window.addEventListener('workout-scroll-anchor', onAnchor, { once: true })
       window.setTimeout(() => {
         window.removeEventListener('workout-scroll-anchor', onAnchor)
-        if (hadKeyboard && !anchored && document.body.style.position !== 'fixed') window.scrollTo(0, restoreY)
+        if (hadKeyboard && !anchored && !pageIsPinned()) window.scrollTo(0, restoreY)
         drainScrollRestore(close)
       }, RESTORE_MS)
     }
   }, [sheets.length > 0])
 
   if (!sheets.length) return null
-  return (
-    <dialog ref={viewportRoot} id="modal-root" className="open" onCancel={e => {
-      e.preventDefault()
-      // Android/native close requests need the same history and locked-sheet rules.
-      // Escape is prevented in onKey, so it cannot also dismiss the sheet underneath.
-      const top = useUI.getState().sheets.at(-1)
-      if (top && !top.locked) closeSheet(top.id)
-    }}>
+  return createPortal(
+    <div id="modal-root" className="open">
       {sheets.map(s => <Sheet key={s.id} sheet={s} />)}
-      <Toast inModal />
-    </dialog>
+    </div>, document.body
   )
 }

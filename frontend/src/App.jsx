@@ -1,3 +1,4 @@
+import { pageIsPinned } from './lib/page-scroll-lock.js'
 import { migrateIronLogExercises, prepareCatalogueMigration } from './lib/ironlog-catalogue.js'
 import { restoreUpstreamPalette } from './lib/ironlog-palette.js'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
@@ -171,8 +172,8 @@ function Shell() {
   }, [ready, linkCode])
   useEffect(() => {
     const onScroll = () => {
-      // Modals pins the body while a sheet is open; scrollY is 0 then, not a position.
-      if (document.body.style.position === 'fixed') return
+      // Modals freezes the app content while a sheet is open; scrollY is not its saved position.
+      if (pageIsPinned()) return
       scrollPositions.set(pathRef.current, window.scrollY)
     }
     window.addEventListener('scroll', onScroll, { passive: true })
