@@ -36,25 +36,20 @@
 <link rel="icon" type="image/png" href="icon-180.png">
 </head>
 <body>
-<!-- Static first paint remains available if the optional animation cannot load. -->
+<!-- Black first paint; reveal the complete startup artwork after its first rendered frame. -->
 <style>
   #boot{--boot-accent:#27ff00;position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;overflow:hidden;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:opacity .22s ease-out}
-  #boot .boot-stage{display:flex;flex-direction:column;align-items:center;padding:24px;transform:translateY(-12px)}
+  #boot .boot-stage{display:flex;flex-direction:column;align-items:center;padding:24px;transform:translateY(-12px);visibility:hidden}
+  #boot .boot-stage.ready{visibility:visible}
   #boot .boot-mark{position:relative;width:176px;height:176px;margin-bottom:4px}
-  #boot .boot-static-bolt{position:absolute;width:60%;height:60%;object-fit:contain;left:20%;top:20%}
   #boot .boot-wordmark{font-size:40px;line-height:1.2;font-weight:650;letter-spacing:-1.4px}
   #boot-enhancement{position:absolute;inset:0;display:grid;place-items:center}
-  #boot[data-enhanced] .boot-stage--fallback{visibility:hidden}
   #boot.out{opacity:0;pointer-events:none}
   @media(prefers-reduced-motion:reduce){
     #boot{transition-duration:.12s}
   }
 </style>
 <div id="boot" role="status" aria-label="Loading IronLog" dir="ltr">
-  <div class="boot-stage boot-stage--fallback" aria-hidden="true">
-    <div class="boot-mark"><svg class="boot-static-bolt" viewBox="140 64 244 384" focusable="false"><path fill="#27ff00" d="M302 75 147 310h101l-39 127 166-241H274L302 75Z"/></svg></div>
-    <div class="boot-wordmark">IronLog</div>
-  </div>
   <div id="boot-enhancement" aria-hidden="true"></div>
 </div>
 <div id="root"></div>
