@@ -1,3 +1,4 @@
+import { restoreUpstreamPalette } from './lib/ironlog-palette.js'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { HashRouter, Routes, Route, Navigate, useNavigate, useLocation, useNavigationType } from 'react-router-dom'
 import { useStore } from './store/useStore.js'
@@ -71,6 +72,9 @@ function Shell() {
   const loc = useLocation()
   const navType = useNavigationType()
   const { S, user, ready } = useStore()
+  useLayoutEffect(() => {
+    if (!(S.ironlogPaletteVersion >= 1)) useStore.getState().update(restoreUpstreamPalette)
+  }, [S.ironlogPaletteVersion])
   // iOS: whether timer sounds get past the ring/silent switch (Settings → Sounds). Page-level,
   // so it is applied here on load and on change rather than at each beep.
   useEffect(() => { setPlayOnSilent(!!S.soundOnSilent) }, [S.soundOnSilent])
