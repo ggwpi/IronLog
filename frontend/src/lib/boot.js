@@ -1,8 +1,11 @@
-// The boot screen in index.html: markup and CSS only, so the web image's CSP needs no new hash.
+// First paint is static; the optional React enhancement is cleaned up on dismissal.
 // It goes the moment the app can draw, or on a script error before that, so it never lifts forever.
 export function hideBoot() {
   const b = document.getElementById('boot')
   if (!b || b.classList.contains('out')) return
   b.classList.add('out')
-  setTimeout(() => b.remove(), 260)
+  setTimeout(() => {
+    b.dispatchEvent(new Event('ironlog:boot-remove'))
+    b.remove()
+  }, 260)
 }
