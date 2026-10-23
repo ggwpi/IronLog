@@ -1,5 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useUI } from '../store/useUI.js'
+import Toast from './Toast.jsx'
+import { openModalLayer } from '../lib/modal-layer.js'
 import { startModalViewport } from '../lib/modal-viewport.js'
 import { keyboardOpen } from '../lib/viewport-guard.js'
 
@@ -153,6 +155,7 @@ export default function Modals() {
   const viewportRoot = useRef(null)
   const open = sheets.length > 0
   useLayoutEffect(() => open ? startModalViewport(viewportRoot.current) : undefined, [open])
+  useLayoutEffect(() => open ? openModalLayer(viewportRoot.current) : undefined, [open])
   const prevLen = useRef(0)
   const suppressPop = useRef(false)
   const pushedEntries = useRef(0)
@@ -209,7 +212,7 @@ export default function Modals() {
   // lock the page behind any open sheet (iOS-safe)
   useEffect(() => {
     if (!sheets.length) return
-    const onKey = e => { if (e.key === 'Escape') { const top = useUI.getState().sheets[useUI.getState().sheets.length - 1]; if (top && !top.locked) useUI.getState().closeSheet(top.id) } }
+    const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); const top = useUI.getState().sheets[useUI.getState().sheets.length - 1]; if (top && !top.locked) useUI.getState().closeSheet(top.id) } }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [sheets.length])
@@ -274,8 +277,15 @@ export default function Modals() {
 
   if (!sheets.length) return null
   return (
-    <div ref={viewportRoot} id="modal-root" className="open">
+    <dialog ref={viewportRoot} id="modal-root" className="open" onCancel={e => {
+      e.preventDefault()
+      // Android/native close requests need the same history and locked-sheet rules.
+      // Escape is prevented in onKey, so it cannot also dismiss the sheet underneath.
+      const top = useUI.getState().sheets.at(-1)
+      if (top && !top.locked) closeSheet(top.id)
+    }}>
       {sheets.map(s => <Sheet key={s.id} sheet={s} />)}
-    </div>
+      <Toast inModal />
+    </dialog>
   )
 }
