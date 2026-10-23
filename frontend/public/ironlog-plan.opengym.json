@@ -1,0 +1,468 @@
+{
+  "opengym_plan": 1,
+  "exported": "2026-10-23",
+  "name": "IronLog — original six-day plan, catalogue exercises",
+  "unit": "kg",
+  "week": {
+    "1": "ironlog-plan-1",
+    "2": "ironlog-plan-2",
+    "3": "ironlog-plan-3",
+    "4": "ironlog-plan-4",
+    "5": "ironlog-plan-5",
+    "6": "ironlog-plan-6"
+  },
+  "routines": [
+    {
+      "name": "PUSH A",
+      "note": "חזה + יד קדמית",
+      "day": 1,
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "0757",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 150,
+          "note": "8–10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0577",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 135,
+          "note": "8–12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "1030",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 90,
+          "note": "12–15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0188",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15–20 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0447",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 120,
+          "note": "8–10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0318",
+          "sets": 3,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 90,
+          "note": "10–12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0313",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 90,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        }
+      ],
+      "id": "ironlog-plan-1"
+    },
+    {
+      "name": "LEGS A",
+      "note": "רגליים כבד + בטן",
+      "day": 2,
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "0743",
+          "sets": 4,
+          "reps": 6,
+          "weight": 0,
+          "restSec": 180,
+          "note": "6–8 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0085",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 180,
+          "note": "8 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0739",
+          "sets": 4,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 165,
+          "note": "10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "2290",
+          "sets": 3,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 150,
+          "note": "10 / leg · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0586",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 90,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0605",
+          "sets": 5,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 75,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0472",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 60,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0175",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 60,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        }
+      ],
+      "id": "ironlog-plan-2"
+    },
+    {
+      "name": "PULL A",
+      "note": "גב + יד אחורית",
+      "day": 3,
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "0652",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 150,
+          "note": "AMRAP · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "10646",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 150,
+          "note": "8–10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0198",
+          "sets": 3,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 120,
+          "note": "10–12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0861",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 120,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "5656",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0200",
+          "sets": 4,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 90,
+          "note": "10–12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0194",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 90,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "1451",
+          "sets": 3,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 120,
+          "note": "10–12 · RIR 1–2",
+          "mode": "reps"
+        }
+      ],
+      "id": "ironlog-plan-3"
+    },
+    {
+      "name": "PUSH B",
+      "note": "כתפיים + חזה",
+      "day": 4,
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "0603",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 150,
+          "note": "8–10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0192",
+          "sets": 5,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 60,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0602",
+          "sets": 4,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "1299",
+          "sets": 4,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 135,
+          "note": "10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0188",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        }
+      ],
+      "id": "ironlog-plan-4"
+    },
+    {
+      "name": "LEGS B",
+      "note": "רגליים נפח + בטן",
+      "day": 5,
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "0743",
+          "sets": 4,
+          "reps": 10,
+          "weight": 0,
+          "restSec": 150,
+          "note": "10 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0739",
+          "sets": 4,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 135,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0585",
+          "sets": 4,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0599",
+          "sets": 4,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "4295",
+          "sets": 3,
+          "reps": 20,
+          "weight": 0,
+          "restSec": 120,
+          "note": "20 steps · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0594",
+          "sets": 5,
+          "reps": 20,
+          "weight": 0,
+          "restSec": 60,
+          "note": "20 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0857",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 60,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0463",
+          "sets": 3,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 60,
+          "note": "duration · RIR 1–2",
+          "mode": "time",
+          "sec": 30
+        }
+      ],
+      "id": "ironlog-plan-5"
+    },
+    {
+      "name": "ARMS",
+      "note": "ידיים + כתפיים",
+      "day": 6,
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "0031",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 120,
+          "note": "8 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0592",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 90,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0868",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "5873",
+          "sets": 4,
+          "reps": 8,
+          "weight": 0,
+          "restSec": 120,
+          "note": "8 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0200",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0194",
+          "sets": 3,
+          "reps": 12,
+          "weight": 0,
+          "restSec": 90,
+          "note": "12 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0334",
+          "sets": 4,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 60,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        },
+        {
+          "id": "0602",
+          "sets": 3,
+          "reps": 15,
+          "weight": 0,
+          "restSec": 75,
+          "note": "15 · RIR 1–2",
+          "mode": "reps"
+        }
+      ],
+      "id": "ironlog-plan-6"
+    }
+  ],
+  "customEx": []
+}

@@ -7,11 +7,20 @@ import { startMediaSync } from './lib/media-sync.js'
 import { startNativeKeyboard } from './lib/native-keyboard.js'
 import './index.css'
 import './ironlog-brand.css'
+import { migrateIronLogExercises, prepareCatalogueMigration } from './lib/ironlog-catalogue.js'
 import { restoreUpstreamPalette } from './lib/ironlog-palette.js'
+import { hideBoot } from './lib/boot.js'
 
 if (!(useStore.getState().S.ironlogPaletteVersion >= 1)) useStore.getState().update(restoreUpstreamPalette)
 
+try {
+  if (prepareCatalogueMigration(useStore.getState().S)) useStore.getState().update(migrateIronLogExercises)
+} catch (error) { console.error('IronLog catalogue migration deferred: backup could not be saved', error) }
+
 // App.jsx restores per-route scroll itself; the browser's own attempt races it.
+// A script that dies before the app draws would otherwise leave the boot logo lifting forever.
+window.addEventListener('error', hideBoot, { once: true })
+
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
 
 createRoot(document.getElementById('root')).render(

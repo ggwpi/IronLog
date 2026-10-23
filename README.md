@@ -1,8 +1,10 @@
 # IronLog
 
-This fork restores [openGym](https://github.com/DuarteSantos8/openGym) at `e348fc17c42c7e9a211c5972e573ad3698190ee2`, with only IronLog branding, the original lightning logo, and the same segmented-control styling as the Muscle balance / Fatigue / Strength chooser, with openGym's five native options: Home, Plan, Start/Resume, Stats and Exercises. All five act directly, without a Workouts submenu.
+This fork restores [openGym](https://github.com/DuarteSantos8/openGym) v1.4.2 at `e9a303877d02e4237b183f96a9a6603990e8fafb`, with only IronLog branding, the original lightning logo, and the same segmented-control styling as the Muscle balance / Fatigue / Strength chooser, with openGym's five native options: Home, Plan, Start/Resume, Stats and Exercises. All five act directly, without a Workouts submenu.
 
 The custom IronLog pages, widgets, Hebrew packs, programme injector and classic app have been removed. Training behavior, pages, widgets, themes, exercise data, storage and API source are upstream. Existing browser training records are not deleted or reseeded.
+
+The original six-day plan is matched to upstream catalogue entries; see [exercise matches](docs/IRONLOG_EXERCISE_MATCHES.md). Existing matching legacy references migrate with a recovery copy, without creating workout data. Native iPhone, Watch, widgets, Live Activities and Health source are included; they require native builds. Coach and server-backed services remain unconfigured at the user’s request.
 
 Run `npm run dev` for local development or `npm run build` for the static build. Vercel uses the static builder; guest/local training works there. Upstream account/auth/sync functionality requires the included Node API, as described below.
 
@@ -34,6 +36,7 @@ on your phone, synced across your devices, behind your own passkey login.
 [Website](https://opengym.ch) ·
 [Live demo](https://opengym.ch/demo/) ·
 [Android APK](https://github.com/DuarteSantos8/openGym/releases/latest) ·
+[iPhone beta (TestFlight)](https://testflight.apple.com/join/RKATb61k) ·
 [Self-hosting guide](docs/SELF_HOSTING.md) ·
 [Roadmap](ROADMAP.md) ·
 [Changelog](CHANGELOG.md)
@@ -199,10 +202,13 @@ The same codebase builds a standalone app with Capacitor: no account, no server,
 on the phone, with native reminders and a rest countdown in the notification shade.
 
 - **Android:** download the signed APK from the [latest release](https://github.com/DuarteSantos8/openGym/releases/latest)
-  or the [website](https://opengym.ch). Each build sits next to its `.sha256`, and
-  the app checks for updates itself. openGym is deliberately not on the Play Store.
-- **iPhone:** Apple doesn't allow installs outside the App Store. Self-host and add the PWA to your
-  home screen from Safari, or build the native app onto your own device with Xcode.
+  or the [website](https://opengym.ch): Standard (`openGym-X.Y.Z.apk`, 180 px animations, about
+  315 MB), Plus (`openGym-Plus-X.Y.Z.apk`, 240 px, about 424 MB) or HD (`openGym-HD-X.Y.Z.apk`,
+  360 px, about 760 MB). Each sits next to its `.sha256`,
+  checks for updates itself and stays the kind you picked. A Google Play version is on its way.
+- **iPhone and Apple Watch:** the App Store app, with a public
+  [TestFlight beta](https://testflight.apple.com/join/RKATb61k) until it is out. Or self-host and
+  add the PWA to your home screen from Safari.
 
 Details and build instructions: [docs/MOBILE.md](docs/MOBILE.md).
 
@@ -311,8 +317,8 @@ two weeks after it.
 
 GitHub is the home of the project. [gitlab.com/DuarteSantos8/opengym](https://gitlab.com/DuarteSantos8/opengym)
 is a mirror, updated by a GitHub Actions workflow on every push to `main` and every release tag. It
-exists because its CI builds the release artifacts: the signed APK, the multi-arch images and the
-SBOMs. Nothing is merged there by hand. In the changelog, `!NN` refers to a GitLab merge request
+exists because its CI builds the multi-arch images and the SBOMs for its registry (the APKs are
+built and signed on the release machine and attached to the GitHub release). Nothing is merged there by hand. In the changelog, `!NN` refers to a GitLab merge request
 from the weeks in August and September 2026 when the project lived there.
 
 ## How openGym is built

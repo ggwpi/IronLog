@@ -75,7 +75,7 @@ export const dateLocale = () => DATE_LOCALES[lang] || 'en-GB'
 export const getVersion = () => version
 
 // Brand UI templates before interpolation; never alter user names, paths or data.
-const brand = text => text.replace(/(?<![\w/.])openGym(?![\w/])/g, 'IronLog')
+const brand = text => typeof text === 'string' ? text.replace(/(?<![\w/.])openGym(?![\w/])/g, 'IronLog') : text
 
 // Translate a source string; {0},{1}… are replaced with args (also on the English fallback).
 export function t(s, ...args) {
