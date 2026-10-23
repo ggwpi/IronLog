@@ -9,6 +9,9 @@
   width:100%;
   max-width:560px;
   margin-inline:auto;
+  /* Inline insets and auto margins center this dock at every width. Cancel the
+     upstream desktop rule's additional half-width translation. */
+  transform:none;
   padding:6px var(--navigation-edge) 20px;
   border:0;
   border-top:1px solid var(--sep-op);
