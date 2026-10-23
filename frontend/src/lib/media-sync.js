@@ -1,3 +1,4 @@
+import { cloudStorage as localStorage } from './cloud-generation.js'
 /* Photos and videos of custom exercises and of logged workouts between this device and its server.
  *
  * ONE mechanism for every move between modes, keyed by content hash and safe to repeat: ask the

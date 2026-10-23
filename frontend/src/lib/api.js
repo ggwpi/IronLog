@@ -1,3 +1,7 @@
+import { sha256Hex } from './sha256.js'
+import { BACKEND_GENERATION } from './cloud-generation.js'
+import { putSigned, signedUrl, readSnapshot } from './cloud-transfer.js'
+let cloudTransport = false
 // Backend + WebAuthn helpers (ported from the vanilla app).
 import { t } from './i18n-core.js'
 import { MOBILE } from './mobile.js'
@@ -23,7 +27,10 @@ export const webauthnOK = () => typeof window.PublicKeyCredential !== 'undefined
 // same-origin cookies, so remoteBase/remoteToken stay empty and api() behaves exactly as before.
 let remoteBase = ''
 let remoteToken = null
-export function setRemoteAuth(base, token) { remoteBase = base || ''; remoteToken = token || null }
+export function setRemoteAuth(base, token) {
+  if (remoteBase !== (base || '')) cloudTransport = false
+  remoteBase = base || ''; remoteToken = token || null
+}
 // A Cloudflare Access service token (lib/cf-access.js): sent only to the origin it was entered
 // for, never on a same-origin request, where the browser's own Access session cookie already
 // does the job, and never to a server that merely happens to be paired or typed in.
@@ -32,7 +39,7 @@ let accessOrigin = ''
 export function setAccessHeaders(h, origin) { accessHeaders = Object.assign({}, h); accessOrigin = origin || '' }
 const originOf = base => { try { return new URL(base).origin } catch { return '' } }
 const accessFor = base => (base && accessOrigin && originOf(base) === accessOrigin ? accessHeaders : {})
-const remoteHeaders = () => Object.assign({}, accessFor(remoteBase), remoteToken ? { Authorization: 'Bearer ' + remoteToken } : {})
+const remoteHeaders = () => Object.assign({}, accessFor(remoteBase), BACKEND_GENERATION ? { 'X-IronLog-Generation': BACKEND_GENERATION } : {}, remoteToken ? { Authorization: 'Bearer ' + remoteToken } : {})
 // The paired server and what a request to it carries (the token, an Access service token for that
 // origin), for the phone's background check (lib/nudge-check.js), which runs with no WebView and
 // so has to be handed them. null when this is not a paired phone.
@@ -59,11 +66,17 @@ export async function api(path, opts) {
   // there and the change was marked as synced while the server never saw it. status 0, not
   // undefined: this is not "offline", and the store must not show it as such.
   if (MOBILE && !remoteBase) throw failure(t('This phone is not connected to a server.'), 'not-paired', 0)
-  const headers = Object.assign({ 'Content-Type': 'application/json' }, init.headers, remoteHeaders())
+  const headers = Object.assign({ 'Content-Type': 'application/json', ...(BACKEND_GENERATION ? { 'X-IronLog-Generation': BACKEND_GENERATION } : {}) }, init.headers, remoteHeaders())
   // A paired phone has an absolute base of its own; everyone else is relative to where the app
   // is served, so a subpath deployment reaches its own API instead of the proxy's root.
   const url = remoteBase ? remoteBase + path : appBase().replace(/\/$/, '') + path
   const ms = timeout != null ? timeout : (init.method || 'GET').toUpperCase() === 'GET' ? TIMEOUT_GET_MS : TIMEOUT_MS
+  if((cloudTransport || (BACKEND_GENERATION && !remoteBase)) && path === '/api/data' && init.method === 'PUT' && typeof init.body === 'string' && new Blob([init.body]).size > 3 * 1024 * 1024) {
+    const blob = new Blob([init.body], { type:'application/json' })
+    const transfer = await api('/api/data/upload', { method:'POST', body:JSON.stringify({size:blob.size,hash:await sha256Hex(blob)}) })
+    if (!transfer.uploaded) await putSigned(transfer.url,blob,'application/json')
+    return api('/api/data/commit', { method:'POST', body:JSON.stringify({id:transfer.id}) })
+  }
   return request(url, Object.assign({}, init, { headers }), ms)
 }
 
@@ -92,9 +105,16 @@ async function exchange(url, init) {
   let data
   let parsed = true
   try { data = await r.json() } catch { parsed = false }
+  if(data?.snapshot) data = { ...data, ...await readSnapshot(data.snapshot) }
+  if(url.endsWith('/api/config') && r.ok) cloudTransport = data?.transport?.snapshots === 'signed-v1'
   const body = parsed && data && typeof data === 'object' ? data : null
   // The body rides along on the error: a 409 from /api/data carries the server's document.
-  if (!r.ok) { const e = new Error((body && body.error) || ('HTTP ' + r.status)); e.status = r.status; e.data = body || {}; throw e }
+  if (!r.ok) {
+    const e = new Error((body && body.error) || ('HTTP ' + r.status))
+    e.status = r.status; e.data = body || {}; e.code = body?.code
+    if (r.status === 429) e.retryAfter = Number(body?.retryAfter) || Number(r.headers?.get?.('Retry-After')) || 60
+    throw e
+  }
   if (!body) throw failure(t('The server answered with something other than openGym data.'), 'bad-response', r.status)
   return body
 }
@@ -106,6 +126,12 @@ async function exchange(url, init) {
 // every "left" to https://localhost/api/activity. The api() call beside it reaches the server.
 export function beacon(path, body) {
   if (MOBILE) return false
+  if (BACKEND_GENERATION) {
+    // A beacon cannot send the generation header. keepalive retains the same auth
+    // and origin checks as ordinary API calls, including while the page closes.
+    api(path, { method:'POST', body:JSON.stringify(body), keepalive:true }).catch(() => {})
+    return true
+  }
   try {
     if (typeof navigator === 'undefined' || typeof navigator.sendBeacon !== 'function') return false
     return !!navigator.sendBeacon(appBase().replace(/\/$/, '') + path, new Blob([JSON.stringify(body)], { type: 'application/json' }))
@@ -147,7 +173,8 @@ export async function apiBlob(path, { expectSize, idleMs = 30000, fetchImpl = gl
   const orStall = p => { p.catch(() => {}); return Promise.race([p, stall]) }
   arm()
   try {
-    const r = await orStall(fetchImpl(mediaUrl(path), { headers: mediaHeaders(), cache: 'no-store', ...(ctl ? { signal: ctl.signal } : {}) }))
+    const descriptor = cloudTransport ? await api(path) : null
+    const r = await orStall(fetchImpl(descriptor ? signedUrl(descriptor.url) : mediaUrl(path), { headers: descriptor ? {} : mediaHeaders(), credentials: descriptor ? 'omit' : 'same-origin', cache: 'no-store', ...(ctl ? { signal: ctl.signal } : {}) }))
     if (!r.ok) {
       let body = null
       try { body = await r.json() } catch { /* not JSON: a proxy's page */ }
@@ -188,6 +215,13 @@ export async function apiBlob(path, { expectSize, idleMs = 30000, fetchImpl = gl
  */
 export function apiUpload(path, blob, mime, { onProgress, idleMs = 60000, XHR = globalThis.XMLHttpRequest } = {}) {
   if (MOBILE && !remoteBase) return Promise.reject(notPaired())
+  if(cloudTransport) return (async () => {
+    const hash=path.split('/').at(-1)
+    const transfer=await api('/api/media/upload',{method:'POST',body:JSON.stringify({hash,mime,size:blob.size})})
+    if (transfer.existed) return transfer
+    if (!transfer.uploaded) await putSigned(transfer.url,blob,mime,{onProgress,idleMs,XHR})
+    return api('/api/media/complete',{method:'POST',body:JSON.stringify({id:transfer.id})})
+  })()
   return new Promise((resolve, reject) => {
     const xhr = new XHR()
     let timer = null
@@ -319,7 +353,7 @@ export async function pairRedeem(serverBase, code, { probeMs = PROBE_MS } = {}) 
   let data
   try {
     data = await request(serverBase + '/api/pair/redeem', {
-      method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, accessFor(serverBase)), body: JSON.stringify({ code })
+      method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json', ...(BACKEND_GENERATION ? { 'X-IronLog-Generation': BACKEND_GENERATION } : {}) }, accessFor(serverBase)), body: JSON.stringify({ code })
     }, TIMEOUT_GET_MS)
   } catch (e) {
     // A wrong, spent or expired code is the one refusal a person can fix, and the server says it

@@ -1,44 +1,14 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
-import { MOBILE } from './lib/mobile.js'
-import { useStore } from './store/useStore.js'
-import { startMediaSync } from './lib/media-sync.js'
-import { startNativeKeyboard } from './lib/native-keyboard.js'
-import './index.css'
-import './ironlog-brand.css'
-import { migrateIronLogExercises, prepareCatalogueMigration } from './lib/ironlog-catalogue.js'
-import { restoreUpstreamPalette } from './lib/ironlog-palette.js'
+import { resetLegacyData } from './lib/cloud-reset.js'
 import { hideBoot } from './lib/boot.js'
+const MOBILE = import.meta.env.VITE_MOBILE === '1'
 
-if (!(useStore.getState().S.ironlogPaletteVersion >= 1)) useStore.getState().update(restoreUpstreamPalette)
-
-try {
-  if (prepareCatalogueMigration(useStore.getState().S)) useStore.getState().update(migrateIronLogExercises)
-} catch (error) { console.error('IronLog catalogue migration deferred: backup could not be saved', error) }
-
-// App.jsx restores per-route scroll itself; the browser's own attempt races it.
-// A script that dies before the app draws would otherwise leave the boot logo lifting forever.
-window.addEventListener('error', hideBoot, { once: true })
-
-if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode><App /></StrictMode>
-)
-
-// The photos and videos of custom exercises, in every build (the phone and the demo included):
-// uploads of what the server lacks, the local clean-up, and the plan's files kept offline.
-startMediaSync(useStore)
-
-// Android 15 does not resize the page for the soft keyboard; the app says how much it covers and
-// this keeps the focused field above it. Idle everywhere else.
-startNativeKeyboard()
-
-// Not in the mobile build: the native shell already serves everything from disk.
-if (!MOBILE && 'serviceWorker' in navigator && location.protocol === 'https:') {
-  navigator.serviceWorker.register('sw.js').catch(() => {})
-  // The plan's exercise media, kept by the worker for a workout opened without a network (#281).
-  // It only fetches ahead while the page runs as the installed app; a tab keeps what it has shown.
-  import('./lib/media-prefetch.js').then(m => m.startMediaPrefetch(useStore)).catch(() => {})
-}
+// No module that reads a profile is imported until the authorized reset completes.
+resetLegacyData({ native: MOBILE }).then(() => import('./app-entry.jsx')).catch(error => {
+  const root = document.getElementById('root')
+  const message = document.createElement('p')
+  message.textContent = 'לא ניתן להשלים את איפוס הנתונים. סגרו חלונות אחרים של IronLog ופתחו שוב.'
+  message.dir = 'rtl'
+  root.replaceChildren(message)
+  hideBoot()
+  console.error('IronLog reset could not complete', error.name)
+})

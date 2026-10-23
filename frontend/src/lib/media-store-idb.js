@@ -1,3 +1,4 @@
+import { BACKEND_GENERATION } from './cloud-generation.js'
 /* The browser's backend for lib/media-store.js: IndexedDB database 'opengym-media', object store
  * 'blobs', one record per file keyed by its hash — { hash, blob, mime, size, putAt, shownAt,
  * pending, rejected }.
@@ -9,7 +10,7 @@
  * refuses Blobs in it — and then open() answers false and the store falls back to memory.
  */
 
-const DB = 'opengym-media'
+const DB = BACKEND_GENERATION ? 'ironlog-cloud-1-media' : 'opengym-media'
 const STORE = 'blobs'
 
 const req = r => new Promise((resolve, reject) => { r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error) })

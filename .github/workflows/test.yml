@@ -180,3 +180,32 @@ jobs:
           # canDropPrivileges() fails closed, so a missing `coach` user disables every job —
           # including the fixture provider. Cheaper to assert here than to discover on an instance.
           docker run --rm opengym-api:default id coach
+
+  ironlog-cloud:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: test-only
+          POSTGRES_DB: ironlog_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      IRONLOG_TEST_DATABASE_URL: postgresql://postgres:test-only@127.0.0.1:5432/ironlog_test
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci --ignore-scripts --prefix api
+      - name: Apply schema to isolated test database
+        run: node api/scripts/cloud/test-schema.mjs
+      - name: Verify database, authentication, sync and isolation
+        run: node --test api/test/cloud-backend.test.js
