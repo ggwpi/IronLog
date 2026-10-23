@@ -1,5 +1,4 @@
 import { pageIsPinned } from './lib/page-scroll-lock.js'
-import { migrateIronLogExercises, prepareCatalogueMigration } from './lib/ironlog-catalogue.js'
 import { restoreUpstreamPalette } from './lib/ironlog-palette.js'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { hideBoot } from './lib/boot.js'
@@ -87,11 +86,6 @@ function Shell() {
   useLayoutEffect(() => {
     if (!(S.ironlogPaletteVersion >= 1)) useStore.getState().update(restoreUpstreamPalette)
   }, [S.ironlogPaletteVersion])
-  useLayoutEffect(() => {
-    try {
-      if (prepareCatalogueMigration(S)) useStore.getState().update(migrateIronLogExercises)
-    } catch (error) { console.error('IronLog catalogue migration deferred: backup could not be saved', error) }
-  }, [S])
   // iOS: whether timer sounds get past the ring/silent switch (Settings → Sounds). Page-level,
   // so it is applied here on load and on change rather than at each beep.
   useEffect(() => { setPlayOnSilent(!!S.soundOnSilent) }, [S.soundOnSilent])

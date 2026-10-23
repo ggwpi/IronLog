@@ -1,3 +1,4 @@
+import { BACKEND_GENERATION } from './cloud-generation.js'
 // Mobile build (VITE_MOBILE=1) — the standalone app-store version (Capacitor native shell).
 //
 // There is no backend: nothing to sign in to, everything lives on the phone. Unlike guest
@@ -46,13 +47,13 @@ export async function nativePlatform() {
   }
 }
 
-const FILE = 'opengym-state.json'
+const FILE = (BACKEND_GENERATION ? 'ironlog-cloud-1-opengym-state.json' : 'opengym-state.json')
 
 // Written whole to a second file first and then moved over the first, so a write cut short (the
 // app killed mid-write, the battery gone) never leaves a half file where the last good copy was.
 // A move that did not finish leaves the new copy under FILE_NEW: whichever of the two parses and
 // is the later one (`_ts`) is the copy.
-const FILE_NEW = 'opengym-state.next.json'
+const FILE_NEW = (BACKEND_GENERATION ? 'ironlog-cloud-1-opengym-state.next.json' : 'opengym-state.next.json')
 
 export async function nativeLoad() {
   try {
@@ -86,7 +87,7 @@ export async function nativeSave(state) {
 // device chose, kept in its own file — never inside opengym-state.json, since that file's content
 // is exactly what pushState() PUTs to a server, and a device's own connection secret must never
 // travel as if it were training data.
-const REMOTE_FILE = 'opengym-remote.json'
+const REMOTE_FILE = (BACKEND_GENERATION ? 'ironlog-cloud-1-opengym-remote.json' : 'opengym-remote.json')
 
 // Small JSON files in the app's private data directory, for device facts that must not ride
 // in S (which syncs and exports): the pairing, and how the Coach runs on this phone.

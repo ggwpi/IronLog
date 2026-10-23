@@ -30,3 +30,11 @@ frontend/bundle-size.json
 
 # Local planning notes
 docs/superpowers/plans/
+
+# Local cloud provisioning secrets and inspected cleanup manifests
+.vercel/
+.env.*.local
+*private-inventory*.json
+*private-runtime-url*
+*private-owner-invite*
+supabase/.temp/
