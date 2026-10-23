@@ -2,7 +2,15 @@
 
 Reference: IronLog main `f6fd3ce`, imported openGym `e348fc17` (1.4.1), and upstream main `e9a303877d02e4237b183f96a9a6603990e8fafb` (1.4.2). Production checked: https://ironlog-v2-two.vercel.app. This is an investigation; no account data, sample training records or backend configuration was changed.
 
-## Findings
+## Implementation follow-up
+
+The user subsequently requested all upstream features and catalogue data, preserving only their plan, and explicitly declined adding backend hosting or an AI provider. IronLog now includes upstream 1.4.2 source, including its native iOS/Watch code. The web deployment remains static: Coach, account sync and other server-backed services remain inactive by request. Native features still require a separately built and signed native app.
+
+The 38 original plan exercises have reviewed catalogue matches in `frontend/src/lib/ironlog-exercise-matches.json`. A one-time migration translates routine slots, workout history and active-session references together, removes those legacy exercise definitions, and preserves prescriptions and logged sets. It saves the original profile in browser storage under `ironlog_before_catalogue_v1` before translating any existing legacy references; if saving fails, migration is deferred. Existing unrelated user-created exercises and data are preserved. Overlapping per-exercise overrides retain the catalogue value and keep the legacy value under its old key for recovery. No starter programme, workout results or weights are invented. A standalone importable copy of the user's original six-day plan is available at `/ironlog-plan.opengym.json`.
+
+The earlier findings below record the pre-upgrade investigation, rather than the current version gap. The media licensing finding still applies.
+
+## Findings (before this update)
 
 | Feature | Status and evidence | What is needed |
 | --- | --- | --- |
