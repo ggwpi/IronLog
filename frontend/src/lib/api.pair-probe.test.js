@@ -36,7 +36,7 @@ describe('pairRedeem when the request never gets an answer', () => {
 
   // Something in front of openGym answered in its place: an SSO login (forward-auth), a proxy
   // rule, a redirect to a sign-in page. The address is right, the proxy needs to let /api/ through.
-  const PROXY_MSG = 'That address answers, but a login page or proxy rule replied instead of openGym. Let /api/ through to openGym unchanged. See “Phone app and CORS” in docs/SELF_HOSTING.md.'
+  const PROXY_MSG = 'That address answers, but a login page or proxy rule replied instead of IronLog. Let /api/ through to IronLog unchanged. See “Phone app and CORS” in docs/SELF_HOSTING.md.'
   it.each([
     ['a redirect to a login page', () => new Response(null, { status: 302, headers: { location: 'https://auth.example.com/login' } })],
     ['a 401', () => new Response('', { status: 401, headers: { 'www-authenticate': 'Basic realm="x"' } })],
