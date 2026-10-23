@@ -216,3 +216,18 @@ describe('English-name switches with every exercise-name pack', () => {
     _setLangState('en', {}, null, null)
   })
 })
+
+describe('IronLog branding of upstream templates', () => {
+  it('keeps absent optional exercise metadata absent', () => {
+    _setLangState('en', null, null, null)
+    expect(t(undefined)).toBeUndefined()
+    expect(t(null)).toBeNull()
+  })
+  it('brands template text while preserving upstream paths and user-supplied names', () => {
+    _setLangState('en', null, null, null)
+    expect(t('Welcome to openGym')).toBe('Welcome to IronLog')
+    expect(t('https://github.com/DuarteSantos8/openGym')).toBe('https://github.com/DuarteSantos8/openGym')
+    expect(t('Documents/openGym')).toBe('Documents/openGym')
+    expect(t('Hello {0}', 'openGym')).toBe('Hello openGym')
+  })
+})
