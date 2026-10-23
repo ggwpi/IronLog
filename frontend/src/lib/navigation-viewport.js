@@ -17,7 +17,9 @@ export function navigationBottom(win) {
     || Math.abs(win.orientation || 0) === 90
   const width = landscape ? Math.max(screen.width, screen.height) : Math.min(screen.width, screen.height)
   const height = landscape ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height)
-  if (Math.abs(win.innerWidth - width) <= 2) bottom = Math.max(bottom, height)
+  // Width identifies the full-screen orientation even while both height APIs
+  // still describe the previous orientation. The screen bounds are authoritative.
+  if (Math.abs(win.innerWidth - width) <= 2) bottom = height
   return bottom
 }
 

@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useUI } from '../store/useUI.js'
+import { startModalViewport } from '../lib/modal-viewport.js'
 import { keyboardOpen } from '../lib/viewport-guard.js'
 
 // Putting the page back after a sheet closes takes up to three goes (see the un-pin below): now,
@@ -149,6 +150,9 @@ function Sheet({ sheet }) {
 export default function Modals() {
   const sheets = useUI(s => s.sheets)
   const closeSheet = useUI(s => s.closeSheet)
+  const viewportRoot = useRef(null)
+  const open = sheets.length > 0
+  useLayoutEffect(() => open ? startModalViewport(viewportRoot.current) : undefined, [open])
   const prevLen = useRef(0)
   const suppressPop = useRef(false)
   const pushedEntries = useRef(0)
@@ -270,7 +274,7 @@ export default function Modals() {
 
   if (!sheets.length) return null
   return (
-    <div id="modal-root" className="open">
+    <div ref={viewportRoot} id="modal-root" className="open">
       {sheets.map(s => <Sheet key={s.id} sheet={s} />)}
     </div>
   )
