@@ -517,3 +517,25 @@ describe('the restore window under StrictMode', () => {
     vi.useRealTimers()
   })
 })
+
+describe('native dialog close requests', () => {
+  it('dismisses only the top sheet through the existing history path', async () => {
+    await setSheets([sheet('under'), sheet('top')])
+    const dialog = document.getElementById('modal-root')
+    expect(dialog.tagName).toBe('DIALOG')
+    const event = new dom.Event('cancel', { cancelable: true })
+    await act(async () => { dialog.dispatchEvent(event) })
+    expect(event.defaultPrevented).toBe(true)
+    expect(mocks.state.sheets.map(s => s.id)).toEqual(['under'])
+    expect(historyMock.go).toHaveBeenCalledTimes(1)
+    expect(historyMock.go).toHaveBeenCalledWith(-1)
+  })
+  it('prevents the native browser from closing a locked sheet', async () => {
+    await setSheets([sheet('locked', { locked: true })])
+    const event = new dom.Event('cancel', { cancelable: true })
+    await act(async () => { document.getElementById('modal-root').dispatchEvent(event) })
+    expect(event.defaultPrevented).toBe(true)
+    expect(mocks.state.sheets.map(s => s.id)).toEqual(['locked'])
+    expect(historyMock.go).not.toHaveBeenCalled()
+  })
+})

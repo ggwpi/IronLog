@@ -6,10 +6,14 @@ import { t } from '../lib/i18n.js'
 // at its end, stays longer and holds still while a finger or the mouse rests on it. Its × sends it
 // away at once: five seconds of Undo over the set list is long when you did mean to delete. The ×
 // sits at the start, the far end from Undo, so a thumb aiming for one never lands on the other.
-export default function Toast() {
+export default function Toast({ inModal = false }) {
+  const modalOpen = useUI(s => s.sheets.length > 0)
   const msg = useUI(s => s.toastMsg)
   const action = useUI(s => s.toastAction)
   const { pauseToast, resumeToast, runToastAction, dismissToast } = useUI.getState()
+  // A native modal makes the rest of the page inert, including a sibling toast.
+  // Render exactly one copy, inside the top layer while a modal is open.
+  if (modalOpen !== inModal || (inModal && !msg)) return null
   const live = !!(msg && action)
   return <div id="toast" role="status" className={(msg ? 'show' : '') + (live ? ' has-action' : '')}
     onPointerEnter={live ? pauseToast : undefined} onPointerDown={live ? pauseToast : undefined}
