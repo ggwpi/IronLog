@@ -2,7 +2,7 @@
 // It goes the moment the app can draw, or on a script error before that, so it never lifts forever.
 export function hideBoot() {
   const b = document.getElementById('boot')
-  if (!b || b.className) return
-  b.className = 'out'
+  if (!b || b.classList.contains('out')) return
+  b.classList.add('out')
   setTimeout(() => b.remove(), 260)
 }
