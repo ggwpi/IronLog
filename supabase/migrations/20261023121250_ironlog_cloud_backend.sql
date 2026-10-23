@@ -6,7 +6,14 @@ do $$ begin
     create role ironlog_backend nologin nosuperuser nocreatedb nocreaterole noinherit nobypassrls;
   end if;
 end $$;
-alter role ironlog_backend nologin nosuperuser nocreatedb nocreaterole noinherit nobypassrls;
+-- Managed Supabase's postgres role cannot ALTER SUPERUSER attributes. Validate an
+-- existing role instead of issuing a redundant ALTER that requires a superuser.
+do $$ begin
+  if exists(select 1 from pg_roles where rolname='ironlog_backend' and
+    (rolcanlogin or rolsuper or rolcreatedb or rolcreaterole or rolinherit or rolbypassrls)) then
+    raise exception 'ironlog_backend has unexpected privileges; inspect before provisioning';
+  end if;
+end $$;
 do $$ declare browser text; begin
   foreach browser in array array['anon','authenticated','authenticator'] loop
     if exists(select 1 from pg_roles where rolname=browser) then
