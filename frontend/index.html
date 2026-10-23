@@ -46,15 +46,10 @@
   #boot .painted .metallic-paint{opacity:1}
   #boot .painted .boot-static-bolt{opacity:0}
   #boot .boot-wordmark{font-size:40px;line-height:1.2;font-weight:650;letter-spacing:-1.4px}
-  #boot .boot-progress{margin-top:28px}
-  #boot .boot-track{display:block;width:112px;height:3px;border-radius:3px;background:#242424;overflow:hidden}
-  #boot .boot-indicator{display:block;width:38%;height:100%;border-radius:inherit;background:var(--boot-accent);animation:boot-sweep 1.3s ease-in-out infinite}
   #boot-enhancement{position:absolute;inset:0;display:grid;place-items:center}
   #boot[data-enhanced] .boot-stage--fallback{visibility:hidden}
   #boot.out{opacity:0;pointer-events:none}
-  @keyframes boot-sweep{from{transform:translateX(-112%)}to{transform:translateX(300%)}}
   @media(prefers-reduced-motion:reduce){
-    #boot .boot-indicator{animation:none;transform:translateX(80%)}
     #boot{transition-duration:.12s}
   }
 </style>
@@ -62,7 +57,6 @@
   <div class="boot-stage boot-stage--fallback" aria-hidden="true">
     <div class="boot-mark"><svg class="boot-static-bolt" viewBox="140 64 244 384" focusable="false"><path fill="#27ff00" d="M302 75 147 310h101l-39 127 166-241H274L302 75Z"/></svg></div>
     <div class="boot-wordmark">IronLog</div>
-    <div class="boot-progress"><div class="boot-track"><span class="boot-indicator"></span></div></div>
   </div>
   <div id="boot-enhancement" aria-hidden="true"></div>
 </div>
