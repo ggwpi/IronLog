@@ -1,4 +1,5 @@
 import pg from 'pg'
+import { connectionOptions } from '../../cloud/db.js'
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 const output = process.argv[2]
@@ -6,7 +7,7 @@ if (!output) throw new Error('Provide a private output file for the runtime data
 const admin = process.env.SUPABASE_ADMIN_DATABASE_URL || process.env.IRONLOG_DATABASE_URL
 const url = new URL(admin),
   password = crypto.randomBytes(36).toString('base64url')
-const db = new pg.Client({ connectionString: admin })
+const db = new pg.Client(connectionOptions(admin))
 await db.connect()
 try {
   await db.query('begin')

@@ -1,19 +1,31 @@
 import pg from 'pg'
+import { rootCertificates } from 'node:tls'
 import { nameKey } from '../password.js'
+
+export function connectionOptions(url, ca = process.env.IRONLOG_DATABASE_CA) {
+  if (!url) throw new Error('IRONLOG_DATABASE_URL is required')
+  const parsed = new URL(url)
+  const local = ['localhost', '127.0.0.1', '[::1]'].includes(parsed.hostname)
+  if (local) return { connectionString: url }
+  if (parsed.searchParams.get('sslmode') !== 'verify-full')
+    throw new Error('Remote database connections require sslmode=verify-full')
+  // pg-connection-string replaces the entire ssl object when sslmode is in the
+  // URL, discarding an explicit CA. Validate the mode, then supply TLS explicitly.
+  for (const key of ['sslcert', 'sslkey', 'sslrootcert', 'ssl'])
+    if (parsed.searchParams.has(key)) throw new Error('Use IRONLOG_DATABASE_CA for database TLS')
+  parsed.searchParams.delete('sslmode')
+  return {
+    connectionString: parsed.href,
+    ssl: { rejectUnauthorized: true, ...(ca ? { ca: [...rootCertificates, ca] } : {}) },
+  }
+}
 
 // A private SQL interface, not a client-side Data API. Supabase Auth is deliberately
 // not involved: all identities and owner proofs are openGym's own.
 export class Database {
   constructor(url = process.env.IRONLOG_DATABASE_URL) {
-    if (!url) throw new Error('IRONLOG_DATABASE_URL is required')
-    const parsed = new URL(url)
-    if (
-      !['localhost', '127.0.0.1', '::1'].includes(parsed.hostname) &&
-      parsed.searchParams.get('sslmode') !== 'verify-full'
-    )
-      throw new Error('Remote database connections require sslmode=verify-full')
     this.pool = new pg.Pool({
-      connectionString: url,
+      ...connectionOptions(url),
       max: 3,
       idleTimeoutMillis: 15000,
       connectionTimeoutMillis: 10000,

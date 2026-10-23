@@ -1,5 +1,6 @@
 // Metadata only. No passwords, workout contents, tokens or upload contents.
 import pg from 'pg'
+import { connectionOptions } from '../../cloud/db.js'
 import fs from 'node:fs'
 import crypto from 'node:crypto'
 const output = process.argv[2],
@@ -8,9 +9,7 @@ if (!output || !project || !process.env.SUPABASE_URL)
   throw new Error('Set project identity and provide an inventory output filename')
 if (new URL(process.env.SUPABASE_URL).hostname !== project + '.supabase.co')
   throw new Error('Project identity mismatch')
-const db = new pg.Client({
-  connectionString: process.env.SUPABASE_ADMIN_DATABASE_URL || process.env.IRONLOG_DATABASE_URL,
-})
+const db = new pg.Client(connectionOptions(process.env.SUPABASE_ADMIN_DATABASE_URL || process.env.IRONLOG_DATABASE_URL))
 await db.connect()
 try {
   const tables = (

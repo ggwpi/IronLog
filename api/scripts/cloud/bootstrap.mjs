@@ -1,12 +1,11 @@
 // Generate an owner-only signup invitation into a private local file, never stdout.
 import pg from 'pg'
+import { connectionOptions } from '../../cloud/db.js'
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 const filename = process.argv[2]
 if (!filename) throw new Error('Provide a private output filename for the owner invitation')
-const db = new pg.Client({
-  connectionString: process.env.SUPABASE_ADMIN_DATABASE_URL || process.env.IRONLOG_DATABASE_URL,
-})
+const db = new pg.Client(connectionOptions(process.env.SUPABASE_ADMIN_DATABASE_URL || process.env.IRONLOG_DATABASE_URL))
 await db.connect()
 try {
   await db.query('begin')

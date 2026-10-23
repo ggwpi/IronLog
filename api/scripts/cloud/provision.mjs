@@ -1,6 +1,7 @@
 // Run only after the dedicated project's legacy inventory/cleanup is complete.
 // Credentials are read from the environment; never emitted in commands or logs.
 import pg from 'pg'
+import { connectionOptions } from '../../cloud/db.js'
 import { createClient } from '@supabase/supabase-js'
 const required = [
   'IRONLOG_DATABASE_URL',
@@ -33,9 +34,7 @@ const result = buckets.some((b) => b.id === 'ironlog-private')
   ? await client.storage.updateBucket('ironlog-private', spec)
   : await client.storage.createBucket('ironlog-private', spec)
 if (result.error) throw new Error('Cannot configure private bucket')
-const db = new pg.Client({
-  connectionString: process.env.SUPABASE_ADMIN_DATABASE_URL || process.env.IRONLOG_DATABASE_URL,
-})
+const db = new pg.Client(connectionOptions(process.env.SUPABASE_ADMIN_DATABASE_URL || process.env.IRONLOG_DATABASE_URL))
 await db.connect()
 try {
   await db.query('begin')
