@@ -7,6 +7,9 @@ import { startMediaSync } from './lib/media-sync.js'
 import { startNativeKeyboard } from './lib/native-keyboard.js'
 import './index.css'
 import './ironlog-brand.css'
+import { restoreUpstreamPalette } from './lib/ironlog-palette.js'
+
+if (!(useStore.getState().S.ironlogPaletteVersion >= 1)) useStore.getState().update(restoreUpstreamPalette)
 
 // App.jsx restores per-route scroll itself; the browser's own attempt races it.
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
