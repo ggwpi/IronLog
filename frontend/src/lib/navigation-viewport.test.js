@@ -68,6 +68,10 @@ describe('installed-app cold launch with both browser heights stale',()=>{
   const win=phone();win.innerWidth=844;win.innerHeight=356;win.visualViewport.height=356;win.screen.orientation.type='landscape-primary'
   expect(navigationBottom(win)).toBe(390)
  })
+ it('ignores portrait heights left behind during a full-screen landscape rotation',()=>{
+  const win=phone();win.innerWidth=844;win.screen.orientation.type='landscape-primary'
+  expect(navigationBottom(win)).toBe(390)
+ })
  it('handles the legacy iPhone orientation API',()=>{
   const win=phone();win.innerWidth=844;win.innerHeight=356;win.visualViewport.height=356;win.screen.orientation=undefined;win.orientation=90
   expect(navigationBottom(win)).toBe(390)
