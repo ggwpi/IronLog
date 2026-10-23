@@ -1,8 +1,8 @@
 # IronLog cloud backend
 
-Status: implemented on the `feat/supabase-backend` branch. Cloud project cleanup, provisioning,
-preview verification and production activation must be completed after Supabase is reconnected.
-Do not activate the reset or deploy this branch to production without those checks.
+Status: the dedicated IronLog Supabase project has been cleaned and provisioned. Real cloud
+preview verification passed; all temporary accounts, profiles and Storage objects were removed.
+Production activation is controlled by the Vercel production generation flag and deployment.
 
 ## Architecture
 
@@ -66,11 +66,17 @@ runtime credentials. Do not commit environment files, metadata manifests or gene
   Do not expose the `ironlog` schema through the Data API. Inspect RLS/security advisors afterward.
 - Run `api/scripts/cloud/runtime-role.mjs <private-runtime-url-file>` to create/rotate the restricted
   runtime login. The input administrative URL must use the actual Supabase pooler connection.
+  Set `IRONLOG_RUNTIME_ROLE=ironlog_production_api` for the deployed instance. The former prelaunch
+  `ironlog_api` role is disabled and no longer has backend membership; do not re-enable it.
 - Configure the Vercel backend's encrypted secrets: `IRONLOG_DATABASE_URL` (restricted pooler URL,
   `sslmode=verify-full`), `SUPABASE_SECRET_KEY` (server-only Storage key),
   `IRONLOG_SESSION_SECRET` (stable random 32+ characters), `IRONLOG_WORKER_SECRET` (stable random
   32+ characters), `IRONLOG_VAPID_PUBLIC_KEY`, `IRONLOG_VAPID_PRIVATE_KEY`. Generate VAPID keys with
   `web-push`; never regenerate them on cold start. No secret may have a `VITE_` prefix.
+- Set `IRONLOG_DATABASE_CA` to the public root certificate downloaded from Supabase's database
+  SSL settings. The pooler uses Supabase's trust root, which Node does not include by default.
+  The SQL connection helper preserves certificate-chain and hostname verification, including
+  when `pg` parses connection-string options. Setup scripts use the same verified TLS helper.
 - Set `SUPABASE_URL`, `ORIGIN=https://ironlog-v2-two.vercel.app`, `RP_ID=ironlog-v2-two.vercel.app`,
   `PASSWORD_LOGIN=1`, and `VAPID_SUBJECT` (instance origin or operator contact).
 - Run `node api/scripts/cloud/provision.mjs` with administrative SQL credentials. This installs
@@ -83,6 +89,12 @@ runtime credentials. Do not commit environment files, metadata manifests or gene
 - Set `VITE_BACKEND_GENERATION=ironlog-cloud-1` **only for the configured preview first**. Use a
   separate isolated test database/bucket and matching preview ORIGIN/RP_ID for preview tests; do
   not test destructive flows against the production project's accounts or files.
+  For this initial clean launch, the dedicated project has no real replacement accounts yet:
+  temporary verification accounts/files can be tested there before owner enrollment, then removed
+  through the durable Storage deletion worker. Verify zero accounts and zero objects afterward.
+  Before production enrollment, rotate the runtime database password and server session/worker
+  secrets, and disable preview database/Storage configuration. Existing tested previews then cannot
+  access the live database. Future previews require their own isolated resources.
 - Validate the built preview and Vercel routing, then provision production and activate its build
   with the same generation. Never claim live migration succeeded from local tests alone.
 
