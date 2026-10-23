@@ -3,6 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="color-scheme" content="dark">
+<!-- Paint the document itself before reset/imports can delay the app stylesheet.
+     The boot overlay alone does not color iOS's canvas or home-indicator area. -->
+<style>
+  html{color-scheme:dark;background:#000}
+  body{margin:0;min-height:100vh;min-height:100dvh;background:inherit}
+  #system-top-edge{display:none}
+  @media (display-mode:standalone){
+    #system-top-edge{display:block;position:fixed;inset:0 0 auto;height:max(8px,env(safe-area-inset-top,0px));background:var(--bg,#000);z-index:60;pointer-events:none}
+  }
+</style>
 <script>
   // Set direction before first paint so an Arabic profile never flashes as LTR.
   // The app re-applies this on every language change (lib/i18n.js setLang).
@@ -16,7 +27,7 @@
 </script>
 <title>IronLog</title>
 <meta name="description" content="Personal gym & body weight tracker">
-<meta name="theme-color" content="#0c0e12">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -29,6 +40,9 @@
 <link rel="icon" type="image/png" href="icon-180.png">
 </head>
 <body>
+<!-- A real fixed surface lets WebKit extend the page color into the status bar.
+     It is present before boot and stays outside route animations and scroll. -->
+<div id="system-top-edge" aria-hidden="true"></div>
 <!-- Keep the upstream first-paint boot lifecycle with IronLog's original logo. -->
 <style>
   #boot{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:#000;transition:opacity .22s ease-out}
