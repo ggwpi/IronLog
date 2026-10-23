@@ -1,7 +1,6 @@
 import { Component, useLayoutEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ShimmeringText } from '@animate-ui/react/primitives/texts/shimmering'
-import { Progress } from '@animate-ui/react/primitives/base-ui/progress'
 import MetallicPaint from './vendor/MetallicPaint.jsx'
 
 // React Bits' Prism preset, with the requested color override. The introduction
@@ -26,9 +25,6 @@ function Artwork({ boot }) {
     </div>
     <ShimmeringText className="boot-wordmark" text="IronLog" duration={1.2}
       color="#a1a1aa" shimmeringColor="#ffffff" wave={false} />
-    <Progress.Root value={null} className="boot-progress" aria-label="Loading IronLog">
-      <Progress.Track className="boot-track"><Progress.Indicator className="boot-indicator" /></Progress.Track>
-    </Progress.Root>
   </div>
 }
 
