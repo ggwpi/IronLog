@@ -142,7 +142,7 @@ async function processWork(database, storage, { max = 10 } = {}) {
   const due = await database.transaction((db) =>
     rows(
       db,
-      'select id,payload from ironlog.jobs where done_at is null and due_at<=now() order by due_at limit $1',
+      "select id,payload from ironlog.jobs where kind <> 'coach' and done_at is null and due_at<=now() order by due_at limit $1",
       [max],
     ),
   )

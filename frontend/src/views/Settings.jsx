@@ -72,7 +72,7 @@ export function SettingsRoute() {
   // `ios` now, not after an async platform check: the Apple Watch page is iPhone only, and a route
   // that did not know yet sent every visit to it straight back to the root.
   // (Unknown counts as yes inside the phone app: the page itself then says there is no watch.)
-  const ctx = { user: useStore(s => s.user), mobile: MOBILE, ios: MOBILE && platformNow() !== 'android' }
+  const ctx = { user: useStore(s => s.user), mobile: MOBILE, cloudCoach: !!useStore(s => s.config?.coach?.cloud), ios: MOBILE && platformNow() !== 'android' }
   if (page && (!PAGES[page] || !pageVisible(PAGES[page].parent || page, ctx))) return <Navigate to="/settings" replace />
   if (page === 'coach') return <Navigate to="/coach/setup" replace />
   return <Settings key={page || 'root'} page={page || null} find={loc.state?.find || null} via={loc.state?.via || null} entryKey={loc.key} />
@@ -413,7 +413,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
   /* ---------------- what the pages and the search need to know about this device ---------------- */
   const canVibrate = vibrateSupported()
   const ctx = {
-    user, mobile: MOBILE, android, ios: MOBILE && ios, demo: DEMO, wakeOK, hasMedia, pwOn, webauthn: webauthnOK(),
+    user, mobile: MOBILE, cloudCoach: !!config?.coach?.cloud, android, ios: MOBILE && ios, demo: DEMO, wakeOK, hasMedia, pwOn, webauthn: webauthnOK(),
     sound: !!S.sound, playOnSilent: playOnSilentSupported(), canVibrate, vibrate: S.vibrate !== false,
     profiles: (S.equipProfiles || []).length > 0, nameLang: EXERCISE_NAME_LANGS.includes(baseLang(lang)),
     pushOK: !MOBILE && pushSupported(), reminderOn: !!S.reminder?.on, nudge: !!S.reminder?.nudge,

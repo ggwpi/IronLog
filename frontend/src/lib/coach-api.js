@@ -76,7 +76,17 @@ export async function ensureAiConsent() {
   if (await askAiConsent(target)) { await allowAi(target); return true }
   throw Object.assign(new Error(t('Okay, nothing was sent.')), { code: 'declined', quiet: true, data: { code: 'declined' } })
 }
-const asked = fn => async (...a) => { await ensureAiConsent(); return fn(...a) }
+const asked = fn => async (...a) => {
+  await ensureAiConsent()
+  const store = useStore.getState()
+  // The cloud worker reads the synced profile, including the just-completed intake/consent.
+  // Wait for the app's existing conflict-aware sync, rather than sending a second state copy.
+  if (store.config?.coach?.cloud && store.user) {
+    const synced = await store.syncNow()
+    if (synced?.status !== 'ok') throw Object.assign(new Error(t('Not synced yet. Tap to retry.')), { code: 'sync' })
+  }
+  return fn(...a)
+}
 
 export const coachStatus = async () => DEMO ? (await demo()).demoStatus() : LOCAL() ? (await local()).localStatus() : api('/api/coach/status')
 const _requestReview = async note => DEMO ? (await demo()).demoReview(S()) : LOCAL() ? (await local()).localReview(S(), note) : api('/api/coach/review', { method: 'POST', body: JSON.stringify({ note: note || '', lang: getLang() }) })
@@ -166,14 +176,14 @@ export function useCoachStatus(active = true) {
 // module loads once, in English, before any locale pack has arrived, and a language picked later
 // would otherwise never reach these lines. The lookup is still JOB_ERRORS[cls].
 export const JOB_ERRORS = {
-  get off() { return t('The Coach isn’t set up on this instance.') },
+  get off() { return useStore.getState().config?.coach?.cloud ? t('Choose a provider and connect your own API key.') : t('The Coach isn’t set up on this instance.') },
   get busy() { return t('The Coach is already thinking about your training.') },
   get cap() { return t('The Coach is taking a rest day. Try again tomorrow.') },
   get consent() { return t('The Coach needs your go-ahead first.') },
   get timeout() { return t('The Coach took too long and gave up.') },
-  get auth() { return t('The Coach couldn’t sign in to its provider. The instance owner needs to check its setup.') },
-  get missing() { return t('The Coach isn’t installed properly on this instance.') },
-  get provider() { return t('The Coach couldn’t run. The instance owner needs to check its setup.') },
+  get auth() { return useStore.getState().config?.coach?.cloud ? t('Your AI provider rejected the key. Check Settings → AI Coach.') : t('The Coach couldn’t sign in to its provider. The instance owner needs to check its setup.') },
+  get missing() { return useStore.getState().config?.coach?.cloud ? t('Choose a provider and connect your own API key.') : t('The Coach isn’t installed properly on this instance.') },
+  get provider() { return useStore.getState().config?.coach?.cloud ? t('Your AI provider couldn’t answer.') : t('The Coach couldn’t run. The instance owner needs to check its setup.') },
   get unusable() { return t('The Coach answered with something the app couldn’t use.') },
   get restart() { return t('The server restarted while the Coach was thinking.') },
   get nostate() { return t('The Coach couldn’t read your training data.') },

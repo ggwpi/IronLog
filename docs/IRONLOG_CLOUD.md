@@ -158,3 +158,42 @@ No production data, fake programme or sample workout is inserted by the applicat
 Observe JSON health/config, API error rates, job failures, Storage/database usage and Cron results.
 A safe rollback retains the clean generation and cloud-era data. Do not restore the old backend,
 legacy local keys or former personal data to fix a deployment problem.
+
+## Personal AI Coach on the cloud backend
+
+Settings → AI Coach connects each account to its own Anthropic, OpenAI, Gemini or public HTTPS
+OpenAI-compatible provider and model. It uses API billing, not a ChatGPT/Claude subscription.
+The native device-local mode and the self-hosted server's SDK/CLI modes remain separate;
+Claude Agent SDK and Codex CLI are not installed in the Vercel handler. Community/cohort sharing
+is disabled on this cloud backend.
+
+The existing core builds the allowlisted training payload, supplies prompts/schemas, runs one
+repair round and validates every proposal. The existing browser applies approved changes,
+checks plan staleness, and keeps its history/revert snapshots. The cloud never applies a model's
+output directly to a profile. Before a manual request, the client waits for its normal sync so
+new intake answers and consent have reached the worker. Provider disclosure/consent is shown
+before training leaves; automatic reviews are armed for that provider/endpoint only after an
+explicit request. They use the same pure cadence rules as the self-hosted worker.
+
+`IRONLOG_COACH_KEY` must be a stable independent 32-byte key encoded as 64 hex characters, stored
+as a production-only sensitive Vercel variable. Never put it in Supabase or client bundles. Keys
+are AES-256-GCM ciphertext authenticated to the user id and provider in `ironlog.coach`, outside
+profile state and exports. Do not rotate the encryption key without an explicit re-encryption
+migration; preserve it for encrypted-database recovery. Disconnect removes the credential and
+pending/active state; account deletion cascades the whole row. Daily usage survives disconnect
+and consent withdrawal, preventing cap resets. `COACH_DISABLED=1` force-disables the cloud Coach.
+
+Model listing and provider calls run outside SQL transactions. HTTPS transport checks DNS at
+connection time with the shared private-address guard, refuses redirects and credential-bearing
+URLs, and caps response size. Only public HTTPS endpoints on port 443 are supported in the cloud.
+The service never returns a saved key or raw provider error bodies to clients/logs.
+
+Requests create durable `coach` jobs in the existing Postgres queue. `waitUntil` starts them after
+responses; the existing authenticated five-second scheduler recovers queued work if that start
+is interrupted. SQL claims, per-account locks, a 240-second lease and config versions prevent
+concurrent execution and late results after disconnect. A provider run has a 200-second total
+budget. Expired *running* tasks fail visibly rather than automatically resending an ambiguously
+charged request. Users can explicitly retry. Up to ten jobs per account per UTC day are allowed;
+model listing/settings have separate rate limits. Notification/media workers skip Coach jobs,
+so inference never holds their global scanner lock. Automatic cadence scanning rotates batches
+of twenty configured users every minute and skips unconsented, busy, capped or pending accounts.

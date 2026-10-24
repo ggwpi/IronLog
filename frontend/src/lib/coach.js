@@ -23,7 +23,8 @@ import { t, tn } from './i18n.js'
 // Bumping this re-prompts everyone: it means what we share, or who we share it with, changed.
 // 2: the training line names the session notes, which the payload carries and version 1 never
 // mentioned.
-export const CONSENT_VERSION = 2
+import { CONSENT_VERSION } from '../../../api/coach/core/categories.js'
+export { CONSENT_VERSION } from '../../../api/coach/core/categories.js'
 
 // Bounds. The whole state has to stay inside the server's 5 MB body limit, and a Coach log
 // that grows forever is exactly the kind of thing that eats it invisibly. Worst case here is

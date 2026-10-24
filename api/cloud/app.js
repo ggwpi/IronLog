@@ -8,6 +8,7 @@ import { pushRoutes } from './push.js'
 import { session, throttle, digest } from './session.js'
 import { configuration, requestConfiguration, HttpError, answer, fail, cors, checkOrigin, generation } from './http.js'
 import { work } from './jobs.js'
+import { coachRoutes, coachConfig, runCoachWork, scanCoachCadence } from './coach.js'
 const bytes = 4 * 1024 * 1024
 const address = (req) =>
   String(req.headers['x-real-ip'] || req.socket?.remoteAddress || 'unknown').slice(0, 100)
@@ -57,6 +58,7 @@ export function createApp({
   storage,
   cfg: baseCfg = configuration(),
   workerSecret = process.env.IRONLOG_WORKER_SECRET,
+  coachFetch,
 } = {}) {
   database ||= new Database()
   storage ||= new Storage()
@@ -66,6 +68,7 @@ export function createApp({
     ...adminRoutes,
     ...storageRoutes,
     ...pushRoutes,
+    ...coachRoutes,
   }
   async function handle(req) {
     const cfg = requestConfiguration(req, baseCfg)
@@ -102,7 +105,7 @@ export function createApp({
         key = req.method + ' /api/media/{hash}'
         params.hash = media[1]
       }
-      const result = await database.transaction(async (db) => {
+      let result = await database.transaction(async (db) => {
         // Known failures are returned inside the transaction so attempts and spent
         // one-time codes COMMIT, instead of resetting the security limit on every failure.
         let ctx
@@ -122,7 +125,7 @@ export function createApp({
               generation,
               media: storageConfig(),
               transport: { snapshots: 'signed-v1' },
-              ...(s ? { coach: null } : {}),
+              ...(s ? { coach: await coachConfig(db, s.user.id) } : {}),
             })
           if (req.headers['x-ironlog-generation'] !== generation)
             fail(409, 'update IronLog before continuing', 'generation-mismatch')
@@ -130,7 +133,7 @@ export function createApp({
           const handler = routes[key]
           if (!handler || (!cfg.passwordLogin && /password|account\/email/.test(key)))
             fail(404, 'not found')
-          ctx = { req, url, body, s, db, cfg, storage, params }
+          ctx = { req, url, body, s, db, cfg, storage, params, coachFetch }
           // Upstream DELETE passkey identifies the key through the query string.
           if (key === 'DELETE /api/account/passkeys')
             ctx.body = { ...body, id: url.searchParams.get('id') || body.id }
@@ -155,12 +158,13 @@ export function createApp({
           return r
         }
       })
+      if (result.outside) result = await result.outside()
       return { ...result, headers: { ...cors(req, cfg), ...result.headers } }
     } catch (e) {
       return { ...errorAnswer(e), headers: cors(req, cfg) }
     }
   }
-  return { handle, routes, database }
+  return { handle, routes, database, runCoach: async () => { await scanCoachCadence(database); return runCoachWork(database) } }
 }
 export function nodeHandler(app) {
   return async (req, res) => {

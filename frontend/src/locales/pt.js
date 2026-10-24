@@ -2414,4 +2414,13 @@ export default {
   // --- import with no account: workouts on this device ---
   'This device has 1 workout that is not in this backup. Replacing deletes it.': 'Este dispositivo tem 1 treino que não está nesta cópia. Substituir elimina-o.',
   'This device has {0} workouts that are not in this backup. Replacing deletes them.': 'Este dispositivo tem {0} treinos que não estão nesta cópia. Substituir elimina-os.',
+  // Cloud Coach: per-user provider connection.
+  "Requests run through IronLog and are charged to your provider account.": "Os pedidos passam pelo IronLog e são cobrados na tua conta do fornecedor.",
+  "Your API key is encrypted on the server. It is never included in synced training data or backups.": "A tua chave API é guardada encriptada no servidor. Nunca é incluída nos dados de treino sincronizados nem nas cópias de segurança.",
+  "Choose a provider and connect your own API key.": "Escolhe um fornecedor e liga a tua própria chave API.",
+  "Open the Coach": "Abrir o treinador",
+  "Data shared with AI": "Dados partilhados com a IA",
+
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "O teu fornecedor de IA rejeitou a chave. Verifica Definições → Treinador IA.",
+
 }

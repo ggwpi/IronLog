@@ -208,4 +208,4 @@ jobs:
       - name: Apply schema to isolated test database
         run: node api/scripts/cloud/test-schema.mjs
       - name: Verify database, authentication, sync and isolation
-        run: node --test api/test/cloud-backend.test.js
+        run: node --test --test-concurrency=1 api/test/cloud-backend.test.js api/test/cloud-coach.test.js

@@ -35,7 +35,7 @@ export const ROOT_GROUPS = [['workout', 'alerts', 'reminders'], ['plan', 'units'
  */
 export function pageVisible(page, ctx) {
   if (page === 'reminders') return !!(ctx.user || ctx.mobile)
-  if (page === 'coach') return !!ctx.mobile
+  if (page === 'coach') return !!(ctx.mobile || (ctx.user && ctx.cloudCoach))
   // The iPhone app only: the watch app ships inside it.
   if (page === 'watch') return !!ctx.ios
   return page in PAGES

@@ -2477,5 +2477,14 @@ export default {
   "Hours": "שעות",
   "h": "ש׳",
   "This device has 1 workout that is not in this backup. Replacing deletes it.": "למכשיר הזה יש אימון אחד שלא נמצא בגיבוי הזה. החלפה מוחקת אותו.",
-  "This device has {0} workouts that are not in this backup. Replacing deletes them.": "למכשיר הזה יש {0} אימונים שאינם בגיבוי זה. החלפה מוחקת אותם."
+  "This device has {0} workouts that are not in this backup. Replacing deletes them.": "למכשיר הזה יש {0} אימונים שאינם בגיבוי זה. החלפה מוחקת אותם.",
+  // Cloud Coach: per-user provider connection.
+  "Requests run through IronLog and are charged to your provider account.": "הבקשות עוברות דרך IronLog ומחויבות בחשבון שלך אצל ספק ה־AI.",
+  "Your API key is encrypted on the server. It is never included in synced training data or backups.": "מפתח ה־API שלך נשמר מוצפן בשרת. הוא אינו נכלל בנתוני האימון המסונכרנים או בגיבויים.",
+  "Choose a provider and connect your own API key.": "בחר ספק וחבר את מפתח ה־API האישי שלך.",
+  "Open the Coach": "פתיחת המאמן",
+  "Data shared with AI": "מידע שנשלח ל־AI",
+
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "ספק ה־AI דחה את המפתח. בדוק אותו בהגדרות ← מאמן AI.",
+
 }

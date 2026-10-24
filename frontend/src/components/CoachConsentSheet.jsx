@@ -11,6 +11,7 @@ import { t } from '../lib/i18n.js'
 import { fmtDate, isoOf } from '../lib/format.js'
 import { DATA_CATEGORIES } from '../../../api/coach/core/categories.js'
 import { aiConsents, withdrawAi, onAiConsentChange } from '../lib/coach-consent.js'
+import { api } from '../lib/api.js'
 import { emptyCoach } from '../lib/coach.js'
 import Icon from './Icon.jsx'
 import { Button, Section, Row } from './ui.jsx'
@@ -45,7 +46,7 @@ function ConsentSheet({ target, onAnswer }) {
     <h3>{t('Send your training to {0}?', target.name)}</h3>
     <p className="muted" style={{ lineHeight: 1.5, margin: '6px 0 12px' }}>
       {server
-        ? t('To answer, the Coach sends this through your openGym server to {0}, an AI service outside openGym that your server’s admin picked:', target.name)
+        ? (target.cloud ? t('Requests run through IronLog and are charged to your provider account.') : t('To answer, the Coach sends this through your openGym server to {0}, an AI service outside openGym that your server’s admin picked:', target.name))
         : t('To answer, this device sends this straight to {0}, an AI service outside openGym, with your API key:', target.name)}
     </p>
     <div className="ob-consent">
@@ -78,6 +79,10 @@ export function AiConsentSection() {
     const { S, update } = useStore.getState()
     const cadence = S?.coach?.cadence
     if (c.via === 'server' && cadence && cadence !== 'off') update(s => { (s.coach = s.coach || emptyCoach()).cadence = 'off' })
+    if (c.via === 'server' && useStore.getState().config?.coach?.cloud) {
+      try { await api('/api/coach/forget', { method: 'POST', body: '{}' }) }
+      catch { toast(t('Not synced yet. Tap to retry.')); return }
+    }
     toast(t('Withdrawn. The Coach will ask before it sends anything again.'))
   }
   if (!list) return null

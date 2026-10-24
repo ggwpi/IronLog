@@ -2425,4 +2425,13 @@ export default {
   // --- import with no account: workouts on this device ---
   'This device has 1 workout that is not in this backup. Replacing deletes it.': 'อุปกรณ์นี้มีการออกกำลังกาย 1 รายการที่ไม่อยู่ในข้อมูลสำรองนี้ การแทนที่จะลบรายการนั้น',
   'This device has {0} workouts that are not in this backup. Replacing deletes them.': 'อุปกรณ์นี้มีการออกกำลังกาย {0} รายการที่ไม่อยู่ในข้อมูลสำรองนี้ การแทนที่จะลบรายการเหล่านั้น',
+  // Cloud Coach: per-user provider connection.
+  "Requests run through IronLog and are charged to your provider account.": "คำขอจะส่งผ่าน IronLog และคิดค่าบริการจากบัญชีผู้ให้บริการของคุณ",
+  "Your API key is encrypted on the server. It is never included in synced training data or backups.": "คีย์ API ของคุณถูกเข้ารหัสไว้บนเซิร์ฟเวอร์ และจะไม่รวมอยู่ในข้อมูลการฝึกที่ซิงค์หรือข้อมูลสำรอง",
+  "Choose a provider and connect your own API key.": "เลือกผู้ให้บริการและเชื่อมต่อคีย์ API ของคุณเอง",
+  "Open the Coach": "เปิดโค้ช",
+  "Data shared with AI": "ข้อมูลที่แชร์กับ AI",
+
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "ผู้ให้บริการ AI ปฏิเสธคีย์ โปรดตรวจสอบที่การตั้งค่า → โค้ช AI",
+
 }

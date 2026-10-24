@@ -2407,4 +2407,13 @@ export default {
   // --- import with no account: workouts on this device ---
   'This device has 1 workout that is not in this backup. Replacing deletes it.': '此裝置上有 1 筆訓練紀錄不在此備份中。覆蓋將會刪除它。',
   'This device has {0} workouts that are not in this backup. Replacing deletes them.': '此裝置上有 {0} 筆訓練紀錄不在此備份中。覆蓋將會將其全數刪除。',
+  // Cloud Coach: per-user provider connection.
+  "Requests run through IronLog and are charged to your provider account.": "請求透過 IronLog 傳送，費用由你的服務商帳戶負擔。",
+  "Your API key is encrypted on the server. It is never included in synced training data or backups.": "API 金鑰會在伺服器上加密儲存，不會包含在同步的訓練資料或備份中。",
+  "Choose a provider and connect your own API key.": "選擇服務商並連結你自己的 API 金鑰。",
+  "Open the Coach": "開啟教練",
+  "Data shared with AI": "與 AI 分享的資料",
+
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "AI 服務商拒絕了金鑰。請檢查設定 → AI 教練。",
+
 }

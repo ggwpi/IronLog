@@ -98,10 +98,11 @@ const pickModel = value => act(() => {
 const openByok = async () => { await click(rowTitled('Bring my own API key')) }
 
 describe('CoachSetup — where it runs at all', () => {
-  it('is a phone screen: the web build is sent straight back to Settings', async () => {
+  it('web build opens cloud setup without using native key storage', async () => {
     mocks.mobile = false
     await mount()
-    expect(mocks.nav).toHaveBeenCalledWith('/settings', { replace: true })
+    expect(mocks.nav).not.toHaveBeenCalled()
+    expect(host.textContent).toContain('AI Coach')
   })
 
   it('re-asks the paired server what it can do, because the admin may have switched it on', async () => {

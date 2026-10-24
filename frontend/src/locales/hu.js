@@ -2417,4 +2417,13 @@ export default {
   // --- import with no account: workouts on this device ---
   'This device has 1 workout that is not in this backup. Replacing deletes it.': 'Ezen az eszközön 1 edzés van, amely nincs ebben a mentésben. A csere törli.',
   'This device has {0} workouts that are not in this backup. Replacing deletes them.': 'Ezen az eszközön {0} edzés van, amely nincs ebben a mentésben. A csere törli őket.',
+  // Cloud Coach: per-user provider connection.
+  "Requests run through IronLog and are charged to your provider account.": "A kérések az IronLogon keresztül futnak, és a szolgáltatói fiókodat terhelik.",
+  "Your API key is encrypted on the server. It is never included in synced training data or backups.": "Az API-kulcs titkosítva kerül a szerverre. Nem szerepel a szinkronizált edzésadatokban vagy a biztonsági mentésekben.",
+  "Choose a provider and connect your own API key.": "Válassz szolgáltatót, és add meg a saját API-kulcsodat.",
+  "Open the Coach": "Edző megnyitása",
+  "Data shared with AI": "Az AI-val megosztott adatok",
+
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "Az AI-szolgáltató elutasította a kulcsot. Ellenőrizd: Beállítások → AI-edző.",
+
 }
