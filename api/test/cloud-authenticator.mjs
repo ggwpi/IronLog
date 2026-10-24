@@ -24,7 +24,7 @@ const cborHead = (major, n) =>
 const cborText = (s) => Buffer.concat([cborHead(3, Buffer.byteLength(s)), Buffer.from(s)])
 const cborBytes = (b) => Buffer.concat([cborHead(2, b.length), b])
 
-export function softPasskey() {
+export function softPasskey({ origin: defaultOrigin = ORIGIN, rpId: credentialRP = rpId } = {}) {
   const { privateKey, publicKey } = crypto.generateKeyPairSync('ec', { namedCurve: 'P-256' })
   const jwk = publicKey.export({ format: 'jwk' })
   const cose = Buffer.concat([
@@ -47,13 +47,13 @@ export function softPasskey() {
       ...extra,
     }),
     // What navigator.credentials.create() hands back, serialised the way lib/api.js does.
-    attestation(challenge, { origin = ORIGIN } = {}) {
+    attestation(challenge, { origin = defaultOrigin } = {}) {
       const clientDataJSON = Buffer.from(
         JSON.stringify({ type: 'webauthn.create', challenge, origin, crossOrigin: false }),
       )
       const len = Buffer.from([raw.length >> 8, raw.length & 255])
       const authData = Buffer.concat([
-        sha(rpId),
+        sha(credentialRP),
         Buffer.from([0x45]),
         Buffer.alloc(4),
         Buffer.alloc(16),
@@ -85,11 +85,11 @@ export function softPasskey() {
     },
     assertion(challenge) {
       const clientDataJSON = Buffer.from(
-        JSON.stringify({ type: 'webauthn.get', challenge, origin: ORIGIN, crossOrigin: false }),
+        JSON.stringify({ type: 'webauthn.get', challenge, origin: defaultOrigin, crossOrigin: false }),
       )
       const c = Buffer.alloc(4)
       c.writeUInt32BE(++counter)
-      const authData = Buffer.concat([sha(rpId), Buffer.from([0x05]), c])
+      const authData = Buffer.concat([sha(credentialRP), Buffer.from([0x05]), c])
       const signature = crypto.sign(
         'sha256',
         Buffer.concat([authData, sha(clientDataJSON)]),
