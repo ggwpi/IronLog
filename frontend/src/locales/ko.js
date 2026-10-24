@@ -2414,4 +2414,11 @@ export default {
   // --- import with no account: workouts on this device ---
   'This device has 1 workout that is not in this backup. Replacing deletes it.': '이 기기에 이 백업에 없는 운동이 1개 있습니다. 바꾸면 삭제됩니다.',
   'This device has {0} workouts that are not in this backup. Replacing deletes them.': '이 기기에 이 백업에 없는 운동이 {0}개 있습니다. 바꾸면 삭제됩니다.',
+  // Cloud Coach: per-user provider connection.
+  "Requests run through IronLog and are charged to your provider account.": "요청은 IronLog를 통해 전송되며 제공업체 계정에 요금이 청구됩니다.",
+  "Your API key is encrypted on the server. It is never included in synced training data or backups.": "API 키는 서버에 암호화되어 저장됩니다. 동기화된 운동 데이터나 백업에는 포함되지 않습니다.",
+  "Choose a provider and connect your own API key.": "제공업체를 선택하고 본인의 API 키를 연결하세요.",
+  "Open the Coach": "코치 열기",
+  "Data shared with AI": "AI와 공유하는 데이터",
+
 }

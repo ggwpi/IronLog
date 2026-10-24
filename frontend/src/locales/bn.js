@@ -2493,4 +2493,11 @@ export default {
   // --- import with no account: workouts on this device ---
   'This device has 1 workout that is not in this backup. Replacing deletes it.': 'এই ডিভাইসে ১টি ওয়ার্কআউট আছে যা এই ব্যাকআপে নেই। প্রতিস্থাপন করলে এটি মুছে যাবে।',
   'This device has {0} workouts that are not in this backup. Replacing deletes them.': 'এই ডিভাইসে {0}টি ওয়ার্কআউট আছে যা এই ব্যাকআপে নেই। প্রতিস্থাপন করলে এগুলো মুছে যাবে।',
+  // Cloud Coach: per-user provider connection.
+  "Requests run through IronLog and are charged to your provider account.": "অনুরোধ IronLog-এর মাধ্যমে পাঠানো হয় এবং খরচ আপনার সেবাদাতার অ্যাকাউন্টে যোগ হয়।",
+  "Your API key is encrypted on the server. It is never included in synced training data or backups.": "আপনার API কী সার্ভারে এনক্রিপ্ট করে রাখা হয়। এটি সিঙ্ক করা ওয়ার্কআউট ডেটা বা ব্যাকআপে অন্তর্ভুক্ত হয় না।",
+  "Choose a provider and connect your own API key.": "সেবাদাতা বেছে নিন এবং নিজের API কী যুক্ত করুন।",
+  "Open the Coach": "কোচ খুলুন",
+  "Data shared with AI": "AI-এর সাথে শেয়ার করা ডেটা",
+
 }

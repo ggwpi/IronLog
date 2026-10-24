@@ -6,15 +6,10 @@ if (!url || !['localhost', '127.0.0.1'].includes(new URL(url).hostname))
 const db = new pg.Client({ connectionString: url })
 await db.connect()
 try {
-  await db.query(
-    fs.readFileSync(
-      new URL(
-        '../../../supabase/migrations/20261023121250_ironlog_cloud_backend.sql',
-        import.meta.url,
-      ),
-      'utf8',
-    ),
-  )
+  const dir = new URL('../../../supabase/migrations/', import.meta.url)
+  for (const name of fs.readdirSync(dir).filter(n => n.endsWith('.sql')).sort()) {
+    await db.query(fs.readFileSync(new URL(name, dir), 'utf8'))
+  }
 } finally {
   await db.end()
 }

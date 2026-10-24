@@ -76,7 +76,17 @@ export async function ensureAiConsent() {
   if (await askAiConsent(target)) { await allowAi(target); return true }
   throw Object.assign(new Error(t('Okay, nothing was sent.')), { code: 'declined', quiet: true, data: { code: 'declined' } })
 }
-const asked = fn => async (...a) => { await ensureAiConsent(); return fn(...a) }
+const asked = fn => async (...a) => {
+  await ensureAiConsent()
+  const store = useStore.getState()
+  // The cloud worker reads the synced profile, including the just-completed intake/consent.
+  // Wait for the app's existing conflict-aware sync, rather than sending a second state copy.
+  if (store.config?.coach?.cloud && store.user) {
+    const synced = await store.syncNow()
+    if (synced?.status !== 'ok') throw Object.assign(new Error(t('Not synced yet. Tap to retry.')), { code: 'sync' })
+  }
+  return fn(...a)
+}
 
 export const coachStatus = async () => DEMO ? (await demo()).demoStatus() : LOCAL() ? (await local()).localStatus() : api('/api/coach/status')
 const _requestReview = async note => DEMO ? (await demo()).demoReview(S()) : LOCAL() ? (await local()).localReview(S(), note) : api('/api/coach/review', { method: 'POST', body: JSON.stringify({ note: note || '', lang: getLang() }) })

@@ -11,3 +11,6 @@ export const DATA_CATEGORIES = Object.freeze([
   'profile',     // the intake answers you gave the Coach, including any limitations
   'prefs'        // unit, language, effort scale
 ]);
+
+// Shared by the consent UI and cloud worker; version 2 explicitly includes session notes.
+export const CONSENT_VERSION = 2;

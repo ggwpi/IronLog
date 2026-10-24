@@ -322,7 +322,7 @@ function PlanCard({ p, S, update, toast, nav, refresh }) {
           ? t('Imported! {0} routines are in your plan and your week is set. See you at the next session.', n)
           : t('Imported! {0} routines are in your plan. Your week is unchanged; schedule them whenever you like.', n) })
       })
-      resolvePending({ accepted: ['plan'] }).catch(() => {})
+      resolvePending({ id: p.id, accepted: ['plan'] }).catch(() => {})
       toast(t('Your plan is live'))
       refresh()
     } catch (e) { toast(e.message || t('That proposal can’t be read.')) }
@@ -332,7 +332,7 @@ function PlanCard({ p, S, update, toast, nav, refresh }) {
     confirmText: t('Discard'), danger: true,
     onConfirm: () => {
       update(s => { const ref = recordDismissal(s, p); appendChat(s, { role: 'coach', kind: 'dismissed', ref, text: t('Discarded. Tell me what was off and I will build a different one.') }) })
-      resolvePending({ dismissed: true }).catch(() => {})
+      resolvePending({ id: p.id, dismissed: true }).catch(() => {})
       refresh()
     }
   })
@@ -398,7 +398,7 @@ function ReviewCard({ p, S, update, toast, refresh }) {
         const res = applyChangeSet(s, marked, ids)
         appendChat(s, { role: 'coach', kind: 'applied', ref: res.logId, text: tn('Applied {0} change to your plan.', 'Applied {0} changes to your plan.', ids.length) })
       })
-      resolvePending({ accepted: ids, rejected: marked.changes.filter(c => !ids.includes(c.id)).map(c => c.id) }).catch(() => {})
+      resolvePending({ id: p.id, accepted: ids, rejected: marked.changes.filter(c => !ids.includes(c.id)).map(c => c.id) }).catch(() => {})
       toast(tn('{0} change applied', '{0} changes applied', ids.length))
       refresh()
     } catch (e) { toast(e.message || t('Could not apply those changes')) }
@@ -408,7 +408,7 @@ function ReviewCard({ p, S, update, toast, refresh }) {
     confirmText: t('Dismiss'), danger: true,
     onConfirm: () => {
       update(s => { const ref = recordDismissal(s, marked); appendChat(s, { role: 'coach', kind: 'dismissed', ref, text: t('Got it. I won’t suggest these again without new evidence.') }) })
-      resolvePending({ dismissed: true }).catch(() => {})
+      resolvePending({ id: p.id, dismissed: true }).catch(() => {})
       refresh()
     }
   })
@@ -569,7 +569,7 @@ const scoreWord = s => s >= 9 ? t('Excellent session') : s >= 7 ? t('Good sessio
 function DebriefCard({ p, S, update, toast, refresh }) {
   const done = () => {
     update(s => { const ref = recordDebrief(s, p); appendChat(s, { role: 'coach', kind: 'debrief', ref, text: '' }) })
-    resolvePending({ accepted: ['debrief'] }).catch(() => {})
+    resolvePending({ id: p.id, accepted: ['debrief'] }).catch(() => {})
     toast(t('Kept in your Coach history'))
     refresh()
   }

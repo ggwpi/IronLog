@@ -1535,6 +1535,13 @@ export const PT_BR_OVERRIDES = {
   // --- import with no account: workouts on this device ---
   'This device has 1 workout that is not in this backup. Replacing deletes it.': 'Este dispositivo tem 1 treino que não está neste backup. Substituir exclui esse treino.',
   'This device has {0} workouts that are not in this backup. Replacing deletes them.': 'Este dispositivo tem {0} treinos que não estão neste backup. Substituir exclui esses treinos.',
+  // Cloud Coach: per-user provider connection.
+  "Requests run through IronLog and are charged to your provider account.": "As solicitações passam pelo IronLog e são cobradas na sua conta do provedor.",
+  "Your API key is encrypted on the server. It is never included in synced training data or backups.": "Sua chave API é armazenada criptografada no servidor. Ela nunca é incluída nos dados de treino sincronizados ou nos backups.",
+  "Choose a provider and connect your own API key.": "Escolha um provedor e conecte sua própria chave API.",
+  "Open the Coach": "Abrir o treinador",
+  "Data shared with AI": "Dados compartilhados com a IA",
+
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

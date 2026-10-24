@@ -56,7 +56,7 @@ export function consentTarget(info, via) {
   const provider = String(info.provider)
   const host = info.host ? String(info.host).toLowerCase() : null
   const name = (provider !== 'compatible' && PROVIDER_NAMES[provider]) || host || info.providerLabel || provider
-  return { key: `${via}|${provider}|${host || ''}`, via, provider, host, name, local: isLocalHost(host) }
+  return { key: `${via}|${provider}|${host || ''}`, via, provider, host, name, cloud: !!info.cloud, local: isLocalHost(host) }
 }
 
 /* ---------- the remembered answers ---------- */
