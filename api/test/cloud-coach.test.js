@@ -130,7 +130,17 @@ const call = (method, url, body, u = A, headers = {}) =>
   app.handle({
     method,
     url,
-    body: body ?? (['GET', 'HEAD'].includes(method) ? undefined : {}),
+    body:
+      body == null
+        ? ['GET', 'HEAD'].includes(method)
+          ? undefined
+          : { accountId: u?.id }
+        : {
+            ...(method !== 'GET' && /\/api\/coach\/(settings|models)$/.test(url)
+              ? { accountId: u?.id }
+              : {}),
+            ...body,
+          },
     headers: {
       origin: cfg.origin,
       'x-ironlog-generation': generation,
@@ -539,5 +549,24 @@ suite(
     assert.equal(r.body.ok, false)
     assert.equal(r.body.code, 'auth')
     assert.ok(!JSON.stringify(r.body).includes('test-key-'))
+  }
+)
+
+suite(
+  'credential forms cannot attach a typed key after another tab changes accounts',
+  async () => {
+    const mismatch = {
+      accountId: B.id,
+      provider: 'openai',
+      model: 'test-model',
+      apiKey: 'key-from-another-account-form',
+    }
+    for (const path of ['/api/coach/settings', '/api/coach/models']) {
+      const r = await call('POST', path, mismatch, A)
+      assert.equal(r.status, 409)
+      assert.equal(r.body.code, 'account-changed')
+    }
+    assert.equal((await call('GET', '/api/coach/settings')).body.hasKey, false)
+    assert.equal(calls.length, 0)
   }
 )

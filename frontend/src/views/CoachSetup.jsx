@@ -38,7 +38,8 @@ const isCleartext = url => /^http:\/\//i.test(String(url || '').trim())
 const cleartextRefused = () => t('Android blocks unencrypted http:// connections from apps, so this phone can only reach an https:// endpoint. Put HTTPS in front of it (Tailscale or a reverse proxy), or choose “Use my self-hosted openGym”: your server can reach an http:// model on its own network.')
 
 export default function CoachSetup() {
-  return MOBILE ? <NativeCoachSetup /> : <CloudCoachSetup />
+  const userId = useStore(s => s.user?.id)
+  return MOBILE ? <NativeCoachSetup /> : <CloudCoachSetup key={userId || 'guest'} />
 }
 
 function NativeCoachSetup() {

@@ -34,6 +34,9 @@ export default function CloudCoachSetup() {
       nav('/home', { replace: true })
       return
     }
+    setKey('')
+    setModels(null)
+    setLoaded(false)
     let gone = false
     api('/api/coach/settings')
       .then((s) => {
@@ -67,6 +70,7 @@ export default function CloudCoachSetup() {
     setModels(null)
   }
   const request = () => ({
+    accountId: user.id,
     provider,
     baseUrl: meta.baseUrl ? baseUrl : undefined,
     model,
@@ -117,7 +121,10 @@ export default function CloudCoachSetup() {
   const disconnect = async () => {
     setBusy(true)
     try {
-      await api('/api/coach/settings', { method: 'DELETE' })
+      await api('/api/coach/settings', {
+        method: 'DELETE',
+        body: JSON.stringify({ accountId: user.id }),
+      })
       setSaved({})
       setKey('')
       setModels(null)
@@ -201,6 +208,7 @@ export default function CloudCoachSetup() {
                   value={baseUrl}
                   placeholder="https://openrouter.ai/api/v1"
                   inputMode="url"
+                  disabled={busy}
                   dir="ltr"
                   autoCapitalize="none"
                   autoCorrect="off"
@@ -222,6 +230,7 @@ export default function CloudCoachSetup() {
               <TextField
                 value={key}
                 type="password"
+                disabled={busy}
                 dir="ltr"
                 autoComplete="off"
                 autoCapitalize="none"

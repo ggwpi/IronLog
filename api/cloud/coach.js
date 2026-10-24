@@ -101,6 +101,15 @@ function checkedSettings(body) {
 }
 function guard(ctx) {
   const u = requireUser(ctx)
+  // Cookies can change when another tab signs into a different account. A form with a
+  // typed key must still belong to the account that opened it, rather than silently
+  // attaching that key to the newly signed-in profile.
+  if (
+    ctx.req.method !== 'GET' &&
+    ['/api/coach/settings', '/api/coach/models'].includes(ctx.url.pathname) &&
+    ctx.body.accountId !== u.id
+  )
+    fail(409, 'Your account changed. Reload IronLog.', 'account-changed')
   if (!enabled()) fail(503, 'Coach is not configured', 'off')
   return u
 }
