@@ -194,6 +194,7 @@ export default function CloudCoachSetup() {
                   value={baseUrl}
                   placeholder="https://openrouter.ai/api/v1"
                   inputMode="url"
+                  dir="ltr"
                   autoCapitalize="none"
                   autoCorrect="off"
                   onChange={(e) => {
@@ -214,6 +215,7 @@ export default function CloudCoachSetup() {
               <TextField
                 value={key}
                 type="password"
+                dir="ltr"
                 autoComplete="off"
                 autoCapitalize="none"
                 autoCorrect="off"

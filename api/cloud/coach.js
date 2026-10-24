@@ -526,7 +526,7 @@ export async function runCoachWork(
 // only the cadence/config markers; training history is loaded for due, connected accounts.
 export async function scanCoachCadence(database) {
   if (!enabled()) return
-  await database.transaction(async (db) => {
+  const users = await database.transaction(async (db) => {
     const scan = await one(
       db,
       "select pg_try_advisory_xact_lock(hashtextextended('ironlog-coach-cadence',0)) as acquired"
@@ -541,16 +541,21 @@ export async function scanCoachCadence(database) {
       "insert into ironlog.settings(key,value) values('coach-cadence-scan',$1) on conflict(key) do update set value=excluded.value",
       [Date.now()]
     )
-    const users = await rows(
+    return rows(
       db,
       `select c.user_id from ironlog.coach c join ironlog.accounts a on a.id=c.user_id join ironlog.profiles p on p.user_id=c.user_id
       where c.config ? 'provider' and coalesce((a.data->>'disabled')::boolean,false)=false
       and p.state->'coach'->'cadence' is not null and p.state->'coach'->>'cadence'<>'off' order by coalesce((c.state->>'cadenceScannedAt')::bigint,0),c.user_id limit 20`
     )
-    for (const { user_id: uid } of users) {
-      await account(db, uid)
+  })
+  for (const { user_id: uid } of users || []) {
+    await database.transaction(async (db) => {
+      const u = await account(db, uid)
+      if (!u || u.disabled) return
       const r = await get(db, uid),
         S = await readProfile(db, uid)
+      if (!r) return
+      if (r.state.pending?.expiresAt < Date.now()) r.state.pending = null
       r.state.cadenceScannedAt = Date.now()
       await statePut(db, uid, r.state)
       if (
@@ -562,11 +567,11 @@ export async function scanCoachCadence(database) {
         !S?.coach?.consent?.agreedAt ||
         S.coach.consent.version !== CONSENT_VERSION
       )
-        continue
+        return
       const tz = S.reminder?.tz || 'UTC',
         now = clockFor(tz)
       if (isDue(S.coach, S, now, r.state.reviewedAt || 0, tz))
         await enqueueCoach(db, uid, 'review', { lang: S.lang })
-    }
-  })
+    })
+  }
 }
