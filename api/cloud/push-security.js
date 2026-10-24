@@ -4,7 +4,8 @@ import https from 'node:https'
 import net from 'node:net'
 function isPrivateAddr(ip) {
   const v = String(ip).toLowerCase()
-  if (isAllowedPrivateAddr(v)) return false
+  // Cloud delivery always blocks private addresses. The self-hosted server's
+  // optional LAN allowlist is not part of this backend.
   const m4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(v)
   if (m4) {
     const a = +m4[1],
