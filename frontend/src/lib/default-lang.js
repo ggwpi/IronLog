@@ -26,6 +26,8 @@ export function matchLocale(tag) {
   const exact = KEYS.find(k => k.toLowerCase() === want)
   if (exact) return exact
   const base = want.split('-')[0]
+  // Some browsers still use Hebrew's former language code.
+  if (base === 'iw') return 'he'
   // Traditional Chinese arrives as zh-Hant(-TW), zh-HK or zh-MO, never as the pack's own 'zh-TW';
   // the bare base would read it as Simplified.
   if (base === 'zh' && KEYS.includes('zh-TW') && /^zh-(hant|hk|mo)(-|$)/.test(want)) return 'zh-TW'
