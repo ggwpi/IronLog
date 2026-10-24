@@ -221,3 +221,24 @@ describe('sw.js re-registers a rotated push subscription with the page\'s device
     expect(await (await (await globalThis.caches.open(DEVICE_CACHE)).match(DEVICE_URL)).text()).toBe('dev1234abcd')
   })
 })
+
+describe('IronLog notification branding', () => {
+  it('uses IronLog for missing titles and old queued app-title payloads', async () => {
+    await loadSW()
+    const shown = []
+    self.registration.showNotification = async (title, options) => shown.push({ title, ...options })
+    for (const title of [undefined, 'openGym', 'OpenGym', 'IronLog', 'המנוחה הסתיימה 💪', '🏋️ My openGym routine today']) {
+      await fire('push', { data: { json: () => ({ title, body: 'An alert', tag: 'test' }) } })
+    }
+    expect(shown.map(n => n.title)).toEqual(['IronLog', 'IronLog', 'IronLog', 'IronLog', 'המנוחה הסתיימה 💪', '🏋️ My openGym routine today'])
+    expect(shown.every(n => n.body === 'An alert' && n.tag === 'test')).toBe(true)
+  })
+
+  it('still shows IronLog when a push payload is not JSON', async () => {
+    await loadSW()
+    let shown
+    self.registration.showNotification = async (title, options) => { shown = { title, ...options } }
+    await fire('push', { data: { json: () => { throw new SyntaxError() }, text: () => 'Rest is over' } })
+    expect(shown).toMatchObject({ title: 'IronLog', body: 'Rest is over' })
+  })
+})

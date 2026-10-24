@@ -153,34 +153,34 @@ const OWN = {
   'Your rest, your next set, or today\'s workout.': {
     de: 'Deine Pause, dein nächster Satz oder das Training von heute.', fr: 'Ton repos, ta prochaine série ou la séance du jour.', es: 'Tu descanso, tu próxima serie o el entreno de hoy.', it: 'Il tuo recupero, la prossima serie o l’allenamento di oggi.', 'pt-PT': 'O teu descanso, a próxima série ou o treino de hoje.', 'pt-BR': 'Seu descanso, a próxima série ou o treino de hoje.', pl: 'Twoja przerwa, następna seria albo dzisiejszy trening.', hu: 'A pihenőd, a következő sorozat vagy a mai edzés.', tr: 'Dinlenmen, sıradaki setin ya da bugünkü antrenman.', ru: 'Отдых, следующий подход или сегодняшняя тренировка.', uk: 'Відпочинок, наступний підхід або сьогоднішнє тренування.', ar: 'راحتك، أو مجموعتك التالية، أو تمرين اليوم.', hi: 'आपका आराम, अगला सेट, या आज का वर्कआउट।', bn: 'আপনার বিশ্রাম, পরের সেট, বা আজকের ওয়ার্কআউট।', th: 'ช่วงพัก เซ็ตถัดไป หรือการฝึกวันนี้', ko: '휴식, 다음 세트, 또는 오늘의 운동.', 'zh-Hans': '你的休息、下一组或今天的训练。', 'zh-Hant': '你的休息、下一組或今天的訓練。',
   },
-  'Opens openGym.': {
-    de: 'Öffnet openGym.', fr: 'Ouvre openGym.', es: 'Abre openGym.', it: 'Apre openGym.', 'pt-PT': 'Abre o openGym.', 'pt-BR': 'Abre o openGym.', pl: 'Otwiera openGym.', hu: 'Megnyitja az openGymet.', tr: 'openGym’i açar.', ru: 'Открывает openGym.', uk: 'Відкриває openGym.', ar: 'يفتح openGym.', hi: 'openGym खोलता है।', bn: 'openGym খোলে।', th: 'เปิด openGym', ko: 'openGym을 열어요.', 'zh-Hans': '打开 openGym。', 'zh-Hant': '打開 openGym。',
+  'Opens IronLog.': {
+    de: 'Öffnet IronLog.', fr: 'Ouvre IronLog.', es: 'Abre IronLog.', it: 'Apre IronLog.', 'pt-PT': 'Abre o IronLog.', 'pt-BR': 'Abre o IronLog.', pl: 'Otwiera IronLog.', hu: 'Megnyitja az IronLoget.', tr: 'IronLog’i açar.', ru: 'Открывает IronLog.', uk: 'Відкриває IronLog.', ar: 'يفتح IronLog.', hi: 'IronLog खोलता है।', bn: 'IronLog খোলে।', th: 'เปิด IronLog', ko: 'IronLog을 열어요.', 'zh-Hans': '打开 IronLog。', 'zh-Hant': '打開 IronLog。',
   },
 }
 
 // Info.plist's own (the Apple Health permission prompts), into InfoPlist.strings.
 const PLIST = {
   NSHealthShareUsageDescription: {
-    de: 'openGym zeigt deinen Puls während des Trainings und neben jedem Satz.', fr: 'openGym affiche ton pouls pendant la séance et à côté de chaque série.',
-    es: 'openGym muestra tu pulso durante el entreno y junto a cada serie.', it: 'openGym mostra il tuo battito durante l’allenamento e accanto a ogni serie.',
-    'pt-PT': 'O openGym mostra a tua frequência cardíaca durante o treino e ao lado de cada série.', 'pt-BR': 'O openGym mostra sua frequência cardíaca durante o treino e ao lado de cada série.',
-    pl: 'openGym pokazuje tętno podczas treningu i przy każdej serii.', hu: 'Az openGym edzés közben és minden sorozat mellett mutatja a pulzusodat.',
-    tr: 'openGym antrenman sırasında ve her setin yanında nabzını gösterir.', ru: 'openGym показывает пульс во время тренировки и рядом с каждым подходом.',
-    uk: 'openGym показує пульс під час тренування і біля кожного підходу.', ar: 'يعرض openGym نبضك أثناء التمرين وبجانب كل مجموعة.',
-    hi: 'openGym वर्कआउट के दौरान और हर सेट के साथ आपकी धड़कन दिखाता है।', bn: 'openGym ওয়ার্কআউটের সময় আর প্রতিটি সেটের পাশে আপনার হার্ট রেট দেখায়।',
-    th: 'openGym แสดงอัตราการเต้นของหัวใจระหว่างฝึกและข้างแต่ละเซ็ต', ko: 'openGym이 운동 중과 각 세트 옆에 심박수를 보여줘요.',
-    'zh-Hans': 'openGym 会在训练中和每组旁显示你的心率。', 'zh-Hant': 'openGym 會在訓練中和每組旁顯示你的心率。',
+    de: 'IronLog zeigt deinen Puls während des Trainings und neben jedem Satz.', fr: 'IronLog affiche ton pouls pendant la séance et à côté de chaque série.',
+    es: 'IronLog muestra tu pulso durante el entreno y junto a cada serie.', it: 'IronLog mostra il tuo battito durante l’allenamento e accanto a ogni serie.',
+    'pt-PT': 'O IronLog mostra a tua frequência cardíaca durante o treino e ao lado de cada série.', 'pt-BR': 'O IronLog mostra sua frequência cardíaca durante o treino e ao lado de cada série.',
+    pl: 'IronLog pokazuje tętno podczas treningu i przy każdej serii.', hu: 'Az IronLog edzés közben és minden sorozat mellett mutatja a pulzusodat.',
+    tr: 'IronLog antrenman sırasında ve her setin yanında nabzını gösterir.', ru: 'IronLog показывает пульс во время тренировки и рядом с каждым подходом.',
+    uk: 'IronLog показує пульс під час тренування і біля кожного підходу.', ar: 'يعرض IronLog نبضك أثناء التمرين وبجانب كل مجموعة.',
+    hi: 'IronLog वर्कआउट के दौरान और हर सेट के साथ आपकी धड़कन दिखाता है।', bn: 'IronLog ওয়ার্কআউটের সময় আর প্রতিটি সেটের পাশে আপনার হার্ট রেট দেখায়।',
+    th: 'IronLog แสดงอัตราการเต้นของหัวใจระหว่างฝึกและข้างแต่ละเซ็ต', ko: 'IronLog이 운동 중과 각 세트 옆에 심박수를 보여줘요.',
+    'zh-Hans': 'IronLog 会在训练中和每组旁显示你的心率。', 'zh-Hant': 'IronLog 會在訓練中和每組旁顯示你的心率。',
   },
   NSHealthUpdateUsageDescription: {
-    de: 'openGym speichert deine Trainings in Apple Health, wenn du das einschaltest.', fr: 'openGym enregistre tes séances dans Apple Santé si tu l’actives.',
-    es: 'openGym guarda tus entrenos en Apple Salud si lo activas.', it: 'openGym salva i tuoi allenamenti in Apple Salute se lo attivi.',
-    'pt-PT': 'O openGym guarda os teus treinos no Apple Saúde se o ativares.', 'pt-BR': 'O openGym salva seus treinos no Apple Saúde se você ativar.',
-    pl: 'openGym zapisuje treningi w Apple Zdrowie, jeśli to włączysz.', hu: 'Az openGym az Apple Egészség appba menti az edzéseidet, ha bekapcsolod.',
-    tr: 'Açarsan openGym antrenmanlarını Apple Sağlık’a kaydeder.', ru: 'openGym сохраняет тренировки в Apple Здоровье, если вы это включите.',
-    uk: 'openGym зберігає тренування в Apple Здоров’я, якщо ти це ввімкнеш.', ar: 'يحفظ openGym تمارينك في Apple صحتي إذا فعّلت ذلك.',
-    hi: 'चालू करने पर openGym आपके वर्कआउट Apple Health में सहेजता है।', bn: 'চালু করলে openGym আপনার ওয়ার্কআউট Apple Health-এ সেভ করে।',
-    th: 'openGym บันทึกการฝึกลงใน Apple Health เมื่อคุณเปิดใช้', ko: '켜면 openGym이 운동을 Apple 건강에 저장해요.',
-    'zh-Hans': '打开后，openGym 会把训练保存到 Apple 健康。', 'zh-Hant': '開啟後，openGym 會把訓練儲存到 Apple 健康。',
+    de: 'IronLog speichert deine Trainings in Apple Health, wenn du das einschaltest.', fr: 'IronLog enregistre tes séances dans Apple Santé si tu l’actives.',
+    es: 'IronLog guarda tus entrenos en Apple Salud si lo activas.', it: 'IronLog salva i tuoi allenamenti in Apple Salute se lo attivi.',
+    'pt-PT': 'O IronLog guarda os teus treinos no Apple Saúde se o ativares.', 'pt-BR': 'O IronLog salva seus treinos no Apple Saúde se você ativar.',
+    pl: 'IronLog zapisuje treningi w Apple Zdrowie, jeśli to włączysz.', hu: 'Az IronLog az Apple Egészség appba menti az edzéseidet, ha bekapcsolod.',
+    tr: 'Açarsan IronLog antrenmanlarını Apple Sağlık’a kaydeder.', ru: 'IronLog сохраняет тренировки в Apple Здоровье, если вы это включите.',
+    uk: 'IronLog зберігає тренування в Apple Здоров’я, якщо ти це ввімкнеш.', ar: 'يحفظ IronLog تمارينك في Apple صحتي إذا فعّلت ذلك.',
+    hi: 'चालू करने पर IronLog आपके वर्कआउट Apple Health में सहेजता है।', bn: 'চালু করলে IronLog আপনার ওয়ার্কআউট Apple Health-এ সেভ করে।',
+    th: 'IronLog บันทึกการฝึกลงใน Apple Health เมื่อคุณเปิดใช้', ko: '켜면 IronLog이 운동을 Apple 건강에 저장해요.',
+    'zh-Hans': '打开后，IronLog 会把训练保存到 Apple 健康。', 'zh-Hant': '開啟後，IronLog 會把訓練儲存到 Apple 健康。',
   },
 }
 
@@ -188,7 +188,7 @@ const esc = s => String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/
 let problems = 0
 for (const [pack, lproj] of Object.entries(LANGS)) {
   const { default: dict } = await import(pathToFileURL(join(root, 'src', 'locales', pack + '.js')).href)
-  const lines = [`/* openGym on the Apple Watch, ${lproj}. Written by ios/ci/watch-strings.mjs: change that, not this. */`, '']
+  const lines = [`/* IronLog on the Apple Watch, ${lproj}. Written by ios/ci/watch-strings.mjs: change that, not this. */`, '']
   const put = (k, v) => {
     if (!v) { console.error(`${lproj}: no word for "${k}"`); problems++; return }
     if (/—/.test(v)) { console.error(`${lproj}: em dash in "${k}"`); problems++ }
@@ -202,7 +202,7 @@ for (const [pack, lproj] of Object.entries(LANGS)) {
   // The widget says a few of the same words (Rest, Start workout).
   mkdirSync(join(widgets, `${lproj}.lproj`), { recursive: true })
   writeFileSync(join(widgets, `${lproj}.lproj`, 'Localizable.strings'), lines.join('\n') + '\n')
-  const plist = [`/* openGym on the Apple Watch, ${lproj}: Info.plist. Written by ios/ci/watch-strings.mjs. */`, '']
+  const plist = [`/* IronLog on the Apple Watch, ${lproj}: Info.plist. Written by ios/ci/watch-strings.mjs. */`, '']
   for (const [k, tr] of Object.entries(PLIST)) {
     if (!tr[lproj] || /—/.test(tr[lproj])) { console.error(`${lproj}: ${k} missing or with an em dash`); problems++; continue }
     plist.push(`"${k}" = "${esc(tr[lproj])}";`)
@@ -213,7 +213,7 @@ for (const [pack, lproj] of Object.entries(LANGS)) {
 // that language's words to an app in English.
 {
   const keys = [...Object.keys(FROM_APP), ...Object.keys(COMPOSED), ...Object.keys(OWN)]
-  const lines = ['/* openGym on the Apple Watch, en. Written by ios/ci/watch-strings.mjs: change that, not this. */', '']
+  const lines = ['/* IronLog on the Apple Watch, en. Written by ios/ci/watch-strings.mjs: change that, not this. */', '']
   for (const k of keys) lines.push(`"${esc(k)}" = "${esc(k)}";`)
   for (const dir of [out, widgets]) {
     mkdirSync(join(dir, 'en.lproj'), { recursive: true })

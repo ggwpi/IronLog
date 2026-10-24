@@ -9,7 +9,7 @@ test('localizes every server-generated notification in pt-BR', () => {
     tag: 'rest-timer',
   });
   assert.deepEqual(testPush('pt-BR'), {
-    title: 'openGym',
+    title: 'IronLog',
     body: 'Notificação de teste ✅ É assim que os alertas aparecem.',
     tag: 'test',
   });
@@ -54,4 +54,10 @@ test('Hebrew reminders and rest alerts follow the profile language', () => {
   assert.equal(testPush('he').body, 'התראת בדיקה ✅ כך ייראו ההתראות שלך.');
   assert.equal(dayReminderPush('he', { name: 'דחיפה A', emoji: 'dumbbell' }).title, '🏋️ דחיפה A היום');
   assert.equal(dayReminderPush('he', null).title, 'מתוכנן אימון להיום');
+});
+
+test('all test notification titles use the IronLog brand regardless of language', () => {
+  for (const lang of ['en', 'pt-BR', 'he', 'ar', undefined, 'unknown']) {
+    assert.equal(testPush(lang).title, 'IronLog');
+  }
 });

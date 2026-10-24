@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, hu: Info.plist. Written by ios/ci/watch-strings.mjs. */
+/* IronLog on the Apple Watch, hu: Info.plist. Written by ios/ci/watch-strings.mjs. */
 
-"NSHealthShareUsageDescription" = "Az openGym edzés közben és minden sorozat mellett mutatja a pulzusodat.";
-"NSHealthUpdateUsageDescription" = "Az openGym az Apple Egészség appba menti az edzéseidet, ha bekapcsolod.";
+"NSHealthShareUsageDescription" = "Az IronLog edzés közben és minden sorozat mellett mutatja a pulzusodat.";
+"NSHealthUpdateUsageDescription" = "Az IronLog az Apple Egészség appba menti az edzéseidet, ha bekapcsolod.";
