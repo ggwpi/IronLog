@@ -494,13 +494,13 @@ export function planPrintHTML(S, owner, { routineId } = {}) {
 </style></head>
 <body><div class="doc">
   <header>
-    <div class="kicker">openGym</div>
+    <div class="kicker">IronLog</div>
     <h1>${esc(title)}</h1>
     ${sub ? `<div class="sub">${sub}</div>` : ''}
   </header>
   ${week}
   ${body}
-  <footer>${esc(t('Made with openGym'))} · opengym.ch</footer>
+  <footer>${esc(t('Made with openGym'))} · ironlg.vercel.app</footer>
 </div></body></html>`
 }
 

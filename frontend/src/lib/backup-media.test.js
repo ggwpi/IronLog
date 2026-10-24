@@ -150,3 +150,19 @@ describe('a workout\'s photos and videos in the zip', () => {
     expect(await into.get(v.hash)).toMatchObject({ mime: 'video/mp4', pending: true })
   })
 })
+
+it('imports both IronLog archives and older openGym archives without changing user data', async () => {
+  const S = stateWith([{ id: 'mine', n: 'My openGym exercise' }])
+  for (const name of ['ironlog-backup.json', 'opengym-backup.json']) {
+    const zip = await zipStore([{ name, blob: new Blob([JSON.stringify(S)]) }])
+    const read = await readBackupFile(new File([zip], 'backup.zip'))
+    expect(read.state).toEqual(S)
+  }
+  const media = createMediaStore(memoryBackend())
+  const out = await exportBackupZip(S, { media })
+  const entries = await readZip(out.blob)
+  expect(entries[0].name).toBe('ironlog-backup.json')
+  const readme = await entries.find(e => e.name === 'README.txt').blob.text()
+  expect(readme).toContain('IronLog backup')
+  expect(readme).not.toMatch(/opengym/i)
+})

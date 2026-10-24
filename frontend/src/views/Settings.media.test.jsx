@@ -151,7 +151,7 @@ describe('Settings — photos and videos', () => {
     await until(() => created.mock.calls.length > 0)
     expect(created).toHaveBeenCalled()
     const names = (await readZip(blob)).map(e => e.name)
-    expect(names).toEqual(['opengym-backup.json', `media/${HASH}.jpg`, 'README.txt'])
+    expect(names).toEqual(['ironlog-backup.json', `media/${HASH}.jpg`, 'README.txt'])
     expect(mocks.toast).toHaveBeenCalledWith('Backup exported')
     vi.restoreAllMocks()
   })

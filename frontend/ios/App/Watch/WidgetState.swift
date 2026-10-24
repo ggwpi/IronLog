@@ -25,7 +25,7 @@ struct WidgetState: Codable, Equatable {
     /// The app's language (the phone's), so the complications speak it too.
     var lang: String?
 
-    static let idle = WidgetState(mode: "idle", title: "openGym", detail: "", restEndsAt: nil)
+    static let idle = WidgetState(mode: "idle", title: "IronLog", detail: "", restEndsAt: nil)
     static let groupId = "group.ch.opengym.app"
     private static let key = "widgetState"
 
