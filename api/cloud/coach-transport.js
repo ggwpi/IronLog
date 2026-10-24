@@ -113,3 +113,21 @@ export function providerFetch(raw, init = {}) {
     req.end(init.body)
   })
 }
+
+// Provider errors may echo a rejected key. Redact before storing or returning a diagnostic,
+// including a key cut short by the upstream pipeline’s bounded stderr.
+export function safeProviderDetail(value, key = '') {
+  if (typeof value !== 'string') return ''
+  let text = value
+  if (key) {
+    text = text.split(key).join('[redacted]')
+    const prefix = key.slice(0, 12).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    text = text.replace(new RegExp(prefix + '[^\\s"\'<>]*', 'g'), '[redacted]')
+  }
+  return text
+    .replace(/Bearer\s+[^\s"'<>]+/gi, 'Bearer [redacted]')
+    .replace(/\b(?:sk-|AIza|AQ\.)[A-Za-z0-9_.-]+/g, '[redacted]')
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .trim()
+    .slice(0, 300)
+}

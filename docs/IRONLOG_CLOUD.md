@@ -181,12 +181,12 @@ are AES-256-GCM ciphertext authenticated to the user id and provider in `ironlog
 profile state and exports. Do not rotate the encryption key without an explicit re-encryption
 migration; preserve it for encrypted-database recovery. Disconnect removes the credential and
 pending/active state; account deletion cascades the whole row. Daily usage survives disconnect
-and consent withdrawal, preventing cap resets. `COACH_DISABLED=1` force-disables the cloud Coach.
+and consent withdrawal. Manual requests with a user-owned key have no daily app quota; a short per-account burst throttle and the single-active-job guard prevent duplicate/spam submissions. Automatic reviews have their own daily spending guard, which manual use does not consume. `COACH_DISABLED=1` force-disables the cloud Coach.
 
 Model listing and provider calls run outside SQL transactions. HTTPS transport checks DNS at
 connection time with the shared private-address guard, refuses redirects and credential-bearing
 URLs, and caps response size. Only public HTTPS endpoints on port 443 are supported in the cloud.
-The service never returns a saved key or raw provider error bodies to clients/logs.
+The service never returns a saved key or raw provider response bodies to clients/logs. For cloud BYOK failures only, a bounded provider error message is redacted (including full or truncated echoed keys) before being saved in the owner-only status response. Internal exception details stay private. Exhausted billing/quota errors are not retried as transient rate limits.
 
 Requests create durable `coach` jobs in the existing Postgres queue. `waitUntil` starts them after
 responses; the existing authenticated five-second scheduler recovers queued work if that start
@@ -196,7 +196,7 @@ budget. Expired *running* tasks fail visibly rather than automatically resending
 charged request. Users can explicitly retry. Up to ten jobs per account per UTC day are allowed;
 model listing/settings have separate rate limits. Notification/media workers skip Coach jobs,
 so inference never holds their global scanner lock. Automatic cadence scanning rotates batches
-of twenty configured users every minute and skips unconsented, busy, capped or pending accounts.
+of twenty configured users every minute and skips unconsented, busy or pending accounts and accounts at the automatic-review spending guard.
 
 ### Named AI connections and switching in chat
 

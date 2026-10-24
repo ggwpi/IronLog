@@ -12,6 +12,7 @@ import {
   openKey,
   settingsOf,
   providerFetch,
+  safeProviderDetail,
 } from '../cloud/coach-transport.js'
 const cfg = configuration({
   ORIGIN: 'https://ironlog.example',
@@ -280,7 +281,7 @@ suite(
   }
 )
 suite(
-  'consent, daily caps and credential disconnect are enforced at the server',
+  'consent is required and manual BYOK requests have no daily quota, including after reconnect',
   async () => {
     await connect()
     await db.transaction((c) =>
@@ -302,10 +303,11 @@ suite(
         { daily: { date: new Date().toISOString().slice(0, 10), count: 10 } },
       ])
     )
-    assert.equal((await call('POST', '/api/coach/review', {})).status, 429)
+    assert.equal((await call('POST', '/api/coach/review', {})).status, 202)
+    assert.equal((await call('GET', '/api/coach/status')).body.cap.limit, 0)
     await call('DELETE', '/api/coach/settings')
     await connect()
-    assert.equal((await call('POST', '/api/coach/review', {})).status, 429)
+    assert.equal((await call('POST', '/api/coach/review', {})).status, 202)
   }
 )
 suite(
@@ -516,11 +518,42 @@ suite(
         "delete from ironlog.settings where key='coach-cadence-scan'"
       )
     })
+    // Manual volume cannot exhaust the separate automatic spending guard.
+    await db.transaction((c) =>
+      c.query(
+        'update ironlog.coach set state=state || $2::jsonb where user_id=$1',
+        [
+          A.id,
+          {
+            daily: { date: new Date().toISOString().slice(0, 10), count: 100 },
+            autoDaily: {
+              date: new Date().toISOString().slice(0, 10),
+              count: 10,
+            },
+          },
+        ]
+      )
+    )
+    await scanCoachCadence(db)
+    assert.equal((await call('GET', '/api/coach/status')).body.job, null)
+    await db.transaction(async (c) => {
+      await c.query(
+        "update ironlog.coach set state=state - 'autoDaily' where user_id=$1",
+        [A.id]
+      )
+      await c.query(
+        "delete from ironlog.settings where key='coach-cadence-scan'"
+      )
+    })
     await scanCoachCadence(db)
     assert.equal(
       (await call('GET', '/api/coach/status')).body.job.kind,
       'review'
     )
+    const automatic = await db.transaction((c) =>
+      one(c, 'select state from ironlog.coach where user_id=$1', [A.id])
+    )
+    assert.equal(automatic.state.autoDaily.count, 1)
     await connect(A, 'gemini')
     await db.transaction((c) =>
       c.query("delete from ironlog.settings where key='coach-cadence-scan'")
@@ -768,5 +801,73 @@ suite(
     assert.equal(status.job, null)
     assert.equal(status.pending, null)
     assert.equal(status.last.errorClass, 'connection-changed')
+  }
+)
+
+test('provider diagnostics redact full and truncated keys before storage', () => {
+  const key = 'account.secret+with/regex$chars-1234567890'
+  const detail = safeProviderDetail(
+    '429 quota exceeded; key ' +
+      key +
+      ' or ' +
+      key.slice(0, 20) +
+      ' Bearer private-token-123',
+    key
+  )
+  assert.match(detail, /429 quota exceeded/)
+  assert.ok(!detail.includes(key))
+  assert.ok(!detail.includes(key.slice(0, 12)))
+  assert.ok(!detail.includes('private-token'))
+  assert.ok(
+    !safeProviderDetail('bad sk-proj-abcdefghijk AIza1234567890').includes(
+      'abcdefghijk'
+    )
+  )
+  assert.equal(safeProviderDetail(null), '')
+  assert.equal(safeProviderDetail('x'.repeat(500)).length, 300)
+})
+suite(
+  'provider failures reach only their owner with redacted actionable diagnostics',
+  async () => {
+    await connect()
+    await call('POST', '/api/coach/review', {})
+    await runCoachWork(db, {
+      fetch: async () =>
+        new Response(
+          JSON.stringify({
+            error: {
+              code: 'insufficient_quota',
+              message:
+                'You exceeded your current quota. Check your billing. Rejected key test-key-coach-alice',
+            },
+          }),
+          { status: 429 }
+        ),
+    })
+    const status = (await call('GET', '/api/coach/status')).body
+    assert.equal(status.last.errorClass, 'provider')
+    assert.match(status.lastError.detail, /billing/)
+    assert.ok(!JSON.stringify(status).includes('test-key-coach-alice'))
+    assert.equal(status.cap.limit, 0)
+    assert.equal(
+      (await call('GET', '/api/coach/status', undefined, B)).body.lastError,
+      null
+    )
+  }
+)
+suite(
+  'duplicate and rapid manual requests remain bounded without a daily quota',
+  async () => {
+    await connect()
+    for (let i = 0; i < 6; i++) {
+      assert.equal((await call('POST', '/api/coach/review', {})).status, 202)
+      assert.equal((await call('POST', '/api/coach/review', {})).status, 409)
+      await runCoachWork(db, {
+        pipeline: async () => ({ ok: true, nochange: true }),
+      })
+    }
+    const refused = await call('POST', '/api/coach/review', {})
+    assert.equal(refused.status, 429)
+    assert.equal(refused.body.code, 'rate-limit')
   }
 )

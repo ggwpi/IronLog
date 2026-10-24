@@ -215,6 +215,7 @@ export const BYOK_ERRORS = {
 export function jobErrorText(cls, detail) {
   const own = LOCAL()
   const base = (own && BYOK_ERRORS[cls]) || JOB_ERRORS[cls] || (own ? BYOK_ERRORS.internal : JOB_ERRORS.internal)
-  const why = own && detail ? String(detail).trim().slice(0, 300) : ''
+  const cloudProvider = useStore.getState().config?.coach?.cloud && ['auth', 'provider'].includes(cls)
+  const why = (own || cloudProvider) && detail ? String(detail).trim().slice(0, 300) : ''
   return why ? `${base}\n${why}` : base
 }

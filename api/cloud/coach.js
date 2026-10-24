@@ -15,6 +15,7 @@ import {
   openKey,
   providerFetch,
   encryptionKey,
+  safeProviderDetail,
 } from './coach-transport.js'
 import { HTTP_PROVIDERS } from '../coach/core/providers.js'
 import * as payloadLib from '../coach/core/payload.js'
@@ -29,7 +30,7 @@ import {
   selectConnection,
   deleteConnection,
 } from './coach-connections.js'
-export const DAILY_CAP = 10
+export const AUTO_DAILY_CAP = 10
 const today = () => new Date().toISOString().slice(0, 10)
 const enabled = () => {
   if (/^(1|true|yes|on)$/i.test(process.env.COACH_DISABLED || '')) return false
@@ -61,7 +62,7 @@ const consentFor = (config) =>
   config.baseUrl
 const capOf = (s) => ({
   used: s.daily?.date === today() ? s.daily.count : 0,
-  limit: DAILY_CAP,
+  limit: 0, // Manual requests use the user’s own key; there is no daily app quota.
 })
 function connected(r) {
   return !!(
@@ -123,6 +124,7 @@ async function cancel(db, uid, r, removeKey = false) {
   )
   const state = {
     daily: r.state.daily,
+    autoDaily: r.state.autoDaily,
     history: [],
     reviewedAt: r.state.reviewedAt || 0,
   }
@@ -131,7 +133,13 @@ async function cancel(db, uid, r, removeKey = false) {
     [uid, state, removeKey ? {} : r.config, removeKey ? null : r.secret]
   )
 }
-export async function enqueueCoach(db, uid, kind, body = {}) {
+export async function enqueueCoach(
+  db,
+  uid,
+  kind,
+  body = {},
+  { automatic = false } = {}
+) {
   const r = await ensure(db, uid),
     S = await readProfile(db, uid)
   const selected = await connection(
@@ -160,8 +168,11 @@ export async function enqueueCoach(db, uid, kind, body = {}) {
   )
     fail(403, 'Coach consent required', 'consent')
   if (r.state.current) fail(409, 'Coach is already running', 'busy')
-  if (capOf(r.state).used >= DAILY_CAP)
-    fail(429, 'Daily Coach limit reached', 'cap', { retryAfter: 3600 })
+  const automaticUsed =
+    r.state.autoDaily?.date === today() ? r.state.autoDaily.count : 0
+  if (automatic && automaticUsed >= AUTO_DAILY_CAP)
+    fail(429, 'Automatic Coach limit reached', 'cap', { retryAfter: 3600 })
+  if (!automatic) await throttle(db, 'coach-request:' + uid, 6, 60)
   for (const key of ['note', 'refine'])
     if (
       body[key] != null &&
@@ -207,6 +218,9 @@ export async function enqueueCoach(db, uid, kind, body = {}) {
     },
     lastError: null,
     daily: { date: today(), count: capOf(r.state).used + 1 },
+    ...(automatic
+      ? { autoDaily: { date: today(), count: automaticUsed + 1 } }
+      : {}),
   }
   await statePut(db, uid, state)
   await db.query(
@@ -342,7 +356,8 @@ export const coachRoutes = {
     const u = guard(ctx),
       r = await get(ctx.db, u.id)
     const expectedAccount = ctx.url.searchParams.get('accountId')
-    if (expectedAccount && expectedAccount !== u.id) fail(409, 'Your account changed. Reload IronLog.', 'account-changed')
+    if (expectedAccount && expectedAccount !== u.id)
+      fail(409, 'Your account changed. Reload IronLog.', 'account-changed')
     const selectedId = ctx.url.searchParams.get('connectionId')
     if (selectedId) {
       const c = await connection(ctx.db, u.id, selectedId)
@@ -522,7 +537,9 @@ export async function runCoachWork(
       }
     })
     if (!claim) continue
-    let attempt, payload
+    let attempt,
+      payload,
+      providerKey = ''
     try {
       const { uid, job, config, S } = claim,
         opts = job.input
@@ -538,9 +555,9 @@ export async function runCoachWork(
       })
       if (JSON.stringify(payload).length > payloadLib.MAX_PAYLOAD_CHARS)
         throw new Error('payload too large')
-      const key = claim.secret
+      const key = (providerKey = claim.secret
         ? openKey(uid, config.provider, claim.secret)
-        : ''
+        : '')
       attempt = await pipeline({
         adapter: ADAPTERS[config.provider],
         cfg: cfgOf(config),
@@ -558,6 +575,11 @@ export async function runCoachWork(
     } catch {
       attempt = { ok: false, errorClass: 'internal' }
     }
+    // Only the provider’s bounded error message is shown to its owner. Never store a key,
+    // a raw response body, generated output, or internal exception details as diagnostics.
+    const detail = ['provider', 'auth'].includes(attempt.errorClass)
+      ? safeProviderDetail(attempt.detail, providerKey)
+      : ''
     await database.transaction(async (db) => {
       const u = await account(db, claim.uid),
         r = await get(db, claim.uid)
@@ -602,7 +624,9 @@ export async function runCoachWork(
         at,
         ...(attempt.reading ? { reading: attempt.reading } : {}),
       }
-      state.lastError = attempt.ok ? null : { errorClass: attempt.errorClass }
+      state.lastError = attempt.ok
+        ? null
+        : { errorClass: attempt.errorClass, ...(detail ? { detail } : {}) }
       if (attempt.ok)
         state.pending = attempt.nochange
           ? null
@@ -704,7 +728,8 @@ export async function scanCoachCadence(database) {
         !connected(r) ||
         r.state.current ||
         r.state.pending ||
-        capOf(r.state).used >= DAILY_CAP ||
+        (r.state.autoDaily?.date === today() &&
+          r.state.autoDaily.count >= AUTO_DAILY_CAP) ||
         !S?.coach?.consent?.agreedAt ||
         S.coach.consent.version !== CONSENT_VERSION
       )
@@ -712,7 +737,13 @@ export async function scanCoachCadence(database) {
       const tz = S.reminder?.tz || 'UTC',
         now = clockFor(tz)
       if (isDue(S.coach, S, now, r.state.reviewedAt || 0, tz))
-        await enqueueCoach(db, uid, 'review', { lang: S.lang })
+        await enqueueCoach(
+          db,
+          uid,
+          'review',
+          { lang: S.lang },
+          { automatic: true }
+        )
     })
   }
 }
