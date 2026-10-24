@@ -2435,5 +2435,6 @@ export default {
   "Delete AI connection": "Удалить подключение ИИ",
   "Manage AI connections": "Управление подключениями ИИ",
   "The AI connection changed. Send your request again.": "Подключение ИИ изменилось. Отправьте запрос ещё раз.",
+  "Choose a model for this provider": "Выбрать модель этого провайдера",
 
 }

@@ -2431,5 +2431,6 @@ export default {
   "Delete AI connection": "删除 AI 连接",
   "Manage AI connections": "管理 AI 连接",
   "The AI connection changed. Send your request again.": "AI 连接已更改。请重新发送请求。",
+  "Choose a model for this provider": "选择此提供商的模型",
 
 }

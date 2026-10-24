@@ -204,10 +204,10 @@ export default function CoachChat() {
         <h1>{t('Coach')}</h1>
         <div className={'chat-st' + (job ? ' live' : '')}>{status}</div>
       </div>
+      {config?.coach?.cloud && <CoachConnectionPicker key={user?.id} userId={user?.id} disabled={!!job || busy} onSelecting={setBusy} />}
       <button className="iconbtn" onClick={menu} aria-label={t('More')}><Icon name="more" /></button>
     </div>
 
-    {config?.coach?.cloud && <CoachConnectionPicker key={user?.id} userId={user?.id} disabled={!!job || busy} />}
     <div className="msgs">
       <Bubble role="coach">{t('Hi, I’m your Coach. I build your plan from your answers and adjust it from what you actually log. Nothing changes until you say so.')}</Bubble>
 

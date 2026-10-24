@@ -350,7 +350,7 @@ export function SelectRow({ icon, iconTint, title, value, options, onChange, she
   )
 }
 
-function SelectSheet({ title, value, options, onChange, search, close }) {
+export function SelectSheet({ title, value, options, onChange, search, close }) {
   const [query, setQuery] = useState('')
   const inputRef = useRef(null)
   const firstVisibleRef = useRef(null)

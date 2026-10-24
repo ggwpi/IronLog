@@ -2424,5 +2424,6 @@ export default {
   "Delete AI connection": "刪除 AI 連線",
   "Manage AI connections": "管理 AI 連線",
   "The AI connection changed. Send your request again.": "AI 連線已變更。請重新傳送請求。",
+  "Choose a model for this provider": "選擇此供應商的模型",
 
 }

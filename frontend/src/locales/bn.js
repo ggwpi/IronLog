@@ -2510,5 +2510,6 @@ export default {
   "Delete AI connection": "AI সংযোগ মুছুন",
   "Manage AI connections": "AI সংযোগ পরিচালনা করুন",
   "The AI connection changed. Send your request again.": "AI সংযোগ পরিবর্তিত হয়েছে। অনুরোধটি আবার পাঠান।",
+  "Choose a model for this provider": "এই প্রদানকারীর জন্য একটি মডেল বেছে নিন",
 
 }

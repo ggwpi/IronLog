@@ -5,160 +5,113 @@ import { t } from '../lib/i18n.js'
 import { coachChoice, setCoachChoice } from '../lib/coach-choice.js'
 import { HTTP_PROVIDERS } from '../../../api/coach/core/providers.js'
 import { useUI } from '../store/useUI.js'
-export default function CoachConnectionPicker({ userId, disabled = false }) {
+import { SelectSheet, Row } from './ui.jsx'
+import Icon from './Icon.jsx'
+
+export default function CoachConnectionPicker({
+  userId,
+  disabled = false,
+  onSelecting,
+}) {
   const nav = useNavigate(),
-    toast = useUI((s) => s.toast)
-  const [connections, setConnections] = useState([]),
-    [choice, setChoice] = useState(() => coachChoice(userId))
-  const [models, setModels] = useState([]),
-    [busy, setBusy] = useState(false),
-    [loadingModels, setLoadingModels] = useState(false)
-  const cache = useRef(new Map()),
-    seq = useRef(0)
+    toast = useUI((s) => s.toast),
+    openSheet = useUI((s) => s.openSheet)
+  const [connections, setConnections] = useState([])
+  const [choice, setChoice] = useState(() => coachChoice(userId))
+  const [busy, setBusy] = useState(false),
+    [loaded, setLoaded] = useState(false)
+  const alive = useRef(true)
   useEffect(() => {
-    let alive = true
+    alive.current = true
     api('/api/coach/connections')
       .then((r) => {
-        if (!alive) return
+        if (!alive.current) return
         setConnections(r.connections)
         const saved = coachChoice(userId)
-        const found =
+        const selected =
           r.connections.find((c) => c.id === saved.connectionId) ||
           r.connections.find((c) => c.id === r.activeId) ||
           r.connections[0]
-        if (found) {
-          const next = {
-            connectionId: found.id,
-            model:
-              found.id === saved.connectionId
-                ? saved.model
-                : found.id === r.activeId
-                  ? r.model
-                  : found.model,
-          }
-          setCoachChoice(userId, next)
-          setChoice(next)
-        }
+        // The model is configured in Settings, never overridden by a stale chat choice.
+        const next = selected
+          ? { connectionId: selected.id, model: selected.model }
+          : {}
+        setCoachChoice(userId, next)
+        setChoice(next)
+        setLoaded(true)
       })
       .catch(() => {
-        if (alive) toast(t('Could not connect'))
+        if (alive.current) toast(t('Could not connect'))
       })
     return () => {
-      alive = false
-      seq.current++
+      alive.current = false
     }
   }, [userId])
-  const selected = connections.find((c) => c.id === choice.connectionId)
-  useEffect(() => {
-    if (!selected) return
-    let alive = true
-    const request = ++seq.current,
-      cacheKey = selected.id + ':' + selected.revision
-    setModels(cache.current.get(cacheKey) || [choice.model || selected.model])
-    setLoadingModels(!cache.current.has(cacheKey))
-    if (cache.current.has(cacheKey)) return
-    api('/api/coach/models', {
-      method: 'POST',
-      body: JSON.stringify({
-        accountId: userId,
-        connectionId: selected.id,
-        provider: selected.provider,
-        baseUrl: selected.baseUrl,
-      }),
-    })
-      .then((r) => {
-        if (!alive || request !== seq.current) return
-        if (!r.ok) {
-          toast(
-            r.code === 'auth'
-              ? t(
-                  'Your AI provider rejected the key. Check Settings → AI Coach.'
-                )
-              : t('Your AI provider couldn’t answer.')
-          )
-          return
-        }
-        cache.current.set(cacheKey, r.models)
-        setModels([
-          ...new Set(
-            [choice.model || selected.model, ...r.models].filter(Boolean)
-          ),
-        ])
-      })
-      .catch(() => {
-        if (alive) toast(t('Could not connect'))
-      })
-      .finally(() => {
-        if (alive && request === seq.current) setLoadingModels(false)
-      })
-    return () => {
-      alive = false
-    }
-  }, [selected?.id, selected?.revision, userId])
-  const select = async (id, model) => {
+  const select = async (id) => {
     setBusy(true)
+    onSelecting?.(true)
     try {
       const r = await api('/api/coach/selection', {
         method: 'POST',
-        body: JSON.stringify({
-          accountId: userId,
-          connectionId: id,
-          ...(model ? { model } : {}),
-        }),
+        body: JSON.stringify({ accountId: userId, connectionId: id }),
       })
+      if (!alive.current) return
       const next = { connectionId: r.id, model: r.model }
       setCoachChoice(userId, next)
       setChoice(next)
     } catch {
-      toast(t('Could not connect'))
+      if (alive.current) toast(t('Could not connect'))
     } finally {
-      setBusy(false)
+      onSelecting?.(false)
+      if (alive.current) setBusy(false)
     }
   }
+  const open = () =>
+    openSheet((close) => (
+      <div className="chat-menu">
+        <SelectSheet
+          title={t('AI connections')}
+          value={choice.connectionId}
+          options={connections.map((c) => ({
+            value: c.id,
+            label: c.name,
+            subtitle: (
+              <>
+                {HTTP_PROVIDERS[c.provider]?.label || c.provider} ·{' '}
+                <bdi>{c.model}</bdi>
+              </>
+            ),
+          }))}
+          onChange={select}
+          close={close}
+        />
+        <div className="sect-b">
+          <Row
+            icon="gear"
+            iconTint="var(--green)"
+            title={t('Manage AI connections')}
+            accessory="chevron"
+            onClick={() => {
+              close()
+              nav('/coach/setup')
+            }}
+          />
+        </div>
+      </div>
+    ))
   return (
-    <div className="coach-connection-picker">
-      <label>
-        <span>{t('AI connection')}</span>
-        <select
-          className="field"
-          aria-label={t('AI connection')}
-          value={choice.connectionId || ''}
-          disabled={disabled || busy || !connections.length}
-          onChange={(e) => select(e.target.value)}
-        >
-          {!connections.length && <option value="">{t('Loading…')}</option>}
-          {connections.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name} · {HTTP_PROVIDERS[c.provider]?.label || c.provider}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        <span>{t('Model')}</span>
-        <select
-          className="field"
-          aria-label={t('Model')}
-          value={choice.model || ''}
-          disabled={disabled || busy || loadingModels || !selected}
-          onChange={(e) => select(selected.id, e.target.value)}
-        >
-          {[...new Set([choice.model, ...models].filter(Boolean))].map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
-      </label>
-      <button
-        className="iconbtn"
-        disabled={busy}
-        onClick={() => nav('/coach/setup')}
-        aria-label={t('Manage AI connections')}
-        title={t('Manage AI connections')}
-      >
-        +
-      </button>
-    </div>
+    <button
+      className="iconbtn"
+      disabled={disabled || busy || !loaded}
+      onClick={open}
+      aria-label={t('AI connection')}
+      aria-haspopup="dialog"
+      title={
+        connections.find((c) => c.id === choice.connectionId)?.name ||
+        t('AI connection')
+      }
+    >
+      <Icon name="swap" />
+    </button>
   )
 }

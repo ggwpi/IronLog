@@ -2431,5 +2431,6 @@ export default {
   "Delete AI connection": "AI bağlantısını sil",
   "Manage AI connections": "AI bağlantılarını yönet",
   "The AI connection changed. Send your request again.": "AI bağlantısı değişti. İsteğinizi yeniden gönderin.",
+  "Choose a model for this provider": "Bu sağlayıcı için bir model seç",
 
 }

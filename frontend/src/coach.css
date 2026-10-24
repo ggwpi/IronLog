@@ -296,6 +296,22 @@
 .cmp-bar.you i{background:var(--acc);opacity:1}
 .cmp-bar span{position:absolute;left:8px;top:0;line-height:22px;font-size:11.5px;font-weight:600;color:var(--label);font-variant-numeric:tabular-nums;text-shadow:0 0 6px var(--bg)}
 
-.coach-connection-picker { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: end; padding: 8px 0 12px; flex: none; }
-.coach-connection-picker label { min-width: 0; font-size: 12px; color: var(--grey); }
-.coach-connection-picker select { width: 100%; min-width: 0; margin-top: 4px; text-overflow: ellipsis; }
+
+/* The connection form uses the shared sheet; its explanatory data list is read-only. */
+.coach-sheet-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.coach-sheet-title h3{margin:0}
+.coach-connection-editor{min-width:0}
+.coach-editor-field{padding:8px 12px}
+.coach-provider-options{display:flex;flex-wrap:wrap;gap:7px;padding:8px 12px}
+.coach-model-choice{display:grid;gap:8px;margin:4px 0 22px}
+.coach-model-choice .btn{width:100%;background:var(--surface-2);border:1px solid var(--sep-op);border-radius:var(--r-lg)}
+.coach-selected-model{display:flex;justify-content:space-between;gap:12px;margin:0;padding:0 6px;font-size:13px;color:var(--label-2)}
+.coach-selected-model bdi{overflow-wrap:anywhere;color:var(--label)}
+.coach-data-info{padding:16px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--sep-op);margin-bottom:22px}
+.coach-data-heading{display:flex;align-items:center;gap:8px;color:var(--label-2)}
+.coach-data-heading .icon{width:18px;height:18px;flex:none}
+.coach-data-heading h4{font-size:14px;margin:0;font-weight:600}
+.coach-data-info dl{margin:12px 0 0;display:grid;gap:12px}
+.coach-data-info dt{font-size:13px;font-weight:600;color:var(--label-2)}
+.coach-data-info dd{margin:3px 0 0;font-size:12px;line-height:1.5;color:var(--label-2)}
+.coach-editor-actions{display:grid;gap:8px;padding-bottom:8px}

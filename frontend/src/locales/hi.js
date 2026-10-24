@@ -2431,5 +2431,6 @@ export default {
   "Delete AI connection": "AI कनेक्शन हटाएँ",
   "Manage AI connections": "AI कनेक्शन प्रबंधित करें",
   "The AI connection changed. Send your request again.": "AI कनेक्शन बदल गया है। अपना अनुरोध फिर भेजें।",
+  "Choose a model for this provider": "इस प्रदाता के लिए मॉडल चुनें",
 
 }

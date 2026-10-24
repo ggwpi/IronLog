@@ -2434,5 +2434,6 @@ export default {
   "Delete AI connection": "AI-kapcsolat törlése",
   "Manage AI connections": "AI-kapcsolatok kezelése",
   "The AI connection changed. Send your request again.": "Az AI-kapcsolat megváltozott. Küldd el újra a kérést.",
+  "Choose a model for this provider": "Modell választása ehhez a szolgáltatóhoz",
 
 }

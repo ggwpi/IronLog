@@ -2451,5 +2451,6 @@ export default {
   "Delete AI connection": "KI-Verbindung löschen",
   "Manage AI connections": "KI-Verbindungen verwalten",
   "The AI connection changed. Send your request again.": "Die KI-Verbindung wurde geändert. Sende deine Anfrage erneut.",
+  "Choose a model for this provider": "Modell für diesen Anbieter wählen",
 
 }
