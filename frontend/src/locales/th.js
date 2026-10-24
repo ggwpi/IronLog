@@ -2432,4 +2432,6 @@ export default {
   "Open the Coach": "เปิดโค้ช",
   "Data shared with AI": "ข้อมูลที่แชร์กับ AI",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "ผู้ให้บริการ AI ปฏิเสธคีย์ โปรดตรวจสอบที่การตั้งค่า → โค้ช AI",
+
 }

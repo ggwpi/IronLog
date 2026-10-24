@@ -2425,4 +2425,6 @@ export default {
   "Open the Coach": "Открыть тренера",
   "Data shared with AI": "Данные, передаваемые ИИ",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "Провайдер ИИ отклонил ключ. Проверьте Настройки → ИИ-тренер.",
+
 }

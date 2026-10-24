@@ -34,7 +34,7 @@ vi.mock('../lib/api.js', () => ({
     if (path.endsWith('/models'))
       return mock.modelsOK
         ? { ok: true, models: ['real-model-from-provider'] }
-        : { ok: false, error: 'API key rejected' }
+        : { ok: false, error: 'API key rejected', code: 'auth' }
     if (options.method === 'POST') {
       if (!mock.saveOK) throw new Error('Could not save')
       return { ...body, apiKey: undefined, connected: true, hasKey: true }
@@ -137,7 +137,7 @@ describe('Cloud Coach personal provider setup', () => {
     type(host.querySelector('input[type=password]'), 'bad-key')
     await click(btn('List models'))
     expect(mock.toast).toHaveBeenCalledWith(
-      expect.stringContaining('API key rejected')
+      expect.stringContaining('Your AI provider rejected the key')
     )
     expect(btn('List models').disabled).toBe(false)
     expect(btn('Save and use the Coach')).toBeUndefined()
@@ -168,4 +168,23 @@ describe('Cloud Coach personal provider setup', () => {
     expect(host.textContent).toContain('מחויבות בחשבון שלך אצל ספק ה־AI')
     expect(host.textContent).not.toContain('Your API key is encrypted')
   })
+})
+
+it('refreshes capabilities before opening a provider connected from another device', async () => {
+  mock.saved = {
+    provider: 'openai',
+    model: 'some-model',
+    connected: true,
+    hasKey: true,
+  }
+  await mount()
+  const row = [...host.querySelectorAll('button')].find((b) =>
+    b.textContent.includes('Open the Coach')
+  )
+  await click(row)
+  expect(mock.refreshConfig).toHaveBeenCalled()
+  expect(mock.nav).toHaveBeenCalledWith('/coach')
+  expect(mock.refreshConfig.mock.invocationCallOrder[0]).toBeLessThan(
+    mock.nav.mock.invocationCallOrder[0]
+  )
 })

@@ -195,6 +195,9 @@ export const coachRoutes = {
             ? { ok: true, models: result.models.slice(0, 2000) }
             : {
                 ok: false,
+                code: /401|403|API key/i.test(result.error)
+                  ? 'auth'
+                  : 'provider',
                 error: /401|403|API key/i.test(result.error)
                   ? 'API key rejected'
                   : 'Could not reach provider',

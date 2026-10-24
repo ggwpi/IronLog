@@ -2421,4 +2421,6 @@ export default {
   "Open the Coach": "Ouvrir le coach",
   "Data shared with AI": "Données partagées avec l’IA",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "Ton fournisseur d’IA a refusé la clé. Vérifie Réglages → Coach IA.",
+
 }

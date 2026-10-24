@@ -2424,4 +2424,6 @@ export default {
   "Open the Coach": "Edző megnyitása",
   "Data shared with AI": "Az AI-val megosztott adatok",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "Az AI-szolgáltató elutasította a kulcsot. Ellenőrizd: Beállítások → AI-edző.",
+
 }

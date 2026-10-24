@@ -2500,4 +2500,6 @@ export default {
   "Open the Coach": "কোচ খুলুন",
   "Data shared with AI": "AI-এর সাথে শেয়ার করা ডেটা",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "আপনার AI সেবাদাতা কীটি প্রত্যাখ্যান করেছে। সেটিংস → AI কোচে যাচাই করুন।",
+
 }

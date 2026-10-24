@@ -2414,4 +2414,6 @@ export default {
   "Open the Coach": "開啟教練",
   "Data shared with AI": "與 AI 分享的資料",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "AI 服務商拒絕了金鑰。請檢查設定 → AI 教練。",
+
 }

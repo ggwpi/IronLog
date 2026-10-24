@@ -144,7 +144,9 @@ if (process.env.IRONLOG_TEST_DATABASE_URL) {
   })
   beforeEach(async () => {
     calls = []
-    await db.pool.query("delete from ironlog.settings where key='coach-cadence-scan'")
+    await db.pool.query(
+      "delete from ironlog.settings where key='coach-cadence-scan'"
+    )
     await db.pool.query(
       'truncate ironlog.accounts,ironlog.jobs,ironlog.limits cascade'
     )
@@ -449,26 +451,93 @@ suite(
   }
 )
 
-suite('older consent versions cannot authorize sharing session notes', async () => {
-  await connect()
-  const S = training(); S.coach.consent.version = CONSENT_VERSION - 1
-  await db.transaction(c => c.query('update ironlog.profiles set state=$2 where user_id=$1', [A.id, S]))
-  assert.equal((await call('POST', '/api/coach/review', {})).status, 403)
-})
-suite('automatic reviews require explicit consent for the current provider and use upstream cadence rules', async () => {
-  await connect()
-  let S = training(); S.coach.cadence = { everyWorkouts: 1 }; S.workouts = [{ id: 'w1', d: new Date().toISOString().slice(0,10), end: Date.now() }]
-  await db.transaction(c => c.query('update ironlog.profiles set state=$2 where user_id=$1', [A.id, S]))
-  await scanCoachCadence(db)
-  assert.equal((await call('GET', '/api/coach/status')).body.job, null)
-  await call('POST', '/api/coach/review', {})
-  await runCoachWork(db, { pipeline: async () => ({ ok: true, nochange: true, reading: 'Keep going.' }) })
-  S.workouts.push({ id: 'w2', d: new Date().toISOString().slice(0,10), end: Date.now() + 1000 })
-  await db.transaction(async c => { await c.query('update ironlog.profiles set state=$2 where user_id=$1', [A.id, S]); await c.query("delete from ironlog.settings where key='coach-cadence-scan'") })
-  await scanCoachCadence(db)
-  assert.equal((await call('GET', '/api/coach/status')).body.job.kind, 'review')
-  await connect(A, 'gemini')
-  await db.transaction(c => c.query("delete from ironlog.settings where key='coach-cadence-scan'"))
-  await scanCoachCadence(db)
-  assert.equal((await call('GET', '/api/coach/status')).body.job, null)
-})
+suite(
+  'older consent versions cannot authorize sharing session notes',
+  async () => {
+    await connect()
+    const S = training()
+    S.coach.consent.version = CONSENT_VERSION - 1
+    await db.transaction((c) =>
+      c.query('update ironlog.profiles set state=$2 where user_id=$1', [
+        A.id,
+        S,
+      ])
+    )
+    assert.equal((await call('POST', '/api/coach/review', {})).status, 403)
+  }
+)
+suite(
+  'automatic reviews require explicit consent for the current provider and use upstream cadence rules',
+  async () => {
+    await connect()
+    let S = training()
+    S.coach.cadence = { everyWorkouts: 1 }
+    S.workouts = [
+      { id: 'w1', d: new Date().toISOString().slice(0, 10), end: Date.now() },
+    ]
+    await db.transaction((c) =>
+      c.query('update ironlog.profiles set state=$2 where user_id=$1', [
+        A.id,
+        S,
+      ])
+    )
+    await scanCoachCadence(db)
+    assert.equal((await call('GET', '/api/coach/status')).body.job, null)
+    await call('POST', '/api/coach/review', {})
+    await runCoachWork(db, {
+      pipeline: async () => ({
+        ok: true,
+        nochange: true,
+        reading: 'Keep going.',
+      }),
+    })
+    S.workouts.push({
+      id: 'w2',
+      d: new Date().toISOString().slice(0, 10),
+      end: Date.now() + 1000,
+    })
+    await db.transaction(async (c) => {
+      await c.query('update ironlog.profiles set state=$2 where user_id=$1', [
+        A.id,
+        S,
+      ])
+      await c.query(
+        "delete from ironlog.settings where key='coach-cadence-scan'"
+      )
+    })
+    await scanCoachCadence(db)
+    assert.equal(
+      (await call('GET', '/api/coach/status')).body.job.kind,
+      'review'
+    )
+    await connect(A, 'gemini')
+    await db.transaction((c) =>
+      c.query("delete from ironlog.settings where key='coach-cadence-scan'")
+    )
+    await scanCoachCadence(db)
+    assert.equal((await call('GET', '/api/coach/status')).body.job, null)
+  }
+)
+
+suite(
+  'provider model-list failures return a translated error code without echoing credentials',
+  async () => {
+    await connect()
+    app = createApp({
+      database: db,
+      cfg,
+      storage: {},
+      coachFetch: async () =>
+        new Response(
+          JSON.stringify({
+            error: { message: 'Rejected secret test-key-' + A.id },
+          }),
+          { status: 401 }
+        ),
+    })
+    const r = await call('POST', '/api/coach/models', { provider: 'openai' })
+    assert.equal(r.body.ok, false)
+    assert.equal(r.body.code, 'auth')
+    assert.ok(!JSON.stringify(r.body).includes('test-key-'))
+  }
+)

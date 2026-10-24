@@ -2421,4 +2421,6 @@ export default {
   "Open the Coach": "Koçu aç",
   "Data shared with AI": "AI ile paylaşılan veriler",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "AI sağlayıcınız anahtarı reddetti. Ayarlar → AI Koçu bölümünü kontrol edin.",
+
 }

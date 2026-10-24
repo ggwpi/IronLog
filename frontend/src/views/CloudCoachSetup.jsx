@@ -80,7 +80,11 @@ export default function CloudCoachSetup() {
         body: JSON.stringify(request()),
       })
       if (!r.ok) {
-        toast(t('Could not reach the provider: {0}', r.error))
+        toast(
+          r.code === 'auth'
+            ? t('Your AI provider rejected the key. Check Settings → AI Coach.')
+            : t('Your AI provider couldn’t answer.')
+        )
         return
       }
       setModels(r.models)
@@ -165,7 +169,10 @@ export default function CloudCoachSetup() {
                 iconTint="var(--green)"
                 title={t('Open the Coach')}
                 accessory="chevron"
-                onClick={() => nav('/coach')}
+                onClick={async () => {
+                  await refreshConfig()
+                  nav('/coach')
+                }}
               />
             )}
           </Section>

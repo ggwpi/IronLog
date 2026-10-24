@@ -60,3 +60,14 @@ it('keeps the upstream self-hosted request path unchanged', async () => {
     '/api/coach/review',
   ])
 })
+
+it('cloud provider errors address the account owner rather than a self-hosted administrator', async () => {
+  const { jobErrorText } = await import('./coach-api.js')
+  expect(jobErrorText('auth')).toBe(
+    'Your AI provider rejected the key. Check Settings → AI Coach.'
+  )
+  expect(jobErrorText('provider')).toBe('Your AI provider couldn’t answer.')
+  expect(jobErrorText('off')).toBe(
+    'Choose a provider and connect your own API key.'
+  )
+})

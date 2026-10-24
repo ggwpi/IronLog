@@ -2476,4 +2476,6 @@ export default {
   "Open the Coach": "فتح المدرب",
   "Data shared with AI": "البيانات المشاركة مع الذكاء الاصطناعي",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "رفض مزوّد الذكاء الاصطناعي المفتاح. تحقّق منه في الإعدادات ← مدرب الذكاء الاصطناعي.",
+
 }

@@ -2441,4 +2441,6 @@ export default {
   "Open the Coach": "Coach öffnen",
   "Data shared with AI": "Mit der KI geteilte Daten",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "Dein KI-Anbieter hat den Schlüssel abgelehnt. Prüfe Einstellungen → AI Coach.",
+
 }

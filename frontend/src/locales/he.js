@@ -2485,4 +2485,6 @@ export default {
   "Open the Coach": "פתיחת המאמן",
   "Data shared with AI": "מידע שנשלח ל־AI",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "ספק ה־AI דחה את המפתח. בדוק אותו בהגדרות ← מאמן AI.",
+
 }

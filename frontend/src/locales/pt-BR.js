@@ -1542,6 +1542,8 @@ export const PT_BR_OVERRIDES = {
   "Open the Coach": "Abrir o treinador",
   "Data shared with AI": "Dados compartilhados com a IA",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "Seu provedor de IA rejeitou a chave. Confira Configurações → Treinador IA.",
+
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

@@ -2421,4 +2421,6 @@ export default {
   "Open the Coach": "कोच खोलें",
   "Data shared with AI": "AI के साथ साझा किया जाने वाला डेटा",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "आपके AI प्रदाता ने कुंजी अस्वीकार कर दी। सेटिंग्स → AI कोच में जाँचें।",
+
 }

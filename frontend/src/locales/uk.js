@@ -2418,4 +2418,6 @@ export default {
   "Open the Coach": "Відкрити тренера",
   "Data shared with AI": "Дані, що передаються ШІ",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "Провайдер ШІ відхилив ключ. Перевірте Налаштування → ШІ-тренер.",
+
 }

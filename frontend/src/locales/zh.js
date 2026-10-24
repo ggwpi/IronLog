@@ -2421,4 +2421,6 @@ export default {
   "Open the Coach": "打开教练",
   "Data shared with AI": "与 AI 共享的数据",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "AI 服务商拒绝了密钥。请检查设置 → AI 教练。",
+
 }

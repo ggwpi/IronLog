@@ -2421,4 +2421,6 @@ export default {
   "Open the Coach": "코치 열기",
   "Data shared with AI": "AI와 공유하는 데이터",
 
+  "Your AI provider rejected the key. Check Settings → AI Coach.": "AI 제공업체가 키를 거부했습니다. 설정 → AI 코치에서 확인하세요.",
+
 }
