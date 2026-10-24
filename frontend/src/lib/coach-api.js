@@ -11,6 +11,7 @@ import { DEMO } from './demo.js'
 import { MOBILE } from './mobile.js'
 import { t, getLang } from './i18n.js'
 import { useStore } from '../store/useStore.js'
+import { coachChoice } from './coach-choice.js'
 import { useUI } from '../store/useUI.js'
 
 const POLL_MS = 3000        // a job is running: often enough to feel live
@@ -67,17 +68,21 @@ export const settleAwaited = id => { if (!id || awaited === id) awaited = null }
    'declined' and `quiet`, which the screens let pass without a toast: you said no, you know. */
 export const coachVia = () => (DEMO ? 'demo' : LOCAL() ? 'device' : 'server')
 export const isDeclined = e => e?.code === 'declined'
-export async function ensureAiConsent() {
+export async function ensureAiConsent(selection = {}) {
   if (DEMO) return true
   const { consentTarget, hasAiConsent, allowAi } = await import('./coach-consent.js')
-  const target = consentTarget(await disclosure(), coachVia())
+  const info = await disclosure(selection)
+  if (info?.cloud) { selection.connectionId ||= info.connectionId; selection.model ||= info.model }
+  const target = consentTarget(info, coachVia())
   if (!target || target.local || await hasAiConsent(target)) return true
   const { askAiConsent } = await import('../components/CoachConsentSheet.jsx')
   if (await askAiConsent(target)) { await allowAi(target); return true }
   throw Object.assign(new Error(t('Okay, nothing was sent.')), { code: 'declined', quiet: true, data: { code: 'declined' } })
 }
 const asked = fn => async (...a) => {
-  await ensureAiConsent()
+  const current = useStore.getState()
+  const selection = current.config?.coach?.cloud ? { ...coachChoice(current.user?.id), accountId: current.user?.id } : {}
+  await ensureAiConsent(selection)
   const store = useStore.getState()
   // The cloud worker reads the synced profile, including the just-completed intake/consent.
   // Wait for the app's existing conflict-aware sync, rather than sending a second state copy.
@@ -85,17 +90,17 @@ const asked = fn => async (...a) => {
     const synced = await store.syncNow()
     if (synced?.status !== 'ok') throw Object.assign(new Error(t('Not synced yet. Tap to retry.')), { code: 'sync' })
   }
-  return fn(...a)
+  return fn(...a, selection)
 }
 
 export const coachStatus = async () => DEMO ? (await demo()).demoStatus() : LOCAL() ? (await local()).localStatus() : api('/api/coach/status')
-const _requestReview = async note => DEMO ? (await demo()).demoReview(S()) : LOCAL() ? (await local()).localReview(S(), note) : api('/api/coach/review', { method: 'POST', body: JSON.stringify({ note: note || '', lang: getLang() }) })
+const _requestReview = async (note, selection) => DEMO ? (await demo()).demoReview(S()) : LOCAL() ? (await local()).localReview(S(), note) : api('/api/coach/review', { method: 'POST', body: JSON.stringify({ note: note || '', lang: getLang(), ...selection }) })
 export const requestReview = (...a) => asked(_requestReview)(...a).then(track)
-const _requestPlan = async intake => DEMO ? (await demo()).demoPlan(S(), intake) : LOCAL() ? (await local()).localPlan(S(), intake) : api('/api/coach/plan', { method: 'POST', body: JSON.stringify({ intake, lang: getLang() }) })
+const _requestPlan = async (intake, selection) => DEMO ? (await demo()).demoPlan(S(), intake) : LOCAL() ? (await local()).localPlan(S(), intake) : api('/api/coach/plan', { method: 'POST', body: JSON.stringify({ intake, lang: getLang(), ...selection }) })
 export const requestPlan = (...a) => asked(_requestPlan)(...a).then(track)
-const _refinePlan = async text => DEMO ? (await demo()).demoRefine(S()) : LOCAL() ? (await local()).localRefine(S(), text) : api('/api/coach/plan', { method: 'POST', body: JSON.stringify({ refine: text, lang: getLang() }) })
+const _refinePlan = async (text, selection) => DEMO ? (await demo()).demoRefine(S()) : LOCAL() ? (await local()).localRefine(S(), text) : api('/api/coach/plan', { method: 'POST', body: JSON.stringify({ refine: text, lang: getLang(), ...selection }) })
 export const refinePlan = (...a) => asked(_refinePlan)(...a).then(track)
-const _requestDebrief = async workoutId => DEMO ? (await demo()).demoDebrief(S(), workoutId) : LOCAL() ? (await local()).localDebrief(S(), workoutId) : api('/api/coach/debrief', { method: 'POST', body: JSON.stringify({ workoutId: workoutId || null, lang: getLang() }) })
+const _requestDebrief = async (workoutId, selection) => DEMO ? (await demo()).demoDebrief(S(), workoutId) : LOCAL() ? (await local()).localDebrief(S(), workoutId) : api('/api/coach/debrief', { method: 'POST', body: JSON.stringify({ workoutId: workoutId || null, lang: getLang(), ...selection }) })
 export const requestDebrief = (...a) => asked(_requestDebrief)(...a).then(track)
 // The room: anonymous medians across the profiles on this instance that opted in. Only a
 // server has a room; a phone with its own key and the demo both answer locally.
@@ -103,7 +108,7 @@ export const cohortStats = async () => DEMO ? (await demo()).demoCohort(S()) : L
 export const setCohortShare = async share => (DEMO || LOCAL()) ? { ok: true, sharing: !!share } : api('/api/coach/cohort/share', { method: 'POST', body: JSON.stringify({ share: !!share }) })
 export const resolvePending = async body => DEMO ? (await demo()).demoResolve() : LOCAL() ? (await local()).localResolve(body) : api('/api/coach/pending/resolve', { method: 'POST', body: JSON.stringify(body) })
 export const forgetCoach = async () => DEMO ? (await demo()).demoResolve() : LOCAL() ? (await local()).localForget() : api('/api/coach/forget', { method: 'POST', body: '{}' })
-export const disclosure = async () => DEMO ? (await demo()).demoDisclosure() : LOCAL() ? (await local()).localDisclosure() : api('/api/coach/disclosure')
+export const disclosure = async (selection = {}) => DEMO ? (await demo()).demoDisclosure() : LOCAL() ? (await local()).localDisclosure() : api('/api/coach/disclosure' + ((selection.connectionId || selection.accountId) ? '?' + new URLSearchParams({ ...(selection.connectionId ? { connectionId: selection.connectionId } : {}), ...(selection.accountId ? { accountId: selection.accountId } : {}) }) : ''))
 
 /* Whose provider account this profile is about to spend. Its own call because the constraint is
    that the Coach screen states it too, not just the admin card — and because in instance mode a
@@ -191,7 +196,8 @@ export const JOB_ERRORS = {
   // The refusal at enqueue when the process cannot drop privileges (api/coach/jobs.js). The same
   // words as api/coach/routes.js USER_ERROR.unprivileged; what to fix goes to the admin card.
   get unprivileged() { return t('The Coach is switched off on this instance for safety reasons.') },
-  get internal() { return t('Something went wrong on the server.') }
+  get internal() { return t('Something went wrong on the server.') },
+  get ['connection-changed']() { return t('The AI connection changed. Send your request again.') }
 }
 
 // The same failures on a phone that brought its own key: there is no instance owner to

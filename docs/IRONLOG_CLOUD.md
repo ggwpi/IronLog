@@ -197,3 +197,20 @@ charged request. Users can explicitly retry. Up to ten jobs per account per UTC 
 model listing/settings have separate rate limits. Notification/media workers skip Coach jobs,
 so inference never holds their global scanner lock. Automatic cadence scanning rotates batches
 of twenty configured users every minute and skips unconsented, busy, capped or pending accounts.
+
+### Named AI connections and switching in chat
+
+Settings → AI Coach → Add AI connection stores a user-supplied name, provider type, key and
+preferred model. Multiple connections may use the same provider. Keys live in the private
+`ironlog.coach_connections` table; APIs expose names/type/models and `hasKey`, never credentials.
+Existing single-key configurations are upgraded lazily under the account lock, copying their
+encrypted value unchanged and preserving usage, consent and pending suggestions. The active
+connection is mirrored in the original record for compatibility with already-open clients.
+
+The Coach chat has connection and model selectors. Selection changes the default without
+clearing chat, pending proposals or daily usage. Each manual request captures a connection/model
+before disclosure and sync. Queued/running work is pinned to that connection and its credential
+revision, so switching defaults on another device cannot reroute a paid request. Editing or
+deleting the key in use cancels the task and discards late results; unrelated key edits do not.
+Provider-data consent is remembered separately for each cloud connection. Requests continue
+using the upstream bounded conversation/training context, validation and approval mechanisms.

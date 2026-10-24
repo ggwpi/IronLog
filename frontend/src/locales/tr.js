@@ -2423,4 +2423,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "AI sağlayıcınız anahtarı reddetti. Ayarlar → AI Koçu bölümünü kontrol edin.",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "AI bağlantıları",
+  "AI connection": "AI bağlantısı",
+  "Add AI connection": "AI bağlantısı ekle",
+  "Connection name": "Bağlantı adı",
+  "Delete AI connection": "AI bağlantısını sil",
+  "Manage AI connections": "AI bağlantılarını yönet",
+  "The AI connection changed. Send your request again.": "AI bağlantısı değişti. İsteğinizi yeniden gönderin.",
+
 }

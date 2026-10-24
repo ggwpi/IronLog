@@ -55,8 +55,9 @@ export function consentTarget(info, via) {
   if (!info || !info.provider || NOWHERE.has(info.provider)) return null
   const provider = String(info.provider)
   const host = info.host ? String(info.host).toLowerCase() : null
-  const name = (provider !== 'compatible' && PROVIDER_NAMES[provider]) || host || info.providerLabel || provider
-  return { key: `${via}|${provider}|${host || ''}`, via, provider, host, name, cloud: !!info.cloud, local: isLocalHost(host) }
+  const company = (provider !== 'compatible' && PROVIDER_NAMES[provider]) || host || info.providerLabel || provider
+  const name = info.cloud && info.connectionName ? info.connectionName + ' (' + company + ')' : company
+  return { key: `${via}|${provider}|${host || ''}${info.cloud && info.connectionId ? '|' + info.connectionId : ''}`, via, provider, host, name, cloud: !!info.cloud, local: isLocalHost(host) }
 }
 
 /* ---------- the remembered answers ---------- */

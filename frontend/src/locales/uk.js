@@ -2420,4 +2420,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "Провайдер ШІ відхилив ключ. Перевірте Налаштування → ШІ-тренер.",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "Підключення ШІ",
+  "AI connection": "Підключення ШІ",
+  "Add AI connection": "Додати підключення ШІ",
+  "Connection name": "Назва підключення",
+  "Delete AI connection": "Видалити підключення ШІ",
+  "Manage AI connections": "Керування підключеннями ШІ",
+  "The AI connection changed. Send your request again.": "Підключення ШІ змінилося. Надішліть запит ще раз.",
+
 }

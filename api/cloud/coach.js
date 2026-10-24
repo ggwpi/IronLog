@@ -20,6 +20,15 @@ import { HTTP_PROVIDERS } from '../coach/core/providers.js'
 import * as payloadLib from '../coach/core/payload.js'
 import { hashPlan } from '../coach/core/plan-hash.js'
 import { runPipeline } from '../coach/core/pipeline.js'
+import {
+  coachRecord,
+  connection,
+  connectionList,
+  connectionKey,
+  saveConnection,
+  selectConnection,
+  deleteConnection,
+} from './coach-connections.js'
 export const DAILY_CAP = 10
 const today = () => new Date().toISOString().slice(0, 10)
 const enabled = () => {
@@ -31,8 +40,7 @@ const enabled = () => {
     return false
   }
 }
-const get = (db, uid) =>
-  one(db, 'select * from ironlog.coach where user_id=$1 for update', [uid])
+const get = coachRecord
 async function ensure(db, uid) {
   await db.query(
     'insert into ironlog.coach(user_id) values($1) on conflict do nothing',
@@ -46,7 +54,11 @@ async function statePut(db, uid, state) {
     [uid, state]
   )
 }
-const consentFor = (config) => config.provider + '|' + config.baseUrl
+const consentFor = (config) =>
+  (config.connectionId ? config.connectionId + '|' : '') +
+  config.provider +
+  '|' +
+  config.baseUrl
 const capOf = (s) => ({
   used: s.daily?.date === today() ? s.daily.count : 0,
   limit: DAILY_CAP,
@@ -66,6 +78,8 @@ export async function coachConfig(db, uid) {
     connected: connected(r),
     authMode: 'profile',
     provider: r?.config?.provider || null,
+    connectionId: r?.config?.connectionId || null,
+    model: r?.config?.model || null,
     community: false,
   }
 }
@@ -74,24 +88,6 @@ const publicSettings = (r) => ({
   connected: connected(r),
   hasKey: !!r?.secret,
 })
-function credential(body, r, settings, uid) {
-  const key = body.apiKey
-  if (
-    key !== undefined &&
-    (typeof key !== 'string' || key.length > 4096 || /[\r\n\0]/.test(key))
-  )
-    fail(400, 'invalid API key')
-  if (key?.trim()) return key.trim()
-  // A saved key is never forwarded to a different provider or endpoint.
-  if (
-    r?.secret &&
-    r.config.provider === settings.provider &&
-    r.config.baseUrl === settings.baseUrl
-  )
-    return openKey(uid, settings.provider, r.secret)
-  if (settings.provider === 'compatible') return ''
-  fail(400, 'API key required')
-}
 function checkedSettings(body) {
   try {
     return settingsOf(body)
@@ -106,9 +102,16 @@ function guard(ctx) {
   // attaching that key to the newly signed-in profile.
   if (
     ctx.req.method !== 'GET' &&
-    ['/api/coach/settings', '/api/coach/models'].includes(ctx.url.pathname) &&
+    [
+      '/api/coach/settings',
+      '/api/coach/models',
+      '/api/coach/connections',
+      '/api/coach/selection',
+    ].includes(ctx.url.pathname) &&
     ctx.body.accountId !== u.id
   )
+    fail(409, 'Your account changed. Reload IronLog.', 'account-changed')
+  if (ctx.body.accountId !== undefined && ctx.body.accountId !== u.id)
     fail(409, 'Your account changed. Reload IronLog.', 'account-changed')
   if (!enabled()) fail(503, 'Coach is not configured', 'off')
   return u
@@ -131,6 +134,25 @@ async function cancel(db, uid, r, removeKey = false) {
 export async function enqueueCoach(db, uid, kind, body = {}) {
   const r = await ensure(db, uid),
     S = await readProfile(db, uid)
+  const selected = await connection(
+    db,
+    uid,
+    body.connectionId || r.config.connectionId
+  )
+  if (!selected) fail(503, 'Connect your own AI provider first', 'off')
+  if (
+    body.model !== undefined &&
+    (typeof body.model !== 'string' ||
+      !body.model.trim() ||
+      body.model.length > 150)
+  )
+    fail(400, 'invalid model')
+  const requestConfig = {
+    ...selected.config,
+    connectionId: selected.id,
+    name: selected.name,
+    model: body.model || selected.config.model,
+  }
   if (!connected(r)) fail(503, 'Connect your own AI provider first', 'off')
   if (
     !S?.coach?.consent?.agreedAt ||
@@ -168,8 +190,21 @@ export async function enqueueCoach(db, uid, kind, body = {}) {
   if (JSON.stringify(input).length > 12000) fail(400, 'request too large')
   const state = {
     ...r.state,
-    providerConsent: consentFor(r.config),
-    current: { ...job, input, version: r.version },
+    providerConsent: consentFor(requestConfig),
+    current: {
+      ...job,
+      input,
+      version: r.version,
+      connectionId: selected.id,
+      connectionVersion: selected.revision,
+      model: requestConfig.model,
+      connection: {
+        id: selected.id,
+        name: selected.name,
+        provider: selected.config.provider,
+        model: requestConfig.model,
+      },
+    },
     lastError: null,
     daily: { date: today(), count: capOf(r.state).used + 1 },
   }
@@ -187,10 +222,17 @@ export const coachRoutes = {
   },
   'POST /api/coach/models': async (ctx) => {
     const u = guard(ctx)
-    await throttle(ctx.db, 'coach-models:' + u.id, 5, 60)
+    await throttle(ctx.db, 'coach-models:' + u.id, 20, 60)
     const s = checkedSettings(ctx.body),
-      r = await get(ctx.db, u.id),
-      key = credential(ctx.body, r, s, u.id)
+      r = await get(ctx.db, u.id)
+    const explicitId = ctx.body.connectionId || ctx.body.id
+    const c = await connection(
+      ctx.db,
+      u.id,
+      explicitId || r?.config?.connectionId
+    )
+    if (explicitId && !c) fail(404, 'AI connection not found')
+    const key = connectionKey(ctx.body, c, s, u.id)
     // Network I/O happens after the request transaction commits, without user/DB locks.
     return {
       outside: async () => {
@@ -221,20 +263,68 @@ export const coachRoutes = {
     await throttle(ctx.db, 'coach-settings:' + u.id, 5, 60)
     const s = checkedSettings(ctx.body)
     if (!s.model) fail(400, 'model required')
-    const r = await ensure(ctx.db, u.id),
-      key = credential(ctx.body, r, s, u.id)
-    await cancel(ctx.db, u.id, r)
-    await ctx.db.query(
-      'update ironlog.coach set config=$2,secret=$3,updated_at=now() where user_id=$1',
-      [u.id, s, key ? sealKey(u.id, s.provider, key) : null]
+    const r = await ensure(ctx.db, u.id)
+    const saved = await saveConnection(
+      ctx.db,
+      u.id,
+      r,
+      {
+        ...ctx.body,
+        id: r.config.connectionId,
+        name: r.config.name || HTTP_PROVIDERS[s.provider].label,
+      },
+      s
     )
-    return answer({ ok: true, ...s, connected: true, hasKey: !!key })
+    return answer({ ok: true, ...saved })
   },
   'DELETE /api/coach/settings': async (ctx) => {
     const u = guard(ctx),
       r = await ensure(ctx.db, u.id)
     await cancel(ctx.db, u.id, r, true)
+    await ctx.db.query(
+      'delete from ironlog.coach_connections where user_id=$1',
+      [u.id]
+    )
     return answer({ ok: true })
+  },
+  'GET /api/coach/connections': async (ctx) => {
+    const u = guard(ctx),
+      r = await get(ctx.db, u.id)
+    return answer(await connectionList(ctx.db, u.id, r))
+  },
+  'POST /api/coach/connections': async (ctx) => {
+    const u = guard(ctx)
+    await throttle(ctx.db, 'coach-settings:' + u.id, 10, 60)
+    const r = await ensure(ctx.db, u.id)
+    return answer({
+      ok: true,
+      ...(await saveConnection(
+        ctx.db,
+        u.id,
+        r,
+        ctx.body,
+        checkedSettings(ctx.body)
+      )),
+    })
+  },
+  'DELETE /api/coach/connections': async (ctx) => {
+    const u = guard(ctx),
+      r = await ensure(ctx.db, u.id)
+    return answer(await deleteConnection(ctx.db, u.id, r, ctx.body.id))
+  },
+  'POST /api/coach/selection': async (ctx) => {
+    const u = guard(ctx),
+      r = await ensure(ctx.db, u.id)
+    return answer({
+      ok: true,
+      ...(await selectConnection(
+        ctx.db,
+        u.id,
+        r,
+        ctx.body.connectionId,
+        ctx.body.model
+      )),
+    })
   },
   'GET /api/coach/account': async (ctx) => {
     const u = guard(ctx),
@@ -251,10 +341,21 @@ export const coachRoutes = {
   'GET /api/coach/disclosure': async (ctx) => {
     const u = guard(ctx),
       r = await get(ctx.db, u.id)
+    const expectedAccount = ctx.url.searchParams.get('accountId')
+    if (expectedAccount && expectedAccount !== u.id) fail(409, 'Your account changed. Reload IronLog.', 'account-changed')
+    const selectedId = ctx.url.searchParams.get('connectionId')
+    if (selectedId) {
+      const c = await connection(ctx.db, u.id, selectedId)
+      if (!c) fail(404, 'AI connection not found')
+      r.config = { ...c.config, connectionId: c.id, name: c.name }
+    }
     return answer({
       provider: r?.config?.provider || null,
       providerLabel: HTTP_PROVIDERS[r?.config?.provider]?.label || null,
       host: r?.config?.baseUrl ? new URL(r.config.baseUrl).host : null,
+      connectionId: r?.config?.connectionId || null,
+      connectionName: r?.config?.name || null,
+      model: r?.config?.model || null,
       categories: payloadLib.DATA_CATEGORIES,
       version: 1,
       payer: 'you',
@@ -277,6 +378,7 @@ export const coachRoutes = {
             kind: current.kind,
             state: current.state,
             startedAt: current.startedAt,
+            connection: current.connection,
           }
         : null,
       pending: state.pending || null,
@@ -359,13 +461,22 @@ export async function runCoachWork(
           [candidate.id]
         )
       if (!job) return null
-      const current = r?.state.current,
-        S = u && !u.disabled ? await readProfile(db, uid) : null
+      const current = r?.state.current
+      const selected = current
+        ? await connection(
+            db,
+            uid,
+            current.connectionId || r.config.connectionId
+          )
+        : null
+      const S = u && !u.disabled ? await readProfile(db, uid) : null
       if (
         !S ||
         !current ||
         current.id !== job.id ||
-        !connected(r) ||
+        !selected ||
+        (current.connectionVersion != null &&
+          String(current.connectionVersion) !== String(selected.revision)) ||
         !S.coach?.consent?.agreedAt ||
         S.coach.consent.version !== CONSENT_VERSION ||
         current.state === 'running'
@@ -398,8 +509,14 @@ export async function runCoachWork(
         uid,
         job: { ...current },
         version: r.version,
-        config: r.config,
-        secret: r.secret,
+        config: {
+          ...selected.config,
+          connectionId: selected.id,
+          name: selected.name,
+          model: current.model || selected.config.model,
+        },
+        secret: selected.secret,
+        connectionVersion: selected.revision,
         S,
         previous: current.input.refine ? r.state.pending : null,
       }
@@ -452,6 +569,16 @@ export async function runCoachWork(
         r.state.current?.id !== claim.job.id
       )
         return
+      const selected = await connection(
+        db,
+        claim.uid,
+        claim.config.connectionId
+      )
+      if (
+        !selected ||
+        String(selected.revision) !== String(claim.connectionVersion)
+      )
+        return
       const S = await readProfile(db, claim.uid)
       if (
         !S?.coach?.consent?.agreedAt ||
@@ -465,6 +592,7 @@ export async function runCoachWork(
       state.last = {
         id: claim.job.id,
         kind,
+        connection: claim.job.connection,
         outcome: !attempt.ok
           ? 'failed'
           : attempt.nochange
@@ -481,6 +609,7 @@ export async function runCoachWork(
           : {
               id: claim.job.id,
               kind,
+              connection: claim.job.connection,
               createdAt: at,
               expiresAt: at + 14 * 86400000,
               planHash: hashPlan(payloadLib.canonicalPlan(claim.S)),

@@ -1544,6 +1544,15 @@ export const PT_BR_OVERRIDES = {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "Seu provedor de IA rejeitou a chave. Confira Configurações → Treinador IA.",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "Conexões de IA",
+  "AI connection": "Conexão de IA",
+  "Add AI connection": "Adicionar conexão de IA",
+  "Connection name": "Nome da conexão",
+  "Delete AI connection": "Excluir conexão de IA",
+  "Manage AI connections": "Gerenciar conexões de IA",
+  "The AI connection changed. Send your request again.": "A conexão de IA mudou. Envie sua solicitação novamente.",
+
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

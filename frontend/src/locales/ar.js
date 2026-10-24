@@ -2478,4 +2478,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "رفض مزوّد الذكاء الاصطناعي المفتاح. تحقّق منه في الإعدادات ← مدرب الذكاء الاصطناعي.",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "اتصالات الذكاء الاصطناعي",
+  "AI connection": "اتصال الذكاء الاصطناعي",
+  "Add AI connection": "إضافة اتصال ذكاء اصطناعي",
+  "Connection name": "اسم الاتصال",
+  "Delete AI connection": "حذف اتصال الذكاء الاصطناعي",
+  "Manage AI connections": "إدارة اتصالات الذكاء الاصطناعي",
+  "The AI connection changed. Send your request again.": "تغيّر اتصال الذكاء الاصطناعي. أرسل طلبك مجدداً.",
+
 }

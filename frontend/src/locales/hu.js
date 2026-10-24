@@ -2426,4 +2426,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "Az AI-szolgáltató elutasította a kulcsot. Ellenőrizd: Beállítások → AI-edző.",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "AI-kapcsolatok",
+  "AI connection": "AI-kapcsolat",
+  "Add AI connection": "AI-kapcsolat hozzáadása",
+  "Connection name": "Kapcsolat neve",
+  "Delete AI connection": "AI-kapcsolat törlése",
+  "Manage AI connections": "AI-kapcsolatok kezelése",
+  "The AI connection changed. Send your request again.": "Az AI-kapcsolat megváltozott. Küldd el újra a kérést.",
+
 }

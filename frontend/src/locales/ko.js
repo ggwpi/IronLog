@@ -2423,4 +2423,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "AI 제공업체가 키를 거부했습니다. 설정 → AI 코치에서 확인하세요.",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "AI 연결 목록",
+  "AI connection": "AI 연결",
+  "Add AI connection": "AI 연결 추가",
+  "Connection name": "연결 이름",
+  "Delete AI connection": "AI 연결 삭제",
+  "Manage AI connections": "AI 연결 관리",
+  "The AI connection changed. Send your request again.": "AI 연결이 변경되었습니다. 요청을 다시 보내세요.",
+
 }
