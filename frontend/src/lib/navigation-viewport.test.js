@@ -20,10 +20,9 @@ describe('compact navigation viewport anchoring',()=>{
   viewport.height=844;viewport.dispatchEvent(new Event('resize'));vi.advanceTimersByTime(16)
   expect(bottom()).toBe('844px')
  })
- it('uses the full installed-app viewport when Safari initially reports a stale visual height',()=>{
-  const {bottom,win}=setup(true);expect(bottom()).toBe('844px')
-  expect(win.document.documentElement.style.getPropertyValue('--navigation-installed-height')).toBe('844px')
-  stop();expect(win.document.documentElement.style.getPropertyValue('--navigation-installed-height')).toBe('')
+ it('keeps an installed dock within the visible viewport when layout height is larger',()=>{
+  const {bottom,win}=setup(true);expect(bottom()).toBe('800px')
+  expect(win.document.documentElement.style.getPropertyValue('--navigation-installed-height')).toBe('')
  })
  it('remeasures a late cold-launch correction even when no resize event was emitted',()=>{
   vi.useFakeTimers();const {viewport,bottom}=setup()
@@ -48,10 +47,10 @@ describe('compact navigation viewport anchoring',()=>{
 })
 
 
-describe('installed-app cold launch with both browser heights stale',()=>{
+describe('installed-app system UI and screen bounds',()=>{
  const phone = () => ({innerWidth:390,innerHeight:810,visualViewport:{height:810,offsetTop:0},navigator:{standalone:true,userAgent:'iPhone'},screen:{width:390,height:844,orientation:{type:'portrait-primary'}}})
- it('anchors to the full screen immediately even if both heights stay short and no event fires',()=>{
-  expect(navigationBottom(phone())).toBe(844)
+ it('does not push the dock under system UI when the full-width viewport is shorter than the screen',()=>{
+  expect(navigationBottom(phone())).toBe(810)
  })
  it('does not use screen bounds in a desktop installed window',()=>{
   const win=phone();win.navigator.userAgent='Mozilla/5.0 Desktop';expect(navigationBottom(win)).toBe(810)
@@ -64,16 +63,20 @@ describe('installed-app cold launch with both browser heights stale',()=>{
   const win=phone();win.innerWidth=500;win.innerHeight=700;win.visualViewport.height=700;win.screen={width:1024,height:1366}
   expect(navigationBottom(win)).toBe(700)
  })
- it('handles landscape screen APIs that retain portrait dimensions',()=>{
+ it('uses the usable landscape viewport rather than the physical screen edge',()=>{
   const win=phone();win.innerWidth=844;win.innerHeight=356;win.visualViewport.height=356;win.screen.orientation.type='landscape-primary'
-  expect(navigationBottom(win)).toBe(390)
+  expect(navigationBottom(win)).toBe(356)
  })
- it('ignores portrait heights left behind during a full-screen landscape rotation',()=>{
-  const win=phone();win.innerWidth=844;win.screen.orientation.type='landscape-primary'
-  expect(navigationBottom(win)).toBe(390)
+ it('includes the visual viewport offset without guessing dimensions from orientation',()=>{
+  const win=phone();win.visualViewport={height:700,offsetTop:20}
+  expect(navigationBottom(win)).toBe(720)
  })
  it('handles the legacy iPhone orientation API',()=>{
   const win=phone();win.innerWidth=844;win.innerHeight=356;win.visualViewport.height=356;win.screen.orientation=undefined;win.orientation=90
-  expect(navigationBottom(win)).toBe(390)
+  expect(navigationBottom(win)).toBe(356)
+ })
+ it('falls back to innerHeight when VisualViewport is unavailable',()=>{
+  const win=phone();win.visualViewport=undefined
+  expect(navigationBottom(win)).toBe(810)
  })
 })
