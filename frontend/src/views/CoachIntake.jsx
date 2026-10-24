@@ -186,7 +186,7 @@ export default function CoachIntake() {
         <div className="ob-group" role="group" aria-labelledby="ob-week-l">
           <div className="ob-sub ob-sub-first" id="ob-week-l">{t('Which days suit you? (optional)')}</div>
           <div className="ob-week">
-            {[1, 2, 3, 4, 5, 6, 0].map(d => <button key={d} className={'ob-wd' + (p.preferredDays.includes(d) ? ' on' : '')} aria-pressed={p.preferredDays.includes(d)} onClick={() => toggleDay(d)}>{t(DAYN[d]).slice(0, 2)}</button>)}
+            {[1, 2, 3, 4, 5, 6, 0].map(d => <button key={d} className={'ob-wd' + (p.preferredDays.includes(d) ? ' on' : '')} aria-pressed={p.preferredDays.includes(d)} onClick={() => toggleDay(d)}>{t(DAYN[d])}</button>)}
           </div>
         </div>
       </>}
