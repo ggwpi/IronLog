@@ -871,3 +871,101 @@ suite(
     assert.equal(refused.body.code, 'rate-limit')
   }
 )
+
+suite(
+  'Gemini receives synced workout evidence and returns validated suggestions, not just text',
+  async () => {
+    await connect(A, 'gemini')
+    const S = training()
+    S.workouts = [14, 7, 0].map((offset, i) => {
+      const d = new Date()
+      d.setUTCDate(d.getUTCDate() - offset)
+      return {
+        id: 'logged-' + i,
+        d: d.toISOString().slice(0, 10),
+        name: 'Push',
+        routineId: 'r1',
+        start: 1000,
+        end: 3601000,
+        entries: [
+          {
+            id: '0025',
+            target: { sets: 3, reps: 8, weight: 20 },
+            sets: [
+              { w: 20, r: 6, rir: 0, done: true },
+              { w: 20, r: 5, rir: 0, done: true },
+              { w: 20, r: 4, rir: 0, done: true },
+            ],
+          },
+        ],
+      }
+    })
+    assert.equal((await call('PUT', '/api/data', { state: S })).status, 200)
+    const before = (await call('GET', '/api/data')).body
+    assert.equal(
+      (
+        await call('POST', '/api/coach/review', {
+          note: 'Review the logged stalls',
+          lang: 'he',
+        })
+      ).status,
+      202
+    )
+    let payload
+    await runCoachWork(db, {
+      fetch: async (url, init) => {
+        assert.match(url, /generativelanguage.*:generateContent$/)
+        const request = JSON.parse(init.body)
+        assert.equal(
+          request.generationConfig.responseMimeType,
+          'application/json'
+        )
+        payload = JSON.parse(
+          request.contents[0].parts[0].text.match(/```json\n([\s\S]*?)\n```/)[1]
+        )
+        const answer = {
+          coach_contract: 1,
+          summary: 'Reduce volume after repeated misses.',
+          changes: [
+            {
+              id: 'c1',
+              type: 'sets',
+              target: { routineId: 'r1', exId: '0025' },
+              before: 3,
+              after: 2,
+              why: 'Three logged sessions missed their rep targets.',
+            },
+          ],
+          notes: [],
+        }
+        return new Response(
+          JSON.stringify({
+            candidates: [
+              {
+                finishReason: 'STOP',
+                content: { parts: [{ text: JSON.stringify(answer) }] },
+              },
+            ],
+          })
+        )
+      },
+    })
+    assert.equal(payload.window.workouts.length, 3)
+    assert.equal(
+      payload.aggregates.exercises.find((e) => e.id === '0025').stalls,
+      3
+    )
+    assert.equal(payload.window.workouts[2].entries[0].sets[0].rir, 0)
+    assert.equal(payload.coachProfile.goal, 'strength')
+    assert.equal(payload.meta.lang, 'he')
+    const status = (await call('GET', '/api/coach/status')).body
+    assert.equal(status.last.outcome, 'ready')
+    assert.equal(status.pending.changes[0].type, 'sets')
+    assert.equal(status.pending.changes[0].after, 2)
+    assert.deepEqual(
+      (await call('GET', '/api/data')).body,
+      before,
+      'a suggestion cannot modify the plan until user approval'
+    )
+  }
+)

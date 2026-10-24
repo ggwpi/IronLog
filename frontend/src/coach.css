@@ -35,9 +35,9 @@
 }
 .ob-day.on{background:var(--acc);color:var(--on-acc);border-color:var(--acc)}
 .ob-day:active{transform:scale(.94)}
-.ob-week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:6px}
+.ob-week{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,100px),1fr));gap:6px;margin-top:6px}
 .ob-wd{
-  padding:10px 0 9px;border-radius:var(--r);background:var(--surface);text-align:center;
+  min-width:0;min-height:44px;padding:10px 8px;border-radius:var(--r);background:var(--surface);text-align:center;white-space:normal;overflow-wrap:anywhere;
   font-size:13px;font-weight:600;color:var(--label-2);border:1.5px solid transparent;transition:all var(--fast)
 }
 .ob-wd.on{color:var(--acc);border-color:var(--acc);background:var(--acc-soft)}

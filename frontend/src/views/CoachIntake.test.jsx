@@ -411,11 +411,11 @@ describe('CoachIntake — the answers themselves', () => {
     expect(all('.ob-group')[0].querySelectorAll('.ob-day')).toHaveLength(7)
     expect(all('.ob-group')[1].querySelectorAll('.ob-wd')).toHaveLength(7)
     const wd = () => all('.ob-wd').filter(b => b.classList.contains('on')).map(b => b.textContent)
-    expect(wd()).toEqual(['Mo', 'We', 'Fr'])
+    expect(wd()).toEqual(['Monday', 'Wednesday', 'Friday'])
     tap('.ob-wd', 'We')
-    expect(wd()).toEqual(['Mo', 'Fr'])
+    expect(wd()).toEqual(['Monday', 'Friday'])
     tap('.ob-wd', 'Su')                                   // Sunday is 0 and is rendered last
-    expect(wd()).toEqual(['Mo', 'Fr', 'Su'])
+    expect(wd()).toEqual(['Monday', 'Friday', 'Sunday'])
     tap('.ob-day', '5')
     walkTo('Almost there')
     cont()
@@ -546,7 +546,7 @@ describe('CoachIntake — the editor behind ?edit=1', () => {
     expect(host.querySelector('.ob-choice.on').textContent).toContain('Coming back after a break')
     walkTo('Schedule')
     expect(all('.ob-day').find(b => b.classList.contains('on')).textContent).toBe('4')
-    expect(all('.ob-wd').filter(b => b.classList.contains('on')).map(b => b.textContent)).toEqual(['Tu', 'Th'])
+    expect(all('.ob-wd').filter(b => b.classList.contains('on')).map(b => b.textContent)).toEqual(['Tuesday', 'Thursday'])
     walkTo('Limits')
     expect(host.querySelector('.ob-field textarea').value).toBe('bad knee')
     walkTo('Almost there')
@@ -579,4 +579,17 @@ describe('CoachIntake — the editor behind ?edit=1', () => {
     mount(); walkTo('Almost there'); cont()
     expect(mocks.S.coach.chat.map(m => m.kind)).toEqual(['text', 'intake'])
   })
+})
+
+it('shows distinct full Hebrew weekday names without truncating every label to יו', async () => {
+  mount(); walkTo('Schedule')
+  try {
+    await act(async()=>{await setLang('he')})
+    mount()
+    expect(all('.ob-wd').map(b=>b.textContent)).toEqual(['יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי','יום שבת','יום ראשון'])
+    const day=all('.ob-wd').find(b=>b.textContent==='יום רביעי')
+    expect(day.getAttribute('aria-pressed')).toBe('true')
+    act(()=>day.click())
+    expect(day.getAttribute('aria-pressed')).toBe('false')
+  } finally { await setLang('en') }
 })
