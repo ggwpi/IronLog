@@ -83,6 +83,3 @@
 #tabbar.navigation-segments button.start.rec > span:last-child { color:var(--orange); }
 #tabbar.navigation-segments button.start.rec .cir::after { display:none; }
 #tabbar.navigation-segments button::before { content:none; }
-
-/* Short first-launch pages must fill the same installed-app bounds as the dock. */
-body { min-height:max(100dvh,var(--navigation-installed-height,0px)); }

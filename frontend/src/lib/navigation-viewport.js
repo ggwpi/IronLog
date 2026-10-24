@@ -1,26 +1,10 @@
-// Installed iPhone apps can initially report both viewport heights without the
-// bottom inset. Screen dimensions are CSS pixels and independent of that stale
-// measurement. Use them only for a standalone window that spans the whole screen;
-// ordinary Safari tabs and iPad split-screen keep their visual viewport bounds.
+// The dock lives in viewport coordinates. An installed app's usable viewport can
+// exclude system UI even at full screen width, so screen.height is never a safe
+// substitute for it. Resize/pageshow and the startup measurements below handle
+// Safari's delayed first-launch viewport updates.
 export function navigationBottom(win) {
   const viewport = win.visualViewport
-  const visualBottom = (viewport?.offsetTop || 0) + (viewport?.height || win.innerHeight)
-  const standalone = win.navigator?.standalone || win.matchMedia?.('(display-mode: standalone)').matches
-  if (!standalone) return visualBottom
-  let bottom = Math.max(win.innerHeight, visualBottom)
-  const ios = /iP(hone|ad|od)/.test(win.navigator?.userAgent || '')
-    || (win.navigator?.platform === 'MacIntel' && win.navigator?.maxTouchPoints > 1)
-  if (!ios) return bottom
-  const screen = win.screen
-  if (!(screen?.width > 0 && screen?.height > 0 && win.innerWidth > 0)) return bottom
-  const landscape = screen.orientation?.type?.startsWith('landscape')
-    || Math.abs(win.orientation || 0) === 90
-  const width = landscape ? Math.max(screen.width, screen.height) : Math.min(screen.width, screen.height)
-  const height = landscape ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height)
-  // Width identifies the full-screen orientation even while both height APIs
-  // still describe the previous orientation. The screen bounds are authoritative.
-  if (Math.abs(win.innerWidth - width) <= 2) bottom = height
-  return bottom
+  return (viewport?.offsetTop || 0) + (viewport?.height || win.innerHeight)
 }
 
 // Anchor the compact dock to the visible viewport, including Safari's first-load
@@ -37,9 +21,6 @@ export function startNavigationViewport(element, win = window) {
     if (editing && stableBottom && bottom < stableBottom - 100) return
     stableBottom = bottom
     element.style.setProperty('--navigation-viewport-bottom', bottom + 'px')
-    const standalone = win.navigator?.standalone || win.matchMedia?.('(display-mode: standalone)').matches
-    const pageStyle = win.document.documentElement?.style
-    if (standalone) pageStyle?.setProperty('--navigation-installed-height', bottom + 'px')
   }
   const schedule = () => {
     if (!frame) frame = win.requestAnimationFrame(sync)
@@ -57,6 +38,5 @@ export function startNavigationViewport(element, win = window) {
     if (frame) win.cancelAnimationFrame(frame)
     for (const [target,event] of targets) target?.removeEventListener(event,schedule)
     element.style.removeProperty('--navigation-viewport-bottom')
-    win.document.documentElement?.style.removeProperty('--navigation-installed-height')
   }
 }
