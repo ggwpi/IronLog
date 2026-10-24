@@ -2134,13 +2134,13 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 @keyframes spflash{0%,45%{background:var(--acc-soft)}100%{background:transparent}}
 .sp-empty{color:var(--label-2);text-align:center;padding:28px 12px;line-height:1.4}
 
-/* ----------------------------------------------------------- RTL (Arabic) -- */
+/* ---------------------------------------------------- RTL (Arabic/Hebrew) -- */
 /* Directional icons flip: back chevrons point right, trailing chevrons point left. */
 [dir="rtl"] [data-icon="chevronLeft"],
 [dir="rtl"] [data-icon="chevronRight"]{transform:scaleX(-1)}
 /* Segmented control: flex order reverses, so the sliding indicator moves the other way. */
 [dir="rtl"] .seg-sel{transform:translateX(calc(-100% * var(--i)))}
-/* Numbers and dates inside Arabic text still read left-to-right. */
+/* Numbers and dates inside RTL text still read left-to-right. */
 [dir="rtl"] .num,[dir="rtl"] input[type="number"]{direction:ltr}
 /* Superset edge stripe points at the inline start (the right, in RTL). */
 [dir="rtl"] .item.in-ss,[dir="rtl"] .wd-ss{box-shadow:inset -3px 0 0 var(--acc)}
@@ -2155,7 +2155,7 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 /* Chronological grids keep their left-to-right order: heatmap weeks and calendar
    weekdays would otherwise mirror. */
 [dir="rtl"] .hm-wrap,[dir="rtl"] .cal-grid{direction:ltr}
-/* Tight tracking is tuned for Latin; Arabic is a connected script and gets none. */
+/* Tight tracking is tuned for Latin; RTL scripts use their natural spacing. */
 [dir="rtl"] *{letter-spacing:0}
 .exfix-link{display:inline-flex;align-items:center;gap:5px;margin:14px 0 4px;color:var(--label-3);text-decoration:none}
 .list .similar-label{margin:16px 2px 6px;grid-column:1/-1}

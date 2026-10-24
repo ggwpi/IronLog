@@ -48,3 +48,10 @@ test('leaves a literal emoji alone and falls back for anything else', () => {
   assert.equal(routineEmoji(''), '🏋️');
   assert.equal(routineEmoji(undefined), '🏋️');
 });
+
+test('Hebrew reminders and rest alerts follow the profile language', () => {
+  assert.equal(restTimerPush('he').title, 'המנוחה הסתיימה 💪');
+  assert.equal(testPush('he').body, 'התראת בדיקה ✅ כך ייראו ההתראות שלך.');
+  assert.equal(dayReminderPush('he', { name: 'דחיפה A', emoji: 'dumbbell' }).title, '🏋️ דחיפה A היום');
+  assert.equal(dayReminderPush('he', null).title, 'מתוכנן אימון להיום');
+});
