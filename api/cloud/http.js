@@ -16,12 +16,24 @@ export function configuration(env = process.env) {
   const origin = new URL(env.ORIGIN || 'http://localhost:8080').origin
   const rpId = env.RP_ID || new URL(origin).hostname
   if (rpId !== new URL(origin).hostname) throw new Error('RP_ID must match ORIGIN hostname')
+  // Explicit migration hosts only. Never derive an RP from an arbitrary request origin.
+  const additionalOrigins = (env.IRONLOG_ADDITIONAL_ORIGINS || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .map((value) => {
+      const url = new URL(value)
+      if (url.protocol !== 'https:' || value !== url.origin)
+        throw new Error('IRONLOG_ADDITIONAL_ORIGINS must contain exact HTTPS origins')
+      return url.origin
+    })
   const secret = env.IRONLOG_SESSION_SECRET
   if (!secret || secret.length < 32)
     throw new Error('A stable IRONLOG_SESSION_SECRET of at least 32 characters is required')
   return {
     origin,
     rpId,
+    additionalOrigins: [...new Set(additionalOrigins)],
     secret,
     rpName: 'IronLog',
     sessionDays: 90,
@@ -30,6 +42,13 @@ export function configuration(env = process.env) {
     allowGuest: true,
     generation,
   }
+}
+export function requestConfiguration(req, cfg) {
+  // Host is matched exactly to operator-configured origins. Ignore Origin and forwarded
+  // host headers: neither may choose a different relying party or broaden CORS.
+  const host = typeof req.headers.host === 'string' ? req.headers.host.toLowerCase() : ''
+  const origin = cfg.additionalOrigins?.find((value) => new URL(value).host === host)
+  return origin ? { ...cfg, origin, rpId: new URL(origin).hostname } : cfg
 }
 export function cors(req, cfg) {
   const origin = req.headers.origin

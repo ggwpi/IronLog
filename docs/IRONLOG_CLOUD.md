@@ -77,7 +77,7 @@ runtime credentials. Do not commit environment files, metadata manifests or gene
   SSL settings. The pooler uses Supabase's trust root, which Node does not include by default.
   The SQL connection helper preserves certificate-chain and hostname verification, including
   when `pg` parses connection-string options. Setup scripts use the same verified TLS helper.
-- Set `SUPABASE_URL`, `ORIGIN=https://ironlog-v2-two.vercel.app`, `RP_ID=ironlog-v2-two.vercel.app`,
+- Set `SUPABASE_URL`, `ORIGIN=https://ironlg.vercel.app`, `RP_ID=ironlg.vercel.app`,
   `PASSWORD_LOGIN=1`, and `VAPID_SUBJECT` (instance origin or operator contact).
 - Run `node api/scripts/cloud/provision.mjs` with administrative SQL credentials. This installs
   the private bucket (50 MiB object ceiling), recurring jobs, Vault-held worker credential and
@@ -105,6 +105,24 @@ stops boot with a retry message instead of loading the old profile. Subsequent s
 cloud-era data. Branding, dock navigation and the confirmed modal/body portal fix are untouched.
 
 ## API compatibility
+
+### Primary domain migration
+
+The primary origin is `https://ironlg.vercel.app`. During migration set
+`IRONLOG_ADDITIONAL_ORIGINS=https://ironlog-v2-two.vercel.app` in production. The backend
+uses the matching explicitly configured request host for WebAuthn and same-origin checks;
+each domain retains its own passkeys and host-only session cookies. Arbitrary Origin or
+forwarded-host headers cannot select a relying party. Both hosts use the same account and
+profile store, stable session secret, and backend generation; do not reset any data.
+
+Existing users open the old app, sync, then use Settings → Account → Add another device.
+Open `https://ironlg.vercel.app/?link=CODE` (replace CODE with the one-time code) and create
+a passkey for the same account on the new domain. Do not create a separate profile. Old
+passkeys cannot be moved between domains. Keep the old domain serving the app until users
+have linked their accounts; do not redirect it away or revoke its passkeys prematurely.
+An installed PWA must be added to the home screen again from the new domain. Existing
+push subscriptions remain tied to the old installation; enable notifications again on
+the new installation. Existing reminder worker callbacks to the old host remain valid.
 
 All 56 non-Coach routes in the upstream server are accounted for by an automated inventory test.
 Existing settings, recovery, passkey, pairing, profile and administration response shapes remain.

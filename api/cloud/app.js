@@ -6,7 +6,7 @@ import { profileRoutes } from './profiles.js'
 import { adminRoutes } from './admin.js'
 import { pushRoutes } from './push.js'
 import { session, throttle, digest } from './session.js'
-import { configuration, HttpError, answer, fail, cors, checkOrigin, generation } from './http.js'
+import { configuration, requestConfiguration, HttpError, answer, fail, cors, checkOrigin, generation } from './http.js'
 import { work } from './jobs.js'
 const bytes = 4 * 1024 * 1024
 const address = (req) =>
@@ -55,7 +55,7 @@ function errorAnswer(e) {
 export function createApp({
   database,
   storage,
-  cfg = configuration(),
+  cfg: baseCfg = configuration(),
   workerSecret = process.env.IRONLOG_WORKER_SECRET,
 } = {}) {
   database ||= new Database()
@@ -68,6 +68,7 @@ export function createApp({
     ...pushRoutes,
   }
   async function handle(req) {
+    const cfg = requestConfiguration(req, baseCfg)
     let url
     try {
       url = new URL(req.url, cfg.origin)
