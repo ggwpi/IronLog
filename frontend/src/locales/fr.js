@@ -2431,5 +2431,6 @@ export default {
   "Delete AI connection": "Supprimer la connexion IA",
   "Manage AI connections": "Gérer les connexions IA",
   "The AI connection changed. Send your request again.": "La connexion IA a changé. Renvoie ta demande.",
+  "Choose a model for this provider": "Choisir un modèle pour ce fournisseur",
 
 }

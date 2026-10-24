@@ -2431,5 +2431,6 @@ export default {
   "Delete AI connection": "AI 연결 삭제",
   "Manage AI connections": "AI 연결 관리",
   "The AI connection changed. Send your request again.": "AI 연결이 변경되었습니다. 요청을 다시 보내세요.",
+  "Choose a model for this provider": "이 제공업체의 모델 선택",
 
 }

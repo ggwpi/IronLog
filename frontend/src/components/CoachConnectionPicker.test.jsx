@@ -8,47 +8,64 @@ const mock = vi.hoisted(() => ({
   calls: [],
   nav: vi.fn(),
   toast: vi.fn(),
-  delayA: null,
+  selecting: vi.fn(),
+  fail: false,
 }))
 const saved = [
   {
     id: 'a',
     name: 'API Alpha',
     provider: 'gemini',
-    baseUrl: 'https://generativelanguage.googleapis.com',
-    model: 'model-a',
-    revision: 0,
+    model: 'configured-model-a',
   },
   {
     id: 'b',
     name: 'API Beta',
     provider: 'gemini',
-    baseUrl: 'https://generativelanguage.googleapis.com',
-    model: 'model-b',
-    revision: 0,
+    model: 'configured-model-b',
   },
 ]
 vi.mock('react-router-dom', () => ({ useNavigate: () => mock.nav }))
-vi.mock('../store/useUI.js', () => ({ useUI: (f) => f({ toast: mock.toast }) }))
+vi.mock('../store/useUI.js', async () => {
+  const { create } = await import('zustand')
+  let n = 0
+  const useUI = create((set, get) => ({
+    sheets: [],
+    toast: (...args) => mock.toast(...args),
+    openSheet(render) {
+      const id = ++n
+      set((s) => ({ sheets: [...s.sheets, { id, render }] }))
+      return { close: () => get().closeSheet(id) }
+    },
+    closeSheet(id) {
+      set((s) => ({ sheets: s.sheets.filter((x) => x.id !== id) }))
+    },
+  }))
+  return { useUI }
+})
+const { useUI } = await import('../store/useUI.js')
+function Sheets() {
+  const sheets = useUI((s) => s.sheets)
+  return (
+    <>
+      {sheets.map((s) => (
+        <div key={s.id} className="sheet">
+          {s.render(() => useUI.getState().closeSheet(s.id))}
+        </div>
+      ))}
+    </>
+  )
+}
 vi.mock('../lib/api.js', () => ({
   api: async (path, opts = {}) => {
     const body = opts.body ? JSON.parse(opts.body) : null
     mock.calls.push({ path, body })
     if (path.endsWith('/connections'))
-      return { connections: saved, activeId: 'a', model: 'model-a' }
-    if (path.endsWith('/models')) {
-      if (body.connectionId === 'a' && mock.delayA) await mock.delayA
-      return {
-        ok: true,
-        models:
-          body.connectionId === 'a'
-            ? ['model-a', 'alternate-a']
-            : ['model-b', 'alternate-b'],
-      }
-    }
+      return { connections: saved, activeId: 'a', model: 'configured-model-a' }
+    if (mock.fail) throw new Error('Could not connect')
     return {
       id: body.connectionId,
-      model: body.model || saved.find((c) => c.id === body.connectionId).model,
+      model: saved.find((c) => c.id === body.connectionId).model,
     }
   },
 }))
@@ -57,8 +74,10 @@ let host, root
 const tick = () => new Promise((r) => setTimeout(r, 0))
 beforeEach(() => {
   setCoachChoice('picker-user', {})
+  useUI.setState({ sheets: [] })
   mock.calls = []
-  mock.delayA = null
+  mock.fail = false
+  mock.selecting.mockReset()
   mock.nav.mockReset()
   mock.toast.mockReset()
   host = document.createElement('div')
@@ -69,71 +88,82 @@ afterEach(async () => {
   await act(() => root.unmount())
   host.remove()
 })
-const mount = (disabled) =>
+const mount = (disabled = false) =>
   act(async () => {
     root.render(
-      <CoachConnectionPicker userId="picker-user" disabled={disabled} />
+      <>
+        <CoachConnectionPicker userId="picker-user" disabled={disabled} onSelecting={mock.selecting} />
+        <Sheets />
+      </>
     )
     await tick()
-    await tick()
   })
-const select = (label, value) =>
+const click = (el) =>
   act(async () => {
-    const el = host.querySelector(`[aria-label="${label}"]`)
-    Object.getOwnPropertyDescriptor(el.constructor.prototype, 'value').set.call(
-      el,
-      value
-    )
-    el.dispatchEvent(new Event('change', { bubbles: true }))
-    await tick()
+    expect(el).toBeTruthy()
+    el.click()
     await tick()
   })
-it('selects separately named keys of one provider and the model for the next message', async () => {
-  await mount(false)
-  expect(host.textContent).toContain('API Alpha')
-  expect(host.textContent).toContain('API Beta')
-  await select('AI connection', 'b')
-  await select('Model', 'alternate-b')
+const row = (name) =>
+  [...host.querySelectorAll('button')].find((b) => b.textContent.includes(name))
+it('uses an icon and shared sliding selector for named connections, not model editing', async () => {
+  await mount()
+  expect(host.textContent).not.toContain('API Alpha')
+  const trigger = host.querySelector('[aria-label="AI connection"]')
+  expect(trigger.textContent).toBe('')
+  expect(trigger.querySelector('svg')).toBeTruthy()
+  await click(trigger)
+  expect(useUI.getState().sheets).toHaveLength(1)
+  expect(host.querySelector('.sheet').textContent).toContain(
+    'configured-model-b'
+  )
+  expect(host.querySelectorAll('select')).toHaveLength(0)
+  await click(row('API Beta'))
+  expect(useUI.getState().sheets).toHaveLength(0)
   expect(coachChoice('picker-user')).toEqual({
     connectionId: 'b',
-    model: 'alternate-b',
+    model: 'configured-model-b',
   })
-  expect(
-    mock.calls.filter((c) => c.path.endsWith('/selection')).at(-1).body
-  ).toMatchObject({
-    accountId: 'picker-user',
+  expect(mock.calls.at(-1)).toEqual({
+    path: '/api/coach/selection',
+    body: { accountId: 'picker-user', connectionId: 'b' },
+  })
+  expect(mock.calls.some((c) => c.path.endsWith('/models'))).toBe(false)
+  expect(mock.selecting.mock.calls).toEqual([[true], [false]])
+})
+it('takes the configured model from Settings over stale chat model choices', async () => {
+  setCoachChoice('picker-user', {
     connectionId: 'b',
-    model: 'alternate-b',
+    model: 'stale-chat-model',
   })
-  expect(
-    mock.calls.filter((c) => c.path.endsWith('/models')).at(-1).body
-      .connectionId
-  ).toBe('b')
+  await mount()
+  expect(coachChoice('picker-user')).toEqual({
+    connectionId: 'b',
+    model: 'configured-model-b',
+  })
 })
-it('ignores a late model list from a previously selected key', async () => {
-  let release
-  mock.delayA = new Promise((r) => {
-    release = r
-  })
-  await mount(false)
-  await select('AI connection', 'b')
-  await act(async () => {
-    release()
-    await tick()
-  })
-  const el = host.querySelector('[aria-label="Model"]')
-  expect(el.textContent).toContain('alternate-b')
-  expect(el.textContent).not.toContain('alternate-a')
-})
-it('locks the selectors during an active request and keeps selections scoped to the signed-in account', async () => {
-  setCoachChoice('somebody-else', {
-    connectionId: 'other-private-id',
+it('disables switching during a request and scopes choices to the signed-in account', async () => {
+  setCoachChoice('other-user', {
+    connectionId: 'private',
     model: 'other-model',
   })
   await mount(true)
-  expect([...host.querySelectorAll('select')].every((s) => s.disabled)).toBe(
-    true
-  )
-  expect(host.textContent).not.toContain('other-model')
+  expect(host.querySelector('[aria-label="AI connection"]').disabled).toBe(true)
   expect(coachChoice('picker-user').connectionId).toBe('a')
+  expect(host.textContent).not.toContain('other-model')
+})
+it('keeps the current connection if switching fails', async () => {
+  await mount()
+  await click(host.querySelector('[aria-label="AI connection"]'))
+  mock.fail = true
+  await click(row('API Beta'))
+  expect(coachChoice('picker-user').connectionId).toBe('a')
+  expect(mock.toast).toHaveBeenCalled()
+})
+it('closes the menu and opens settings to change a connection model', async () => {
+  await mount()
+  await click(host.querySelector('[aria-label="AI connection"]'))
+  await click(row('Manage AI connections'))
+  expect(useUI.getState().sheets).toHaveLength(0)
+  expect(mock.nav).toHaveBeenCalledWith('/coach/setup')
 })

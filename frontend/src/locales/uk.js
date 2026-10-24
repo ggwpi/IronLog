@@ -2428,5 +2428,6 @@ export default {
   "Delete AI connection": "Видалити підключення ШІ",
   "Manage AI connections": "Керування підключеннями ШІ",
   "The AI connection changed. Send your request again.": "Підключення ШІ змінилося. Надішліть запит ще раз.",
+  "Choose a model for this provider": "Вибрати модель цього постачальника",
 
 }

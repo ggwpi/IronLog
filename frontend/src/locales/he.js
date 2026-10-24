@@ -2495,5 +2495,6 @@ export default {
   "Delete AI connection": "מחיקת חיבור AI",
   "Manage AI connections": "ניהול חיבורי AI",
   "The AI connection changed. Send your request again.": "חיבור ה־AI השתנה. שלח את הבקשה שוב.",
+  "Choose a model for this provider": "בחר מודל לספק",
 
 }

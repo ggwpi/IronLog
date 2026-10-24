@@ -2486,5 +2486,6 @@ export default {
   "Delete AI connection": "حذف اتصال الذكاء الاصطناعي",
   "Manage AI connections": "إدارة اتصالات الذكاء الاصطناعي",
   "The AI connection changed. Send your request again.": "تغيّر اتصال الذكاء الاصطناعي. أرسل طلبك مجدداً.",
+  "Choose a model for this provider": "اختر نموذجًا لهذا المزوّد",
 
 }

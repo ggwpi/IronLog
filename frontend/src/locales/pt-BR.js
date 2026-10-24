@@ -1552,6 +1552,7 @@ export const PT_BR_OVERRIDES = {
   "Delete AI connection": "Excluir conexão de IA",
   "Manage AI connections": "Gerenciar conexões de IA",
   "The AI connection changed. Send your request again.": "A conexão de IA mudou. Envie sua solicitação novamente.",
+  "Choose a model for this provider": "Escolher um modelo para este provedor",
 
 }
 

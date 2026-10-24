@@ -2442,5 +2442,6 @@ export default {
   "Delete AI connection": "ลบการเชื่อมต่อ AI",
   "Manage AI connections": "จัดการการเชื่อมต่อ AI",
   "The AI connection changed. Send your request again.": "การเชื่อมต่อ AI เปลี่ยนไป โปรดส่งคำขออีกครั้ง",
+  "Choose a model for this provider": "เลือกโมเดลสำหรับผู้ให้บริการนี้",
 
 }
