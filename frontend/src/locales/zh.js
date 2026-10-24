@@ -2423,4 +2423,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "AI 服务商拒绝了密钥。请检查设置 → AI 教练。",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "AI 连接",
+  "AI connection": "AI 连接",
+  "Add AI connection": "添加 AI 连接",
+  "Connection name": "连接名称",
+  "Delete AI connection": "删除 AI 连接",
+  "Manage AI connections": "管理 AI 连接",
+  "The AI connection changed. Send your request again.": "AI 连接已更改。请重新发送请求。",
+
 }

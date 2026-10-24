@@ -2423,4 +2423,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "आपके AI प्रदाता ने कुंजी अस्वीकार कर दी। सेटिंग्स → AI कोच में जाँचें।",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "AI कनेक्शन",
+  "AI connection": "AI कनेक्शन",
+  "Add AI connection": "AI कनेक्शन जोड़ें",
+  "Connection name": "कनेक्शन का नाम",
+  "Delete AI connection": "AI कनेक्शन हटाएँ",
+  "Manage AI connections": "AI कनेक्शन प्रबंधित करें",
+  "The AI connection changed. Send your request again.": "AI कनेक्शन बदल गया है। अपना अनुरोध फिर भेजें।",
+
 }

@@ -2434,4 +2434,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "ผู้ให้บริการ AI ปฏิเสธคีย์ โปรดตรวจสอบที่การตั้งค่า → โค้ช AI",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "การเชื่อมต่อ AI",
+  "AI connection": "การเชื่อมต่อ AI",
+  "Add AI connection": "เพิ่มการเชื่อมต่อ AI",
+  "Connection name": "ชื่อการเชื่อมต่อ",
+  "Delete AI connection": "ลบการเชื่อมต่อ AI",
+  "Manage AI connections": "จัดการการเชื่อมต่อ AI",
+  "The AI connection changed. Send your request again.": "การเชื่อมต่อ AI เปลี่ยนไป โปรดส่งคำขออีกครั้ง",
+
 }

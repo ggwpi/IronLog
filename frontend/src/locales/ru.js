@@ -2427,4 +2427,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "Провайдер ИИ отклонил ключ. Проверьте Настройки → ИИ-тренер.",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "Подключения ИИ",
+  "AI connection": "Подключение ИИ",
+  "Add AI connection": "Добавить подключение ИИ",
+  "Connection name": "Название подключения",
+  "Delete AI connection": "Удалить подключение ИИ",
+  "Manage AI connections": "Управление подключениями ИИ",
+  "The AI connection changed. Send your request again.": "Подключение ИИ изменилось. Отправьте запрос ещё раз.",
+
 }

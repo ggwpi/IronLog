@@ -2502,4 +2502,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "আপনার AI সেবাদাতা কীটি প্রত্যাখ্যান করেছে। সেটিংস → AI কোচে যাচাই করুন।",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "AI সংযোগসমূহ",
+  "AI connection": "AI সংযোগ",
+  "Add AI connection": "AI সংযোগ যোগ করুন",
+  "Connection name": "সংযোগের নাম",
+  "Delete AI connection": "AI সংযোগ মুছুন",
+  "Manage AI connections": "AI সংযোগ পরিচালনা করুন",
+  "The AI connection changed. Send your request again.": "AI সংযোগ পরিবর্তিত হয়েছে। অনুরোধটি আবার পাঠান।",
+
 }

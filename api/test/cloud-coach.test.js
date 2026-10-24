@@ -136,7 +136,8 @@ const call = (method, url, body, u = A, headers = {}) =>
           ? undefined
           : { accountId: u?.id }
         : {
-            ...(method !== 'GET' && /\/api\/coach\/(settings|models)$/.test(url)
+            ...(method !== 'GET' &&
+            /\/api\/coach\/(settings|models|connections|selection)$/.test(url)
               ? { accountId: u?.id }
               : {}),
             ...body,
@@ -568,5 +569,204 @@ suite(
     }
     assert.equal((await call('GET', '/api/coach/settings')).body.hasKey, false)
     assert.equal(calls.length, 0)
+  }
+)
+
+async function addConnection(name, apiKey, provider = 'openai', u = A) {
+  const r = await call(
+    'POST',
+    '/api/coach/connections',
+    { name, provider, model: 'test-model', apiKey },
+    u
+  )
+  assert.equal(r.status, 200, JSON.stringify(r.body))
+  return r.body
+}
+suite(
+  'multiple named keys of the same type are stored independently and remain private',
+  async () => {
+    const a = await addConnection('API Alpha', 'alpha-key'),
+      b = await addConnection('API Beta', 'beta-key')
+    assert.notEqual(a.id, b.id)
+    const list = (await call('GET', '/api/coach/connections')).body
+    assert.deepEqual(
+      list.connections.map((c) => c.name),
+      ['API Alpha', 'API Beta']
+    )
+    assert.ok(!JSON.stringify(list).includes('alpha-key'))
+    assert.ok(!JSON.stringify(list).includes('beta-key'))
+    assert.deepEqual(
+      (await call('GET', '/api/coach/connections', undefined, B)).body
+        .connections,
+      []
+    )
+    for (const path of ['/api/coach/selection', '/api/coach/models']) {
+      const body = path.endsWith('/models')
+        ? { connectionId: a.id, provider: 'openai' }
+        : { connectionId: a.id }
+      assert.equal((await call('POST', path, body, B)).status, 404)
+    }
+    assert.equal(
+      (await call('DELETE', '/api/coach/connections', { id: a.id }, B)).status,
+      404
+    )
+    await call('POST', '/api/coach/models', {
+      connectionId: a.id,
+      provider: 'openai',
+    })
+    assert.equal(calls.at(-1).init.headers.authorization, 'Bearer alpha-key')
+    await call('POST', '/api/coach/models', {
+      connectionId: b.id,
+      provider: 'openai',
+    })
+    assert.equal(calls.at(-1).init.headers.authorization, 'Bearer beta-key')
+  }
+)
+suite(
+  'selection preserves pending proposals, training and usage; queued requests keep their original key/model',
+  async () => {
+    const a = await addConnection('First API', 'first-key'),
+      b = await addConnection('Second API', 'second-key')
+    await call('POST', '/api/coach/review', {
+      connectionId: a.id,
+      model: 'first-model',
+    })
+    await call('POST', '/api/coach/selection', {
+      connectionId: b.id,
+      model: 'second-model',
+    })
+    let used
+    await runCoachWork(db, {
+      pipeline: async (opts) => {
+        used = opts
+        return {
+          ok: true,
+          result: {
+            summary: 'Test proposal',
+            changes: [{ id: 'c1', type: 'sets' }],
+          },
+        }
+      },
+    })
+    assert.equal(used.model, 'first-model')
+    assert.equal(used.invokeOpts.env.OPENAI_API_KEY, 'first-key')
+    const status = (await call('GET', '/api/coach/status')).body
+    assert.equal(status.pending.connection.id, a.id)
+    assert.equal(status.cap.used, 1)
+    await call('POST', '/api/coach/selection', { connectionId: a.id })
+    assert.deepEqual(
+      (await call('GET', '/api/coach/status')).body.pending,
+      status.pending
+    )
+    assert.equal((await call('GET', '/api/coach/status')).body.cap.used, 1)
+    const data = (await call('GET', '/api/data')).body
+    assert.equal((data.state || data).routines[0].ex[0].sets, 3)
+  }
+)
+suite(
+  'a legacy saved key upgrades in place without decryption or replacement',
+  async () => {
+    const secret = sealKey(A.id, 'openai', 'existing-key')
+    await db.transaction((c) =>
+      c.query(
+        'insert into ironlog.coach(user_id,config,secret,state) values($1,$2,$3,$4)',
+        [
+          A.id,
+          {
+            provider: 'openai',
+            baseUrl: 'https://api.openai.com',
+            model: 'old-model',
+          },
+          secret,
+          { daily: { date: new Date().toISOString().slice(0, 10), count: 3 } },
+        ]
+      )
+    )
+    const list = (await call('GET', '/api/coach/connections')).body
+    assert.equal(list.connections.length, 1)
+    assert.equal(list.connections[0].name, 'OpenAI API')
+    const stored = await db.transaction((c) =>
+      one(
+        c,
+        'select secret from ironlog.coach_connections where user_id=$1 and id=$2',
+        [A.id, list.activeId]
+      )
+    )
+    assert.equal(stored.secret, secret)
+    assert.equal((await call('GET', '/api/coach/status')).body.cap.used, 3)
+    await addConnection('Another key', 'another-key')
+    assert.equal(
+      (await call('GET', '/api/coach/connections')).body.connections.length,
+      2
+    )
+  }
+)
+suite(
+  'deleting one key preserves the other connections, chat and pending suggestions',
+  async () => {
+    const a = await addConnection('Delete this', 'a-key'),
+      b = await addConnection('Keep this', 'b-key')
+    await call('POST', '/api/coach/review', { connectionId: b.id })
+    await runCoachWork(db, {
+      pipeline: async () => ({ ok: true, result: { changes: [] } }),
+    })
+    const before = (await call('GET', '/api/coach/status')).body.pending
+    assert.equal(
+      (await call('DELETE', '/api/coach/connections', { id: a.id })).status,
+      200
+    )
+    const list = (await call('GET', '/api/coach/connections')).body
+    assert.deepEqual(
+      list.connections.map((c) => c.id),
+      [b.id]
+    )
+    assert.equal(list.activeId, b.id)
+    assert.deepEqual(
+      (await call('GET', '/api/coach/status')).body.pending,
+      before
+    )
+  }
+)
+suite(
+  'editing a connection in use discards late results while edits to other keys leave the run intact',
+  async () => {
+    const a = await addConnection('A', 'a-key'),
+      b = await addConnection('B', 'b-key')
+    await call('POST', '/api/coach/review', { connectionId: a.id })
+    let ready, release
+    const started = new Promise((r) => {
+      ready = r
+    })
+    const run = runCoachWork(db, {
+      pipeline: async () => {
+        ready()
+        await new Promise((r) => {
+          release = r
+        })
+        return { ok: true, result: { changes: [] } }
+      },
+    })
+    await started
+    await call('POST', '/api/coach/connections', {
+      id: b.id,
+      name: 'Renamed B',
+      provider: 'openai',
+      model: 'test-model',
+      apiKey: 'new-b-key',
+    })
+    assert.ok((await call('GET', '/api/coach/status')).body.job)
+    await call('POST', '/api/coach/connections', {
+      id: a.id,
+      name: 'Updated A',
+      provider: 'openai',
+      model: 'test-model',
+      apiKey: 'new-a-key',
+    })
+    release()
+    await run
+    const status = (await call('GET', '/api/coach/status')).body
+    assert.equal(status.job, null)
+    assert.equal(status.pending, null)
+    assert.equal(status.last.errorClass, 'connection-changed')
   }
 )

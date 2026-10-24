@@ -14,12 +14,16 @@ import { CATEGORY_TEXT } from '../lib/coach.js'
 import { AiConsentSection } from '../components/CoachConsentSheet.jsx'
 import { Button, Section, Row, TextField } from '../components/ui.jsx'
 import Icon from '../components/Icon.jsx'
+import { setCoachChoice } from '../lib/coach-choice.js'
 export default function CloudCoachSetup() {
   const nav = useNavigate(),
     toast = useUI((s) => s.toast)
   const user = useStore((s) => s.user),
     ready = useStore((s) => s.ready)
   const refreshConfig = useStore((s) => s.refreshConfig)
+  const [connections, setConnections] = useState([]),
+    [editing, setEditing] = useState(false),
+    [name, setName] = useState('')
   const [saved, setSaved] = useState(null),
     [provider, setProvider] = useState('anthropic')
   const [baseUrl, setBaseUrl] = useState(''),
@@ -38,13 +42,18 @@ export default function CloudCoachSetup() {
     setModels(null)
     setLoaded(false)
     let gone = false
-    api('/api/coach/settings')
+    api('/api/coach/connections')
       .then((s) => {
         if (gone) return
-        setSaved(s)
-        if (s.provider) setProvider(s.provider)
-        setBaseUrl(s.baseUrl || '')
-        setModel(s.model || '')
+        setConnections(s.connections)
+        const current =
+          s.connections.find((c) => c.id === s.activeId) || s.connections[0]
+        setSaved(current || {})
+        setName(current?.name || '')
+        if (current?.provider) setProvider(current.provider)
+        setBaseUrl(current?.baseUrl || '')
+        setModel(current?.model || '')
+        setEditing(!s.connections.length)
         setLoaded(true)
       })
       .catch((e) => {
@@ -71,6 +80,8 @@ export default function CloudCoachSetup() {
   }
   const request = () => ({
     accountId: user.id,
+    ...(saved?.id ? { id: saved.id, connectionId: saved.id } : {}),
+    name,
     provider,
     baseUrl: meta.baseUrl ? baseUrl : undefined,
     model,
@@ -103,12 +114,21 @@ export default function CloudCoachSetup() {
   const save = async () => {
     setBusy(true)
     try {
-      const r = await api('/api/coach/settings', {
+      const r = await api('/api/coach/connections', {
         method: 'POST',
         body: JSON.stringify(request()),
       })
       setSaved(r)
       setKey('')
+      await api('/api/coach/selection', {
+        method: 'POST',
+        body: JSON.stringify({
+          accountId: user.id,
+          connectionId: r.id,
+          model: r.model,
+        }),
+      })
+      setCoachChoice(user.id, r)
       await refreshConfig()
       toast(t('The Coach is on'))
       nav('/coach')
@@ -121,21 +141,49 @@ export default function CloudCoachSetup() {
   const disconnect = async () => {
     setBusy(true)
     try {
-      await api('/api/coach/settings', {
+      await api('/api/coach/connections', {
         method: 'DELETE',
-        body: JSON.stringify({ accountId: user.id }),
+        body: JSON.stringify({ accountId: user.id, id: saved.id }),
       })
+      const list = await api('/api/coach/connections')
+      setConnections(list.connections)
+      setCoachChoice(
+        user.id,
+        list.connections.find((c) => c.id === list.activeId) || {}
+      )
       setSaved({})
+      setName('')
+      setEditing(false)
       setKey('')
       setModels(null)
       setModel('')
       await refreshConfig()
-      toast(t('The Coach is off'))
+      toast(t('Removed'))
     } catch (e) {
       toast(e.message || t('Something went wrong'))
     } finally {
       setBusy(false)
     }
+  }
+  const add = () => {
+    setSaved({})
+    setName('')
+    setKey('')
+    setModels(null)
+    setProvider('anthropic')
+    setBaseUrl('')
+    setModel('')
+    setEditing(true)
+  }
+  const edit = (c) => {
+    setSaved(c)
+    setName(c.name)
+    setKey('')
+    setModels(null)
+    setProvider(c.provider)
+    setBaseUrl(c.baseUrl || '')
+    setModel(c.model)
+    setEditing(true)
   }
   return (
     <div className="narrow">
@@ -155,22 +203,33 @@ export default function CloudCoachSetup() {
       ) : (
         <>
           <Section
-            title={t('Your account')}
+            title={t('AI connections')}
             footer={t(
               'Requests run through IronLog and are charged to your provider account.'
             )}
           >
+            {connections.map((c) => (
+              <Row
+                key={c.id}
+                icon="key"
+                iconTint="var(--green)"
+                title={c.name}
+                subtitle={
+                  (HTTP_PROVIDERS[c.provider]?.label || c.provider) +
+                  ' · ' +
+                  c.model
+                }
+                accessory="chevron"
+                onClick={() => edit(c)}
+              />
+            ))}
             <Row
-              icon="key"
+              icon="plus"
               iconTint="var(--green)"
-              title={
-                saved?.connected
-                  ? HTTP_PROVIDERS[saved.provider]?.label
-                  : t('Choose a provider and connect your own API key.')
-              }
-              subtitle={saved?.model || undefined}
+              title={t('Add AI connection')}
+              onClick={add}
             />
-            {saved?.connected && (
+            {!!connections.length && (
               <Row
                 icon="sparkles"
                 iconTint="var(--green)"
@@ -183,130 +242,146 @@ export default function CloudCoachSetup() {
               />
             )}
           </Section>
-          <Section title={t('Provider')}>
-            <div
-              className="row"
-              style={{ flexWrap: 'wrap', gap: 7, padding: '8px 12px' }}
-            >
-              {HTTP_PROVIDER_IDS.map((id) => (
-                <button
-                  key={id}
-                  className={'chip' + (id === provider ? ' on' : '')}
-                  aria-pressed={id === provider}
-                  disabled={busy}
-                  onClick={() => selectProvider(id)}
+          {editing && (
+            <>
+              <Section title={t('Connection name')}>
+                <div style={{ padding: '8px 12px' }}>
+                  <TextField
+                    aria-label={t('Connection name')}
+                    value={name}
+                    maxLength={80}
+                    disabled={busy}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+              </Section>
+              <Section title={t('Provider')}>
+                <div
+                  className="row"
+                  style={{ flexWrap: 'wrap', gap: 7, padding: '8px 12px' }}
                 >
-                  {HTTP_PROVIDERS[id].label}
-                </button>
-              ))}
-            </div>
-          </Section>
-          {meta.baseUrl && (
-            <Section title={t('Endpoint')}>
-              <div style={{ padding: '8px 12px' }}>
-                <TextField
-                  value={baseUrl}
-                  placeholder="https://openrouter.ai/api/v1"
-                  inputMode="url"
-                  disabled={busy}
-                  dir="ltr"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  onChange={(e) => {
-                    setBaseUrl(e.target.value)
-                    setModels(null)
-                  }}
-                />
-              </div>
-            </Section>
-          )}
-          <Section
-            title={t('API key')}
-            footer={t(
-              'Your API key is encrypted on the server. It is never included in synced training data or backups.'
-            )}
-          >
-            <div style={{ padding: '8px 12px' }}>
-              <TextField
-                value={key}
-                type="password"
-                disabled={busy}
-                dir="ltr"
-                autoComplete="off"
-                autoCapitalize="none"
-                autoCorrect="off"
-                aria-label={t('API key')}
-                placeholder={
-                  hasKey ? '•••••••• ' + t('(saved)') : meta.keyPlaceholder
-                }
-                onChange={(e) => {
-                  setKey(e.target.value)
-                  setModels(null)
-                }}
-              />
-            </div>
-          </Section>
-          <Section title={t('Data shared with AI')}>
-            {DATA_CATEGORIES.map((k) => {
-              const [title, sub] = CATEGORY_TEXT[k]?.() || [k, '']
-              return (
-                <Row
-                  key={k}
-                  icon="check"
-                  iconTint="var(--acc)"
-                  title={title}
-                  subtitle={sub}
-                />
-              )
-            })}
-          </Section>
-          {models && (
-            <Section title={t('Model')}>
-              <div style={{ padding: '8px 12px' }}>
-                <select
-                  className="input"
-                  aria-label={t('Model')}
-                  value={model}
-                  disabled={busy}
-                  onChange={(e) => setModel(e.target.value)}
-                  style={{ width: '100%' }}
-                >
-                  <option value="">{t('Pick a model')}</option>
-                  {models.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
+                  {HTTP_PROVIDER_IDS.map((id) => (
+                    <button
+                      key={id}
+                      className={'chip' + (id === provider ? ' on' : '')}
+                      aria-pressed={id === provider}
+                      disabled={busy}
+                      onClick={() => selectProvider(id)}
+                    >
+                      {HTTP_PROVIDERS[id].label}
+                    </button>
                   ))}
-                </select>
-              </div>
-            </Section>
-          )}
-          <div style={{ display: 'grid', gap: 10 }}>
-            <Button
-              disabled={
-                busy || (!key.trim() && !hasKey && provider !== 'compatible')
-              }
-              onClick={listModels}
-            >
-              {busy ? t('Loading…') : t('List models')}
-            </Button>
-            {models && (
-              <Button
-                variant="primary"
-                disabled={busy || !model}
-                onClick={save}
+                </div>
+              </Section>
+              {meta.baseUrl && (
+                <Section title={t('Endpoint')}>
+                  <div style={{ padding: '8px 12px' }}>
+                    <TextField
+                      value={baseUrl}
+                      placeholder="https://openrouter.ai/api/v1"
+                      inputMode="url"
+                      disabled={busy}
+                      dir="ltr"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      onChange={(e) => {
+                        setBaseUrl(e.target.value)
+                        setModels(null)
+                      }}
+                    />
+                  </div>
+                </Section>
+              )}
+              <Section
+                title={t('API key')}
+                footer={t(
+                  'Your API key is encrypted on the server. It is never included in synced training data or backups.'
+                )}
               >
-                {t('Save and use the Coach')}
-              </Button>
-            )}
-          </div>
+                <div style={{ padding: '8px 12px' }}>
+                  <TextField
+                    value={key}
+                    type="password"
+                    disabled={busy}
+                    dir="ltr"
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    aria-label={t('API key')}
+                    placeholder={
+                      hasKey ? '•••••••• ' + t('(saved)') : meta.keyPlaceholder
+                    }
+                    onChange={(e) => {
+                      setKey(e.target.value)
+                      setModels(null)
+                    }}
+                  />
+                </div>
+              </Section>
+              <Section title={t('Data shared with AI')}>
+                {DATA_CATEGORIES.map((k) => {
+                  const [title, sub] = CATEGORY_TEXT[k]?.() || [k, '']
+                  return (
+                    <Row
+                      key={k}
+                      icon="check"
+                      iconTint="var(--acc)"
+                      title={title}
+                      subtitle={sub}
+                    />
+                  )
+                })}
+              </Section>
+              {models && (
+                <Section title={t('Model')}>
+                  <div style={{ padding: '8px 12px' }}>
+                    <select
+                      className="input"
+                      aria-label={t('Model')}
+                      value={model}
+                      disabled={busy}
+                      onChange={(e) => setModel(e.target.value)}
+                      style={{ width: '100%' }}
+                    >
+                      <option value="">{t('Pick a model')}</option>
+                      {models.map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </Section>
+              )}
+              <div style={{ display: 'grid', gap: 10 }}>
+                <Button
+                  disabled={
+                    busy ||
+                    (!key.trim() && !hasKey && provider !== 'compatible')
+                  }
+                  onClick={listModels}
+                >
+                  {busy ? t('Loading…') : t('List models')}
+                </Button>
+                {models && (
+                  <Button
+                    variant="primary"
+                    disabled={busy || !model || !name.trim()}
+                    onClick={save}
+                  >
+                    {t('Save and use the Coach')}
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
           <AiConsentSection />
-          {saved?.connected && (
+          {editing && saved?.connected && (
             <Section title={t('Controls')}>
               <Row
                 icon="signOut"
                 iconTint="var(--red)"
-                title={t('Disconnect')}
+                title={t('Delete AI connection')}
                 danger
                 disabled={busy}
                 onClick={() => {

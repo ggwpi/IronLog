@@ -2487,4 +2487,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "ספק ה־AI דחה את המפתח. בדוק אותו בהגדרות ← מאמן AI.",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "חיבורי AI",
+  "AI connection": "חיבור AI",
+  "Add AI connection": "הוספת חיבור AI",
+  "Connection name": "שם החיבור",
+  "Delete AI connection": "מחיקת חיבור AI",
+  "Manage AI connections": "ניהול חיבורי AI",
+  "The AI connection changed. Send your request again.": "חיבור ה־AI השתנה. שלח את הבקשה שוב.",
+
 }

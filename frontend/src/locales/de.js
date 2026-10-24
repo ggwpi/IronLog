@@ -2443,4 +2443,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "Dein KI-Anbieter hat den Schlüssel abgelehnt. Prüfe Einstellungen → AI Coach.",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "KI-Verbindungen",
+  "AI connection": "KI-Verbindung",
+  "Add AI connection": "KI-Verbindung hinzufügen",
+  "Connection name": "Verbindungsname",
+  "Delete AI connection": "KI-Verbindung löschen",
+  "Manage AI connections": "KI-Verbindungen verwalten",
+  "The AI connection changed. Send your request again.": "Die KI-Verbindung wurde geändert. Sende deine Anfrage erneut.",
+
 }

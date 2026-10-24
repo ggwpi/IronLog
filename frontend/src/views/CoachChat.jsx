@@ -24,6 +24,7 @@ import { speedUnitOf } from '../lib/speed.js'
 import { DEMO } from '../lib/demo.js'
 import { MOBILE } from '../lib/mobile.js'
 import ChatInput from '../components/ChatInput.jsx'
+import CoachConnectionPicker from '../components/CoachConnectionPicker.jsx'
 import {
   coachAvailable, hasConsent, emptyCoach, appendChat, recordTiming, estimateMs, profileLines,
   markStale, applicable, applyChangeSet, applyCreatedPlan, recordDismissal, recordDebrief, logEntry,
@@ -206,13 +207,16 @@ export default function CoachChat() {
       <button className="iconbtn" onClick={menu} aria-label={t('More')}><Icon name="more" /></button>
     </div>
 
+    {config?.coach?.cloud && <CoachConnectionPicker key={user?.id} userId={user?.id} disabled={!!job || busy} />}
     <div className="msgs">
       <Bubble role="coach">{t('Hi, I’m your Coach. I build your plan from your answers and adjust it from what you actually log. Nothing changes until you say so.')}</Bubble>
 
       {(coach.chat || []).map(m => <Message key={m.id} m={m} S={S} profile={coach.profile} openSheet={openSheet} />)}
 
+      {job?.connection && <div className="chat-st">{job.connection.name} · {job.connection.model}</div>}
       {job && <Typing S={S} kind={job.kind} coachLocal={coachLocal} config={config} />}
 
+      {pending?.connection && !job && <div className="chat-st">{pending.connection.name} · {pending.connection.model}</div>}
       {pending && !job && (pending.kind === 'create'
         ? <PlanCard p={pending} S={S} update={update} toast={toast} nav={nav} refresh={refresh} />
         : pending.kind === 'debrief'

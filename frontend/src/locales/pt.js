@@ -2423,4 +2423,13 @@ export default {
 
   "Your AI provider rejected the key. Check Settings → AI Coach.": "O teu fornecedor de IA rejeitou a chave. Verifica Definições → Treinador IA.",
 
+  // Named AI connections and per-request selection.
+  "AI connections": "Ligações de IA",
+  "AI connection": "Ligação de IA",
+  "Add AI connection": "Adicionar ligação de IA",
+  "Connection name": "Nome da ligação",
+  "Delete AI connection": "Eliminar ligação de IA",
+  "Manage AI connections": "Gerir ligações de IA",
+  "The AI connection changed. Send your request again.": "A ligação de IA mudou. Envia novamente o pedido.",
+
 }

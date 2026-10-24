@@ -37,10 +37,12 @@ vi.mock('../lib/api.js', () => ({
         : { ok: false, error: 'API key rejected', code: 'auth' }
     if (options.method === 'POST') {
       if (!mock.saveOK) throw new Error('Could not save')
-      return { ...body, apiKey: undefined, connected: true, hasKey: true }
+      if (path.endsWith('/selection')) return { id: body.connectionId, model: body.model || 'real-model-from-provider' }
+      return { ...body, id: body.id || 'new-connection', apiKey: undefined, connected: true, hasKey: true }
     }
-    if (options.method === 'DELETE') return { ok: true }
-    return mock.saved
+    if (options.method === 'DELETE') { mock.saved = {}; return { ok: true } }
+    return { connections: mock.saved.provider ? [{ id: 'saved-one', name: 'Saved API', ...mock.saved }] : [], activeId: mock.saved.provider ? 'saved-one' : null }
+
   },
 }))
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
@@ -91,6 +93,7 @@ describe('Cloud Coach personal provider setup', () => {
   it('lists models, saves the personal key through the API, refreshes availability and opens Coach', async () => {
     await mount()
     await click(btn('OpenAI API'))
+    type(host.querySelector('[aria-label="Connection name"]'), 'My API')
     type(host.querySelector('input[type=password]'), 'not-a-real-key')
     await click(btn('List models'))
     const modelsRequest = mock.requests.at(-1)
@@ -100,8 +103,8 @@ describe('Cloud Coach personal provider setup', () => {
     })
     type(host.querySelector('select'), 'real-model-from-provider', 'change')
     await click(btn('Save and use the Coach'))
-    expect(mock.requests.at(-1)).toMatchObject({
-      path: '/api/coach/settings',
+    expect(mock.requests.find(r => r.path === '/api/coach/connections' && r.method === 'POST')).toMatchObject({
+      path: '/api/coach/connections',
       method: 'POST',
       body: {
         provider: 'openai',
@@ -123,6 +126,7 @@ describe('Cloud Coach personal provider setup', () => {
       connected: true,
     }
     await mount()
+    await click([...host.querySelectorAll('button')].find(b => b.textContent.includes('Saved API')))
     await click(btn('List models'))
     expect(mock.requests.at(-1).body).not.toHaveProperty('apiKey')
     expect(host.querySelector('select')).toBeTruthy()
@@ -150,12 +154,13 @@ describe('Cloud Coach personal provider setup', () => {
       connected: true,
     }
     await mount()
+    await click([...host.querySelectorAll('button')].find(b => b.textContent.includes('Saved API')))
     const row = [...host.querySelectorAll('button')].find((b) =>
-      b.textContent.includes('Disconnect')
+      b.textContent.includes('Delete AI connection')
     )
     await click(row)
-    expect(mock.requests.at(-1)).toMatchObject({
-      path: '/api/coach/settings',
+    expect(mock.requests.find(r => r.method === 'DELETE')).toMatchObject({
+      path: '/api/coach/connections',
       method: 'DELETE',
     })
     expect(mock.refreshConfig).toHaveBeenCalled()
