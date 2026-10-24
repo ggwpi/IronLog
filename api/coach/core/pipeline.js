@@ -39,7 +39,7 @@ export async function attemptOnce({ adapter, cfg, kind, payload, model, timeoutM
   if (r.spawnError) return { ok: false, errorClass: 'missing', detail: r.stderr?.slice(0, 300) };
   if (r.code !== 0) {
     const err = (r.stderr || r.text || '').toLowerCase();
-    const authish = /auth|unauthor|api key|credential|token|401|403|login/.test(err);
+    const authish = /unauthor|authentication|invalid.?api.?key|incorrect.?api.?key|credential|invalid.?token|expired.?token|401|403|login/.test(err);
     return { ok: false, errorClass: authish ? 'auth' : 'provider', detail: (r.stderr || r.text || '').slice(0, 300) };
   }
 

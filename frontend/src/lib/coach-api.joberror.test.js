@@ -12,18 +12,18 @@
 import { readFileSync } from 'node:fs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const mocks = vi.hoisted(() => ({ MOBILE: false, coachLocal: null, toast: vi.fn() }))
+const mocks = vi.hoisted(() => ({ MOBILE: false, coachLocal: null, cloud: false, toast: vi.fn() }))
 vi.mock('./demo.js', () => ({ DEMO: false, DEMO_SEEDED: 'gym_demo_seeded_v1', REPO: '' }))
 vi.mock('./mobile.js', () => ({ get MOBILE() { return mocks.MOBILE } }))
 vi.mock('./api.js', () => ({ api: vi.fn() }))
 vi.mock('./coach-demo.js', () => ({}))
 vi.mock('./coach-local.js', () => ({ setNotifier: vi.fn() }))
-vi.mock('../store/useStore.js', () => ({ useStore: { getState: () => ({ S: { unit: 'kg' }, coachLocal: mocks.coachLocal }) } }))
+vi.mock('../store/useStore.js', () => ({ useStore: { getState: () => ({ config: { coach: { cloud: mocks.cloud } }, S: { unit: 'kg' }, coachLocal: mocks.coachLocal }) } }))
 vi.mock('../store/useUI.js', () => ({ useUI: { getState: () => ({ toast: mocks.toast }) } }))
 
 const { jobErrorText, JOB_ERRORS } = await import('./coach-api.js')
 
-beforeEach(() => { mocks.MOBILE = false; mocks.coachLocal = null })
+beforeEach(() => { mocks.MOBILE = false; mocks.coachLocal = null; mocks.cloud = false })
 
 describe('jobErrorText for a job refused at start for safety', () => {
   it('reads as the refusal at enqueue does, not as internal', () => {
@@ -41,4 +41,13 @@ describe('jobErrorText for a job refused at start for safety', () => {
     expect(atEnqueue).toBeTruthy()
     expect(JOB_ERRORS.unprivileged.toLowerCase()).toBe(atEnqueue.toLowerCase() + '.')
   })
+})
+
+it('cloud BYOK shows the owner the sanitized provider reason, keeping internal errors private', () => {
+  mocks.cloud = true
+  expect(jobErrorText('provider', '429 Check your billing')).toBe(JOB_ERRORS.provider + '\n429 Check your billing')
+  expect(jobErrorText('auth', '401 Incorrect API key [redacted]')).toContain('[redacted]')
+  expect(jobErrorText('internal', 'private backend exception')).toBe(JOB_ERRORS.internal)
+  mocks.cloud = false
+  expect(jobErrorText('provider', 'private server account details')).toBe(JOB_ERRORS.provider)
 })

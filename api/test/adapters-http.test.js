@@ -449,3 +449,15 @@ test('validateHeaders: small maps pass, framing names and junk do not', () => {
   const many = {}; for (let i = 0; i < 9; i++) many['x-h-' + i] = 'v';
   assert.equal(validateHeaders(many).ok, false);
 });
+
+test('exhausted API billing is not retried as a temporary rate limit', async () => {
+  const f = fakeFetch([{status:429,body:{error:{code:'insufficient_quota',message:'You exceeded your current quota, please check your plan and billing details.'}}}]);
+  const r = await openai.invoke({cfg:{},prompt:'P',env,model:'gpt-5-mini',fetch:f,retryDelayMs:0});
+  assert.equal(f.calls.length, 1);
+  assert.match(r.stderr, /billing/);
+});
+test('output token limits are provider errors, not rejected API keys', async () => {
+  const f = fakeFetch([{status:400,body:{error:{message:'max_completion_tokens is too large'}}}]);
+  const r = await attemptOnce({adapter:openai,cfg:{},kind:'review',payload:{},invokeOpts:{env,fetch:f,retryDelayMs:0}},null);
+  assert.equal(r.errorClass, 'provider');
+});

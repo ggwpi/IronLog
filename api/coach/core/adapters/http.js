@@ -192,7 +192,7 @@ export function httpAdapter(spec) {
         const { data, text } = await readJson(res);
         if (!res.ok) {
           const msg = spec.errorMessage(data) || trim(text, 200);
-          if (RETRY_STATUSES.has(res.status) && transientRetries < RETRY_DELAYS_MS.length && !(signal && signal.aborted)) {
+          if (RETRY_STATUSES.has(res.status) && !/insufficient_quota|billing|credit balance|exceeded your current quota|quota.*(?:exhausted|limit.?\s*0)/i.test(String(data?.error?.code || '') + ' ' + msg) && transientRetries < RETRY_DELAYS_MS.length && !(signal && signal.aborted)) {
             await sleep(opts.retryDelayMs != null ? opts.retryDelayMs : RETRY_DELAYS_MS[transientRetries], signal);
             transientRetries++;
             continue;
