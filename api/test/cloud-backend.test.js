@@ -442,6 +442,61 @@ suite(
   },
 )
 suite(
+  'domain migration links the same profile with independent passkeys and preserves legacy login',
+  async () => {
+    const { softPasskey } = await import('./cloud-authenticator.mjs')
+    await invite()
+    const oldKey = softPasskey()
+    const options = await call('POST', '/api/register/options', {
+      name: 'Migrating Owner', code: 'TEST-INVITE',
+    })
+    const registered = await call('POST', '/api/register/verify', {
+      cid: options.body.cid, credential: oldKey.attestation(options.body.options.challenge),
+    })
+    assert.equal(registered.status, 200, JSON.stringify(registered.body))
+    const oldCookie = registered.headers['Set-Cookie'].split(';')[0]
+    assert.equal((await call('PUT', '/api/data', { state: state('Saved plan'), baseRev: 0 }, oldCookie)).status, 200)
+    const newOrigin = 'https://new.ironlog.example'
+    app = createApp({ database: db, storage, cfg: configuration({
+      ORIGIN: newOrigin, RP_ID: 'new.ironlog.example',
+      IRONLOG_ADDITIONAL_ORIGINS: cfg.origin, IRONLOG_SESSION_SECRET: cfg.secret,
+    }) })
+    const oldHeaders = { host: 'ironlog.example' }
+    const newHeaders = { host: 'new.ironlog.example', origin: newOrigin }
+    const oldCall = (method, path, body, cookie) => call(method, path, body, cookie, oldHeaders)
+    const newCall = (method, path, body, cookie) => call(method, path, body, cookie, newHeaders)
+    const proof = await oldCall('POST', '/api/login/options', {})
+    const link = await oldCall('POST', '/api/account/device-link', {
+      cid: proof.body.cid, credential: oldKey.assertion(proof.body.options.challenge),
+    }, oldCookie)
+    assert.equal(link.status, 200, JSON.stringify(link.body))
+    const linkedOptions = await newCall('POST', '/api/device-link/options', { code: link.body.code })
+    assert.equal(linkedOptions.body.options.rp.id, 'new.ironlog.example')
+    const newKey = softPasskey({ origin: newOrigin, rpId: 'new.ironlog.example' })
+    const linked = await newCall('POST', '/api/device-link/verify', {
+      code: link.body.code, cid: linkedOptions.body.cid,
+      credential: newKey.attestation(linkedOptions.body.options.challenge),
+    })
+    assert.equal(linked.status, 200, JSON.stringify(linked.body))
+    assert.equal(linked.body.user.id, registered.body.user.id)
+    const newCookie = linked.headers['Set-Cookie'].split(';')[0]
+    const saved = await newCall('GET', '/api/data', undefined, newCookie)
+    assert.equal(saved.body.state.routines[0].name, 'Saved plan')
+    for (const [onDomain, key] of [[oldCall, oldKey], [newCall, newKey]]) {
+      const login = await onDomain('POST', '/api/login/options', {})
+      const signedIn = await onDomain('POST', '/api/login/verify', {
+        cid: login.body.cid, credential: key.assertion(login.body.options.challenge),
+      })
+      assert.equal(signedIn.status, 200, JSON.stringify(signedIn.body))
+      assert.equal(signedIn.body.user.id, registered.body.user.id)
+    }
+    const wrongDomain = await newCall('POST', '/api/login/options', {})
+    assert.equal((await newCall('POST', '/api/login/verify', {
+      cid: wrongDomain.body.cid, credential: oldKey.assertion(wrongDomain.body.options.challenge),
+    })).status, 403)
+  },
+)
+suite(
   'username/email share a normalized identity namespace and password errors match the UI',
   async () => {
     await invite()
