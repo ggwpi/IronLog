@@ -1,6 +1,17 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  "Automatically use another model": "מעבר אוטומטי למודל חלופי",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "אם המודל שנבחר אינו זמין, אפשר לנסות מודל אחר אצל אותו ספק. האיכות והעלות עשויות להשתנות. כשהמתג כבוי, ייעשה שימוש רק במודל שבחרת.",
+  "Thinking about your question…": "חושב על השאלה שלך…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "בטלפון הזה המאמן יכול לבדוק רק כשהאפליקציה פתוחה: אחרי אימון או בפתיחה הבאה שלה.",
+  "Advanced": "מתקדם",
+  "Max output tokens": "מגבלת טוקנים לתשובה",
+  "Daily runs": "בקשות ביום",
+  "Max message length": "אורך הודעה מרבי",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "המגבלה לתשובה אחת. במודלי חשיבה היא כוללת גם את החשיבה הפנימית; אפשר להגדיל אותה אם תוכנית נקטעת.",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "כל הפעלה היא בקשה בחשבון שלך אצל הספק. 0 פירושו ללא מגבלה.",
+  "How long a message, refinement or review note can be.": "האורך המרבי להודעה, לבקשת שינוי או להערה לסקירה.",
   "Confirm": "אישור",
   "Cancel": "ביטול",
   "Press back again to exit": "לחץ שוב על חזרה כדי לצאת",

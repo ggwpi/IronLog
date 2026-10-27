@@ -1,5 +1,16 @@
 // Hungarian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Automatically use another model": "Másik modell automatikus használata",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "Ha a kiválasztott modell nem érhető el, próbáljon másik modellt ugyanattól a szolgáltatótól. A minőség és a költség eltérhet. Kikapcsolva csak a kiválasztott modellt használja.",
+  "Thinking about your question…": "Gondolkodom a kérdéseden…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "Ezen a telefonon az Edző csak akkor tud ránézni, amikor az app nyitva van: rögtön egy edzés után, vagy amikor legközelebb megnyitod.",
+  "Advanced": "Speciális",
+  "Max output tokens": "Max. kimeneti token",
+  "Daily runs": "Napi futtatások",
+  "Max message length": "Max. üzenethossz",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "Egy válasz felső korlátja. A gondolkodó modellek a rejtett gondolkodásukat is beleszámítják, ezért emeld meg, ha egy terv elvágódik.",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "Minden Edző-futtatás egy kérés a szolgáltatói fiókodon. A 0 azt jelenti, nincs korlát.",
+  "How long a message, refinement or review note can be.": "Milyen hosszú lehet egy üzenet, finomítási kérés vagy elemzési megjegyzés.",
   // --- generic ---
   'Confirm': 'Megerősítés',
   'Cancel': 'Mégse',

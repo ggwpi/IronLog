@@ -4,6 +4,9 @@
  * screen, before anything AI-related has been loaded — can import five strings without pulling
  * the payload builder and the exercise catalogue behind it. payload.js re-exports it, and
  * builds from it, so the screen cannot drift from the payload. */
+// Compatibility export shared by IronLog cloud and intake consent.
+export const CONSENT_VERSION = 2;
+
 export const DATA_CATEGORIES = Object.freeze([
   'plan',        // routines, exercises, sets/reps, schedule, progression settings
   'training',    // logged sets, targets, effort ratings, durations, PRs, session notes in the review window
@@ -11,6 +14,3 @@ export const DATA_CATEGORIES = Object.freeze([
   'profile',     // the intake answers you gave the Coach, including any limitations
   'prefs'        // unit, language, effort scale
 ]);
-
-// Shared by the consent UI and cloud worker; version 2 explicitly includes session notes.
-export const CONSENT_VERSION = 2;

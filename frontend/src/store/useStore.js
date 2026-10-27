@@ -7,6 +7,7 @@ import { registerCustom, healCustomEx } from '../lib/exercises.js'
 import { DEMO, DEMO_SEEDED } from '../lib/demo.js'
 import { rememberDefaultLang } from '../lib/default-lang.js'
 import { guestAllowed } from '../lib/guest.js'
+import { initCoachSchedule } from '../lib/coach-schedule.js'
 import { MOBILE, initReminderSync, nativeLoad, nativeSave, onAppActive, readJsonFile, syncReminder, writeAutoBackup, writeJsonFile } from '../lib/mobile.js'
 import { initHealthSync, syncHealth } from '../lib/health-sync.js'
 import { refillIfComplete } from '../lib/rotation.js'
@@ -478,6 +479,7 @@ export const useStore = create((set, get) => {
   }
 
   initReminderSync(() => get().S)
+  initCoachSchedule(get)
   initHealthSync(() => get().S)
 
   // Mobile build: the file mirror, and beside it whose copy it is and which one (its `_ts`) —

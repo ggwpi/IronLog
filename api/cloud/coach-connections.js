@@ -34,6 +34,7 @@ export async function coachRecord(db, uid) {
         provider: r.config.provider,
         baseUrl: r.config.baseUrl,
         model: r.config.model,
+        allowModelFallback: r.config.allowModelFallback !== false,
       }
     const name = HTTP_PROVIDERS[config.provider]?.label || config.provider
     await db.query(
@@ -141,11 +142,14 @@ export async function saveConnection(db, uid, r, body, settings) {
     if (count.n >= 50) fail(400, 'maximum 50 saved connections')
   }
   const key = connectionKey(body, existing, settings, uid)
+  // Older clients do not send the preference; an edit must preserve the stored choice.
+  settings.allowModelFallback = body.allowModelFallback ?? existing?.config.allowModelFallback ?? true
   const changed =
     !!existing &&
     (!!body.apiKey?.trim() ||
       existing.config.provider !== settings.provider ||
-      existing.config.baseUrl !== settings.baseUrl)
+      existing.config.baseUrl !== settings.baseUrl ||
+      (existing.config.allowModelFallback !== false) !== settings.allowModelFallback)
   if (changed) await stopConnectionJob(db, uid, r, id)
   const revision = existing ? Number(existing.revision) + (changed ? 1 : 0) : 0
   await db.query(

@@ -1,5 +1,16 @@
 // German UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Automatically use another model": "Automatisch ein anderes Modell verwenden",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "Wenn das gewählte Modell nicht verfügbar ist, ein anderes Modell desselben Anbieters versuchen. Qualität und Kosten können abweichen. Ausschalten, um nur das gewählte Modell zu verwenden.",
+  "Thinking about your question…": "Ich denke über deine Frage nach…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "Auf diesem Handy kann der Coach nur nachsehen, solange die App offen ist: direkt nach einem Training oder beim nächsten Öffnen.",
+  "Advanced": "Erweitert",
+  "Max output tokens": "Max. Ausgabe-Token",
+  "Daily runs": "Läufe pro Tag",
+  "Max message length": "Maximale Nachrichtenlänge",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "Die Obergrenze für eine Antwort. Denkende Modelle rechnen ihr verborgenes Nachdenken darauf an; erhöhe sie, wenn ein Plan abgeschnitten wird.",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "Jeder Coach-Lauf ist eine Anfrage über dein Anbieterkonto. 0 bedeutet kein Limit.",
+  "How long a message, refinement or review note can be.": "Wie lang eine Nachricht, ein Überarbeitungswunsch oder eine Analyse-Notiz sein darf.",
   // --- generic ---
   'Confirm': 'Bestätigen',
   'Cancel': 'Abbrechen',

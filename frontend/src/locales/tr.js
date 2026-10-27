@@ -1,5 +1,16 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Automatically use another model": "Otomatik olarak başka model kullan",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "Seçilen model kullanılamıyorsa aynı sağlayıcının başka bir modelini deneyin. Kalite ve maliyet farklı olabilir. Yalnızca seçilen modeli kullanmak için kapatın.",
+  "Thinking about your question…": "Sorunu düşünüyorum…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "Bu telefonda Koç yalnızca uygulama açıkken bakabilir: bir antrenmandan hemen sonra ya da uygulamayı bir sonraki açışında.",
+  "Advanced": "Gelişmiş",
+  "Max output tokens": "Maks. çıktı token’ı",
+  "Daily runs": "Günlük çalıştırma",
+  "Max message length": "Maks. mesaj uzunluğu",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "Tek bir yanıtın üst sınırı. Akıl yürüten modeller gizli düşünmelerini bu sınıra sayar; bir plan kesilirse bunu yükselt.",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "Her Koç çalıştırması sağlayıcı hesabında bir istektir. 0 sınırsız demektir.",
+  "How long a message, refinement or review note can be.": "Bir mesajın, iyileştirme isteğinin veya inceleme notunun ne kadar uzun olabileceği.",
   'Confirm': 'Onayla',
   'Cancel': 'İptal',
   'Press back again to exit': 'Çıkmak için geri tuşuna tekrar basın',

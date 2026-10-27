@@ -1,5 +1,16 @@
 // Russian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Automatically use another model": "Автоматически использовать другую модель",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "Если выбранная модель недоступна, попробовать другую модель того же поставщика. Качество и стоимость могут отличаться. Отключите, чтобы использовать только выбранную модель.",
+  "Thinking about your question…": "Думаю над вашим вопросом…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "На этом телефоне Тренер может посмотреть, только пока приложение открыто: сразу после тренировки или при следующем открытии.",
+  "Advanced": "Дополнительно",
+  "Max output tokens": "Макс. токенов вывода",
+  "Daily runs": "Запусков в день",
+  "Max message length": "Макс. длина сообщения",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "Потолок одного ответа. Рассуждающие модели учитывают в нём свои скрытые размышления, поэтому увеличьте его, если план обрывается.",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "Каждый запуск Тренера это один запрос с вашего аккаунта у провайдера. 0 означает без ограничений.",
+  "How long a message, refinement or review note can be.": "Насколько длинным может быть сообщение, просьба о доработке или заметка к разбору.",
   'Confirm': 'Подтвердить',
   'Cancel': 'Отмена',
   'Press back again to exit': 'Нажмите «Назад» ещё раз, чтобы выйти',

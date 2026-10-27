@@ -318,10 +318,10 @@ describe('CoachSetup — listing the models', () => {
     expect(host.querySelector('select')).toBe(null)
     expect(btn('Save and use the Coach')).toBeUndefined()
 
-    vi.mocked(localModels).mockResolvedValue({ ok: true, models: ['gemini-2.5-pro'] })
+    vi.mocked(localModels).mockResolvedValue({ ok: true, models: ['gemini-3.8-flash'] })
     await click(btn('List models')); await settle()
     expect(localModels).toHaveBeenLastCalledWith({ provider: 'gemini', baseUrl: null }, 'sk-1')
-    expect(host.querySelector('select').value).toBe('gemini-2.5-pro')
+    expect(host.querySelector('select').value).toBe('gemini-3.8-flash')
   })
 })
 
@@ -335,10 +335,19 @@ describe('CoachSetup — saving', () => {
     await click(btn('List models')); await settle()
   }
 
+  it('lets the phone owner disable model substitution before saving', async () => {
+    await listed(null, ['claude-opus-5'])
+    const toggle = host.querySelector('[aria-label="Automatically use another model"]')
+    expect(toggle.getAttribute('aria-checked')).toBe('true')
+    await click(toggle)
+    await click(btn('Save and use the Coach')); await settle()
+    expect(mocks.setCoachLocal).toHaveBeenCalledWith(expect.objectContaining({ allowModelFallback: false }))
+  })
+
   it('writes the mode, the provider and the chosen model, then stores the key and leaves', async () => {
     await listed(null, ['claude-opus-5'])
     await click(btn('Save and use the Coach')); await settle()
-    expect(mocks.setCoachLocal).toHaveBeenCalledWith({ mode: 'byok', provider: 'anthropic', model: 'claude-opus-5', baseUrl: null })
+    expect(mocks.setCoachLocal).toHaveBeenCalledWith({ mode: 'byok', provider: 'anthropic', model: 'claude-opus-5', baseUrl: null, allowModelFallback: true })
     expect(setApiKey).toHaveBeenCalledWith('sk-1')
     expect(mocks.toast).toHaveBeenCalledWith('The Coach is on')
     expect(mocks.nav).toHaveBeenCalledWith('/coach')
@@ -349,7 +358,7 @@ describe('CoachSetup — saving', () => {
     pickModel('llama-3.3')
     await click(btn('Save and use the Coach')); await settle()
     expect(mocks.setCoachLocal).toHaveBeenCalledWith({
-      mode: 'byok', provider: 'compatible', model: 'llama-3.3', baseUrl: 'https://ollama.lan:11434'
+      mode: 'byok', provider: 'compatible', model: 'llama-3.3', baseUrl: 'https://ollama.lan:11434', allowModelFallback: true
     })
     expect(setApiKey).not.toHaveBeenCalled()
   })

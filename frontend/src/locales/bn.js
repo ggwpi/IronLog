@@ -1,5 +1,16 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Automatically use another model": "স্বয়ংক্রিয়ভাবে অন্য মডেল ব্যবহার করুন",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "নির্বাচিত মডেল অনুপলব্ধ হলে একই প্রদানকারীর অন্য মডেল চেষ্টা করুন। মান ও খরচ ভিন্ন হতে পারে। শুধু নির্বাচিত মডেল ব্যবহার করতে এটি বন্ধ করুন।",
+  "Thinking about your question…": "আপনার প্রশ্ন নিয়ে ভাবছি…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "এই ফোনে অ্যাপ খোলা থাকলেই কোচ দেখতে পারে: ওয়ার্কআউটের ঠিক পরে, বা পরের বার আপনি অ্যাপটি খুললে।",
+  "Advanced": "উন্নত",
+  "Max output tokens": "সর্বোচ্চ আউটপুট টোকেন",
+  "Daily runs": "প্রতিদিনের রান",
+  "Max message length": "সর্বোচ্চ বার্তার দৈর্ঘ্য",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "একটি উত্তরের সীমা। যুক্তি-ভিত্তিক মডেলগুলো তাদের গোপন চিন্তা এতে গোনে, তাই কোনো পরিকল্পনা কাটা পড়লে এটি বাড়ান।",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "কোচের প্রতিটি রান আপনার প্রদানকারীর অ্যাকাউন্টে একটি অনুরোধ। 0 মানে কোনো সীমা নেই।",
+  "How long a message, refinement or review note can be.": "একটি বার্তা, পরিমার্জনার অনুরোধ বা পর্যালোচনা নোট কত দীর্ঘ হতে পারে।",
   'Confirm': 'নিশ্চিত করুন',
   'Cancel': 'বাতিল',
   'Press back again to exit': 'বের হতে আবার ব্যাক চাপুন',

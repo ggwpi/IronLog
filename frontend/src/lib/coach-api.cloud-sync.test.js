@@ -82,3 +82,15 @@ it('pins the connection/model before consent and sync, even if the active select
   const sent = mock.calls.find(c => c.path === '/api/coach/review')
   expect(JSON.parse(sent.options.body)).toMatchObject({ connectionId: 'connection-a', model: 'model-a' })
 })
+
+it('a chat question syncs first and carries the pinned connection plus only the active workout numbers', async () => {
+  const { askCoach } = await import('./coach-api.js')
+  setCoachChoice('alice', { connectionId: 'gemini-personal', model: 'gemini-3.8-flash' })
+  mock.state.S.active = { d: '2026-10-27', name: 'Push', entries: [{ id: '0025', sets: [{ w: 20, r: 8, done: true, private: 'excluded' }] }] }
+  await askCoach('How long should I rest?')
+  expect(mock.calls.map(c => c.path)).toEqual(['/api/coach/disclosure', 'sync', '/api/coach/ask'])
+  const body = JSON.parse(mock.calls.at(-1).options.body)
+  expect(body).toMatchObject({ text: 'How long should I rest?', connectionId: 'gemini-personal', model: 'gemini-3.8-flash', accountId: 'alice' })
+  expect(body.today.entries[0].sets[0]).toEqual({ w: 20, r: 8, done: true })
+  expect(JSON.stringify(body)).not.toContain('excluded')
+})

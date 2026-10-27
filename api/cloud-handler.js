@@ -6,7 +6,7 @@ export default async function cloudHandler(req, res) {
     app ||= createApp()
     handler ||= nodeHandler(app)
     await handler(req, res)
-    if (res.statusCode < 300 && req.method === 'POST' && (req.url.split('?')[0] === '/api/internal/worker' || /^\/api\/coach\/(plan|review|debrief)$/.test(req.url.split('?')[0]))) {
+    if (res.statusCode < 300 && req.method === 'POST' && (req.url.split('?')[0] === '/api/internal/worker' || /^\/api\/coach\/(plan|review|debrief|ask)$/.test(req.url.split('?')[0]))) {
       waitUntil(app.runCoach().catch(() => console.error('IronLog Coach worker failed', { code: 'worker-failed' })))
     }
   } catch {

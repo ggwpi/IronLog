@@ -1,5 +1,16 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Automatically use another model": "استخدام نموذج بديل تلقائيًا",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "إذا لم يكن النموذج المحدد متاحًا، جرّب نموذجًا آخر من المزوّد نفسه. قد تختلف الجودة والتكلفة. عطّل الخيار لاستخدام النموذج المحدد فقط.",
+  "Thinking about your question…": "أفكر في سؤالك…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "على هذا الهاتف لا يستطيع المدرب النظر إلا والتطبيق مفتوح: بعد التمرين مباشرة، أو في المرة التالية التي تفتحه فيها.",
+  "Advanced": "متقدم",
+  "Max output tokens": "الحد الأقصى لرموز الإخراج",
+  "Daily runs": "عمليات التشغيل اليومية",
+  "Max message length": "الحد الأقصى لطول الرسالة",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "الحد الأقصى للإجابة الواحدة. تحتسب النماذج الاستدلالية تفكيرها الخفي ضمن هذا الحد، لذا ارفعه إذا قُطع خطتك.",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "كل تشغيل للمدرب هو طلب واحد على حساب مزودك. تعني 0 بلا حد.",
+  "How long a message, refinement or review note can be.": "كم يمكن أن يطول نص رسالة أو طلب تعديل أو ملاحظة مراجعة.",
   'Confirm': 'تأكيد',
   'Cancel': 'إلغاء',
   'Press back again to exit': 'اضغط زر الرجوع مرة أخرى للخروج',

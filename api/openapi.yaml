@@ -2784,6 +2784,30 @@ paths:
         '429': { $ref: '#/components/responses/CoachRefused' }
         '503': { $ref: '#/components/responses/CoachOff' }
 
+  /api/coach/ask:
+    post:
+      tags: [coach]
+      operationId: postCoachAsk
+      summary: Answer a training question with recent sessions and the current workout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text: { type: string, maxLength: 4000 }
+                today: { type: object, description: Running session; only bounded exercise targets and set numbers reach the provider. }
+                lang: { type: string }
+      responses:
+        '202': { $ref: '#/components/responses/CoachJobQueued' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/CoachRefused' }
+        '409': { $ref: '#/components/responses/CoachRefused' }
+        '429': { $ref: '#/components/responses/CoachRefused' }
+        '503': { $ref: '#/components/responses/CoachOff' }
+
   /api/coach/debrief:
     post:
       tags: [coach]

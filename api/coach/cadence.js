@@ -11,11 +11,12 @@
  */
 import * as jobs from './jobs.js';
 import * as cfgStore from './config.js';
+import { isDue } from './core/due.js';
+
+// Re-exported so nothing that reached it through this module has to move.
+export { isDue };
 
 const TICK_MS = 60000;
-
-import { isDue } from './core/cadence.js';
-export { isDue } from './core/cadence.js';
 
 /**
  * @param {object} deps  { users(): [{id}], userNow(tz): {date,hhmm,weekday}, skip?(uid): bool }
