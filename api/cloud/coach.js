@@ -595,15 +595,21 @@ export async function runCoachWork(
           fetch: async (url, init) => {
             const started = Date.now(), number = providerAttempts.length + 1
             const tags = { jobId: job.id, provider: config.provider, task: job.kind, attempt: number }
+            const phases = []
             console.info('Coach provider request started', tags)
             try {
-              const response = await fetch(url, init)
-              const diagnostic = { attempt: number, elapsedMs: Date.now() - started, status: response.status }
+              const response = await fetch(url, { ...init, onTransportProgress: phase => {
+                if (!['socket-assigned', 'dns-complete', 'tcp-connected', 'tls-connected', 'request-sent', 'response-headers', 'response-body', 'response-complete', 'connection-timeout'].includes(phase)) return
+                const event = { phase, elapsedMs: Date.now() - started }
+                if (phases.length < 12) phases.push(event)
+                console.info('Coach provider transport progress', { ...tags, ...event })
+              } })
+              const diagnostic = { attempt: number, elapsedMs: Date.now() - started, status: response.status, phases }
               providerAttempts.push(diagnostic)
               console.info('Coach provider request finished', { ...tags, ...diagnostic })
               return response
             } catch (e) {
-              const diagnostic = { attempt: number, elapsedMs: Date.now() - started, outcome: e?.name === 'AbortError' ? 'timeout' : 'transport-error' }
+              const diagnostic = { attempt: number, elapsedMs: Date.now() - started, outcome: e?.name === 'AbortError' ? 'timeout' : 'transport-error', phases }
               providerAttempts.push(diagnostic)
               // Never log the URL, headers, exception message, prompt or response body.
               console.info('Coach provider request finished', { ...tags, ...diagnostic })

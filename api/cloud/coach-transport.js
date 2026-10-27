@@ -63,13 +63,17 @@ export const cfgOf = (s) => ({
 export const envOf = (s, key) => ({
   [HTTP_PROVIDERS[s.provider].apiKeyEnv]: key,
 })
-export function providerFetch(raw, init = {}) {
+export function providerFetch(raw, init = {}, { request = https.request, connectTimeoutMs = 30000 } = {}) {
   return new Promise((resolve, reject) => {
     const error = pushEndpointError(raw)
     if (error) return reject(new Error('Provider endpoint is not allowed'))
     if (init.signal?.aborted)
       return reject(new DOMException('Aborted', 'AbortError'))
-    const req = https.request(
+    const progress = phase => { try { init.onTransportProgress?.(phase) } catch { /* diagnostics cannot fail a request */ } }
+    let connectTimer
+    const connected = () => clearTimeout(connectTimer)
+    const failed = error => { connected(); reject(error) }
+    const req = request(
       raw,
       {
         method: init.method || 'GET',
@@ -78,17 +82,22 @@ export function providerFetch(raw, init = {}) {
         signal: init.signal,
       },
       (res) => {
+        connected()
+        progress('response-headers')
         // Never follow a redirect carrying a user's Authorization/API-key header.
         const parts = []
         let size = 0
         res.on('data', (b) => {
+          if (!size) progress('response-body')
           size += b.length
           if (size > 2 * 1024 * 1024)
             res.destroy(new Error('Provider response too large'))
           else parts.push(b)
         })
-        res.on('error', reject)
+        res.on('error', failed)
+        res.on('aborted', () => failed(new Error('Provider response ended before completion')))
         res.on('end', () => {
+          progress('response-complete')
           try {
             resolve(
               new Response(
@@ -110,10 +119,23 @@ export function providerFetch(raw, init = {}) {
         })
       }
     )
+    connectTimer = setTimeout(() => {
+      progress('connection-timeout')
+      req.destroy(new Error('Provider connection did not complete within 30 seconds'))
+    }, connectTimeoutMs)
+    req.on('socket', socket => {
+      progress('socket-assigned')
+      if (!socket.connecting && socket.encrypted && !socket.secureConnecting) { connected(); progress('tls-connected'); return }
+      socket.once('lookup', () => progress('dns-complete'))
+      socket.once('connect', () => progress('tcp-connected'))
+      socket.once('secureConnect', () => { connected(); progress('tls-connected') })
+    })
+    req.once('finish', () => progress('request-sent'))
+    req.once('close', connected)
     req.setTimeout(300000, () =>
       req.destroy(new DOMException('Timed out', 'AbortError'))
     )
-    req.on('error', reject)
+    req.on('error', failed)
     req.end(init.body)
   })
 }
