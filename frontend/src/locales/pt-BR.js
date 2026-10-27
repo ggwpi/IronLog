@@ -1567,4 +1567,4 @@ export const PT_BR_OVERRIDES = {
 
 }
 
-export default {
+export default { ...pt, ...PT_BR_OVERRIDES }
