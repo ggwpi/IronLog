@@ -120,7 +120,7 @@ function HomePrototype({ variation }) {
 }
 
 export default function IronlogStudio() {
-  const [variation, setVariation] = useState('precision')
+  const [variation, setVariation] = useState('kinetic')
   const current = VARIATIONS.find(item => item.id === variation)
   return <div className="ironlog-studio">
     <LabSwitcher active={variation} onChange={setVariation} />
