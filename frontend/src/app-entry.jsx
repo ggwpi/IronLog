@@ -18,6 +18,9 @@ window.addEventListener('error', hideBoot, { once: true })
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
 
+// Keep the production entry unchanged while making this design branch open directly in v0 Preview.
+if (import.meta.env.DEV && (!location.hash || location.hash === '#/')) location.hash = '#/studio'
+
 createRoot(document.getElementById('root')).render(
   <StrictMode><App /></StrictMode>
 )
