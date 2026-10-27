@@ -1,5 +1,16 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Automatically use another model": "अपने आप दूसरा मॉडल इस्तेमाल करें",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "चुना गया मॉडल उपलब्ध न हो तो उसी प्रदाता का दूसरा मॉडल आज़माएँ। गुणवत्ता और लागत अलग हो सकती हैं। केवल चुना गया मॉडल इस्तेमाल करने के लिए इसे बंद करें।",
+  "Thinking about your question…": "आपके सवाल पर सोच रहा हूँ…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "इस फ़ोन पर कोच तभी देख सकता है जब ऐप खुला हो: वर्कआउट के ठीक बाद, या अगली बार जब आप इसे खोलें।",
+  "Advanced": "उन्नत",
+  "Max output tokens": "अधिकतम आउटपुट टोकन",
+  "Daily runs": "प्रतिदिन रन",
+  "Max message length": "अधिकतम संदेश लंबाई",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "एक उत्तर की सीमा। तर्क करने वाले मॉडल अपनी छिपी सोच को इसमें गिनते हैं, इसलिए यदि कोई योजना कट जाए तो इसे बढ़ाएँ।",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "कोच का हर रन आपके प्रदाता खाते पर एक अनुरोध है। 0 का अर्थ है कोई सीमा नहीं।",
+  "How long a message, refinement or review note can be.": "संदेश, सुधार अनुरोध या समीक्षा नोट कितना लंबा हो सकता है।",
   'Confirm': 'पुष्टि करें',
   'Cancel': 'रद्द करें',
   'Press back again to exit': 'बाहर निकलने के लिए फिर से बैक दबाएँ',

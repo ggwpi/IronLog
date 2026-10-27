@@ -969,3 +969,124 @@ suite(
     )
   }
 )
+
+suite('cloud ask uses the upstream question pipeline and restores the proposal it was asked beside', async () => {
+  await connect()
+  await call('POST', '/api/coach/review', {})
+  await runCoachWork(db, { fetch })
+  const proposal = (await call('GET', '/api/coach/status')).body.pending
+  const text = 'How long should I rest?'
+  const queued = await call('POST', '/api/coach/ask', {
+    text, lang: 'he',
+    today: { name: 'Push', entries: [{ id: '0025', note: 'private-note', sets: [{ w: 20, r: 8, done: true, private: 'not-for-provider' }] }] },
+  })
+  assert.equal(queued.status, 202)
+  await runCoachWork(db, { fetch: async (_url, init) => {
+    const body = JSON.parse(init.body)
+    assert.match(body.messages[0].content, /# Task: answer a question/)
+    const prompt = body.messages[1].content
+    assert.ok(prompt.includes(text))
+    assert.ok(prompt.includes('"lang":"he"'))
+    assert.ok(prompt.includes('"w":20'))
+    assert.ok(!prompt.includes('private-note'))
+    assert.ok(!prompt.includes('not-for-provider'))
+    return new Response(JSON.stringify({ choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({ coach_contract: 1, answer: 'Rest two minutes.' }) } }] }))
+  } })
+  const status = (await call('GET', '/api/coach/status')).body
+  assert.equal(status.pending.kind, 'ask')
+  assert.equal(status.pending.answer, 'Rest two minutes.')
+  assert.equal(status.pending.prev.id, proposal.id)
+  assert.equal((await call('POST', '/api/coach/pending/resolve', { id: 'old-answer', accepted: ['ask'] })).status, 409)
+  assert.equal((await call('POST', '/api/coach/pending/resolve', { id: status.pending.id, accepted: ['ask'] })).status, 200)
+  assert.equal((await call('GET', '/api/coach/status')).body.pending.id, proposal.id)
+  assert.equal((await call('POST', '/api/coach/ask', { text: '   ' })).status, 400)
+})
+
+suite('cloud Gemini replaces a refused model with a listed Flash and remembers the model that answered', async () => {
+  await call('POST', '/api/coach/settings', { provider: 'gemini', model: 'gemini-retired-cloud-test', apiKey: 'test-gemini-cloud-key' })
+  const queued = await call('POST', '/api/coach/ask', { text: 'How was my training?' })
+  assert.equal(queued.status, 202)
+  const visited = []
+  await runCoachWork(db, { fetch: async (url, init) => {
+    visited.push(url)
+    assert.equal(init.headers['x-goog-api-key'], 'test-gemini-cloud-key')
+    if (url.includes(':generateContent') && url.includes('gemini-retired-cloud-test'))
+      return new Response(JSON.stringify({ error: { message: 'model not found' } }), { status: 404 })
+    if (!url.includes(':generateContent'))
+      return new Response(JSON.stringify({ models: [{ name: 'models/gemini-3.8-flash', supportedGenerationMethods: ['generateContent'] }] }))
+    return new Response(JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({ coach_contract: 1, answer: 'Keep training steadily.' }) }] } }] }))
+  } })
+  const status = (await call('GET', '/api/coach/status')).body
+  assert.equal(status.pending.answer, 'Keep training steadily.')
+  assert.equal(status.pending.connection.model, 'gemini-3.8-flash')
+  assert.equal((await call('GET', '/api/coach/settings')).body.model, 'gemini-3.8-flash')
+  assert.equal(visited.length, 3)
+})
+
+suite('a failed question preserves the pending proposal; a first plan can start from a chat message', async () => {
+  await connect()
+  await call('POST', '/api/coach/review', {})
+  await runCoachWork(db, { fetch })
+  const proposal = (await call('GET', '/api/coach/status')).body.pending
+  await call('POST', '/api/coach/ask', { text: 'Why this change?' })
+  await runCoachWork(db, { pipeline: async (opts) => {
+    assert.equal(opts.timeoutMs, 300000)
+    assert.ok(opts.invokeOpts.signal instanceof AbortSignal)
+    return { ok: false, errorClass: 'timeout' }
+  } })
+  assert.equal((await call('GET', '/api/coach/status')).body.pending.id, proposal.id)
+  await call('POST', '/api/coach/pending/resolve', { id: proposal.id, dismissed: true })
+  const queued = await call('POST', '/api/coach/plan', { refine: 'Build me a three-day plan' })
+  assert.equal(queued.status, 202)
+  await runCoachWork(db, { pipeline: async (opts) => {
+    assert.equal(opts.kind, 'create')
+    assert.equal(opts.payload.userNote, 'Build me a three-day plan')
+    assert.equal(opts.payload.refine, undefined)
+    return { ok: false, errorClass: 'timeout' }
+  } })
+})
+
+suite('fallback preference survives saved connections and older clients; disabled runs never change models', async () => {
+  assert.equal((await call('POST', '/api/coach/settings', { provider: 'gemini', model: 'gemini-choice-only', apiKey: 'choice-key', allowModelFallback: 'false' })).status, 400)
+  const saved = await call('POST', '/api/coach/settings', { provider: 'gemini', model: 'gemini-choice-only', apiKey: 'choice-key', allowModelFallback: false })
+  assert.equal(saved.status, 200)
+  assert.equal(saved.body.allowModelFallback, false)
+  assert.equal((await call('GET', '/api/coach/settings')).body.allowModelFallback, false)
+  const edited = await call('POST', '/api/coach/settings', { provider: 'gemini', model: 'gemini-choice-only' })
+  assert.equal(edited.status, 200)
+  assert.equal(edited.body.allowModelFallback, false, 'older clients must not re-enable fallback by omission')
+  const queued = await call('POST', '/api/coach/ask', { text: 'How did I do?' })
+  assert.equal(queued.status, 202)
+  const seen = []
+  await runCoachWork(db, { fetch: async (url) => {
+    seen.push(url)
+    return new Response(JSON.stringify({ error: { message: 'model not found' } }), { status: 404 })
+  } })
+  assert.equal(seen.length, 1)
+  assert.ok(seen[0].includes('gemini-choice-only:generateContent'))
+  assert.equal((await call('GET', '/api/coach/status')).body.last.errorClass, 'provider')
+  assert.equal((await call('GET', '/api/coach/settings')).body.model, 'gemini-choice-only')
+  const enabled = await call('POST', '/api/coach/settings', { provider: 'gemini', model: 'gemini-choice-only', allowModelFallback: true })
+  assert.equal(enabled.body.allowModelFallback, true)
+})
+
+suite('disabling fallback during inference cancels the run and discards a late substituted result', async () => {
+  await connect()
+  await call('POST', '/api/coach/ask', { text: 'How was my training?' })
+  let release, entered
+  const ready = new Promise(resolve => { entered = resolve })
+  const running = runCoachWork(db, { pipeline: async () => {
+    entered()
+    await new Promise(resolve => { release = resolve })
+    return { ok: true, result: { answer: 'Late answer' } }
+  } })
+  await ready
+  const saved = await call('POST', '/api/coach/settings', { provider: 'openai', model: 'test-model', allowModelFallback: false })
+  assert.equal(saved.status, 200)
+  release()
+  await running
+  const status = (await call('GET', '/api/coach/status')).body
+  assert.equal(status.pending, null)
+  assert.equal(status.last.errorClass, 'connection-changed')
+  assert.equal((await call('GET', '/api/coach/settings')).body.allowModelFallback, false)
+})

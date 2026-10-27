@@ -314,3 +314,20 @@ it('does not reopen a model picker after the connection editor was dismissed', a
   expect(useUI.getState().sheets).toHaveLength(0)
   expect(host.querySelector('input')).toBeNull()
 })
+
+
+it('edits and saves fallback in the existing connection sheet without changing model selection', async () => {
+  mock.saved = { provider: 'gemini', model: 'my-selected-model', hasKey: true, connected: true, allowModelFallback: false }
+  await mount()
+  await click([...host.querySelectorAll('button')].find(b => b.textContent.includes('Saved API')))
+  const toggle = host.querySelector('[aria-label="Automatically use another model"]')
+  expect(toggle.getAttribute('role')).toBe('switch')
+  expect(toggle.getAttribute('aria-checked')).toBe('false')
+  expect(host.querySelector('.coach-selected-model').textContent).toContain('my-selected-model')
+  await click(toggle)
+  expect(toggle.getAttribute('aria-checked')).toBe('true')
+  await click(toggle)
+  await click(btn('Save changes'))
+  expect(mock.requests.find(r => r.path === '/api/coach/connections' && r.method === 'POST').body)
+    .toMatchObject({ id: 'saved-one', model: 'my-selected-model', allowModelFallback: false })
+})

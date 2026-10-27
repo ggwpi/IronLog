@@ -10,7 +10,7 @@ import {
 } from '../../../api/coach/core/providers.js'
 import { DATA_CATEGORIES } from '../../../api/coach/core/categories.js'
 import { CATEGORY_TEXT } from '../lib/coach.js'
-import { Button, Section, TextField, SelectSheet } from './ui.jsx'
+import { Button, Section, TextField, SelectSheet, Row, Switch } from './ui.jsx'
 import Icon from './Icon.jsx'
 import { setCoachChoice } from '../lib/coach-choice.js'
 
@@ -29,6 +29,7 @@ export default function CoachConnectionEditor({
   const [baseUrl, setBaseUrl] = useState(connection?.baseUrl || '')
   const [key, setKey] = useState('')
   const [model, setModel] = useState(connection?.model || '')
+  const [allowModelFallback, setAllowModelFallback] = useState(connection?.allowModelFallback !== false)
   const [busy, setBusy] = useState(false)
   const alive = useRef(true)
   useEffect(() => {
@@ -55,6 +56,7 @@ export default function CoachConnectionEditor({
     name,
     provider,
     model,
+    allowModelFallback,
     baseUrl: meta.baseUrl ? baseUrl : undefined,
     ...(key.trim() ? { apiKey: key.trim() } : {}),
   })
@@ -240,6 +242,19 @@ export default function CoachConnectionEditor({
           </p>
         )}
       </div>
+      <Section>
+        <Row
+          title={t('Automatically use another model')}
+          subtitle={t('If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.')}
+        >
+          <Switch
+            aria-label={t('Automatically use another model')}
+            checked={allowModelFallback}
+            disabled={busy}
+            onChange={setAllowModelFallback}
+          />
+        </Row>
+      </Section>
       <aside className="coach-data-info" aria-label={t('Data shared with AI')}>
         <div className="coach-data-heading">
           <Icon name="info" />

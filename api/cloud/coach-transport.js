@@ -34,6 +34,8 @@ export function openKey(uid, provider, value, key = encryptionKey()) {
   return Buffer.concat([cipher.update(body), cipher.final()]).toString('utf8')
 }
 export function settingsOf(body) {
+  if (body.allowModelFallback !== undefined && typeof body.allowModelFallback !== 'boolean')
+    throw new Error('invalid model fallback setting')
   const provider = body.provider
   if (!Object.hasOwn(ADAPTERS, provider)) throw new Error('invalid provider')
   const base =
@@ -48,12 +50,14 @@ export function settingsOf(body) {
   return {
     provider,
     baseUrl: valid.value,
+    allowModelFallback: body.allowModelFallback !== false,
     model:
       typeof body.model === 'string' ? body.model.trim().slice(0, 150) : '',
   }
 }
 export const cfgOf = (s) => ({
   provider: s.provider,
+  allowModelFallback: s.allowModelFallback !== false,
   providerOptions: { [s.provider]: { baseUrl: s.baseUrl } },
 })
 export const envOf = (s, key) => ({
@@ -106,7 +110,7 @@ export function providerFetch(raw, init = {}) {
         })
       }
     )
-    req.setTimeout(90000, () =>
+    req.setTimeout(300000, () =>
       req.destroy(new DOMException('Timed out', 'AbortError'))
     )
     req.on('error', reject)

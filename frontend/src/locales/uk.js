@@ -1,5 +1,16 @@
 // Ukrainian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Automatically use another model": "Автоматично використовувати іншу модель",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "Якщо вибрана модель недоступна, спробувати іншу модель того самого постачальника. Якість і вартість можуть відрізнятися. Вимкніть, щоб використовувати лише вибрану модель.",
+  "Thinking about your question…": "Думаю над вашим запитанням…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "На цьому телефоні Тренер може зазирнути, лише поки застосунок відкритий: одразу після тренування або коли ти відкриєш його наступного разу.",
+  "Advanced": "Додатково",
+  "Max output tokens": "Макс. вихідних токенів",
+  "Daily runs": "Запусків на день",
+  "Max message length": "Макс. довжина повідомлення",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "Стеля однієї відповіді. Міркувальні моделі враховують у ній свої приховані роздуми, тож підніми її, якщо план обривається.",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "Кожен запуск Тренера це один запит з твого акаунта в постачальника. 0 означає без обмежень.",
+  "How long a message, refinement or review note can be.": "Наскільки довгим може бути повідомлення, прохання про доопрацювання чи нотатка до розбору.",
   'Confirm': 'Підтвердити',
   'Cancel': 'Скасувати',
   'Press back again to exit': 'Натисни «Назад» ще раз, щоб вийти',

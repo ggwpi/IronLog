@@ -1,5 +1,16 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Automatically use another model": "다른 모델 자동 사용",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "선택한 모델을 사용할 수 없으면 같은 제공업체의 다른 모델을 시도합니다. 품질과 비용이 달라질 수 있습니다. 선택한 모델만 사용하려면 끄세요.",
+  "Thinking about your question…": "질문을 생각하고 있어요…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "이 폰에서는 앱이 열려 있을 때만 코치가 살펴볼 수 있어요: 운동 직후, 또는 다음에 앱을 열 때.",
+  "Advanced": "고급",
+  "Max output tokens": "최대 출력 토큰",
+  "Daily runs": "일일 실행 횟수",
+  "Max message length": "최대 메시지 길이",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "한 응답의 상한입니다. 추론 모델은 숨은 사고를 여기에 포함하므로, 계획이 잘리면 이 값을 높이세요.",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "코치 실행은 매번 제공자 계정으로 보내는 한 번의 요청입니다. 0은 무제한을 뜻합니다.",
+  "How long a message, refinement or review note can be.": "메시지, 수정 요청 또는 리뷰 메모의 최대 길이입니다.",
   'Confirm': '확인',
   'Cancel': '취소',
   'Press back again to exit': '뒤로를 한 번 더 누르면 종료됩니다',

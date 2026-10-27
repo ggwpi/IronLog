@@ -38,6 +38,7 @@ vi.mock('../lib/coach-api.js', () => ({
   useCoachStatus: () => ({ pending: mocks.pending, job: mocks.job, cap: null, loading: false, lastError: null, last: null, refresh: mocks.refresh, maxMessageLen: mocks.maxMessageLen }),
   resolvePending: vi.fn(() => Promise.resolve({})),
   refinePlan: vi.fn(() => Promise.resolve({})),
+  askCoach: vi.fn(() => Promise.resolve({})),
   requestReview: vi.fn(() => Promise.resolve({})),
   requestDebrief: vi.fn(() => Promise.resolve({})),
   cohortStats: vi.fn(() => Promise.resolve({ ok: false, enabled: true, sharing: false })),
@@ -239,4 +240,18 @@ describe('the Coach chat', () => {
     await mount(null, null, { community: true })
     expect(byText(/^Compare$/)).toBeTruthy()
   })
+})
+
+
+it('an ask answer enters the thread once and acknowledges the exact cloud proposal ID', async () => {
+  const { resolvePending } = await import('../lib/coach-api.js')
+  const answer = { id: 'ask-1', kind: 'ask', answer: 'Rest two minutes between sets.' }
+  await mount(answer)
+  expect(mocks.S.coach.chat.filter(m => m.pid === 'ask-1')).toHaveLength(1)
+  expect(mocks.S.coach.chat.at(-1).text).toBe(answer.answer)
+  expect(container.querySelector('.pcard')).toBeNull()
+  expect(resolvePending).toHaveBeenCalledWith({ id: 'ask-1', accepted: ['ask'] })
+  mocks.pending = { ...answer }
+  await act(async () => { root.render(React.createElement(CoachChat)) })
+  expect(mocks.S.coach.chat.filter(m => m.pid === 'ask-1')).toHaveLength(1)
 })

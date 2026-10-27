@@ -1,5 +1,16 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Automatically use another model": "自动使用其他模型",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "所选模型不可用时，尝试同一供应商的其他模型。质量和费用可能不同。关闭后只使用您选择的模型。",
+  "Thinking about your question…": "正在思考你的问题…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "在这部手机上，教练只能在应用打开时查看：刚练完的时候，或者你下次打开应用时。",
+  "Advanced": "高级",
+  "Max output tokens": "最大输出 token 数",
+  "Daily runs": "每日运行次数",
+  "Max message length": "最大消息长度",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "单次回答的上限。推理模型会把隐藏的思考计入其中，所以如果计划被截断，就把它调高。",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "教练每次运行都会向你的提供商账户发送一次请求。0 表示不限制。",
+  "How long a message, refinement or review note can be.": "消息、修改要求或点评备注可以有多长。",
   'Confirm': '确认',
   'Cancel': '取消',
   'Press back again to exit': '再按一次返回退出',

@@ -18,12 +18,13 @@ import { MOBILE } from '../lib/mobile.js'
 import { CATEGORY_TEXT } from '../lib/coach.js'
 import { getApiKey, setApiKey, clearApiKey } from '../lib/coach-secrets.js'
 import CloudCoachSetup from './CloudCoachSetup.jsx'
+import { coachLimits, clampCoachLimit, COACH_LIMITS } from '../lib/coach-device.js'
 import { HTTP_PROVIDERS, HTTP_PROVIDER_IDS, baseUrlFor, validateBaseUrl } from '../../../api/coach/core/providers.js'
 import { DATA_CATEGORIES } from '../../../api/coach/core/categories.js'
 import { ConnectSheet } from './MobileOnboarding.jsx'
 import { AiConsentSection } from '../components/CoachConsentSheet.jsx'
 import Icon from '../components/Icon.jsx'
-import { Section, Row, Button, TextField } from '../components/ui.jsx'
+import { Section, Row, Button, TextField, Switch } from '../components/ui.jsx'
 
 // Literal t() calls, so check-source-strings sees the three lines; t(s) over a list of keys hid them.
 const STEPS = () => [t('Loading the exercise catalogue…'), t('Checking the endpoint…'), t('Ready')]
@@ -61,12 +62,24 @@ function NativeCoachSetup() {
   const [models, setModels] = useState(null)
   const [step, setStep] = useState(-1)                     // -1 idle, 0..2 running, 3 done
   const [busy, setBusy] = useState(false)
+  const [allowModelFallback, setAllowModelFallback] = useState(coachLocal?.allowModelFallback !== false)
+  const [limits, setLimits] = useState(() => coachLimits(coachLocal))
 
   useEffect(() => { if (!MOBILE) nav('/settings', { replace: true }) }, [])
   useEffect(() => { getApiKey().then(k => setHasKey(!!k)) }, [])
   // Ask the paired server afresh: the admin may have switched the Coach on since this phone booted.
   useEffect(() => { if (user) refreshConfig() }, [user])
   useEffect(() => { setModels(null); setModel(coachLocal?.provider === provider ? (coachLocal?.model || '') : '') }, [provider])
+
+  useEffect(() => { setLimits(coachLimits(coachLocal)) }, [coachLocal])
+  useEffect(() => { setAllowModelFallback(coachLocal?.allowModelFallback !== false) }, [coachLocal?.allowModelFallback])
+
+  const editLimit = (k, raw) => setLimits(l => ({ ...l, [k]: raw }))
+  const commitLimit = k => {
+    const clamped = clampCoachLimit(k, limits[k])
+    setLimits(l => ({ ...l, [k]: clamped }))
+    setCoachLocal({ limits: { ...limits, [k]: clamped } })
+  }
 
   const meta = HTTP_PROVIDERS[provider] || {}
   const host = hostOf(baseUrlFor(provider, { providerOptions: { [provider]: { baseUrl } } }))
@@ -119,7 +132,7 @@ function NativeCoachSetup() {
       // The mode first, the key second: the settings file is the cheap, reliable write, the
       // key goes through the platform's secure store, which is the step that can misbehave.
       // Either way the user hears what happened instead of watching a greyed-out button (#42).
-      await setCoachLocal({ mode: 'byok', provider, model: chosen, baseUrl: meta.baseUrl ? v.value : null })
+      await setCoachLocal({ mode: 'byok', provider, model: chosen, allowModelFallback, baseUrl: meta.baseUrl ? v.value : null })
       if (key.trim()) { await setApiKey(key.trim()); setHasKey(true); setKey('') }
       toast(t('The Coach is on'))
       nav('/coach')
@@ -209,6 +222,25 @@ function NativeCoachSetup() {
         </div>
       </Section>}
 
+      {/* The server's admin card, for the person who owns this phone: in BYOK mode there is no
+          other profile, so the limits protect nobody but the account already holding the key. */}
+      <Section title={t('Advanced')}>
+        <Row title={t('Automatically use another model')}
+          subtitle={t('If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.')}
+        >
+          <Switch aria-label={t('Automatically use another model')} checked={allowModelFallback} disabled={busy} onChange={setAllowModelFallback} />
+        </Row>
+        <LimitRow label={t('Max output tokens')} hint={t('The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.')}
+          value={limits.maxOutputTokens} min={COACH_LIMITS.maxOutputTokens.min} max={COACH_LIMITS.maxOutputTokens.max}
+          onChange={v => editLimit('maxOutputTokens', v)} onCommit={() => commitLimit('maxOutputTokens')} />
+        <LimitRow label={t('Daily runs')} hint={t('Every Coach run is one request on your provider account. 0 means no limit.')}
+          value={limits.daily} min={COACH_LIMITS.daily.min} max={COACH_LIMITS.daily.max}
+          onChange={v => editLimit('daily', v)} onCommit={() => commitLimit('daily')} />
+        <LimitRow label={t('Max message length')} hint={t('How long a message, refinement or review note can be.')}
+          value={limits.maxMessageLen} min={COACH_LIMITS.maxMessageLen.min} max={COACH_LIMITS.maxMessageLen.max}
+          onChange={v => editLimit('maxMessageLen', v)} onCommit={() => commitLimit('maxMessageLen')} />
+      </Section>
+
       <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
         {!models
           ? <Button variant="primary" icon="sparkles" disabled={busy} onClick={prepare}>{t('List models')}</Button>
@@ -226,3 +258,19 @@ function NativeCoachSetup() {
 }
 
 const hostOf = url => { try { return new URL(url).host } catch { return '' } }
+
+// One numeric dial of the Advanced section: a label and its hint on the left, a plain number
+// field on the right, clamped and saved when it is left rather than on every keystroke — a
+// floor applied mid-typing turns a just-typed "1" into "1024".
+function LimitRow({ label, hint, value, min, max, onChange, onCommit }) {
+  return <div className="row between" style={{ gap: 12, padding: '10px 12px', alignItems: 'flex-start' }}>
+    <div style={{ minWidth: 0 }}>
+      <div style={{ fontWeight: 500 }}>{label}</div>
+      <div className="muted small">{hint}</div>
+    </div>
+    <div style={{ width: 118, flex: 'none' }}>
+      <TextField type="number" inputMode="numeric" aria-label={label} min={min} max={max} value={value}
+        onChange={e => onChange(e.target.value)} onBlur={onCommit} />
+    </div>
+  </div>
+}

@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { isDue } from '../coach/core/cadence.js'
+import { isDue } from '../coach/core/due.js'
 import { localClock as clockFor, enqueuePush } from './jobs.js'
 import { CONSENT_VERSION } from '../coach/core/categories.js'
 import { account, one, rows } from './db.js'
@@ -20,6 +20,7 @@ import {
 import { HTTP_PROVIDERS } from '../coach/core/providers.js'
 import * as payloadLib from '../coach/core/payload.js'
 import { hashPlan } from '../coach/core/plan-hash.js'
+import { waitingProposal } from '../coach/core/pending.js'
 import { runPipeline } from '../coach/core/pipeline.js'
 import {
   coachRecord,
@@ -30,6 +31,10 @@ import {
   selectConnection,
   deleteConnection,
 } from './coach-connections.js'
+// Upstream allows five minutes per provider attempt. The serverless invocation has a
+// five-minute ceiling including DB work, so reserve time to persist its final outcome.
+export const COACH_ATTEMPT_TIMEOUT_MS = 300000
+export const COACH_RUN_BUDGET_MS = 280000
 export const AUTO_DAILY_CAP = 10
 const today = () => new Date().toISOString().slice(0, 10)
 const enabled = () => {
@@ -173,32 +178,37 @@ export async function enqueueCoach(
   if (automatic && automaticUsed >= AUTO_DAILY_CAP)
     fail(429, 'Automatic Coach limit reached', 'cap', { retryAfter: 3600 })
   if (!automatic) await throttle(db, 'coach-request:' + uid, 6, 60)
-  for (const key of ['note', 'refine'])
+  for (const key of ['note', 'refine', 'text'])
     if (
       body[key] != null &&
       (typeof body[key] !== 'string' || body[key].length > 4000)
     )
       fail(400, 'message too long')
-  if (body.refine && r.state.pending?.kind !== 'create')
-    fail(409, 'No plan to refine', 'stale')
+  if (kind === 'ask' && (typeof body.text !== 'string' || !body.text.trim()))
+    fail(400, 'question required')
   if (kind === 'debrief' && !payloadLib.findWorkout(S, body.workoutId))
     fail(400, 'workout not found')
   const job = {
     id: crypto.randomUUID(),
     kind,
     state: 'queued',
+    ...(automatic ? { trigger: 'scheduled' } : {}),
     startedAt: Date.now(),
   }
   const input = {
     intake: kind === 'create' ? body.intake || null : null,
-    note: body.note || null,
+    note: (kind === 'ask' ? body.text.trim() : body.note) || null,
+    today: kind === 'ask'
+      ? payloadLib.build(S, { handle: 'queued', kind: 'ask', today: body.today }).today || null
+      : null,
     refine: body.refine || null,
     lang: payloadLib.langTag(body.lang),
     workoutId:
       typeof body.workoutId === 'string' ? body.workoutId.slice(0, 40) : null,
   }
   // Bound intake and free text before persisting a queued request.
-  if (JSON.stringify(input).length > 12000) fail(400, 'request too large')
+  const inputLimit = kind === 'ask' ? payloadLib.MAX_PAYLOAD_CHARS : 12000
+  if (JSON.stringify(input).length > inputLimit) fail(400, 'request too large')
   const state = {
     ...r.state,
     providerConsent: consentFor(requestConfig),
@@ -411,6 +421,10 @@ export const coachRoutes = {
     const u = guard(ctx)
     return answer(await enqueueCoach(ctx.db, u.id, 'review', ctx.body), 202)
   },
+  'POST /api/coach/ask': async (ctx) => {
+    const u = guard(ctx)
+    return answer(await enqueueCoach(ctx.db, u.id, 'ask', ctx.body), 202)
+  },
   'POST /api/coach/debrief': async (ctx) => {
     const u = guard(ctx)
     return answer(await enqueueCoach(ctx.db, u.id, 'debrief', ctx.body), 202)
@@ -431,7 +445,9 @@ export const coachRoutes = {
           at: Date.now(),
         },
       ].slice(-50)
-      state.pending = null
+      state.pending = state.pending.kind === 'ask'
+        ? waitingProposal(state.pending.prev)
+        : null
       await statePut(ctx.db, u.id, state)
     }
     return answer({ ok: true })
@@ -517,7 +533,7 @@ export async function runCoachWork(
       current.state = 'running'
       await statePut(db, uid, r.state)
       await db.query(
-        "update ironlog.jobs set lease_until=now()+interval '240 seconds',attempts=attempts+1 where id=$1",
+        "update ironlog.jobs set lease_until=now()+interval '330 seconds',attempts=attempts+1 where id=$1",
         [job.id]
       )
       return {
@@ -539,7 +555,8 @@ export async function runCoachWork(
     if (!claim) continue
     let attempt,
       payload,
-      providerKey = ''
+      providerKey = '',
+      providerModel = null
     try {
       const { uid, job, config, S } = claim,
         opts = job.input
@@ -559,16 +576,23 @@ export async function runCoachWork(
         ? openKey(uid, config.provider, claim.secret)
         : '')
       attempt = await pipeline({
-        adapter: ADAPTERS[config.provider],
+        adapter: {
+          ...ADAPTERS[config.provider],
+          invoke: async (opts) => {
+            const result = await ADAPTERS[config.provider].invoke(opts)
+            if (result.code === 0 && result.model) providerModel = result.model
+            return result
+          },
+        },
         cfg: cfgOf(config),
         kind: job.kind,
         payload,
         model: config.model,
-        timeoutMs: 100000,
+        timeoutMs: COACH_ATTEMPT_TIMEOUT_MS,
         invokeOpts: {
           env: envOf(config, key),
           fetch,
-          signal: AbortSignal.timeout(200000),
+          signal: AbortSignal.timeout(COACH_RUN_BUDGET_MS),
           maxTokens: 16000,
         },
       })
@@ -601,6 +625,19 @@ export async function runCoachWork(
         String(selected.revision) !== String(claim.connectionVersion)
       )
         return
+      // Keep an upstream-selected replacement only after it answered successfully, and
+      // never overwrite a model the user selected while the job was running.
+      if (attempt.ok && providerModel) {
+        claim.job.connection = { ...claim.job.connection, model: providerModel }
+        if (selected.config.model === claim.config.model) {
+          selected.config = { ...selected.config, model: providerModel }
+          await db.query('update ironlog.coach_connections set config=$3,updated_at=now() where user_id=$1 and id=$2', [claim.uid, selected.id, selected.config])
+          if (r.config.connectionId === selected.id && r.config.model === claim.config.model) {
+            r.config = { ...r.config, model: providerModel }
+            await db.query('update ironlog.coach set config=$2 where user_id=$1', [claim.uid, r.config])
+          }
+        }
+      }
       const S = await readProfile(db, claim.uid)
       if (
         !S?.coach?.consent?.agreedAt ||
@@ -634,12 +671,14 @@ export async function runCoachWork(
               id: claim.job.id,
               kind,
               connection: claim.job.connection,
+              ...(claim.job.trigger === 'scheduled' ? { trigger: 'scheduled' } : {}),
               createdAt: at,
               expiresAt: at + 14 * 86400000,
               planHash: hashPlan(payloadLib.canonicalPlan(claim.S)),
               iteration: claim.previous
                 ? (claim.previous.iteration || 1) + 1
                 : 1,
+              ...(kind === 'ask' ? { prev: waitingProposal(state.pending) } : {}),
               ...(kind === 'debrief'
                 ? {
                     workout: payloadLib.workoutMeta(
@@ -650,7 +689,8 @@ export async function runCoachWork(
                 : {}),
               ...attempt.result,
             }
-      if (kind === 'review') state.reviewedAt = at
+      if (kind === 'review' && (attempt.ok || attempt.errorClass === 'unusable'))
+        state.reviewedAt = at
       state.history = [...(state.history || []), state.last].slice(-50)
       await statePut(db, claim.uid, state)
       const suggestions =

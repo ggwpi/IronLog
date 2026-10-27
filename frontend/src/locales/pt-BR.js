@@ -1556,4 +1556,15 @@ export const PT_BR_OVERRIDES = {
 
 }
 
-export default { ...pt, ...PT_BR_OVERRIDES }
+export default {
+  "Automatically use another model": "Usar outro modelo automaticamente",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "Se o modelo escolhido estiver indisponível, tentar outro do mesmo provedor. A qualidade e o custo podem variar. Desative para usar apenas o modelo escolhido.",
+  "Thinking about your question…": "Pensando na sua pergunta…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "Neste celular o Treinador só consegue olhar enquanto o app está aberto: logo depois de um treino, ou na próxima vez que você abrir.",
+  "Advanced": "Avançado",
+  "Max output tokens": "Máximo de tokens de saída",
+  "Daily runs": "Execuções por dia",
+  "Max message length": "Comprimento máximo da mensagem",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "O limite de uma resposta. Modelos de raciocínio contam o pensamento oculto nesse limite, então aumente se um plano for cortado.",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "Cada execução do Treinador é uma requisição na sua conta do provedor. 0 significa sem limite.",
+  "How long a message, refinement or review note can be.": "Quanto pode ter uma mensagem, um pedido de refinamento ou uma nota de análise.", ...pt, ...PT_BR_OVERRIDES }

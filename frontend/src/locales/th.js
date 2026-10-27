@@ -1,5 +1,16 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Automatically use another model": "ใช้โมเดลอื่นโดยอัตโนมัติ",
+  "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "หากโมเดลที่เลือกไม่พร้อมใช้งาน ให้ลองโมเดลอื่นจากผู้ให้บริการเดียวกัน คุณภาพและค่าใช้จ่ายอาจต่างกัน ปิดตัวเลือกนี้เพื่อใช้เฉพาะโมเดลที่เลือก",
+  "Thinking about your question…": "กำลังคิดเรื่องคำถามของคุณ…",
+  "On this phone the Coach can only look while the app is open: right after a workout, or the next time you open it.": "บนโทรศัพท์เครื่องนี้ โค้ชดูได้เฉพาะตอนที่แอปเปิดอยู่: ทันทีหลังออกกำลังกาย หรือครั้งถัดไปที่คุณเปิดแอป",
+  "Advanced": "ขั้นสูง",
+  "Max output tokens": "จำนวนโทเคนเอาต์พุตสูงสุด",
+  "Daily runs": "จำนวนครั้งต่อวัน",
+  "Max message length": "ความยาวข้อความสูงสุด",
+  "The ceiling on one answer. Reasoning models count its hidden thinking against it, so raise it if a plan is cut off.": "เพดานของคำตอบหนึ่งครั้ง โมเดลที่คิดวิเคราะห์จะนับการคิดที่ซ่อนอยู่รวมในเพดานนี้ ดังนั้นให้เพิ่มค่านี้หากแผนถูกตัดขาด",
+  "Every Coach run is one request on your provider account. 0 means no limit.": "โค้ชแต่ละครั้งคือหนึ่งคำขอในบัญชีผู้ให้บริการของคุณ 0 หมายถึงไม่จำกัด",
+  "How long a message, refinement or review note can be.": "ข้อความ คำขอปรับแก้ หรือบันทึกการวิเคราะห์ยาวได้เท่าใด",
   // --- generic ---
   'Confirm': 'ยืนยัน',
   'Cancel': 'ยกเลิก',
