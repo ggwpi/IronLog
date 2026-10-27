@@ -1090,3 +1090,27 @@ suite('disabling fallback during inference cancels the run and discards a late s
   assert.equal(status.last.errorClass, 'connection-changed')
   assert.equal((await call('GET', '/api/coach/settings')).body.allowModelFallback, false)
 })
+
+suite('Gemini short-answer settings and bounded transport timing reach the cloud job without logging secrets', async (t) => {
+  const logged = []
+  t.mock.method(console, 'info', (...args) => logged.push(args))
+  await call('POST', '/api/coach/settings', { provider: 'gemini', model: 'gemini-3.8-flash', apiKey: 'latency-test-key' })
+  await call('POST', '/api/coach/ask', { text: 'private-training-question' })
+  await runCoachWork(db, { fetch: async (_url, init) => {
+    const request = JSON.parse(init.body)
+    assert.equal(request.generationConfig.maxOutputTokens, 4096)
+    assert.equal(request.generationConfig.thinkingConfig.thinkingLevel, 'LOW')
+    throw new DOMException('sensitive exception latency-test-key', 'AbortError')
+  } })
+  const status = (await call('GET', '/api/coach/status')).body
+  assert.equal(status.last.errorClass, 'timeout')
+  assert.equal(status.last.providerAttempts.length, 1)
+  assert.equal(status.last.providerAttempts[0].outcome, 'timeout')
+  assert.equal(typeof status.last.providerAttempts[0].elapsedMs, 'number')
+  const diagnostics = JSON.stringify(logged)
+  assert.ok(diagnostics.includes('Coach provider request started'))
+  assert.ok(diagnostics.includes('Coach provider request finished'))
+  assert.ok(!diagnostics.includes('latency-test-key'))
+  assert.ok(!diagnostics.includes('private-training-question'))
+  assert.ok(!diagnostics.includes('sensitive exception'))
+})

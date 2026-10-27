@@ -198,7 +198,7 @@ export function httpAdapter(spec) {
      * native HTTP and a test can hand in a fake.
      */
     async invoke(opts = {}) {
-      const { cfg, prompt, system, schema, env, model, timeoutMs = DEFAULT_TIMEOUT_MS, maxTokens = MAX_OUTPUT_TOKENS, fetch: fetchImpl = globalThis.fetch, signal } = opts;
+      const { cfg, task, prompt, system, schema, env, model, timeoutMs = DEFAULT_TIMEOUT_MS, maxTokens = MAX_OUTPUT_TOKENS, fetch: fetchImpl = globalThis.fetch, signal } = opts;
       const base = adapter.baseUrl(cfg);
       if (!base) return { code: -1, text: '', stderr: `no endpoint configured for ${id}`, spawnError: true };
       const key = keyOf(env);
@@ -208,7 +208,7 @@ export function httpAdapter(spec) {
       const allowModelFallback = cfg?.allowModelFallback !== false;
       let chosen = (allowModelFallback && substitutes.get(substituteKey(id, base, asked))) || asked;
 
-      let body = spec.body({ model: chosen, prompt, system: system || null, schema: schema || null, maxTokens });
+      let body = spec.body({ model: chosen, task, prompt, system: system || null, schema: schema || null, maxTokens });
       let triedOtherModel = false;
       let retriedWithStrictSchema = false;
       let retriedWithoutJsonMode = false;
@@ -262,7 +262,8 @@ export function httpAdapter(spec) {
             if (next) {
               substitutes.set(substituteKey(id, base, asked), next);
               chosen = next;
-              if ('model' in body) body = { ...body, model: next };
+              if (id === 'gemini') body = spec.body({ model: chosen, task, prompt, system: system || null, schema: schema || null, maxTokens });
+              else if ('model' in body) body = { ...body, model: next };
               transientRetries = 0;
               continue;
             }
