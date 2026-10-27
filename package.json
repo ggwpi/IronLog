@@ -3,10 +3,11 @@
     "js-yaml": "^4.1.0"
   },
   "scripts": {
-    "dev": "npm run dev --prefix frontend -- --host 0.0.0.0",
+    "predev": "npm ci --prefix frontend --ignore-scripts --include=dev",
+    "dev": "API_TARGET=${API_TARGET:-http://127.0.0.1:3001} npm run dev --prefix frontend -- --host 0.0.0.0 --port 3000 --strictPort",
     "build": "npm run build --prefix frontend && node scripts/catalogue/stage-media.mjs frontend/dist",
     "test": "npm test --prefix frontend",
-    "start:api": "npm start --prefix api",
+    "start:api": "PORT=${PORT:-3001} npm start --prefix api",
     "vercel-build": "npm ci --ignore-scripts --prefix frontend && npm run build"
   }
 }
