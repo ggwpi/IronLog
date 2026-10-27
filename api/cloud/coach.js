@@ -557,6 +557,7 @@ export async function runCoachWork(
       payload,
       providerKey = '',
       providerModel = null
+    const providerAttempts = []
     try {
       const { uid, job, config, S } = claim,
         opts = job.input
@@ -591,7 +592,24 @@ export async function runCoachWork(
         timeoutMs: COACH_ATTEMPT_TIMEOUT_MS,
         invokeOpts: {
           env: envOf(config, key),
-          fetch,
+          fetch: async (url, init) => {
+            const started = Date.now(), number = providerAttempts.length + 1
+            const tags = { jobId: job.id, provider: config.provider, task: job.kind, attempt: number }
+            console.info('Coach provider request started', tags)
+            try {
+              const response = await fetch(url, init)
+              const diagnostic = { attempt: number, elapsedMs: Date.now() - started, status: response.status }
+              providerAttempts.push(diagnostic)
+              console.info('Coach provider request finished', { ...tags, ...diagnostic })
+              return response
+            } catch (e) {
+              const diagnostic = { attempt: number, elapsedMs: Date.now() - started, outcome: e?.name === 'AbortError' ? 'timeout' : 'transport-error' }
+              providerAttempts.push(diagnostic)
+              // Never log the URL, headers, exception message, prompt or response body.
+              console.info('Coach provider request finished', { ...tags, ...diagnostic })
+              throw e
+            }
+          },
           signal: AbortSignal.timeout(COACH_RUN_BUDGET_MS),
           maxTokens: 16000,
         },
@@ -658,6 +676,7 @@ export async function runCoachWork(
             ? 'nochange'
             : 'ready',
         errorClass: attempt.ok ? null : attempt.errorClass,
+        providerAttempts: providerAttempts.slice(-12),
         at,
         ...(attempt.reading ? { reading: attempt.reading } : {}),
       }

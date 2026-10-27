@@ -29,7 +29,7 @@ export async function attemptOnce({ adapter, cfg, kind, payload, model, timeoutM
   const parts = buildPromptParts(kind, payload, repair);
   const split = adapter.spawns === false;
   const r = await adapter.invoke({
-    cfg,
+    cfg, task: parts.task,
     prompt: split ? parts.user : parts.system + '\n\n---\n\n' + parts.user,
     ...(split ? { system: parts.system, schema: SCHEMAS[parts.task] || null } : {}),
     model: model || null, timeoutMs, ...invokeOpts

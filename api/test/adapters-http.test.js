@@ -658,3 +658,29 @@ test('model fallback disabled still retries transient errors on the same selecte
   assert.equal(f.calls.length, 3)
   assert.ok(f.calls.every(c => c.url.includes('gemini-selected')))
 })
+
+test('Gemini short tasks use a bounded answer and low thinking on Gemini 3 Flash, while plans keep their budget', async () => {
+  for (const task of ['ask', 'debrief']) {
+    const f = fakeFetch([ok({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: ANSWER }] } }] })])
+    await gemini.invoke({ cfg: {}, task, prompt: 'P', env, model: 'gemini-3.8-flash', maxTokens: 16000, fetch: f })
+    assert.deepEqual(f.calls[0].body.generationConfig, { responseMimeType: 'application/json', maxOutputTokens: 4096, thinkingConfig: { thinkingLevel: 'LOW' } })
+  }
+  for (const task of ['create', 'refine', 'review']) {
+    const f = fakeFetch([ok({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: ANSWER }] } }] })])
+    await gemini.invoke({ cfg: {}, task, prompt: 'P', env, model: 'gemini-3.8-flash', maxTokens: 16000, fetch: f })
+    assert.equal(f.calls[0].body.generationConfig.maxOutputTokens, 16000)
+    assert.equal(f.calls[0].body.generationConfig.thinkingConfig, undefined)
+  }
+  const f = fakeFetch([ok({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: ANSWER }] } }] })])
+  await gemini.invoke({ cfg: {}, task: 'debrief', prompt: 'P', env, model: 'gemini-2.5-flash', maxTokens: 2048, fetch: f })
+  assert.equal(f.calls[0].body.generationConfig.maxOutputTokens, 2048)
+  assert.equal(f.calls[0].body.generationConfig.thinkingConfig, undefined)
+})
+
+test('the pipeline sends the actual debrief task through to Gemini request settings', async () => {
+  const answer = { coach_contract: 1, summary: 'All sets done.', score: 8, highlights: ['Three sets done.'], watch: [], nextTime: ['Keep the load.'] }
+  const f = fakeFetch([ok({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(answer) }] } }] })])
+  const result = await attemptOnce({ adapter: gemini, cfg: {}, kind: 'debrief', payload: { plan: { routines: [], week: {} } }, model: 'gemini-3.8-flash', invokeOpts: { env, fetch: f } })
+  assert.equal(result.ok, true)
+  assert.equal(f.calls[0].body.generationConfig.thinkingConfig.thinkingLevel, 'LOW')
+})

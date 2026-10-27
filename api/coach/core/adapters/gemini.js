@@ -12,10 +12,17 @@ export const geminiSpec = {
   headers: key => ({ 'x-goog-api-key': key }),
   // No responseSchema on purpose: Gemini's OpenAPI subset rejects the type unions our schemas
   // use for before/after, and json mime plus the validator already holds the line.
-  body: ({ prompt, system, maxTokens }) => ({
+  body: ({ model, task, prompt, system, maxTokens }) => ({
     systemInstruction: { parts: [{ text: system ? SYSTEM_PROMPT + '\n\n' + system : SYSTEM_PROMPT }] },
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    generationConfig: { responseMimeType: 'application/json', maxOutputTokens: maxTokens }
+    generationConfig: {
+      responseMimeType: 'application/json',
+      // A chat answer or a one-session debrief is short; do not give it a full-plan
+      // output budget and Gemini 3 Flash's unrestricted default thinking time.
+      maxOutputTokens: ['ask', 'debrief'].includes(task) ? Math.min(maxTokens, 4096) : maxTokens,
+      ...(['ask', 'debrief'].includes(task) && /^gemini-3(?:\.\d+)?-flash(?:-|$)/.test(model || '')
+        ? { thinkingConfig: { thinkingLevel: 'LOW' } } : {})
+    }
   }),
   errorMessage: data => data && data.error && data.error.message,
   readText: data => {
