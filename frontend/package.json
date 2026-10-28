@@ -14,6 +14,7 @@
   },
   "license": "AGPL-3.0-or-later",
   "dependencies": {
+    "@animate-ui/react": "^2.4.1",
     "@aparajita/capacitor-secure-storage": "^8.0.1",
     "@capacitor-mlkit/barcode-scanning": "^8.2.1",
     "@capacitor/app": "^8.0.0",
@@ -23,6 +24,7 @@
     "@capacitor/share": "^8.0.0",
     "jsqr": "^1.4.0",
     "lean-qr": "^2.7.3",
+    "motion": "^14.7.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.2",

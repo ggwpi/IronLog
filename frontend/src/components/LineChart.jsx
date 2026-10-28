@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useId, useLayoutEffect, useRef, useState } from 'react'
 import { fmtNum, fmtDate, MONTHS, isoOf } from '../lib/format.js'
 import { t } from '../lib/i18n.js'
 
@@ -9,13 +9,19 @@ const W = 340   // viewBox width; the svg stretches to its container, height com
 //        more of it). Used for effort on the weight curve, where the two belong on one line:
 //        the same weight with less left in the tank is not the same session.
 //   note extra text for that point's tooltip.
-// opts: { h, unit, color, axes, goal, invert, series }
+// opts: { h, unit, color, axes, goal, invert, series, variant }
+//   ribbon is a compact, axis-free presentation of the same readings. Scrubbing reveals
+//   the selected portion in colour, with the remaining recorded readings in grey.
+//   Multiple series retain their separate coloured traces in the same compact layout.
 //   invert flips the y axis, for a scale that counts down as it gets harder (RIR). Without it
 //   a curve of reps-in-reserve reads upside down, with the hardest sets at the floor.
 //   series draws several lines instead of one: [{ points, color }] (issue #145, one per set
 //   number). `points` then only anchors the hover — one per date, its `note` the tooltip — and
 //   the y axis spans every series.
-export default function LineChart({ points, h = 150, unit = '', color = 'var(--acc)', axes = true, goal = null, invert = false, series = null }) {
+export default function LineChart({ points, h = 150, unit = '', color = 'var(--acc)', axes = true, goal = null, invert = false, series = null, variant = 'default' }) {
+  const gid = useId()
+  const multi = Array.isArray(series) && series.length > 0
+  const ribbon = variant === 'ribbon'
   const svgRef = useRef(null)
   const wrapRef = useRef(null)
   const tipRef = useRef(null)
@@ -35,7 +41,7 @@ export default function LineChart({ points, h = 150, unit = '', color = 'var(--a
   // render path — hover fires on every mouse move.
   useLayoutEffect(() => {
     const tip = tipRef.current, wrap = wrapRef.current
-    if (!hover || !tip || !wrap) return
+    if (ribbon || !hover || !tip || !wrap) return
     const cw = wrap.clientWidth, ch = wrap.clientHeight
     const tw = tip.offsetWidth, th = tip.offsetHeight
     const M = 4                                   // breathing room against the clip
@@ -48,13 +54,14 @@ export default function LineChart({ points, h = 150, unit = '', color = 'var(--a
 
   if (!points || points.length === 0) return <div className="empty small">{t('No data yet')}</div>
   const H = h
-  const P = { l: axes ? 34 : 8, r: 12, t: 10, b: axes ? 22 : 8 }
+  const showAxes = axes && !ribbon
+  const P = ribbon ? { l: 8, r: 8, t: 8, b: 26 } : { l: axes ? 34 : 8, r: 12, t: 10, b: axes ? 22 : 8 }
   const single = points.length === 1
   const pts = single ? [points[0], points[0]] : points
-  const multi = Array.isArray(series) && series.length > 0
+  const hasGoal = goal != null && isFinite(goal)
   const ys = multi ? series.flatMap(s => s.points.map(p => p.y)) : pts.map(p => p.y)
   let ymin = Math.min(...ys), ymax = Math.max(...ys)
-  if (goal != null && isFinite(goal)) { ymin = Math.min(ymin, goal); ymax = Math.max(ymax, goal) }
+  if (hasGoal) { ymin = Math.min(ymin, goal); ymax = Math.max(ymax, goal) }
   if (ymin === ymax) { ymin -= 1; ymax += 1 }
   const pad = (ymax - ymin) * 0.12; ymin -= pad; ymax += pad
   const t0 = pts[0].t, t1 = pts[pts.length - 1].t || t0 + 1
@@ -65,7 +72,7 @@ export default function LineChart({ points, h = 150, unit = '', color = 'var(--a
   }
 
   const gridlines = []
-  if (axes) {
+  if (showAxes) {
     const range = ymax - ymin, raw = range / 3
     const pow = Math.pow(10, Math.floor(Math.log10(raw)))
     let step = 10 * pow
@@ -76,7 +83,7 @@ export default function LineChart({ points, h = 150, unit = '', color = 'var(--a
       const v = Math.round(v0 / step) * step || 0
       const y = Y(v)
       gridlines.push(<g key={'y' + v}>
-        <line x1={P.l} y1={y} x2={W - P.r} y2={y} stroke="var(--sep-op)" strokeWidth="1" strokeDasharray="2 4" />
+        <line className="chart-grid-y" x1={P.l} y1={y} x2={W - P.r} y2={y} stroke="var(--sep-op)" strokeWidth="1" />
         <text x={P.l - 5} y={y + 3.5} textAnchor="end" fontSize="9.5" fill="var(--label-2)">{fmtNum(v)}</text>
       </g>)
     }
@@ -95,20 +102,43 @@ export default function LineChart({ points, h = 150, unit = '', color = 'var(--a
       if (i % every) return
       const x = X(tk.t)
       gridlines.push(<g key={'x' + i}>
-        <line x1={x} y1={P.t} x2={x} y2={H - P.b} stroke="var(--sep-op)" strokeWidth="1" strokeDasharray="2 4" />
+        <line className="chart-grid-x" x1={x} y1={P.t} x2={x} y2={H - P.b} stroke="var(--sep-op)" strokeWidth="1" />
         <text x={x} y={H - 7} textAnchor={tk.anchor || 'middle'} fontSize="9.5" fill="var(--label-2)">{tk.txt}</text>
       </g>)
     })
   }
 
-  const poly = pts.map(p => X(p.t).toFixed(1) + ',' + Y(p.y).toFixed(1)).join(' ')
+  // Presentation only: every curve passes through the original readings. Control points
+  // stay within each pair's bounds, so smoothing cannot invent a higher peak or lower trough.
+  const curve = values => values.map((p, i) => {
+    const x = X(p.t).toFixed(1), y = Y(p.y).toFixed(1)
+    if (!i) return `M${x},${y}`
+    const prev = values[i - 1]
+    const mid = ((X(prev.t) + X(p.t)) / 2).toFixed(1)
+    return `C${mid},${Y(prev.y).toFixed(1)} ${mid},${y} ${x},${y}`
+  }).join(' ')
+  const path = curve(pts)
   const last = pts[pts.length - 1]
-  const gid = 'g' + Math.round(t0 % 1e7) + '_' + H
   const hoverSource = single ? [points[0]] : points
   const hoverDates = hoverSource.map(p => p.d || isoOf(new Date(p.t)))
   const showYear = new Set(hoverDates.map(iso => new Date(iso + 'T12:00:00').getFullYear())).size > 1
   const hoverPts = hoverSource.map((p, i) => ({ x: X(p.t), y: Y(p.y), t: p.t, iso: hoverDates[i], v: p.y, note: p.note }))
+  const caption = hover || (ribbon ? hoverPts.at(-1) : null)
   const marked = points.some(p => p.m != null)
+  const floor = ribbon ? H : H - P.b
+  // Only the edge padding extends to the card boundary; it adds no readings.
+  const edgePath = ribbon && !single ? `M0,${Y(pts[0].y).toFixed(1)} L${path.slice(1)} L${W},${Y(last.y).toFixed(1)}` : path
+  const area = ribbon && single ? '' : `${edgePath} L${ribbon ? W : X(last.t).toFixed(1)},${floor} L${ribbon ? 0 : X(pts[0].t).toFixed(1)},${floor} Z`
+  const selected = hover || { x: X(last.t), y: Y(last.y) }
+  // The final reading owns the edge padding too; leaving it uncoloured looks like future data.
+  const fillToEnd = !hover || hover.t === last.t
+  const goalLine = hasGoal && <g className="chart-goal">
+    {ribbon && <line className="chart-goal-casing" x1={P.l} y1={Y(goal)} x2={W - P.r} y2={Y(goal)}
+      stroke="var(--bg)" strokeWidth="2.5" strokeDasharray="8 6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />}
+    <line className="chart-goal-rule" x1={P.l} y1={Y(goal)} x2={W - P.r} y2={Y(goal)} stroke={ribbon ? 'var(--label)' : 'var(--label-2)'}
+      strokeWidth={ribbon ? 1.75 : 1} strokeDasharray={ribbon ? '8 6' : '4 5'} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+    {!ribbon && <text x={W - P.r - 2} y={Y(goal) - 5} textAnchor="end" direction="ltr" fontSize="9.5" fontWeight="500" fill="var(--label)">{fmtNum(goal)}{unit ? ' ' + unit : ''}</text>}
+  </g>
 
   const onMove = e => {
     const c = e.touches ? e.touches[0] : e
@@ -121,53 +151,85 @@ export default function LineChart({ points, h = 150, unit = '', color = 'var(--a
     setHover(best)
   }
 
+  const tip = caption && <div className="ctip" ref={tipRef}>
+    {multi
+      ? <>{fmtDate(caption.iso, true, showYear)}{caption.note ? ' · ' + caption.note : ''}</>
+      : <>{fmtDate(caption.iso, true, showYear)} · {fmtNum(caption.v)}{unit ? ' ' + unit : ''}{caption.note ? ' · ' + caption.note : ''}</>}
+  </div>
+
   return (
-    <div className="chart-i" ref={wrapRef}
+    <div className={'chart-i' + (ribbon ? ' chart-ribbon' : '')} ref={wrapRef}
       onMouseMove={onMove} onMouseDown={onMove}
       onMouseLeave={() => setHover(null)}
       onTouchStart={onMove} onTouchMove={onMove}>
       <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ aspectRatio: `${W}/${H}` }}>
         <defs><linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor={color} stopOpacity=".28" />
-          <stop offset="1" stopColor={color} stopOpacity="0" />
-        </linearGradient></defs>
+          <stop offset="0" stopColor={color} stopOpacity=".58" />
+          <stop offset="1" stopColor={color} stopOpacity=".04" />
+        </linearGradient>
+          {ribbon && <>
+            <linearGradient id={gid + '-ribbon'} x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor={`color-mix(in srgb, ${color} 45%, #fff)`} />
+              <stop offset=".48" stopColor={`color-mix(in srgb, ${color} 78%, #fff)`} />
+              <stop offset="1" stopColor={`color-mix(in srgb, ${color} 70%, #101b15)`} />
+            </linearGradient>
+            <linearGradient id={gid + '-remainder'} x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="color-mix(in srgb, var(--label) 38%, var(--bg))" />
+              <stop offset=".5" stopColor="color-mix(in srgb, var(--label) 26%, var(--bg))" />
+              <stop offset="1" stopColor="color-mix(in srgb, var(--label) 12%, var(--bg))" />
+            </linearGradient>
+            <clipPath id={gid + '-selected'}>
+              <rect width={fillToEnd ? W : selected.x} height={H} />
+            </clipPath>
+          </>}
+        </defs>
         {gridlines}
-        {goal != null && isFinite(goal) && <>
-          <line x1={P.l} y1={Y(goal)} x2={W - P.r} y2={Y(goal)} stroke="var(--yellow)" strokeWidth="1.6" strokeDasharray="7 4" />
-          <text x={W - P.r - 2} y={Y(goal) - 5} textAnchor="end" fontSize="9.5" fontWeight="700" fill="var(--yellow)">{fmtNum(goal)}</text>
-        </>}
+        {!ribbon && goalLine}
         {/* The first series is drawn widest and underneath, each next one thinner on top, so
             lines that share their values show as nested stripes instead of hiding each other. */}
         {multi ? series.map((s, k) => {
           const sw = 2 + (series.length - 1 - k) * 2.4
           return <g key={'s' + k}>
-            {s.points.length > 1 && <polyline points={s.points.map(p => X(p.t).toFixed(1) + ',' + Y(p.y).toFixed(1)).join(' ')}
-              fill="none" stroke={s.color} strokeWidth={sw} strokeLinejoin="round" strokeLinecap="round" />}
+            {s.points.length > 1 && <path d={curve(s.points)}
+              fill="none" stroke={s.color} strokeWidth={sw} strokeLinejoin="round" strokeLinecap="round" vectorEffect={ribbon ? 'non-scaling-stroke' : undefined} />}
             {s.points.map((p, i) => <circle key={i} cx={X(p.t)} cy={Y(p.y)} r={sw / 2 + 1.2} fill={s.color} />)}
           </g>
         }) : <>
-          <polygon points={`${P.l},${H - P.b} ${poly} ${X(last.t).toFixed(1)},${H - P.b}`} fill={`url(#${gid})`} />
-          <polyline points={poly} fill="none" stroke={color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+          {ribbon ? <>
+            <path className="chart-remainder" d={area} fill={`url(#${gid}-remainder)`} />
+            <path className="chart-remainder-line" d={edgePath} fill="none" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+            <g clipPath={`url(#${gid}-selected)`}>
+              <path className="chart-area" d={area} fill={`url(#${gid}-ribbon)`} />
+              <path className="chart-line" d={edgePath} fill="none" stroke="var(--label)" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+            </g>
+          </> : <>
+            <path className="chart-area" d={area} fill={`url(#${gid})`} />
+            <path className="chart-line" d={path} fill="none" stroke="var(--label)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          </>}
           {marked && pts.map((p, i) => (p.m == null ? null :
             <circle key={'m' + i} cx={X(p.t)} cy={Y(p.y)} r={2.4 + p.m * 3} fill={color} opacity={0.3 + p.m * 0.7} />))}
-          <circle cx={X(last.t)} cy={Y(last.y)} r="4" fill={color} />
         </>}
+        {ribbon && goalLine}
+        {!multi && <circle className="chart-end" cx={ribbon ? selected.x : X(last.t)} cy={ribbon ? selected.y : Y(last.y)}
+          r={ribbon ? 6 : 4} fill={color} stroke="var(--label)" strokeWidth={ribbon ? 3 : 1.8} vectorEffect={ribbon ? 'non-scaling-stroke' : undefined} />}
         {hover && <g>
-          <line className="cvl" x1={hover.x} y1={P.t} x2={hover.x} y2={H - P.b} stroke="var(--label-3)" strokeWidth="1" strokeDasharray="3 3" />
+          <line className="cvl" x1={hover.x} y1={ribbon ? hover.y + 8 : P.t} x2={hover.x} y2={H - P.b} stroke="var(--label-3)" strokeWidth="1" strokeDasharray="3 3" />
           {multi
             ? series.map((s, k) => s.points.filter(p => p.t === hover.t).map((p, i) =>
-              <circle key={k + '_' + i} cx={X(p.t)} cy={Y(p.y)} r="4.5" fill={s.color} stroke="var(--bg)" strokeWidth="2" />))
-            : <>
+              <circle key={k + '_' + i} cx={X(p.t)} cy={Y(p.y)} r={ribbon ? 6 : 4.5} fill={s.color} stroke={ribbon ? 'var(--label)' : 'var(--bg)'} strokeWidth={ribbon ? 3 : 2} vectorEffect={ribbon ? 'non-scaling-stroke' : undefined} />))
+            : !ribbon && <>
               <line className="chl" x1={P.l} y1={hover.y} x2={W - P.r} y2={hover.y} stroke="var(--label-3)" strokeWidth="1" strokeDasharray="3 3" />
-              <circle cx={hover.x} cy={hover.y} r="5" fill={color} stroke="var(--bg)" strokeWidth="2" />
+              <circle cx={hover.x} cy={hover.y} r="5" fill={color} stroke="var(--label)" strokeWidth="2" />
             </>}
         </g>}
       </svg>
-      {hover && <div className="ctip" ref={tipRef}>
-        {multi
-          ? <>{fmtDate(hover.iso, true, showYear)}{hover.note ? ' · ' + hover.note : ''}</>
-          : <>{fmtDate(hover.iso, true, showYear)} · {fmtNum(hover.v)}{unit ? ' ' + unit : ''}{hover.note ? ' · ' + hover.note : ''}</>}
-      </div>}
+      {ribbon ? <div className="chart-ribbon-meta">
+        {hasGoal && <div className="chart-goal-label">
+          <span className="chart-goal-swatch" aria-hidden="true" />
+          <span>{t('Goal')} <bdi>{fmtNum(goal)}{unit ? ' ' + unit : ''}</bdi></span>
+        </div>}
+        {tip}
+      </div> : tip}
     </div>
   )
 }

@@ -244,7 +244,7 @@ export default {
   "Freestyle workout. Add your first exercise and off you go.": "אימון חופשי. הוסף את התרגיל הראשון כדי להתחיל.",
   "Finish workout early · {0} exercises": "סיום מוקדם של האימון · {0} תרגילים",
   "Rest’s over. Next set!": "המנוחה הסתיימה. הסט הבא!",
-  "Hi {0}": "היי {0}",
+  "Hi {0}": "שלום {0}.",
   "This week": "השבוע",
   "{0} (in progress)": "{0} (בביצוע)",
   "Resume ▶": "המשך אימון ▶",

@@ -24,7 +24,23 @@ final class OpenGymUITests: XCTestCase {
     }
 
     private func tap(_ e: XCUIElement, _ what: String, timeout: TimeInterval = 15) {
-        XCTAssertTrue(e.waitForExistence(timeout: timeout), "\(what) did not show up")
+        guard e.waitForExistence(timeout: timeout) else {
+            XCTFail("\(what) did not show up")
+            return
+        }
+        // Responsive pages can place a control below the viewport or behind the floating tabs.
+        // Scroll the web content into reach, then keep the same native hit-testing assertion.
+        let web = app.webViews.firstMatch
+        for _ in 0..<6 {
+            if e.isHittable || !web.exists { break }
+            if e.frame.midY < web.frame.midY { web.swipeDown() }
+            else { web.swipeUp() }
+        }
+        guard e.isHittable else {
+            shot("not-hittable-\(what)")
+            XCTFail("\(what) is not hittable after scrolling")
+            return
+        }
         e.tap()
     }
 
