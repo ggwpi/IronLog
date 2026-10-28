@@ -128,6 +128,9 @@ function Sheet({ sheet }) {
   // backdrop to tap, no drag to dismiss — the viewer has its own close button, and back closes
   // it like any sheet.
   if (sheet.kind === 'viewer') return <div>{sheet.render(close)}</div>
+  // A whole-screen step keeps the same history, focus isolation and explicit close contract,
+  // with no backdrop, grab handle or swipe-to-dismiss animation.
+  if (sheet.kind === 'screen') return <div id={sheet.id} className="sheet screen-sheet">{sheet.render(close)}</div>
   if (sheet.kind === 'center') {
     return (
       <div>

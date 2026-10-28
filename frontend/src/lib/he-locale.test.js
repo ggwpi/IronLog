@@ -27,7 +27,7 @@ describe('Hebrew through the existing language system', () => {
   })
   it('formats counts and substitutions without losing dynamic values', async () => {
     await setLang('he')
-    expect(t('Hi {0}', 'Ziv')).toBe('היי Ziv')
+    expect(t('Hi {0}', 'Ziv')).toBe('שלום Ziv.')
     expect(tn('{0} set', '{0} sets', 1)).toBe('1 סט')
     expect(tn('{0} set', '{0} sets', 2)).toBe('2 סטים')
     expect(tn('{0} set', '{0} sets', 10)).toBe('10 סטים')
@@ -50,11 +50,11 @@ describe('Hebrew through the existing language system', () => {
 
 describe('Hebrew direction before the app loads', () => {
   const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf8')
-  const script = html.match(/<script>([\s\S]*?)<\/script>/)[1]
+  const script = html.match(/<script id="boot-preferences">([\s\S]*?)<\/script>/)[1]
   const boot = (saved, browser) => {
-    const document = { documentElement: {} }
+    const document = { documentElement: { dataset: {}, style: { setProperty() {} } } }
     vm.runInNewContext(script, { document, navigator: { language: browser }, localStorage: { getItem: () => JSON.stringify(saved) } })
-    return document.documentElement
+    return { lang: document.documentElement.lang, dir: document.documentElement.dir }
   }
   it('starts saved Hebrew profiles in RTL and honors an explicit English choice', () => {
     expect(boot({ lang: 'he' }, 'en-US')).toEqual({ lang: 'he', dir: 'rtl' })

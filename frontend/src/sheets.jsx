@@ -11,6 +11,9 @@ import { toScale, rirOf, EFFORT_PRESETS, effortColor } from './lib/effort.js'
 import { beep, vibrate } from './lib/sound.js'
 import { t, tn, dateLocale, instrFor, instrTranslated, descFor, exerciseNameFor, exerciseNameClass, getLang, useLang } from './lib/i18n.js'
 import { nav, closeThenNav, navToWorkout } from './lib/nav.js'
+import { lightningTransition } from './lib/lightning-transition.js'
+import { waitForWorkoutScreen } from './lib/screen-ready.js'
+import { afterScrollRestore } from './components/Modals.jsx'
 import { buildStarterPlan, starterPlanDays, starterPlanOptions } from './lib/starter.js'
 import Media, { Thumb } from './components/Media.jsx'
 import CustomMediaField from './components/CustomMediaField.jsx'
@@ -300,23 +303,33 @@ function BwSheet({ required, onDone, close }) {
   const bw = lastBW(st)
   const [v, setV] = useState(bw ? bw.w : 70)
   const [date, setDate] = useState(todayISO())
-  const save = () => {
+  const screenRef = useRef(null)
+  useSheetKeyboard(screenRef, required, { reveal: true })
+  const proceed = (event, action) => lightningTransition(event.currentTarget, () => {
+    action()
+    return waitForWorkoutScreen(S().active?.id).then(() => new Promise(resolve => afterScrollRestore(resolve)))
+  })
+  const save = event => {
     const n = Math.round((v || 0) * 10) / 10
     if (!n || n <= 0) { toast(t('Enter a valid weight')); return }
     if (bwTooHeavy(n, unit)) return
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > todayISO()) { toast(t('Choose a valid date')); return }
     // Today's weigh-in is replaced by a second one, as it always was; an earlier day's is not.
     if (date !== todayISO() && st.bodyweight.some(b => b.d === date)) { toast(t('That date already has a weigh-in. Delete it first.')); return }
-    update(s => {
-      const ex = s.bodyweight.find(b => b.d === date)
-      if (ex) { ex.w = n; ex.t = Date.now() } else s.bodyweight.push({ d: date, w: n, t: Date.now() })
-      s.bodyweight.sort((a, b) => (a.d < b.d ? -1 : 1))
-    })
-    close()
-    if (onDone) onDone(n); else toast(t('Weight saved'))
+    const finish = () => {
+      update(s => {
+        const ex = s.bodyweight.find(b => b.d === date)
+        if (ex) { ex.w = n; ex.t = Date.now() } else s.bodyweight.push({ d: date, w: n, t: Date.now() })
+        s.bodyweight.sort((a, b) => (a.d < b.d ? -1 : 1))
+      })
+      close()
+      if (onDone) onDone(n); else toast(t('Weight saved'))
+    }
+    if (required) proceed(event, finish)
+    else finish()
   }
   const recent = [...st.bodyweight].reverse().slice(0, 3)
-  return <>
+  const content = <>
     {/* This sheet opens `locked` — swipe/backdrop/Escape/Android-back all no-op on it (see
         Modals.jsx) so an accidental tap on "Start" can't be walked back by reflex the way
         every other sheet in the app can. The two buttons below already cover leaving it
@@ -324,7 +337,7 @@ function BwSheet({ required, onDone, close }) {
         opted back in explicitly instead of by omission. Plain close() — no onDone, no
         nav — so it's a true no-op: the screen underneath is exactly where you left it. */}
     {required
-      ? <div className="row between" style={{ marginBottom: 14 }}>
+      ? <div className="row between checkin-heading" style={{ marginBottom: 14 }}>
           <h3 style={{ marginBottom: 0 }}>{t('Quick check-in')}</h3>
           <button className="iconbtn" aria-label={t('Cancel')} onClick={() => close()}><Icon name="xmark" /></button>
         </div>
@@ -335,12 +348,13 @@ function BwSheet({ required, onDone, close }) {
           <span>{t('Date')}</span>
           <input className="field" type="date" value={date} max={todayISO()} onChange={e => setDate(e.target.value)} />
         </label>}
+    {required && <span className="checkin-symbol" aria-hidden="true"><Icon name="scale" /></span>}
     <WeightInput value={v} setValue={setV} unit={unit} />
     <div style={{ height: 14 }} />
     <Button variant="primary" onClick={save}>{required ? t('Save & start workout') : t('Save')}</Button>
     {required && <>
-      <div style={{ height: 8 }} /><Button variant="ghost" className="dim" onClick={() => { close(); onDone && onDone(null) }}>{t('Start without weighing in')}</Button>
-      <div style={{ height: 2 }} /><Button variant="ghost" className="dim" icon="swap" onClick={() => closeThenNav(close, '/workout')}>{t('Choose a different workout')}</Button>
+      <div style={{ height: 8 }} /><Button variant="ghost" className="dim" onClick={event => proceed(event, () => { close(); onDone && onDone(null) })}>{t('Start without weighing in')}</Button>
+      <div style={{ height: 2 }} /><Button variant="ghost" className="dim" icon="swap" onClick={event => proceed(event, () => closeThenNav(close, '/workout'))}>{t('Choose a different workout')}</Button>
     </>}
     {!required && recent.length > 0 && <>
       <h4 className="sec">{t('Recent weigh-ins')}</h4>
@@ -352,9 +366,10 @@ function BwSheet({ required, onDone, close }) {
       </div>}
     </>}
   </>
+  return required ? <section ref={screenRef} className="workout-checkin" role="dialog" aria-modal="true" aria-label={t('Quick check-in')}>{content}</section> : content
 }
 export function bwSheet(opts = {}) {
-  const h = ui().openSheet(close => <BwSheet {...opts} close={close} />, { locked: !!opts.required })
+  const h = ui().openSheet(close => <BwSheet {...opts} close={close} />, { locked: !!opts.required, kind: opts.required ? 'screen' : 'sheet' })
   return h
 }
 
@@ -394,7 +409,7 @@ function WeighIns() {
   return <>
     <h3 style={{ marginBottom: 2 }}>{t('Weigh-ins')}</h3>
     <div className="muted small" style={{ marginBottom: 10 }}>{tn('{0} weigh-in', '{0} weigh-ins', n)}</div>
-    <div className="chart"><LineChart points={points} h={140} unit={st.unit} goal={st.targetW} /></div>
+    <div className="chart"><LineChart points={points} h={104} unit={st.unit} goal={st.targetW} variant="ribbon" /></div>
     <div className="small dim" style={{ marginTop: 6 }}>{t('Weekly average')}</div>
     {weeks.map(w => {
       // Only a change the display can show: at one decimal, 0.02 kg is "0", and an arrow over a
@@ -2943,7 +2958,7 @@ export function startFlow(routineIds) {
   // The weigh-in is a setting (Settings → During a workout, issue #137): off goes straight
   // into the session with no body weight on it, same as "Start without weighing in".
   if (S().weighIn === false) { beginWorkout(routineIds, null); return }
-  bwSheet({ required: true, onDone: bw => beginWorkout(routineIds, bw) })
+  return bwSheet({ required: true, onDone: bw => beginWorkout(routineIds, bw) })
 }
 // `opts` from the Apple Watch (lib/watch-sync.js): a session started there keeps the watch's id,
 // so the sets ticked on it find it, and its start time, however late the phone hears of it.

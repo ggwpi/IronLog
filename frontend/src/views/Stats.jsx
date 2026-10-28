@@ -368,7 +368,7 @@ function EffortCard({ S }) {
       </div>}
       {pts.length > 1 && <>
         <h4 className="sec" style={{ marginTop: 12 }}>{t('Week by week')}</h4>
-        <div className="chart"><LineChart points={pts} h={140} unit={hd} color="var(--yellow)" invert={kind === 'rir'} /></div>
+        <div className="chart"><LineChart points={pts} h={104} unit={hd} color="var(--yellow)" invert={kind === 'rir'} variant="ribbon" /></div>
       </>}
       <h4 className="sec" style={{ marginTop: 12 }}>{t('Where the sets land')}</h4>
       {hist.map(b => <div key={b.rir} className="mrow">
@@ -642,11 +642,11 @@ export default function Stats() {
     <div className="hdr"><div><h1>{t('Stats')}</h1><div className="sub">{t('Progress & history')}</div></div>
       <button className="iconbtn" onClick={() => nav('/history')} aria-label={t('History')}><Icon name="history" /></button></div>
 
-    <div className="tiles">
-      <div className="tile"><div className="l"><Icon name="dumbbell" />{t('Workouts')}</div><div className="v">{workouts.length}</div></div>
-      <div className="tile"><div className="l"><Icon name="calendar" />{t('This month')}</div><div className="v">{monthW}</div></div>
-      <div className="tile"><div className="l"><Icon name="flame" />{t('Week streak')}</div><div className="v">{streakWeeks(S)}</div></div>
-      <div className="tile"><div className="l"><Icon name="scale" />{t('Weight 30d')}</div><div className="v" style={{ fontSize: 22, color: bwDelta30 === null ? 'inherit' : bwDeltaColor(bwDelta30, (lastBW(S) || {}).w || 0) }}>{bwDelta30 === null ? '–' : (bwDelta30 > 0 ? '+' : '') + fmtNum(bwDelta30) + ' ' + S.unit}</div></div>
+    <div className="tiles stats-summary">
+      <div className="tile"><div className="l"><span>{t('Workouts')}</span><Icon name="dumbbell" /></div><div className="v">{workouts.length}</div></div>
+      <div className="tile"><div className="l"><span>{t('This month')}</span><Icon name="calendar" /></div><div className="v">{monthW}</div></div>
+      <div className="tile"><div className="l"><span>{t('Week streak')}</span><Icon name="flameFill" /></div><div className="v">{streakWeeks(S)}</div></div>
+      <div className="tile"><div className="l"><span>{t('Weight 30d')}</span><Icon name="scale" /></div><div className="v" style={{ color: bwDelta30 === null ? 'inherit' : bwDeltaColor(bwDelta30, (lastBW(S) || {}).w || 0) }}>{bwDelta30 === null ? '–' : <>{(bwDelta30 > 0 ? '+' : '') + fmtNum(bwDelta30)} <span className="tile-unit">{S.unit}</span></>}</div></div>
 
     </div>
 
@@ -686,13 +686,13 @@ export default function Stats() {
         <div className="row between bw-head" style={{ marginBottom: 8 }}>
           <h2 style={{ margin: 0 }}>{t('Body weight')}</h2>
           <div className="row" style={{ gap: 8 }}>
-            <Button size="sm" icon="target" style={S.targetW ? { color: 'var(--yellow)' } : undefined} onClick={goalSheet}>{S.targetW ? fmtNum(S.targetW) : t('Goal')}</Button>
+            <Button size="sm" icon="target" onClick={goalSheet}>{S.targetW ? fmtNum(S.targetW) : t('Goal')}</Button>
             <Button size="sm" icon="plus" onClick={() => bwSheet()}>{t('Log')}</Button>
           </div>
         </div>
         <Segmented className="seg-range" value={range} onChange={setRange}
           options={rangeOptions()} />
-        <div className="chart"><LineChart points={bwPts} h={160} unit={S.unit} goal={S.targetW} /></div>
+        <div className="chart"><LineChart points={bwPts} h={104} unit={S.unit} goal={S.targetW} variant="ribbon" /></div>
         {/* every weigh-in, week by week with its average (Discord 'Weight') */}
         {S.bodyweight.length > 0 && <div className="row" style={{ justifyContent: 'flex-end', marginTop: 4 }}>
           <Button size="sm" variant="ghost" trailingIcon="chevronRight" onClick={weighInsSheet}>{t('All weigh-ins')}</Button>
@@ -718,14 +718,14 @@ export default function Stats() {
             {rangeTooShort
               ? <div className="empty small">{t('Fewer than two workouts in this period. Pick a longer one.')}</div>
               : onSets
-              ? <LineChart points={perSetChart.anchors} series={perSetChart.series} h={150} unit={perSet.metric === 'reps' ? t('reps') : S.unit} />
+              ? <LineChart points={perSetChart.anchors} series={perSetChart.series} h={104} unit={perSet.metric === 'reps' ? t('reps') : S.unit} variant="ribbon" />
               : onMax
-              ? <LineChart points={maxChartPts} h={150} unit={t('reps')} color="var(--blue)" />
+              ? <LineChart points={maxChartPts} h={104} unit={t('reps')} color="var(--blue)" variant="ribbon" />
               : onEff
-              ? <LineChart points={effPts} h={150} unit={hd} color="var(--yellow)" invert={kind === 'rir'} />
-              : <LineChart points={chartPts} h={150} unit={exUnit} color="var(--blue)" />}
+              ? <LineChart points={effPts} h={104} unit={hd} color="var(--yellow)" invert={kind === 'rir'} variant="ribbon" />
+              : <LineChart points={chartPts} h={104} unit={exUnit} color="var(--blue)" variant="ribbon" />}
           </div>
-          {onSets && !rangeTooShort && <div className="row small" style={{ gap: 12, flexWrap: 'wrap', marginTop: 6 }}>
+          {onSets && !rangeTooShort && <div className="row chart-legend" style={{ gap: 12, flexWrap: 'wrap', marginTop: 6 }}>
             {perSetChart.ns.map(n => <span key={n} className="row" style={{ gap: 5, alignItems: 'center' }}>
               <span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: 4, background: SET_COLORS[n - 1] }} />{t('Set {0}', n)}
             </span>)}

@@ -2005,7 +2005,7 @@ function ActiveWorkout() {
     {/* In list mode the whole session scrolls under the header, so the header (name, clock,
         set counter, discard/finish, progress) stays pinned — the one thing you want in view
         while you are somewhere in the middle of a long stack. Cards mode never scrolls far. */}
-    <div className={'whdr' + (listMode ? ' stick' : '')} ref={hdrRef}>
+    <div className={'whdr' + (listMode ? ' stick' : '')} ref={hdrRef} data-workout-id={A.id}>
     {/* ⌄ leaves the screen and keeps the session running (the tab bar's Resume brings it back);
         in the editor of a saved workout it is the ✕ that closes the editor. Discard is in the ⋯
         menu now, and Finish is a labelled pill rather than a check that looked like a set tick: it

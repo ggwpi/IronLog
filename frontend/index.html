@@ -4,14 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="color-scheme" content="dark">
+<link rel="preload" href="./fonts/Rubik-Variable.ttf" as="font" type="font/ttf" crossorigin>
 <!-- Paint the document itself before reset/imports can delay the app stylesheet.
      The boot overlay alone does not color iOS's canvas or home-indicator area. -->
 <style>
-  html{color-scheme:dark;background:#000}
+  html{color-scheme:dark;background:#111}
+  html[data-theme="light"]{color-scheme:light;background:#fff}
   body{margin:0;min-height:100vh;min-height:100dvh;background:inherit}
 </style>
-<script>
-  // Set direction before first paint so an RTL profile never flashes as LTR.
+<script id="boot-preferences">
+  // Read presentation preferences before first paint; never write to the saved profile here.
   // The app re-applies this on every language change (lib/i18n.js setLang).
   // i18n-core RTL_LANGS is the runtime source of truth — keep this list in sync.
   try {
@@ -22,6 +24,14 @@
     if (l === 'iw') l = 'he';
     document.documentElement.lang = l;
     document.documentElement.dir = ['ar', 'he'].includes(l) ? 'rtl' : 'ltr';
+    var theme = s.theme === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : s.theme === 'light' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+    var shades = theme === 'light'
+      ? {lime:'#34c759',sky:'#007aff',orange:'#ff9500',violet:'#af52de',pink:'#ff2d55',red:'#ff3b30',teal:'#30b0c7',gold:'#ffcc00'}
+      : {lime:'#30d158',sky:'#0a84ff',orange:'#ff9f0a',violet:'#bf5af2',pink:'#ff375f',red:'#ff453a',teal:'#40c8e0',gold:'#ffd60a'};
+    var accent = s.accent === 'custom' && typeof s.accentCustom === 'string' && /^#[0-9a-f]{6}$/i.test(s.accentCustom.trim())
+      ? s.accentCustom.trim() : Object.hasOwn(shades, s.accent) ? shades[s.accent] : shades.lime;
+    document.documentElement.style.setProperty('--boot-accent', accent);
   } catch (e) {}
 </script>
 <title>IronLog</title>
@@ -39,33 +49,67 @@
 <link rel="icon" type="image/png" href="icon-180.png">
 </head>
 <body>
-<!-- Complete startup artwork is available in the first HTML, without asset or shader loading. -->
+<!-- The existing boot overlay: inline artwork, with the saved accent available on first paint. -->
 <style>
-  #boot{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;overflow:hidden;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:opacity .22s ease-out}
-  #boot .boot-stage{position:relative;width:min(328px,calc(100vw - 40px),45svh);aspect-ratio:288/448;font-size:min(36px,9.2vw,5svh)}
-  #boot .boot-outline{display:block;width:100%;height:100%;overflow:visible;fill:none;stroke:#27ff00;stroke-linecap:round;stroke-linejoin:round}
-  #boot .boot-shape{stroke-width:1.25;opacity:.18;vector-effect:non-scaling-stroke}
-  #boot .boot-trace{stroke-width:2;stroke-dasharray:18 82;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 5px #27ff00);animation:boot-outline-loop 2.4s linear infinite}
-  #boot .boot-wordmark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:max-content;line-height:1.2;font-weight:650;letter-spacing:-1.3px}
-  #boot .boot-wordmark span{color:#a1a1aa;animation:boot-shimmer 1.2s ease-in-out infinite;animation-delay:calc(var(--i)*.12s)}
-  #boot.out{opacity:0;pointer-events:none}
-  @keyframes boot-outline-loop{to{stroke-dashoffset:-100}}
-  @keyframes boot-shimmer{0%,100%{color:#a1a1aa}50%{color:#fff}}
+  .lightning-screen{--boot-ground:#111;position:fixed;inset:0 auto auto 0;width:100vw;height:100dvh;z-index:2147483000;display:grid;place-items:center;overflow:hidden;background:var(--boot-ground);color:var(--boot-accent,#30d158)}
+  .lightning-screen.lightning-action{background:transparent;color:var(--acc,#30d158);touch-action:none}
+  .lightning-screen.lightning-action .boot-wipe{opacity:1}
+  .lightning-hold{position:absolute;width:36px;height:56px;fill:#fff;opacity:0;pointer-events:none}
+  .lightning-action.waiting .lightning-hold{animation:lightning-wait 1.2s ease-in-out 180ms infinite}
+  .lightning-iris{position:absolute;inset:0;width:100%;height:100%;fill:#fff;overflow:hidden;pointer-events:none}
+  @keyframes lightning-wait{0%,100%{opacity:.5;transform:scale(.9)}50%{opacity:1;transform:scale(1)}}
+  :root[data-theme="light"] #boot{--boot-ground:#fff}
+  #boot .boot-stage{position:relative;display:grid;place-items:center;width:144px;height:144px;isolation:isolate;animation:boot-arrive 820ms cubic-bezier(.2,.7,.25,1) both}
+  #boot .boot-aura{position:absolute;inset:0;z-index:-1;filter:blur(13px);animation:boot-bloom 820ms ease-out both}
+  #boot .boot-aura i{position:absolute;width:88px;height:88px;border-radius:48% 58% 54% 45%;background:radial-gradient(ellipse,currentColor 20%,color-mix(in srgb,currentColor 75%,transparent) 48%,transparent 75%)}
+  #boot .boot-aura i:nth-child(1){left:10px;top:9px;filter:hue-rotate(48deg);transform:rotate(-28deg)}
+  #boot .boot-aura i:nth-child(2){right:8px;top:25px;filter:hue-rotate(22deg);transform:rotate(30deg)}
+  #boot .boot-aura i:nth-child(3){left:24px;bottom:9px;filter:hue-rotate(-16deg);transform:rotate(12deg)}
+  #boot .boot-logo{display:block;width:44px;height:68px;overflow:visible}
+  #boot .boot-logo .boot-logo-white{fill:#fff}
+  .lightning-screen .boot-defs{position:absolute;width:0;height:0;overflow:visible}
+  #boot .boot-cutout{transform:translate(50vw,50dvh) scale(.01375) translate(-260px,-256px)}
+  .lightning-screen .boot-wipe{position:absolute;inset:0;opacity:0;pointer-events:none;background:currentColor;clip-path:var(--lightning-clip,url(#boot-cover))}
+  .lightning-screen .boot-wipe::before,.lightning-screen .boot-wipe::after{content:'';position:absolute;inset:0}
+  .lightning-screen .boot-wipe::before{background:linear-gradient(145deg,color-mix(in srgb,currentColor 65%,#fff),transparent 75%);filter:hue-rotate(48deg)}
+  .lightning-screen .boot-wipe::after{background:radial-gradient(ellipse at 85% 95%,currentColor,transparent 75%);filter:hue-rotate(-16deg);opacity:.85}
+  #boot.finishing .boot-stage{animation:boot-contract 220ms cubic-bezier(.65,0,.8,.5) both}
+  #boot.finishing .boot-aura{animation:boot-gather 220ms ease-in both}
+  #boot.finishing .boot-logo-white{animation:boot-colour 150ms ease-in both}
+  #boot.out{pointer-events:none;animation:boot-reveal 620ms linear both}
+  #boot.out .boot-stage{visibility:hidden}
+  #boot.out .boot-wipe{animation:boot-wipe 620ms cubic-bezier(.7,0,.85,.3) both}
+  #boot.out .boot-cutout{animation:boot-cover 620ms cubic-bezier(.7,0,.85,.3) both}
+  @keyframes boot-arrive{0%{opacity:0;transform:scale(.5);filter:blur(5px)}28%,100%{opacity:1;transform:scale(1);filter:blur(0)}}
+  @keyframes boot-bloom{0%{opacity:0;transform:scale(.4)}30%{opacity:.9;transform:scale(.96)}75%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+  @keyframes boot-contract{from{transform:scale(1)}to{transform:scale(.075)}}
+  @keyframes boot-gather{to{opacity:0;filter:blur(0)}}
+  @keyframes boot-colour{to{opacity:0}}
+  @keyframes boot-cover{0%{transform:translate(50vw,50dvh) scale(.01375) translate(-260px,-256px)}54%,100%{transform:translate(50vw,50dvh) scale(var(--boot-cover-scale,64)) translate(-260px,-256px)}}
+  @keyframes boot-wipe{0%,54%{opacity:1;filter:blur(0)}100%{opacity:0;filter:blur(20px)}}
+  @keyframes boot-reveal{0%,48%{opacity:1}100%{opacity:0}}
   @media(prefers-reduced-motion:reduce){
-    #boot .boot-trace,#boot .boot-wordmark span{animation:none}
-    #boot .boot-wordmark span{color:#fff}
-    #boot .boot-shape{opacity:.35}
-    #boot{transition-duration:.12s}
+    #boot .boot-stage,#boot .boot-aura,#boot.finishing .boot-stage,#boot.finishing .boot-aura,#boot.finishing .boot-logo-white,#boot.out .boot-cutout,#boot.out .boot-wipe{animation:none}
+    #boot .boot-aura{opacity:.4}
+    #boot .boot-wipe{display:none}
+    #boot.out{animation:none;opacity:0;transition:opacity 120ms ease-out}
   }
 </style>
-<div id="boot" role="status" aria-label="Loading IronLog" dir="ltr">
+<div id="boot" class="lightning-screen" role="status" aria-label="Loading IronLog" dir="ltr">
+  <svg class="boot-defs" aria-hidden="true" focusable="false"><defs><clipPath id="boot-cover" clipPathUnits="userSpaceOnUse"><path class="boot-cutout" d="M302 75 147 310h101l-39 127 166-241H274L302 75Z"/></clipPath></defs></svg>
   <div class="boot-stage" aria-hidden="true">
-    <svg class="boot-outline" viewBox="112 32 288 448" focusable="false">
-      <path class="boot-shape" d="M302 75 147 310h101l-39 127 166-241H274L302 75Z"/>
-      <path class="boot-trace" pathLength="100" d="M302 75 147 310h101l-39 127 166-241H274L302 75Z"/>
+    <div class="boot-aura"><i></i><i></i><i></i></div>
+    <svg class="boot-logo" viewBox="140 70 240 372" focusable="false">
+      <defs><linearGradient id="boot-ink" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" style="stop-color:color-mix(in srgb,currentColor 70%,#17252d)"/>
+        <stop offset=".5" stop-color="currentColor"/>
+        <stop offset="1" style="stop-color:color-mix(in srgb,currentColor 50%,#fff)"/>
+      </linearGradient></defs>
+      <path fill="url(#boot-ink)" d="M302 75 147 310h101l-39 127 166-241H274L302 75Z"/>
+      <path class="boot-logo-white" d="M302 75 147 310h101l-39 127 166-241H274L302 75Z"/>
     </svg>
-    <div class="boot-wordmark"><span style="--i:0">I</span><span style="--i:1">r</span><span style="--i:2">o</span><span style="--i:3">n</span><span style="--i:4">L</span><span style="--i:5">o</span><span style="--i:6">g</span></div>
   </div>
+  <div class="boot-wipe" aria-hidden="true"></div>
 </div>
 <div id="root"></div>
 <script type="module" src="/src/main.jsx"></script>
