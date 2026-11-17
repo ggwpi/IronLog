@@ -69,7 +69,7 @@ export default function WeeklyMuscleTargetsCard({ S }) {
   return <div className="card" data-weekly-muscle-targets>
     <div className="row between" style={{ gap: 10, marginBottom: 6 }}>
       <div>
-        <h2 style={{ margin: 0 }}>{t('Weekly muscle volume')}</h2>
+        <h2 style={{ margin: 0 }}>{t('Weekly muscle volume')} · {t('Goal')}</h2>
         <div className="muted small" style={{ marginTop: 2 }}>{t('Completed')} · {t('Work sets')}</div>
       </div>
       <Button icon="target" size="sm" onClick={muscleTargetsSheet}>{t('Goal')}</Button>
