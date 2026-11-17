@@ -1,4 +1,20 @@
 export default {
+  // Original openGym v1.4.5 set-trend wording.
+  "{0} less help than last time": "輔助比上次少 {0}",
+  "{0} more help than last time": "輔助比上次多 {0}",
+  "{0} more than last time": "比上次多 {0}",
+  "{0} less than last time": "比上次少 {0}",
+  "{0} more rep than last time": "比上次多 {0} 次",
+  "{0} more reps than last time": "比上次多 {0} 次",
+  "{0} rep fewer than last time": "比上次少 {0} 次",
+  "{0} reps fewer than last time": "比上次少 {0} 次",
+  "Better estimated 1RM than last time": "估算 1RM 比上次高",
+  "Lower estimated 1RM than last time": "估算 1RM 比上次低",
+  "{0} longer than last time": "比上次長 {0}",
+  "{0} shorter than last time": "比上次短 {0}",
+  "Faster than last time": "比上次快",
+  "Slower than last time": "比上次慢",
+  "Compare sets with last time": "與上次逐組比較",
   "Recovery tips": "恢復提示",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "今日狀態",

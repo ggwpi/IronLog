@@ -88,7 +88,7 @@ describe('labels and the switch', () => {
     expect(trendLabel({ dir: 1, by: 'e1rm', delta: 4 })).toBe('Better estimated 1RM than last time')
     expect(trendLabel(null)).toBe('')
   })
-  test('on unless switched off', () => {
+  test('only on when explicitly switched on', () => {
     expect(setTrendOn({})).toBe(false)
     expect(setTrendOn({ setTrend: true })).toBe(true)
     expect(setTrendOn({ setTrend: false })).toBe(false)
