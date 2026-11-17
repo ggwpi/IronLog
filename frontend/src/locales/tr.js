@@ -1,5 +1,21 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original openGym v1.4.5 set-trend wording.
+  "{0} less help than last time": "Geçen seferden {0} daha az destek",
+  "{0} more help than last time": "Geçen seferden {0} daha fazla destek",
+  "{0} more than last time": "Geçen seferden {0} fazla",
+  "{0} less than last time": "Geçen seferden {0} az",
+  "{0} more rep than last time": "Geçen seferden {0} tekrar fazla",
+  "{0} more reps than last time": "Geçen seferden {0} tekrar fazla",
+  "{0} rep fewer than last time": "Geçen seferden {0} tekrar az",
+  "{0} reps fewer than last time": "Geçen seferden {0} tekrar az",
+  "Better estimated 1RM than last time": "Tahmini 1RM geçen seferden iyi",
+  "Lower estimated 1RM than last time": "Tahmini 1RM geçen seferden düşük",
+  "{0} longer than last time": "Geçen seferden {0} uzun",
+  "{0} shorter than last time": "Geçen seferden {0} kısa",
+  "Faster than last time": "Geçen seferden hızlı",
+  "Slower than last time": "Geçen seferden yavaş",
+  "Compare sets with last time": "Setleri geçen seferle karşılaştır",
   "Recovery tips": "Toparlanma ipuçları",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "Günün formu",

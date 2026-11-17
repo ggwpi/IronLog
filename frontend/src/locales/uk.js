@@ -1,5 +1,21 @@
 // Ukrainian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original openGym v1.4.5 set-trend wording.
+  "{0} less help than last time": "На {0} менше допомоги, ніж минулого разу",
+  "{0} more help than last time": "На {0} більше допомоги, ніж минулого разу",
+  "{0} more than last time": "На {0} більше, ніж минулого разу",
+  "{0} less than last time": "На {0} менше, ніж минулого разу",
+  "{0} more rep than last time": "На {0} повт. більше, ніж минулого разу",
+  "{0} more reps than last time": { one: "На {0} повт. більше, ніж минулого разу", few: "На {0} повт. більше, ніж минулого разу", many: "На {0} повт. більше, ніж минулого разу" },
+  "{0} rep fewer than last time": "На {0} повт. менше, ніж минулого разу",
+  "{0} reps fewer than last time": { one: "На {0} повт. менше, ніж минулого разу", few: "На {0} повт. менше, ніж минулого разу", many: "На {0} повт. менше, ніж минулого разу" },
+  "Better estimated 1RM than last time": "Розрахунковий 1ПМ вищий, ніж минулого разу",
+  "Lower estimated 1RM than last time": "Розрахунковий 1ПМ нижчий, ніж минулого разу",
+  "{0} longer than last time": "На {0} довше, ніж минулого разу",
+  "{0} shorter than last time": "На {0} коротше, ніж минулого разу",
+  "Faster than last time": "Швидше, ніж минулого разу",
+  "Slower than last time": "Повільніше, ніж минулого разу",
+  "Compare sets with last time": "Порівнювати підходи з минулим разом",
   "Recovery tips": "Підказки про відновлення",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "Форма дня",

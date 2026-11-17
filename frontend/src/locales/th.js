@@ -1,5 +1,21 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original openGym v1.4.5 set-trend wording.
+  "{0} less help than last time": "แรงช่วยน้อยกว่าครั้งที่แล้ว {0}",
+  "{0} more help than last time": "แรงช่วยมากกว่าครั้งที่แล้ว {0}",
+  "{0} more than last time": "มากกว่าครั้งที่แล้ว {0}",
+  "{0} less than last time": "น้อยกว่าครั้งที่แล้ว {0}",
+  "{0} more rep than last time": "มากกว่าครั้งที่แล้ว {0} ครั้ง",
+  "{0} more reps than last time": "มากกว่าครั้งที่แล้ว {0} ครั้ง",
+  "{0} rep fewer than last time": "น้อยกว่าครั้งที่แล้ว {0} ครั้ง",
+  "{0} reps fewer than last time": "น้อยกว่าครั้งที่แล้ว {0} ครั้ง",
+  "Better estimated 1RM than last time": "1RM โดยประมาณดีกว่าครั้งที่แล้ว",
+  "Lower estimated 1RM than last time": "1RM โดยประมาณต่ำกว่าครั้งที่แล้ว",
+  "{0} longer than last time": "นานกว่าครั้งที่แล้ว {0}",
+  "{0} shorter than last time": "สั้นกว่าครั้งที่แล้ว {0}",
+  "Faster than last time": "เร็วกว่าครั้งที่แล้ว",
+  "Slower than last time": "ช้ากว่าครั้งที่แล้ว",
+  "Compare sets with last time": "เทียบเซ็ตกับครั้งที่แล้ว",
   "Recovery tips": "เคล็ดลับการฟื้นตัว",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "ฟอร์มวันนี้",

@@ -4,6 +4,22 @@
 import pt from './pt.js'
 
 export const PT_BR_OVERRIDES = {
+  // Original openGym v1.4.5 set-trend wording.
+  "{0} less help than last time": "{0} a menos de ajuda que da última vez",
+  "{0} more help than last time": "{0} a mais de ajuda que da última vez",
+  "{0} more than last time": "{0} a mais que da última vez",
+  "{0} less than last time": "{0} a menos que da última vez",
+  "{0} more rep than last time": "{0} rep. a mais que da última vez",
+  "{0} more reps than last time": "{0} rep. a mais que da última vez",
+  "{0} rep fewer than last time": "{0} rep. a menos que da última vez",
+  "{0} reps fewer than last time": "{0} rep. a menos que da última vez",
+  "Better estimated 1RM than last time": "1RM estimado melhor que da última vez",
+  "Lower estimated 1RM than last time": "1RM estimado mais baixo que da última vez",
+  "{0} longer than last time": "{0} a mais que da última vez",
+  "{0} shorter than last time": "{0} a menos que da última vez",
+  "Faster than last time": "Mais rápido que da última vez",
+  "Slower than last time": "Mais lento que da última vez",
+  "Compare sets with last time": "Comparar séries com a última vez",
   "Recovery tips": "Dicas de recuperação",
   "Automatically use another model": "Usar outro modelo automaticamente",
   "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "Se o modelo escolhido estiver indisponível, tentar outro do mesmo provedor. A qualidade e o custo podem variar. Desative para usar apenas o modelo escolhido.",
