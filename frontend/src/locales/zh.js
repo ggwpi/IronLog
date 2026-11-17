@@ -2486,4 +2486,9 @@ export default {
   "Hidden for today. Back tomorrow.": "今天先隐藏，明天再回来。",
   "Hide for today": "今天不再显示",
   "Swap session": "换个训练",
+  // openGym v1.4.5 weekly countdown translations.
+  'Workouts per week': '每周训练次数',
+  "No weekly countdown on Home.": "首页不显示本周倒数。",
+  "{0} of {1} left this week": "本周还剩 {0}/{1} 次",
+  "All done this week. Nice.": "本周全部完成，漂亮。",
 }
