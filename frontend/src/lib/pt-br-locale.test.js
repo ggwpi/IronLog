@@ -39,9 +39,9 @@ describe('Brazilian Portuguese locale', () => {
     // The counts themselves are read off the pack rather than pinned here: a new UI string lands
     // in pt.js and pt-BR.js together and moves both, and a number in a test that every new string
     // has to be taught is a number nobody reads. What the numbers stood for is asserted above.
-    // If the hash fails, review the changed keys and wording before accepting a new one. From
+    // Reviewed 2026-11-18: the Recovery Hint adds five shared inherited pt strings:\n    // Upper body today?, Legs today?, Hidden for today. Back tomorrow., Hide for today,\n    // Swap session. Each has neutral wording suitable for pt-BR; ten other hints\n    // use Brazilian-specific explicit overrides. Keep this snapshot guard enforced.\n    // If the hash fails, review the changed keys and wording before accepting a new one. From
     // frontend/: node scripts/pt-br-inheritance-fingerprint.mjs --list
-    expect(fingerprint, 'pt-PT inheritance changed; review the inherited pt-BR wording').toBe('263b925d9de4b84fee6b20814518c1a10fdaee945cde9729ee6bfcc1f03a4e0c')
+    expect(fingerprint, 'pt-PT inheritance changed; review the inherited pt-BR wording').toBe('a23d6978504bf4d5ed44c74165dfe242f10ecf40309285414696aee299f794f9')
   })
 
   // pt-PT labelled Unpair 'Desfazer': Undo, in Portuguese (it is pt-BR's Undo), on the button that
