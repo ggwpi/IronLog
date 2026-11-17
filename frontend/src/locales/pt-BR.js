@@ -4,6 +4,7 @@
 import pt from './pt.js'
 
 export const PT_BR_OVERRIDES = {
+  "Recovery tips": "Dicas de recuperação",
   "Automatically use another model": "Usar outro modelo automaticamente",
   "If the selected model is unavailable, try another model from this provider. Quality and cost may differ. Turn off to use only your selected model.": "Se o modelo escolhido estiver indisponível, tentar outro do mesmo provedor. A qualidade e o custo podem variar. Desative para usar apenas o modelo escolhido.",
   "Thinking about your question…": "Pensando na sua pergunta…",
