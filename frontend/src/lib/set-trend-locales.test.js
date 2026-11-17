@@ -26,9 +26,14 @@ const placeholders = value => [...new Set([...String(value).matchAll(/\{\d+\}/g)
 describe('openGym set trends use all 19 IronLog locale packs', () => {
   it('keeps every comparison and settings key available without changing interpolation', () => {
     for (const [lang, dict] of packs) for (const key of keys) {
-      expect(typeof dict[key], lang + ': ' + key).toBe('string')
-      expect(dict[key]?.length, lang + ': ' + key).toBeGreaterThan(0)
-      expect(placeholders(dict[key]), lang + ': ' + key).toEqual(placeholders(key))
+      const translation = dict[key]
+      const forms = typeof translation === 'string' ? [translation] : Object.values(translation || {})
+      expect(forms.length, lang + ': ' + key).toBeGreaterThan(0)
+      for (const form of forms) {
+        expect(typeof form, lang + ': ' + key).toBe('string')
+        expect(form.length, lang + ': ' + key).toBeGreaterThan(0)
+        expect(placeholders(form), lang + ': ' + key).toEqual(placeholders(key))
+      }
     }
   })
 })
