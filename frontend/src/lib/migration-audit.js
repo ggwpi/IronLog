@@ -10,7 +10,7 @@ export const PROTECTED_USER_FIELDS = Object.freeze([
   'dayPhotos', 'gymCards', 'equipProfiles', 'favEx', 'exWeights',
   'exNotes', 'dayNotes', 'dayPlan', 'week', 'queue', 'rotation', 'active',
   'deleted', 'mediaPending', 'targetW', 'unit', 'unitSet',
-  'muscleTargets', 'showWeeklySetsHome', 'sex', 'birthYear', 'deloadCycle',
+  'muscleTargets', 'showWeeklySetsHome', 'showWorkoutMusclePreview', 'sex', 'birthYear', 'deloadCycle',
   'recoveryHint', 'recoveryHintDay',
   'dailyForm', 'dayForm',
 ])

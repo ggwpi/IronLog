@@ -21,6 +21,7 @@ describe('upstream fields across IronLog multi-device sync', () => {
     latestPrefs.deloadCycle = { every: 4, from: '2026-11-16' }
     latestPrefs.muscleTargets = { chest: [12, 17] }
     latestPrefs.showWeeklySetsHome = true
+    latestPrefs.showWorkoutMusclePreview = true
     stampChange(original, latestPrefs, 3000)
 
     const secondDevice = structuredClone(original)
@@ -33,6 +34,7 @@ describe('upstream fields across IronLog multi-device sync', () => {
     expect(merged.deloadCycle).toEqual(latestPrefs.deloadCycle)
     expect(merged.muscleTargets).toEqual(latestPrefs.muscleTargets)
     expect(merged.showWeeklySetsHome).toBe(true)
+    expect(merged.showWorkoutMusclePreview).toBe(true)
     expect(merged.workouts.map(w => w.id)).toEqual(['w1', 'w2'])
     expect(merged.routines).toEqual(original.routines)
   })

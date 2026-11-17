@@ -20,6 +20,14 @@ Upstream baseline to integrate: `DuarteSantos8/openGym@e4a68a94c42a3c17cbd560d66
 - Recovery Hint message/interaction strings are localized for all 19 IronLog locale packs. Non-Hebrew text comes from the pinned openGym v1.4.5 packs, while the fork supplies Hebrew; Brazilian Portuguese keeps its upstream regional overrides and inherits shared strings from pt. Locale-presence/placeholder regression tests were added. This is **not** proof of screenshot or native feature parity.
 - No visual/screenshot comparison or restored production-data test has been performed. The feature is only eligible for preview testing, not production release.
 
+## Today's mini body map (openGym v1.4.5, opt-in)
+
+- The upstream planned-workout thumbnail projects all exercises of today's routines into an effective-sets map. It is **read-only** and uses IronLog's own original `BodyMap`, muscle metadata, accent palette, and Today-row markup; no upstream UI components/styles were copied.
+- `Settings → Look & Home → Muscle map` controls `showWorkoutMusclePreview`. It is **off by default** for existing and new profiles: the exact existing Start badge, splash, loading, greeting, Home cards, chart, tab bar, and bottom sheets remain unchanged until enabled.
+- When enabled, only today's pending planned workout row gains a decorative, `aria-hidden` body thumbnail. Completed, running, freestyle, or empty plans do not gain a thumbnail. Empty or no-load routines return no thumbnail. The existing Start action is unchanged; no extra click target or focus target.
+- A small scoped CSS file sizes the map; shared design tokens and original IronLog global CSS are not edited. This is a web preview slice only, not full upstream multi-session/split-day parity; no migration, historical exercise edits, or remote profile data updates are involved.
+- Unit/Home UI and multi-device settings-sync fixture tests are included. Full mobile/RTL/screenshot review still required.
+
 ## Immutable visual baseline
 
 All existing components/screens remain the visual source of truth, including the splash/logo, boot/loading animation, workout-load transitions, Home greeting, Home card arrangement, existing card/expanded card appearance, charts, bottom sheets and swipe gestures, navigation bar, iconography, RTL layout and light/dark palettes. A feature may add a surface where needed, but must not replace or restyle existing IronLog surfaces. Compare screenshots in each state before any production merge.
