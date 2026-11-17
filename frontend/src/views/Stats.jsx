@@ -11,6 +11,7 @@ import { bwSheet, goalSheet, calendarSheet, dayOverrideSheet, workoutDetailSheet
 import LineChart from '../components/LineChart.jsx'
 import { lifetimeTotals } from '../lib/lifetime-totals.js'
 import StrengthLevelsCard from '../components/StrengthLevelsCard.jsx'
+import RelativeStrengthCard from '../components/RelativeStrengthCard.jsx'
 import Heatmap from '../components/Heatmap.jsx'
 import Icon from '../components/Icon.jsx'
 import BodyMap, { BodyMapLegend } from '../components/BodyMap.jsx'
@@ -772,6 +773,10 @@ export default function Stats() {
         </> : <div className="muted small">{t('Finish your first workout and your progress curves will show up here.')}</div>}
       </div>
     </div>
+
+    {/* Upstream relative-strength chart, following the existing exercise picker,
+        using IronLog's line graph and native card design. */}
+    {curEx && <RelativeStrengthCard S={S} exId={curEx} />}
 
     {workouts.length > 0 && <>
       <div className="row between" style={{ marginBottom: 10 }}>
