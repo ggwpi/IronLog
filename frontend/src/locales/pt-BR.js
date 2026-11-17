@@ -1567,4 +1567,29 @@ export const PT_BR_OVERRIDES = {
 
 }
 
-export default { ...pt, ...PT_BR_OVERRIDES }
+export default {
+  // openGym 1.4.5 Daily Form localized UI.
+  "Daily form": "Forma do dia",
+  "How are you today?": "Como você está hoje?",
+  "Tap what fits, skip what does not.": "Toque no que combina, pule o resto.",
+  "Sleep": "Sono",
+  "Barely slept": "Mal dormi",
+  "Slept like a log": "Dormi feito pedra",
+  "Energy": "Energia",
+  "Running on fumes": "Na reserva",
+  "Full of beans": "Cheio de gás",
+  "Soreness": "Dor muscular",
+  "Nothing aches": "Nada dói",
+  "Everything aches": "Dói tudo",
+  "Stress": "Estresse",
+  "Calm": "Calmo",
+  "Frazzled": "No limite",
+  "Today is a take-it-easy day": "Hoje é dia de ir com calma",
+  "Start without answering": "Começar sem responder",
+  "Skip for today": "Pular hoje",
+  "Check in before workouts?": "Fazer um check-in antes do treino?",
+  "Turn it on": "Ativar",
+  "Not for me": "Não é para mim",
+  "check-ins": "check-ins",
+  "Average": "Média",
+  "Patterns, not proof. Sleep is rarely the only thing that changed that day.": "Padrões, não provas. O sono raramente é a única coisa que mudou naquele dia.", ...pt, ...PT_BR_OVERRIDES }
