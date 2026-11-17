@@ -119,7 +119,7 @@ export const SEARCH = [
   { page: 'look', title: 'Gym check-in', icon: 'qr', tint: 'var(--blue)', kw: 'qr code membership card check in barcode' },
   { page: 'look', title: 'Body weight', icon: 'scale', tint: 'var(--green)', kw: 'weight card home' },
   { page: 'look', title: 'Recovery tips', icon: 'figureStrength', tint: 'var(--green)', kw: 'recovery tips tired muscles fatigue rest home card hint' },
-  { page: 'look', title: 'Workouts left this week', icon: 'target', tint: 'var(--green)', kw: 'weekly countdown home workouts left plan' },
+  { page: 'look', title: 'Workouts per week', icon: 'target', tint: 'var(--green)', kw: 'weekly countdown home workouts left plan' },
   { page: 'look', title: 'Weekly muscle volume', icon: 'figureStrength', tint: 'var(--teal)', kw: 'muscle volume training weekly targets sets home show' },
   { page: 'look', title: 'Muscle map', icon: 'figureStrength', tint: 'var(--teal)', kw: 'mini body muscle map today home workout row preview plan start' },
   { page: 'look', title: 'Show connection status', icon: 'cloud', tint: 'var(--blue)', kw: 'sync offline banner bar connection', when: c => !c.demo },

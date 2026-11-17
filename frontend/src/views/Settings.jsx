@@ -852,8 +852,8 @@ export default function Settings({ page = null, find = null, via = null, entryKe
             onChange={v => update(s => { s.showWorkoutMusclePreview = v })} />
         </Row>
         {/* The openGym weekly countdown is optional and never replaces IronLog's streak. */}
-        <Row icon="target" iconTint="var(--green)" title={t('Workouts left this week')}
-          subtitle={t('Workouts per week') + ' · ' + t('This week')}>
+        <Row icon="target" iconTint="var(--green)" title={t('Workouts per week')}
+          subtitle={t('This week') + ' · ' + t('On Home')}>
           <Switch checked={S.showWorkoutsLeftHome === true}
             onChange={v => update(s => { s.showWorkoutsLeftHome = v })} />
         </Row>
