@@ -53,11 +53,22 @@ describe('weekly countdown localized parity', () => {
   for (const [locale, pack] of Object.entries(packs)) {
     it(`has complete localized week-left copy for ${locale}`, () => {
       for (const key of keys) {
-        expect(typeof pack[key], `${locale}: ${key}`).toBe('string')
-        expect(pack[key].trim().length, `${locale}: ${key}`).toBeGreaterThan(0)
+        const value = pack[key]
+        // Polish, Russian and Ukrainian use the source i18n engine's three
+        // grammatical plural forms (one/few/many), not one string. Preserve them.
+        const forms = typeof value === 'string'
+          ? [value]
+          : value && typeof value === 'object' && !Array.isArray(value)
+            ? ['one', 'few', 'many'].map(form => value[form])
+            : []
+        expect(forms.length, `${locale}: ${key}`).toBeGreaterThan(0)
+        for (const form of forms) {
+          expect(typeof form, `${locale}: ${key}`).toBe('string')
+          expect(form.trim().length, `${locale}: ${key}`).toBeGreaterThan(0)
+          if (key.includes('{0}')) expect(form, `${locale}: ${key}`).toContain('{0}')
+          if (key.includes('{1}')) expect(form, `${locale}: ${key}`).toContain('{1}')
+        }
       }
-      expect(pack['{0} of {1} left this week'], locale).toContain('{0}')
-      expect(pack['{0} of {1} left this week'], locale).toContain('{1}')
     })
   }
 })
