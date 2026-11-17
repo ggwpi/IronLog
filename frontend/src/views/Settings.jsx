@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, forwardRef, useSyncExternalStore } from 'react'
 import { useNavigate, useParams, useLocation, Navigate } from 'react-router-dom'
 import { useStore, DEF, hasData } from '../store/useStore.js'
+import { muscleTargetsSheet } from '../components/WeeklyMuscleTargetsCard.jsx'
 import { healthStatus, loadHealth, enableHealth, disableHealth, openHealthConnect, onHealthChange } from '../lib/health-sync.js'
 import { workoutControls } from '../lib/workout-controls.js'
 import { speedUnitOf } from '../lib/speed.js'
@@ -694,6 +695,10 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         </Row>
       </Section>
       <Section>
+        {/* openGym 1.4.5 ranges in the native IronLog bottom sheet. */}
+        <Row icon="figureStrength" iconTint="var(--teal)" title={t('Weekly muscle volume')}
+          subtitle={t('Work sets') + ' · ' + t('Goal')} accessory="chevron"
+          onClick={muscleTargetsSheet} />
         <Row icon="clipboard" iconTint="var(--green)" title={t('Load starter plan')} accessory="chevron" onClick={starterPlanSheet} />
       </Section>
     </>,
