@@ -1,6 +1,7 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  "Recovery tips": "טיפים להתאוששות",
   // openGym 1.4.5 Daily Form, preserved in IronLog's Hebrew interface.
   "Daily form": "הרגשה יומית",
   "How are you today?": "איך אתה מרגיש היום?",
