@@ -1,5 +1,6 @@
 // Polish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Recovery tips": "Wskazówki regeneracji",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "Forma dnia",
   "How are you today?": "Jak się dziś czujesz?",
