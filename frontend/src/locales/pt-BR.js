@@ -1603,6 +1603,11 @@ export const PT_BR_OVERRIDES = {
   "Your shoulders haven’t had any work in {0} days.": "Seus ombros não treinam há {0} dias.",
   "Today’s plan takes care of that.": "O plano de hoje resolve isso.",
   "A few sets today would be nice.": "Umas séries hoje cairiam bem.",
+  // Weekly countdown is explicit here so the inherited pt-BR fingerprint stays pinned.
+  'Workouts per week': 'Treinos por semana',
+  "No weekly countdown on Home.": "Sem contagem semanal no Início.",
+  "{0} of {1} left this week": "Faltam {0} de {1} nesta semana",
+  "All done this week. Nice.": "Tudo feito nesta semana. Mandou bem.",
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }
