@@ -7,7 +7,7 @@ import { t } from '../lib/i18n.js'
 import { dateLocale } from '../lib/i18n-core.js'
 import { fmtNum, exerciseNameText } from '../lib/format.js'
 import { EXIDX } from '../lib/exercises.js'
-import { strengthLevels, LEVEL_NAME, sexOf } from '../lib/strength-level.js'
+import { strengthLevels, strengthLevel, liftOf, LEVELS, LEVEL_NAME, sexOf } from '../lib/strength-level.js'
 import { Button, Segmented, Stepper } from './ui.jsx'
 
 const ratio = value => new Intl.NumberFormat(dateLocale(), { maximumFractionDigits: 2 }).format(value)
@@ -65,4 +65,37 @@ export default function StrengthLevelsCard({ S }) {
       {t('Using the men’s table for now. Add your sex and year of birth for a fairer read.')}
     </div>}
   </div>
+}
+
+// The same strength-grade feature on the exercise's existing IronLog detail sheet.
+// Uses existing typography and neutral controls; never an upstream-themed component.
+export function StrengthLevelBlock({ exId }) {
+  const S = useStore(s => s.S)
+  if (!liftOf(exId)) return null
+  const level = strengthLevel(S, exId)
+  if (!level) return null
+  return <section data-strength-level-detail style={{ margin: '14px 0' }}>
+    <h4 className="sec">{t('Strength level')}</h4>
+    <div className="row between" style={{ alignItems: 'baseline', gap: 8 }}>
+      <strong>{t(LEVEL_NAME[level.name])}</strong>
+      <span className="small muted">{t('{0} × body weight', ratio(level.ratio))}</span>
+    </div>
+    <div className="row" style={{ gap: 4, marginTop: 9, marginBottom: 8 }} role="img"
+      aria-label={t(LEVEL_NAME[level.name])}>
+      {LEVELS.map((name, i) => <span key={name} style={{
+        display: 'block', height: 5, flex: 1, borderRadius: 'var(--r-sm)',
+        background: i <= level.level ? 'var(--acc)' : 'var(--surface-3)',
+      }} />)}
+    </div>
+    <div className="small muted">{level.next
+      ? t('{0} from an estimated 1RM of {1}',
+        t(LEVEL_NAME[level.next.name]), fmtNum(level.next.weight) + ' ' + S.unit)
+      : t('Top of the table. Take a bow.')}</div>
+    <div className="small muted" style={{ marginTop: 6 }}>
+      {sexOf(S)
+        ? t('Against published strength standards, worked out on this device.')
+        : t('Using the men’s table for now. Add your sex and year of birth for a fairer read.')}
+      {' '}<button type="button" className="link" onClick={aboutYouSheet}>{t('About you')}</button>
+    </div>
+  </section>
 }
