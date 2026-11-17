@@ -1,5 +1,6 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Recovery tips": "نصائح التعافي",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "لياقة اليوم",
   "How are you today?": "كيف حالك اليوم؟",
