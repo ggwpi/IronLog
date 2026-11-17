@@ -1,4 +1,5 @@
 export default {
+  "Recovery tips": "恢復提示",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "今日狀態",
   "How are you today?": "今天感覺如何？",
