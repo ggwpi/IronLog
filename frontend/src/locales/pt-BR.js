@@ -1592,6 +1592,17 @@ export const PT_BR_OVERRIDES = {
   "check-ins": "check-ins",
   "Average": "Média",
   "Patterns, not proof. Sleep is rarely the only thing that changed that day.": "Padrões, não provas. O sono raramente é a única coisa que mudou naquele dia.",
+  // openGym v1.4.5 Recovery Hint: Brazilian overrides; other copy inherits pt.
+  "Your legs are still recovering from {0}.": "Suas pernas ainda estão se recuperando (sessão: {0}).",
+  "Your upper body is still recovering from {0}.": "A parte de cima ainda está se recuperando (sessão: {0}).",
+  "Rest day, good timing.": "Dia de descanso, na hora certa.",
+  "Go a bit lighter today, or swap the session.": "Pegue mais leve hoje, ou troque a sessão.",
+  "Your legs haven’t had any work in {0} days.": "Suas pernas não treinam há {0} dias.",
+  "Your back hasn’t had any work in {0} days.": "Suas costas não treinam há {0} dias.",
+  "Your chest hasn’t had any work in {0} days.": "Seu peito não treina há {0} dias.",
+  "Your shoulders haven’t had any work in {0} days.": "Seus ombros não treinam há {0} dias.",
+  "Today’s plan takes care of that.": "O plano de hoje resolve isso.",
+  "A few sets today would be nice.": "Umas séries hoje cairiam bem.",
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

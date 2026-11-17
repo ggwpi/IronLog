@@ -17,6 +17,7 @@ Upstream baseline to integrate: `DuarteSantos8/openGym@e4a68a94c42a3c17cbd560d66
 - The familiar IronLog Home card appears **only** when the person explicitly enables `Recovery tips` in Look & Home, has sufficiently recent workout history, and has a relevant recovery insight. Prior profiles never see a new Home card by default.
 - Dismissal stores a single day and supports Undo. Toggling Recovery tips on clears a previous dismissal. Both preferences are included in the non-destructive audit.
 - Sport activity stimuli (running, football, cycling) remain **unimplemented** in this fork and are not silently inferred. Recovery advice based on those activities must wait for the actual activity log and recovery parity, with additional integration tests.
+- Recovery Hint message/interaction strings are localized for all 19 IronLog locale packs. Non-Hebrew text comes from the pinned openGym v1.4.5 packs, while the fork supplies Hebrew; Brazilian Portuguese keeps its upstream regional overrides and inherits shared strings from pt. Locale-presence/placeholder regression tests were added. This is **not** proof of screenshot or native feature parity.
 - No visual/screenshot comparison or restored production-data test has been performed. The feature is only eligible for preview testing, not production release.
 
 ## Immutable visual baseline
