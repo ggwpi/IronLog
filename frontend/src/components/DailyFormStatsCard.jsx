@@ -34,7 +34,7 @@ export default function DailyFormStatsCard({ S }) {
     </> : <>
       <div className="row between" style={{ padding: '8px 0' }}>
         <span className="muted">{t('Today')}</span>
-        <span>{today ? fmtNum(formScore(today)) + ' / 5' : '—'}</span>
+        <span>{today ? fmtNum(formScore(today)) + ' / 5' : '–'}</span>
       </div>
       <div className="row between" style={{ padding: '8px 0', borderTop: 'var(--hair) solid var(--sep)' }}>
         <span className="muted">{t('Daily form')} · 14</span>
