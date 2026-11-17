@@ -4,6 +4,17 @@ Status: **IN PROGRESS — NOT SAFE TO MERGE OR DEPLOY**
 IronLog baseline: `79fc61eed2000049424591b2bde4ec7f20fa6615`  
 Upstream baseline to integrate: `DuarteSantos8/openGym@e4a68a94c42a3c17cbd560d66ce2e46a7048ab99` (v1.4.5).
 
+## Current verified implementation scope (branch only)
+
+- A destructive legacy reset at startup has been replaced with a no-delete guard and regression tests.
+- A **read-only** migration audit can reject dropped or changed original workout records, sets, loads, routines, measurements, media references, owner-related data fields and active session records on JSON fixture comparisons. This is NOT a backup or a live migration.
+- openGym v1.4.5's `lifetimeTotals` calculation and `strength-level` engine were ported with automated tests. IronLog Stats now renders the new calculations in existing IronLog `.card`, `.row`, `Button`, `Segmented`, and `Stepper` components; its strength preferences open through IronLog's existing bottom-sheet system.
+- **Not yet feature-parity complete:** the remaining openGym cards, settings, native apps, server integrations and architecture changes have not been ported. Tests/Preview must pass before these changes are considered verified.
+
+## Immutable visual baseline
+
+All existing components/screens remain the visual source of truth, including the splash/logo, boot/loading animation, workout-load transitions, Home greeting, Home card arrangement, existing card/expanded card appearance, charts, bottom sheets and swipe gestures, navigation bar, iconography, RTL layout and light/dark palettes. A feature may add a surface where needed, but must not replace or restyle existing IronLog surfaces. Compare screenshots in each state before any production merge.
+
 ## Non-negotiable product contract
 
 1. Preserve the physical IronLog visual design: navigation bar, typography, spacing, card surfaces, sheets, animations, graphs, palettes, accessibility and layouts. Add all upstream cards and screens using this exact design system. Do not overlay a second UI or embed upstream screens.
