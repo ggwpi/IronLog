@@ -1,5 +1,7 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { useStore } from './store/useStore.js'
+import { checkinMode, readForm, withForm } from './lib/daily-form.js'
+import DailyFormCheckin from './components/DailyFormCheckin.jsx'
 import { useUI } from './store/useUI.js'
 import { EXDB, EXIDX, BODYPARTS, isCardio, isBodyweightEq, allExercises, equipmentOf, byCategory, smOf, searchExercises, similarExercises, exOr, isAssisted, betterWeight, beatsWeight, isCustomEx } from './lib/exercises.js'
 import { activeProfile, exAvailable, ALL_EQUIPMENT, newProfile, profileEquipment, ACC_V } from './lib/equipment.js'
@@ -2957,9 +2959,23 @@ export function DayNoteRow({ iso, note }) {
 /* ============================ workout lifecycle ============================ */
 // `routineIds` accepts `string | string[] | null` — `[r.id]` for one routine,
 // `effectiveRoutineIds(...)` for today's planned session, `[]` / null for explicit freestyle.
-export function startFlow(routineIds) {
-  // The weigh-in is a setting (Settings → During a workout, issue #137): off goes straight
-  // into the session with no body weight on it, same as "Start without weighing in".
+export function startFlow(routineIds, { checked = false } = {}) {
+  // Optional openGym 1.4.5 check-in precedes IronLog's existing weigh-in
+  // flow. Profiles predating this feature remain unchanged; dismissing the
+  // sheet or skipping never writes to a user profile.
+  const today = todayISO()
+  if (!checked && checkinMode(S(), today)) {
+    ui().openSheet(close => <DailyFormCheckin
+      onDone={answers => {
+        close()
+        if (readForm(answers)) update(s => { s.dayForm = withForm(s.dayForm, today, answers) })
+        startFlow(routineIds, { checked: true })
+      }}
+      onSkip={() => { close(); startFlow(routineIds, { checked: true }) }}
+    />)
+    return
+  }
+  // Keep IronLog's original weigh-in behavior and all navigation intact.
   if (S().weighIn === false) { beginWorkout(routineIds, null); return }
   return bwSheet({ required: true, onDone: bw => beginWorkout(routineIds, bw) })
 }
