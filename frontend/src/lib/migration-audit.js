@@ -11,6 +11,7 @@ export const PROTECTED_USER_FIELDS = Object.freeze([
   'exNotes', 'dayNotes', 'dayPlan', 'week', 'queue', 'rotation', 'active',
   'deleted', 'mediaPending', 'targetW', 'unit', 'unitSet',
   'muscleTargets', 'showWeeklySetsHome', 'sex', 'birthYear', 'deloadCycle',
+  'dailyForm', 'dayForm',
 ])
 
 const own = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key)
