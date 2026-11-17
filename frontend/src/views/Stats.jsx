@@ -10,6 +10,7 @@ import { t, exerciseNameFor, exerciseNameClass, getLang } from '../lib/i18n.js'
 import { bwSheet, goalSheet, calendarSheet, dayOverrideSheet, workoutDetailSheet, exerciseHistorySheet, WorkoutRow, bwDeltaColor, weighInsSheet } from '../sheets.jsx'
 import LineChart from '../components/LineChart.jsx'
 import { lifetimeTotals } from '../lib/lifetime-totals.js'
+import StrengthLevelsCard from '../components/StrengthLevelsCard.jsx'
 import Heatmap from '../components/Heatmap.jsx'
 import Icon from '../components/Icon.jsx'
 import BodyMap, { BodyMapLegend } from '../components/BodyMap.jsx'
@@ -667,6 +668,9 @@ export default function Stats() {
         <span className="muted">{t('Hours')}</span><span>{fmtNum(Math.round(totals.hours * 10) / 10)}</span>
       </div>
     </div>}
+
+    {/* Same IronLog card/sheet system as the existing Stats UI. No upstream styling. */}
+    {workouts.length > 0 && <StrengthLevelsCard S={S} />}
 
     <div className="card">
       <h2>{t('Activity (last 12 months)')}</h2>
