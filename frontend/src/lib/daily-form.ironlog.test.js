@@ -88,6 +88,7 @@ describe('Daily Form check-ins across devices and API', () => {
     next.dayForm = withForm({}, '2026-11-17', { energy: 4 }, 100)
     stampChange(before, next, 100)
     expect(next.workouts).toEqual(before.workouts)
-    expect(next.edited.dailyForm).toBeTruthy()
+    expect(next.dayForm['2026-11-17']._ts).toBe(100)
+    expect(next._ts).toBeGreaterThanOrEqual(100)
   })
 })
