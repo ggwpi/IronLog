@@ -9,6 +9,7 @@ import { speedUnitOf, speedLabel, toSpeed } from '../lib/speed.js'
 import { t, exerciseNameFor, exerciseNameClass, getLang } from '../lib/i18n.js'
 import { bwSheet, goalSheet, calendarSheet, dayOverrideSheet, workoutDetailSheet, exerciseHistorySheet, WorkoutRow, bwDeltaColor, weighInsSheet } from '../sheets.jsx'
 import LineChart from '../components/LineChart.jsx'
+import { lifetimeTotals } from '../lib/lifetime-totals.js'
 import Heatmap from '../components/Heatmap.jsx'
 import Icon from '../components/Icon.jsx'
 import BodyMap, { BodyMapLegend } from '../components/BodyMap.jsx'
@@ -438,6 +439,8 @@ export default function Stats() {
   const bw30 = S.bodyweight.filter(b => weighInAt(b) > now - 30 * 86400000)
   const bwDelta30 = bw30.length > 1 ? bw30[bw30.length - 1].w - bw30[0].w : null
   const workouts = S.workouts
+  // Upstream's lifetime calculation is pure; rendering it never changes a user's history.
+  const totals = useMemo(() => lifetimeTotals(S), [S.workouts])
   const monthW = workouts.filter(w => workoutDay(w)?.slice(0, 7) === todayISO().slice(0, 7)).length
 
   // Dumbbell weights are read in each exercise's current meaning (lib/dumbbells.js), so the
@@ -649,6 +652,21 @@ export default function Stats() {
       <div className="tile"><div className="l"><span>{t('Weight 30d')}</span><Icon name="scale" /></div><div className="v" style={{ color: bwDelta30 === null ? 'inherit' : bwDeltaColor(bwDelta30, (lastBW(S) || {}).w || 0) }}>{bwDelta30 === null ? '–' : <>{(bwDelta30 > 0 ? '+' : '') + fmtNum(bwDelta30)} <span className="tile-unit">{S.unit}</span></>}</div></div>
 
     </div>
+
+    {/* The first new upstream Stats feature is rendered with the existing IronLog
+        card, row and typography styles. Existing summary cards stay untouched. */}
+    {workouts.length > 0 && <div className="card" data-lifetime-totals>
+      <h2>{t('History')}</h2>
+      <div className="row between" style={{ padding: '8px 0', borderBottom: 'var(--hair) solid var(--sep)' }}>
+        <span className="muted">{t('Workouts')}</span><span>{fmtNum(totals.workouts)}</span>
+      </div>
+      <div className="row between" style={{ padding: '8px 0', borderBottom: 'var(--hair) solid var(--sep)' }}>
+        <span className="muted">{t('Work sets')}</span><span>{fmtNum(totals.sets)}</span>
+      </div>
+      <div className="row between" style={{ padding: '8px 0' }}>
+        <span className="muted">{t('Hours')}</span><span>{fmtNum(Math.round(totals.hours * 10) / 10)}</span>
+      </div>
+    </div>}
 
     <div className="card">
       <h2>{t('Activity (last 12 months)')}</h2>
