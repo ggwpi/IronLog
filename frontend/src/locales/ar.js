@@ -2525,4 +2525,20 @@ export default {
   "The AI connection changed. Send your request again.": "تغيّر اتصال الذكاء الاصطناعي. أرسل طلبك مجدداً.",
   "Choose a model for this provider": "اختر نموذجًا لهذا المزوّد",
 
+  // openGym v1.4.5 Recovery Hint strings (upstream translations).
+  "Your legs are still recovering from {0}.": "ساقاك لا تزالان تتعافيان (التمرين: {0}).",
+  "Your upper body is still recovering from {0}.": "الجزء العلوي لا يزال يتعافى (التمرين: {0}).",
+  "Rest day, good timing.": "يوم راحة، توقيت ممتاز.",
+  "Go a bit lighter today, or swap the session.": "خفّف قليلًا اليوم، أو بدّل الجلسة.",
+  "Upper body today?": "الجزء العلوي اليوم؟",
+  "Legs today?": "الساقان اليوم؟",
+  "Your legs haven’t had any work in {0} days.": "ساقاك بلا تمرين منذ {0} أيام.",
+  "Your back hasn’t had any work in {0} days.": "ظهرك بلا تمرين منذ {0} أيام.",
+  "Your chest hasn’t had any work in {0} days.": "صدرك بلا تمرين منذ {0} أيام.",
+  "Your shoulders haven’t had any work in {0} days.": "كتفاك بلا تمرين منذ {0} أيام.",
+  "Today’s plan takes care of that.": "خطة اليوم تتكفّل بذلك.",
+  "A few sets today would be nice.": "بضع مجموعات اليوم ستكون فكرة لطيفة.",
+  "Hidden for today. Back tomorrow.": "مخفية لليوم. تعود غدًا.",
+  "Hide for today": "إخفاء لليوم",
+  "Swap session": "تبديل الجلسة",
 }

@@ -2473,4 +2473,20 @@ export default {
   "The AI connection changed. Send your request again.": "Az AI-kapcsolat megváltozott. Küldd el újra a kérést.",
   "Choose a model for this provider": "Modell választása ehhez a szolgáltatóhoz",
 
+  // openGym v1.4.5 Recovery Hint strings (upstream translations).
+  "Your legs are still recovering from {0}.": "A lábad még regenerálódik (edzés: {0}).",
+  "Your upper body is still recovering from {0}.": "A felsőtested még regenerálódik (edzés: {0}).",
+  "Rest day, good timing.": "Pihenőnap, jó időzítés.",
+  "Go a bit lighter today, or swap the session.": "Ma kicsit könnyebben, vagy cseréld le az edzést.",
+  "Upper body today?": "Ma felsőtest?",
+  "Legs today?": "Ma láb?",
+  "Your legs haven’t had any work in {0} days.": "A lábad {0} napja nem dolgozott.",
+  "Your back hasn’t had any work in {0} days.": "A hátad {0} napja nem dolgozott.",
+  "Your chest hasn’t had any work in {0} days.": "A mellkasod {0} napja nem dolgozott.",
+  "Your shoulders haven’t had any work in {0} days.": "A vállad {0} napja nem dolgozott.",
+  "Today’s plan takes care of that.": "A mai terv ezt rendezi.",
+  "A few sets today would be nice.": "Pár sorozat ma jólesne.",
+  "Hidden for today. Back tomorrow.": "Mára elrejtve. Holnap visszajön.",
+  "Hide for today": "Elrejtés mára",
+  "Swap session": "Edzés cseréje",
 }

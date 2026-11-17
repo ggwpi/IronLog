@@ -2549,4 +2549,20 @@ export default {
   "The AI connection changed. Send your request again.": "AI সংযোগ পরিবর্তিত হয়েছে। অনুরোধটি আবার পাঠান।",
   "Choose a model for this provider": "এই প্রদানকারীর জন্য একটি মডেল বেছে নিন",
 
+  // openGym v1.4.5 Recovery Hint strings (upstream translations).
+  "Your legs are still recovering from {0}.": "আপনার পা এখনও রিকভারি করছে (ওয়ার্কআউট: {0})।",
+  "Your upper body is still recovering from {0}.": "আপনার শরীরের উপরের অংশ এখনও রিকভারি করছে (ওয়ার্কআউট: {0})।",
+  "Rest day, good timing.": "বিশ্রামের দিন, একদম ঠিক সময়ে।",
+  "Go a bit lighter today, or swap the session.": "আজ একটু হালকা করুন, বা সেশন বদলে নিন।",
+  "Upper body today?": "আজ আপার বডি?",
+  "Legs today?": "আজ লেগ ডে?",
+  "Your legs haven’t had any work in {0} days.": "{0} দিন ধরে আপনার পায়ের কোনো ট্রেনিং হয়নি।",
+  "Your back hasn’t had any work in {0} days.": "{0} দিন ধরে আপনার পিঠের কোনো ট্রেনিং হয়নি।",
+  "Your chest hasn’t had any work in {0} days.": "{0} দিন ধরে আপনার বুকের কোনো ট্রেনিং হয়নি।",
+  "Your shoulders haven’t had any work in {0} days.": "{0} দিন ধরে আপনার কাঁধের কোনো ট্রেনিং হয়নি।",
+  "Today’s plan takes care of that.": "আজকের প্ল্যানেই সেটি আছে।",
+  "A few sets today would be nice.": "আজ কয়েকটা সেট হলে ভালো হয়।",
+  "Hidden for today. Back tomorrow.": "আজকের জন্য লুকানো। কাল ফিরবে।",
+  "Hide for today": "আজকের জন্য লুকান",
+  "Swap session": "সেশন বদলান",
 }
