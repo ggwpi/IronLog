@@ -1,5 +1,6 @@
 // Russian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Recovery tips": "Подсказки о восстановлении",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "Форма дня",
   "How are you today?": "Как ты сегодня?",
