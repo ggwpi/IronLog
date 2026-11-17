@@ -9,6 +9,7 @@ import LineChart from '../components/LineChart.jsx'
 import Icon from '../components/Icon.jsx'
 import QueueRow from '../components/QueueRow.jsx'
 import { WeeklySetsHomeLine } from '../components/WeeklyMuscleTargetsCard.jsx'
+import DeloadWeekCard from '../components/DeloadWeekCard.jsx'
 import { queueOf, queueView, weekTally, pinState } from '../lib/queue.js'
 import { scheduleModeOf } from '../lib/rotation.js'
 import { useConnectionTrouble } from '../components/SyncBanner.jsx'
@@ -231,6 +232,10 @@ export default function Home() {
     {/* Off by default; when chosen, the new weekly progress summary follows the
         existing IronLog cards without changing the greeting, hero or navigation. */}
     {S.showWeeklySetsHome === true && <WeeklySetsHomeLine S={S} />}
+
+    {/* New deload suggestions use the existing IronLog Home card style.
+        Without a scheduled or suggested deload this renders nothing. */}
+    <DeloadWeekCard S={S} />
 
     <div className="card tappable home-streak" style={{ cursor: 'pointer' }} {...tappable(() => calendarSheet())}>
       <div className="row between">
