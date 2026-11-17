@@ -1,5 +1,6 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Recovery tips": "रिकवरी सुझाव",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "आज की फ़ॉर्म",
   "How are you today?": "आज कैसे हो?",
