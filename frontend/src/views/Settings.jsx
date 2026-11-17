@@ -811,6 +811,12 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           subtitle={t('Show a card on Home with your membership QR codes.')}>
           <Switch checked={S.checkIn !== false} onChange={v => update(s => { s.checkIn = v })} />
         </Row>
+        {/* openGym 1.4.5 targets summary: opt-in, never changes existing Home cards. */}
+        <Row icon="figureStrength" iconTint="var(--teal)" title={t('Weekly muscle volume')}
+          subtitle={t('Work sets') + ' · ' + t('This week')}>
+          <Switch checked={S.showWeeklySetsHome === true}
+            onChange={v => update(s => { s.showWeeklySetsHome = v })} />
+        </Row>
         {/* The Home summary is optional; hiding it leaves weight logging, history and Stats intact. */}
         <Row icon="scale" iconTint="var(--green)" title={t('Body weight')}
           subtitle={t('Show the body weight card on Home.')}>
