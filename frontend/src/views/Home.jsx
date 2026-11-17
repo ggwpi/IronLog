@@ -8,6 +8,7 @@ import { bwSheet, goalSheet, dayOverrideSheet, calendarSheet, startFlow, starter
 import LineChart from '../components/LineChart.jsx'
 import Icon from '../components/Icon.jsx'
 import QueueRow from '../components/QueueRow.jsx'
+import { WeeklySetsHomeLine } from '../components/WeeklyMuscleTargetsCard.jsx'
 import { queueOf, queueView, weekTally, pinState } from '../lib/queue.js'
 import { scheduleModeOf } from '../lib/rotation.js'
 import { useConnectionTrouble } from '../components/SyncBanner.jsx'
@@ -226,6 +227,10 @@ export default function Home() {
         ? t('No weigh-ins yet. Log your weight to start the curve.')
         : t("No weigh-ins yet. Log your weight to start the curve (we also ask before every workout).")}</div>}
     </div>}
+
+    {/* Off by default; when chosen, the new weekly progress summary follows the
+        existing IronLog cards without changing the greeting, hero or navigation. */}
+    {S.showWeeklySetsHome === true && <WeeklySetsHomeLine S={S} />}
 
     <div className="card tappable home-streak" style={{ cursor: 'pointer' }} {...tappable(() => calendarSheet())}>
       <div className="row between">
