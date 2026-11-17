@@ -2486,4 +2486,9 @@ export default {
   "Hidden for today. Back tomorrow.": "오늘은 숨겼어요. 내일 다시 나와요.",
   "Hide for today": "오늘은 숨기기",
   "Swap session": "세션 바꾸기",
+  // openGym v1.4.5 weekly countdown translations.
+  'Workouts per week': '주당 운동 횟수',
+  "No weekly countdown on Home.": "홈에 주간 카운트다운 없음.",
+  "{0} of {1} left this week": "이번 주 {1}회 중 {0}회 남음",
+  "All done this week. Nice.": "이번 주 다 끝냈어요. 멋져요.",
 }

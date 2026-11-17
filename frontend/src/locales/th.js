@@ -2497,4 +2497,9 @@ export default {
   "Hidden for today. Back tomorrow.": "ซ่อนไว้สำหรับวันนี้ พรุ่งนี้กลับมา",
   "Hide for today": "ซ่อนสำหรับวันนี้",
   "Swap session": "สลับเซสชัน",
+  // openGym v1.4.5 weekly countdown translations.
+  'Workouts per week': 'การฝึกต่อสัปดาห์',
+  "No weekly countdown on Home.": "ไม่มีการนับถอยหลังรายสัปดาห์ที่หน้าแรก",
+  "{0} of {1} left this week": "สัปดาห์นี้เหลือ {0} จาก {1}",
+  "All done this week. Nice.": "สัปดาห์นี้ครบแล้ว เยี่ยม",
 }

@@ -2486,4 +2486,9 @@ export default {
   "Hidden for today. Back tomorrow.": "Bugünlük gizlendi. Yarın geri gelir.",
   "Hide for today": "Bugünlük gizle",
   "Swap session": "Antrenmanı değiştir",
+  // openGym v1.4.5 weekly countdown translations.
+  'Workouts per week': 'Haftada antrenman',
+  "No weekly countdown on Home.": "Ana sayfada haftalık geri sayım yok.",
+  "{0} of {1} left this week": "Bu hafta {1} antrenmandan {0} kaldı",
+  "All done this week. Nice.": "Bu hafta hepsi tamam. Harika.",
 }

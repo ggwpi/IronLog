@@ -2486,4 +2486,9 @@ export default {
   "Hidden for today. Back tomorrow.": "Ukryte na dziś. Wróci jutro.",
   "Hide for today": "Ukryj na dziś",
   "Swap session": "Zamień trening",
+  // openGym v1.4.5 weekly countdown translations.
+  'Workouts per week': 'Treningi na tydzień',
+  "No weekly countdown on Home.": "Bez tygodniowego odliczania na ekranie głównym.",
+  "{0} of {1} left this week": { one: "Jeszcze {0} z {1} w tym tygodniu", few: "Jeszcze {0} z {1} w tym tygodniu", many: "Jeszcze {0} z {1} w tym tygodniu" },
+  "All done this week. Nice.": "Wszystko zrobione w tym tygodniu. Brawo.",
 }
