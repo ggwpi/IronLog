@@ -37,8 +37,12 @@ describe('isolated 1.4.5 muscle targets are safe for legacy IronLog', () => {
 
   it('adding a muscle target is strictly additive and never overwrites the legacy model', () => {
     const old = { chest: [12, 18], deltoids: [8, 16], 'upper-back': [10, 18] }
-    const next = withTarget(old, 'front-delts', [4, 12])
-    expect(next).toMatchObject({ chest: [12, 18], deltoids: [8, 16], 'upper-back': [10, 18], 'front-delts': [4, 12] })
+    // An explicit default is deliberately removed by upstream withTarget.
+    // An actual personal override MUST be retained without rewriting legacy keys.
+    const next = withTarget(old, 'front-delts', [5, 13])
+    expect(next).toMatchObject({ chest: [12, 18], deltoids: [8, 16], 'upper-back': [10, 18], 'front-delts': [5, 13] })
+    const defaults = withTarget(next, 'front-delts', [4, 12])
+    expect(defaults).toEqual(old)
     expect(old).toEqual({ chest: [12, 18], deltoids: [8, 16], 'upper-back': [10, 18] })
   })
 })
