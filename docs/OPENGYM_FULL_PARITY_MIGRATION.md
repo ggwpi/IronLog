@@ -11,6 +11,14 @@ Upstream baseline to integrate: `DuarteSantos8/openGym@e4a68a94c42a3c17cbd560d66
 - openGym v1.4.5's `lifetimeTotals` calculation and `strength-level` engine were ported with automated tests. IronLog Stats now renders the new calculations in existing IronLog `.card`, `.row`, `Button`, `Segmented`, and `Stepper` components; its strength preferences open through IronLog's existing bottom-sheet system.
 - **Not yet feature-parity complete:** the remaining openGym cards, settings, native apps, server integrations and architecture changes have not been ported. Tests/Preview must pass before these changes are considered verified.
 
+## Recovery Hint parity boundary (read-only, opt-in)
+
+- The upstream 1.4.5 Home Recovery Hint algorithm and regression cases have been adapted to IronLog's **existing** muscle load/fatigue model. Until the full newer exercise catalogue and history interpretation are migrated, old IronLog groups `upper-back` and `deltoids` represent lats and all deltoid heads. No saved exercise, workout, or body-map field is rewritten.
+- The familiar IronLog Home card appears **only** when the person explicitly enables `Recovery tips` in Look & Home, has sufficiently recent workout history, and has a relevant recovery insight. Prior profiles never see a new Home card by default.
+- Dismissal stores a single day and supports Undo. Toggling Recovery tips on clears a previous dismissal. Both preferences are included in the non-destructive audit.
+- Sport activity stimuli (running, football, cycling) remain **unimplemented** in this fork and are not silently inferred. Recovery advice based on those activities must wait for the actual activity log and recovery parity, with additional integration tests.
+- No visual/screenshot comparison or restored production-data test has been performed. The feature is only eligible for preview testing, not production release.
+
 ## Immutable visual baseline
 
 All existing components/screens remain the visual source of truth, including the splash/logo, boot/loading animation, workout-load transitions, Home greeting, Home card arrangement, existing card/expanded card appearance, charts, bottom sheets and swipe gestures, navigation bar, iconography, RTL layout and light/dark palettes. A feature may add a surface where needed, but must not replace or restyle existing IronLog surfaces. Compare screenshots in each state before any production merge.
