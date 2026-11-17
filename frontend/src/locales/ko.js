@@ -1,5 +1,6 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Recovery tips": "회복 팁",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "오늘의 컨디션",
   "How are you today?": "오늘 컨디션 어때요?",
