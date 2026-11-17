@@ -6,7 +6,7 @@ import {
 } from './daily-form.js'
 import { formTrend, setDailyFormSource } from './deload-cycle.js'
 import { STAMPED_MAPS, mergeStates, stampChange } from './sync-merge.js'
-import { STAMPED_MAPS as SERVER_STAMPED_MAPS } from '../../../api/sync-stamps.js'
+import { STAMPED_MAPS as SERVER_STAMPED_MAPS, keepUnknown } from '../../../api/sync-stamps.js'
 import { auditUserDataPreservation } from './migration-audit.js'
 
 afterEach(() => setDailyFormSource(null))
@@ -75,6 +75,18 @@ describe('Daily Form check-ins across devices and API', () => {
     expect(merged.dayForm['2026-11-13'].sleep).toBe(2)
     expect(merged.workouts.map(w => w.id).sort()).toEqual(['w1', 'w2'])
     expect(old.dayForm['2026-11-12'].energy).toBe(4)
+  })
+  it('keeps daily check-ins when an older app pushes a profile without that field', () => {
+    const server = {
+      unit: 'kg', workouts: [{ id: 'w1', d: '2026-11-13', entries: [] }],
+      dayForm: { '2026-11-13': { sleep: 5, _ts: 400 } },
+    }
+    const oldClient = {
+      unit: 'kg', workouts: [{ id: 'w1', d: '2026-11-13', entries: [] }],
+    }
+    keepUnknown(server, oldClient)
+    expect(oldClient.dayForm).toEqual(server.dayForm)
+    expect(server.dayForm['2026-11-13'].sleep).toBe(5)
   })
   it('retains an explicitly cleared day even when another device has a stale answer', () => {
     const a = { _ts: 100, dayForm: { '2026-11-13': { sleep: 5, _ts: 100 } } }
