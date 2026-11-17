@@ -8,6 +8,7 @@ import { fmtNum, todayISO, isoOf } from '../lib/format.js'
 import { Button } from './ui.jsx'
 import { formDays, formOf, formScore, offerCheckin } from '../lib/daily-form.js'
 import { workoutPerformance, formInsights, insightProgress } from '../lib/form-insights.js'
+import { displayScale } from '../lib/effort.js'
 
 export default function DailyFormStatsCard({ S }) {
   const update = useStore(s => s.update)
@@ -19,10 +20,21 @@ export default function DailyFormStatsCard({ S }) {
   const insights = useMemo(() => days.length ? formInsights(S, { perf }) : [],
     [S.dayForm, perf, days.length])
   const progress = days.length ? insightProgress(S, { perf }) : null
+  // Explain the GOOD side of every comparison. Saying only "Soreness"
+  // would incorrectly imply that higher soreness predicts better workouts.
   const factorLabel = {
-    sleep: t('Sleep'), energy: t('Energy'), sore: t('Soreness'), stress: t('Stress'),
-    form: t('Daily form'), sleepHours: t('Sleep'),
+    sleepHours: t('After 7 hours of sleep or more'),
+    sleep: t('When you rate your sleep 4 or 5'),
+    energy: t('When your energy is 4 or 5'),
+    sore: t('When soreness is 1 or 2'),
+    stress: t('When stress is 1 or 2'),
+    form: t('On your good-form days'),
   }
+  const signed = (n, digits = 0) =>
+    (n > 0 ? '+' : n < 0 ? '−' : '±') + fmtNum(Math.abs(Math.round(n * 10 ** digits) / 10 ** digits))
+  const insightValue = x => x.metric === 'effort'
+    ? signed(displayScale(S) === 'rpe' ? -x.diff : x.diff, 1) + (displayScale(S) === 'rpe' ? ' RPE' : ' RIR')
+    : signed(x.diff) + '%'
   const metricLabel = { strength: t('Estimated strength'), volume: t('Volume'), effort: t('Reps in reserve') }
   const confidenceLabel = {
     chance: t('Could easily be chance'), maybe: t('Leaning that way'),
@@ -71,7 +83,7 @@ export default function DailyFormStatsCard({ S }) {
           </span>
         </span>
         <span style={{ flexShrink: 0 }} className="small">
-          {(x.diff > 0 ? '+' : '') + fmtNum(x.diff)}{x.metric === 'effort' ? ' RIR' : '%'}
+          {insightValue(x)}
         </span>
       </div>)}
       {progress && !insights.length && <p className="small muted" data-insight-progress>
