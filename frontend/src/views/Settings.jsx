@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation, Navigate } from 'react-router-dom'
 import { useStore, DEF, hasData } from '../store/useStore.js'
 import { muscleTargetsSheet } from '../components/WeeklyMuscleTargetsCard.jsx'
 import { DeloadSettingsRows } from '../components/DeloadWeekCard.jsx'
+import { setRecoveryHint } from '../lib/recovery-hint.js'
 import { healthStatus, loadHealth, enableHealth, disableHealth, openHealthConnect, onHealthChange } from '../lib/health-sync.js'
 import { workoutControls } from '../lib/workout-controls.js'
 import { speedUnitOf } from '../lib/speed.js'
@@ -832,6 +833,12 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           subtitle={t('Work sets') + ' · ' + t('This week')}>
           <Switch checked={S.showWeeklySetsHome === true}
             onChange={v => update(s => { s.showWeeklySetsHome = v })} />
+        </Row>
+        {/* Recovery is an opt-in Home card; preserve every existing Home card. */}
+        <Row icon="figureStrength" iconTint="var(--green)" title={t('Recovery tips')}
+          subtitle={t('A quiet hint about which muscles have rested and which are still recovering.')}>
+          <Switch checked={S.recoveryHint === true}
+            onChange={on => update(s => setRecoveryHint(s, on))} />
         </Row>
         {/* The Home summary is optional; hiding it leaves weight logging, history and Stats intact. */}
         <Row icon="scale" iconTint="var(--green)" title={t('Body weight')}
