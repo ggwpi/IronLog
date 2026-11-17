@@ -1,5 +1,21 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original openGym v1.4.5 set-trend wording.
+  "{0} less help than last time": "지난번보다 보조 {0} 덜",
+  "{0} more help than last time": "지난번보다 보조 {0} 더",
+  "{0} more than last time": "지난번보다 {0} 더",
+  "{0} less than last time": "지난번보다 {0} 덜",
+  "{0} more rep than last time": "지난번보다 {0}회 더",
+  "{0} more reps than last time": "지난번보다 {0}회 더",
+  "{0} rep fewer than last time": "지난번보다 {0}회 덜",
+  "{0} reps fewer than last time": "지난번보다 {0}회 덜",
+  "Better estimated 1RM than last time": "지난번보다 추정 1RM이 높음",
+  "Lower estimated 1RM than last time": "지난번보다 추정 1RM이 낮음",
+  "{0} longer than last time": "지난번보다 {0} 더 길게",
+  "{0} shorter than last time": "지난번보다 {0} 더 짧게",
+  "Faster than last time": "지난번보다 빠름",
+  "Slower than last time": "지난번보다 느림",
+  "Compare sets with last time": "세트를 지난번과 비교",
   "Recovery tips": "회복 팁",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "오늘의 컨디션",

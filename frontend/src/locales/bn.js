@@ -1,5 +1,21 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original openGym v1.4.5 set-trend wording.
+  "{0} less help than last time": "গতবারের চেয়ে {0} কম সহায়তা",
+  "{0} more help than last time": "গতবারের চেয়ে {0} বেশি সহায়তা",
+  "{0} more than last time": "গতবারের চেয়ে {0} বেশি",
+  "{0} less than last time": "গতবারের চেয়ে {0} কম",
+  "{0} more rep than last time": "গতবারের চেয়ে {0}টি রেপ বেশি",
+  "{0} more reps than last time": "গতবারের চেয়ে {0}টি রেপ বেশি",
+  "{0} rep fewer than last time": "গতবারের চেয়ে {0}টি রেপ কম",
+  "{0} reps fewer than last time": "গতবারের চেয়ে {0}টি রেপ কম",
+  "Better estimated 1RM than last time": "গতবারের চেয়ে ভালো আনুমানিক 1RM",
+  "Lower estimated 1RM than last time": "গতবারের চেয়ে কম আনুমানিক 1RM",
+  "{0} longer than last time": "গতবারের চেয়ে {0} বেশি সময়",
+  "{0} shorter than last time": "গতবারের চেয়ে {0} কম সময়",
+  "Faster than last time": "গতবারের চেয়ে দ্রুত",
+  "Slower than last time": "গতবারের চেয়ে ধীরে",
+  "Compare sets with last time": "সেটগুলো গতবারের সাথে তুলনা করুন",
   "Recovery tips": "রিকভারি টিপস",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "আজকের ফর্ম",

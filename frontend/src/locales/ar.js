@@ -1,5 +1,21 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original openGym v1.4.5 set-trend wording.
+  "{0} less help than last time": "مساعدة أقل بـ {0} من المرة الماضية",
+  "{0} more help than last time": "مساعدة أكثر بـ {0} من المرة الماضية",
+  "{0} more than last time": "{0} أكثر من المرة الماضية",
+  "{0} less than last time": "{0} أقل من المرة الماضية",
+  "{0} more rep than last time": "{0} تكرار أكثر من المرة الماضية",
+  "{0} more reps than last time": "{0} تكرارات أكثر من المرة الماضية",
+  "{0} rep fewer than last time": "{0} تكرار أقل من المرة الماضية",
+  "{0} reps fewer than last time": "{0} تكرارات أقل من المرة الماضية",
+  "Better estimated 1RM than last time": "1RM مقدّر أفضل من المرة الماضية",
+  "Lower estimated 1RM than last time": "1RM مقدّر أقل من المرة الماضية",
+  "{0} longer than last time": "أطول بـ {0} من المرة الماضية",
+  "{0} shorter than last time": "أقصر بـ {0} من المرة الماضية",
+  "Faster than last time": "أسرع من المرة الماضية",
+  "Slower than last time": "أبطأ من المرة الماضية",
+  "Compare sets with last time": "قارن المجموعات بالمرة الماضية",
   "Recovery tips": "نصائح التعافي",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "لياقة اليوم",

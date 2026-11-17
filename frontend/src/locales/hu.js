@@ -1,5 +1,21 @@
 // Hungarian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original openGym v1.4.5 set-trend wording.
+  "{0} less help than last time": "{0}-mal kevesebb segítség, mint legutóbb",
+  "{0} more help than last time": "{0}-mal több segítség, mint legutóbb",
+  "{0} more than last time": "{0} több, mint legutóbb",
+  "{0} less than last time": "{0} kevesebb, mint legutóbb",
+  "{0} more rep than last time": "{0} ismétléssel több, mint legutóbb",
+  "{0} more reps than last time": "{0} ismétléssel több, mint legutóbb",
+  "{0} rep fewer than last time": "{0} ismétléssel kevesebb, mint legutóbb",
+  "{0} reps fewer than last time": "{0} ismétléssel kevesebb, mint legutóbb",
+  "Better estimated 1RM than last time": "Jobb becsült 1RM, mint legutóbb",
+  "Lower estimated 1RM than last time": "Alacsonyabb becsült 1RM, mint legutóbb",
+  "{0} longer than last time": "{0}-cel hosszabb, mint legutóbb",
+  "{0} shorter than last time": "{0}-cel rövidebb, mint legutóbb",
+  "Faster than last time": "Gyorsabb, mint legutóbb",
+  "Slower than last time": "Lassabb, mint legutóbb",
+  "Compare sets with last time": "Sorozatok összevetése a legutóbbival",
   "Recovery tips": "Regenerációs tippek",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "Napi forma",
