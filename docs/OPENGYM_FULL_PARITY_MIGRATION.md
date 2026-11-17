@@ -33,7 +33,8 @@ Upstream baseline to integrate: `DuarteSantos8/openGym@e4a68a94c42a3c17cbd560d66
 - Ported openGym v1.4.5 `week-left.js` and its original unit tests. The countdown uses the existing IronLog `weekTally`, today's still-open planned routines, and an optional 1–7 rotation target, so it does not count future or unrelated workouts as completions.
 - `Settings → Plan & schedule → Workouts per week` sets a rotation target (0/off or 1–7), without altering workout history, routines, rotation queue, or dates. The target is irrelevant to Fixed Week.
 - `Settings → Look & Home → Workouts left this week` opt-in (`showWorkoutsLeftHome`) displays a single text line after the existing IronLog week strip/queue. Off by default to retain the original Home hero, streak, cards, charts, tab bar, splash, gestures and sheets.
-- Added user-data preservation audit coverage for the opt-in flag and rotation target, plus cross-device setting sync regression. No writes to production state or database, no new APIs and no destructive migration.
+- Added user-data preservation audit coverage for the opt-in flag and rotation target, plus cross-device setting sync regression.
+- The full countdown UI copy is localized in all **19 IronLog language packs**, with a key/placeholder regression test. Existing upstream v1.4.5 wording is used where available; the fork supplies Hebrew. pt-BR keeps explicit overrides for all new keys, preserving its inherited-translation fingerprint. No writes to production state or database, no new APIs and no destructive migration.
 - **Parity boundary:** Home/PWA slice only; openGym native widget snapshots and full native platforms remain future work. Visual screenshot checks and restored-user-data tests remain required.
 
 ## Immutable visual baseline
