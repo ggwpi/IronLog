@@ -9,6 +9,11 @@ import './index.css'
 import './ironlog-brand.css'
 import { restoreUpstreamPalette } from './lib/ironlog-palette.js'
 import { hideBoot } from './lib/boot.js'
+import { registerDailyFormSource } from './lib/daily-form.js'
+
+// Connect recorded daily check-ins to the upstream Deload trend engine.
+// Pure registration: no existing profile is written or migrated.
+registerDailyFormSource()
 
 if (!(useStore.getState().S.ironlogPaletteVersion >= 1)) useStore.getState().update(restoreUpstreamPalette)
 
