@@ -1,5 +1,21 @@
 // Italian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original openGym v1.4.5 set-trend wording.
+  "{0} less help than last time": "{0} di aiuto in meno dell’ultima volta",
+  "{0} more help than last time": "{0} di aiuto in più dell’ultima volta",
+  "{0} more than last time": "{0} in più dell’ultima volta",
+  "{0} less than last time": "{0} in meno dell’ultima volta",
+  "{0} more rep than last time": "{0} rip. in più dell’ultima volta",
+  "{0} more reps than last time": "{0} rip. in più dell’ultima volta",
+  "{0} rep fewer than last time": "{0} rip. in meno dell’ultima volta",
+  "{0} reps fewer than last time": "{0} rip. in meno dell’ultima volta",
+  "Better estimated 1RM than last time": "1RM stimato migliore dell’ultima volta",
+  "Lower estimated 1RM than last time": "1RM stimato più basso dell’ultima volta",
+  "{0} longer than last time": "{0} in più dell’ultima volta",
+  "{0} shorter than last time": "{0} in meno dell’ultima volta",
+  "Faster than last time": "Più veloce dell’ultima volta",
+  "Slower than last time": "Più lento dell’ultima volta",
+  "Compare sets with last time": "Confronta le serie con l’ultima volta",
   "Recovery tips": "Consigli sul recupero",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "Forma del giorno",

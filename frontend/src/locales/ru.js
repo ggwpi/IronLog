@@ -1,5 +1,21 @@
 // Russian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original openGym v1.4.5 set-trend wording.
+  "{0} less help than last time": "На {0} меньше помощи, чем в прошлый раз",
+  "{0} more help than last time": "На {0} больше помощи, чем в прошлый раз",
+  "{0} more than last time": "На {0} больше, чем в прошлый раз",
+  "{0} less than last time": "На {0} меньше, чем в прошлый раз",
+  "{0} more rep than last time": "На {0} повт. больше, чем в прошлый раз",
+  "{0} more reps than last time": { one: "На {0} повт. больше, чем в прошлый раз", few: "На {0} повт. больше, чем в прошлый раз", many: "На {0} повт. больше, чем в прошлый раз" },
+  "{0} rep fewer than last time": "На {0} повт. меньше, чем в прошлый раз",
+  "{0} reps fewer than last time": { one: "На {0} повт. меньше, чем в прошлый раз", few: "На {0} повт. меньше, чем в прошлый раз", many: "На {0} повт. меньше, чем в прошлый раз" },
+  "Better estimated 1RM than last time": "Расчётный 1ПМ выше, чем в прошлый раз",
+  "Lower estimated 1RM than last time": "Расчётный 1ПМ ниже, чем в прошлый раз",
+  "{0} longer than last time": "На {0} дольше, чем в прошлый раз",
+  "{0} shorter than last time": "На {0} короче, чем в прошлый раз",
+  "Faster than last time": "Быстрее, чем в прошлый раз",
+  "Slower than last time": "Медленнее, чем в прошлый раз",
+  "Compare sets with last time": "Сравнивать подходы с прошлым разом",
   "Recovery tips": "Подсказки о восстановлении",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "Форма дня",

@@ -1,6 +1,22 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  // Original openGym v1.4.5 set-trend wording.
+  "{0} less help than last time": "פחות עזרה ב־{0} מהפעם הקודמת",
+  "{0} more help than last time": "יותר עזרה ב־{0} מהפעם הקודמת",
+  "{0} more than last time": "יותר ב־{0} מהפעם הקודמת",
+  "{0} less than last time": "פחות ב־{0} מהפעם הקודמת",
+  "{0} more rep than last time": "חזרה אחת יותר מהפעם הקודמת",
+  "{0} more reps than last time": "{0} חזרות יותר מהפעם הקודמת",
+  "{0} rep fewer than last time": "חזרה אחת פחות מהפעם הקודמת",
+  "{0} reps fewer than last time": "{0} חזרות פחות מהפעם הקודמת",
+  "Better estimated 1RM than last time": "הערכת משקל מקסימלי טובה יותר מהפעם הקודמת",
+  "Lower estimated 1RM than last time": "הערכת משקל מקסימלי נמוכה יותר מהפעם הקודמת",
+  "{0} longer than last time": "ארוך יותר ב־{0} מהפעם הקודמת",
+  "{0} shorter than last time": "קצר יותר ב־{0} מהפעם הקודמת",
+  "Faster than last time": "מהיר יותר מהפעם הקודמת",
+  "Slower than last time": "איטי יותר מהפעם הקודמת",
+  "Compare sets with last time": "השוואת סטים לאימון הקודם",
   "Recovery tips": "טיפים להתאוששות",
   // openGym 1.4.5 Daily Form, preserved in IronLog's Hebrew interface.
   "Daily form": "הרגשה יומית",
