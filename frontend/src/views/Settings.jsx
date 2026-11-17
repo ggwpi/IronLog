@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, forwardRef, useSyncExternalStore } from 'r
 import { useNavigate, useParams, useLocation, Navigate } from 'react-router-dom'
 import { useStore, DEF, hasData } from '../store/useStore.js'
 import { muscleTargetsSheet } from '../components/WeeklyMuscleTargetsCard.jsx'
+import { DeloadSettingsRows } from '../components/DeloadWeekCard.jsx'
 import { healthStatus, loadHealth, enableHealth, disableHealth, openHealthConnect, onHealthChange } from '../lib/health-sync.js'
 import { workoutControls } from '../lib/workout-controls.js'
 import { speedUnitOf } from '../lib/speed.js'
@@ -666,6 +667,10 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           <Row icon="sun" iconTint="var(--yellow)" title={t('Flash the screen')}>
             <Switch checked={!!S.timerFlash} onChange={v => update(s => { s.timerFlash = v })} />
           </Row>
+        </Section>
+        {/* openGym's deload settings within IronLog's unchanged Fine-tuning page. */}
+        <Section title={t('Deload weeks')}>
+          <DeloadSettingsRows />
         </Section>
       </>
     },
