@@ -6,10 +6,12 @@ import { useUI } from '../store/useUI.js'
 import { t } from '../lib/i18n.js'
 import { fmtNum } from '../lib/format.js'
 import {
-  weeklyMuscleSets, targetOf, withTarget, TARGET_MUSCLES, TARGET_MAX,
+  weeklyMuscleSets, mostRoom, targetOf, withTarget, TARGET_MUSCLES, TARGET_MAX,
 } from '../lib/muscle-targets.js'
 import { MUSCLE_NAME } from '../lib/muscles-v145.js'
 import { Button, Stepper } from './ui.jsx'
+import { tappable } from '../lib/use-sheet-keyboard.js'
+import Icon from './Icon.jsx'
 
 const ROW_LIMIT = 5
 const labelOf = row => t(row.name || MUSCLE_NAME[row.slug] || row.slug)
@@ -90,5 +92,28 @@ export default function WeeklyMuscleTargetsCard({ S }) {
         {t(expanded ? 'Show less' : 'Show more')}
       </Button>
     </div>}
+  </div>
+}
+
+// Optional Home summary, mirroring openGym's choice to keep it off by default.
+// The familiar IronLog Home card opens the same expanded IronLog bottom sheet.
+export function WeeklySetsHomeLine({ S }) {
+  const rows = weeklyMuscleSets(S)
+  if (!rows.some(row => row.sets > 0)) return null
+  const room = mostRoom(rows)
+  return <div className="card tappable" data-weekly-targets-home
+    style={{ cursor: 'pointer' }} {...tappable(muscleTargetsSheet)}>
+    <div className="row between" style={{ gap: 10 }}>
+      <span className="lrow-i"><Icon name="figureStrength" /></span>
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <div className="lbl2">{t('Weekly muscle volume')}</div>
+        <div className="muted small" style={{ marginTop: 3 }}>
+          {room
+            ? t(room.name) + ' · ' + fmtNum(room.sets) + ' / ' + room.lo + '–' + room.hi
+            : t('Goal') + ' · ' + t('Work sets')}
+        </div>
+      </div>
+      <Icon name="chevronRight" className="chev" />
+    </div>
   </div>
 }
