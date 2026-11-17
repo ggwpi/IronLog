@@ -1,0 +1,48 @@
+# IronLog × openGym: full feature parity, IronLog visual design
+
+Status: **IN PROGRESS — NOT SAFE TO MERGE OR DEPLOY**  
+IronLog baseline: `79fc61eed2000049424591b2bde4ec7f20fa6615`  
+Upstream baseline to integrate: `DuarteSantos8/openGym@e4a68a94c42a3c17cbd560d66ce2e46a7048ab99` (v1.4.5).
+
+## Non-negotiable product contract
+
+1. Preserve the physical IronLog visual design: navigation bar, typography, spacing, card surfaces, sheets, animations, graphs, palettes, accessibility and layouts. Add all upstream cards and screens using this exact design system. Do not overlay a second UI or embed upstream screens.
+2. Preserve complete upstream feature behavior, with all settings, interactions, explanatory states, calculations and native hooks. No placeholder buttons.
+3. Preserve all existing user data: workouts, sets, weights, history, personal records, routines, body measurements, photos/videos, favorites, pending offline changes, sync metadata, accounts, settings and custom exercises. No reset/reseed. IDs, dates and units must remain semantically identical.
+4. Preserve IronLog cloud/backend integrations and branded identity. Do not replace authentication or data services without verified compatibility.
+5. No changes to `main`, production database or Vercel production environment until there is passing CI, migration verification, UI visual approval and a rollback/backup drill.
+
+## Data migration contract
+
+- **Backup before any migration:** independent, restorable snapshots of the active server database and storage; locally export each user profile and pending offline queue. Validate checksum and a full restore to an isolated environment. This repository does not provide access to production databases; do not assume backup exists.
+- Make migrations **additive** and **idempotent**. Preserve unknown fields to enable forward/backward compatibility. Do not use destructive deletes or renames before a separate approved retention period.
+- Migration must be side-effect-free on legacy data until imported output is validated; use separate namespace / staging copy and atomic commit with recovery on failure.
+- Validate parity for at least: number and IDs of workouts/routines/custom exercises; each set's load, reps, time, effort and date; body weight and measurements; PRs; media references and actual files; local pending edits; account ownership and permissions; correct display units and locale.
+- Exercise catalogue IDs might have changed upstream. Map stable IDs without rewriting historical workout entries; unknown exercises must remain representable.
+- Test: old client -> new client -> old client reading unchanged data; multiple devices editing while offline; interrupted migration; duplicate run; storage full; invalid data; revoked access; guest-to-account adoption; timezone boundaries; media still available.
+- **Critical finding:** `frontend/src/lib/cloud-reset.js` previously deleted legacy localStorage, IndexedDB and native files when `VITE_BACKEND_GENERATION=ironlog-cloud-1`. A preservation-only startup gate is introduced on this branch to prevent such deletes. It does **not** transfer legacy keys into cloud namespace or migrate production data. A separately verified migration is REQUIRED before rollout.
+
+## Implementation sequence
+
+1. Inventory exact upstream functionality and files since 1.4.2, including new cards, stats, planning, equipment, motivation, community, Coach, circuits, iOS/Android/Watch native features.
+2. Capture IronLog appearance baselines across phone/tablet/desktop: navigation, cards, charts, all core pages, RTL, light/dark, active workouts, empty and populated states. Freeze design tokens in `frontend/src/index.css`, `frontend/src/ironlog-brand.css` and shared components.
+3. Port upstream domain models, calculation libs, persistence contracts and tests first, preserving IronLog's existing custom logic, cloud sync, and API contracts.
+4. Port each upstream feature view/card as a native IronLog React/CSS component; share style tokens and interaction primitives rather than copying upstream styling. Feature-parity checklist must account for every action and setting.
+5. Add backwards-compatible migrations with fixture tests and reversible rollout. No real user data touched during development.
+6. Run existing unit + integration suites, build web and native, run visual regression against saved IronLog screenshots, verify keyboard/touch/RTL/accessibility. Compare behavior with upstream v1.4.5.
+7. Produce staging Preview and test on a restore of **sanitized** production data with explicit permission. Only then approve a staged production release with monitoring and rollback.
+
+## Feature parity checklist
+
+- [ ] Home: mini muscle maps, weekly set targets, recovery tips, streak/challenges, recaps, Wrapped, deload suggestions, daily form/check-ins
+- [ ] Stats: Strength Levels, effort/volume insights, cardio goals, lifetime totals, relative strength, recovery, bodyweight trend and photos
+- [ ] Workout: circuits/EMOM, live workout volume, form video, backup exercise swaps, expanded progression and deload, per-exercise gym equipment
+- [ ] Planning and exercises: all upstream plans, training options, modules, exercise library and metadata
+- [ ] Sharing and community: share cards, recap images, community plans/content
+- [ ] Accounts/data: compatible imports/exports, offline editing and 2-device merge, all upstream options
+- [ ] Coach, integrations and MCP, webhooks, reminders
+- [ ] Native iOS/Android/Watch features (require native builds; web PWA cannot emulate platform-only capabilities)
+- [ ] Exact IronLog navigation/cards/charts/sheets visual regression
+- [ ] Verified non-destructive data migration, backup restoration and rollback
+
+A checkbox can only be checked after implementation and automated/manual proof. **Do not merge this document as evidence of feature completion.**
