@@ -1,5 +1,6 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Recovery tips": "เคล็ดลับการฟื้นตัว",
   // openGym 1.4.5 Daily Form localized UI.
   "Daily form": "ฟอร์มวันนี้",
   "How are you today?": "วันนี้เป็นยังไงบ้าง?",
