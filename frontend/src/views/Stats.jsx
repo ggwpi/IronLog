@@ -12,6 +12,7 @@ import LineChart from '../components/LineChart.jsx'
 import { lifetimeTotals } from '../lib/lifetime-totals.js'
 import StrengthLevelsCard from '../components/StrengthLevelsCard.jsx'
 import RelativeStrengthCard from '../components/RelativeStrengthCard.jsx'
+import WeeklyMuscleTargetsCard from '../components/WeeklyMuscleTargetsCard.jsx'
 import Heatmap from '../components/Heatmap.jsx'
 import Icon from '../components/Icon.jsx'
 import BodyMap, { BodyMapLegend } from '../components/BodyMap.jsx'
@@ -685,6 +686,9 @@ export default function Stats() {
 
     {(workouts.length > 0 || Object.keys(loadOfWeeklyPlan(S)).length > 0) && <MuscleBalance S={S} />}
     {S.routines.length > 0 && <WeeklyPlanVolume S={S} />}
+    {/* New weekly target ranges are an additional IronLog card, not a replacement
+        for the existing weekly planned-volume or body-map cards. */}
+    <WeeklyMuscleTargetsCard S={S} />
     {workouts.length > 0 && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
       <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t('Structural balance')}</h2>
         <div className="muted small" style={{ marginTop: 4 }}>{t('See which lift is holding back the rest.')}</div></div>
