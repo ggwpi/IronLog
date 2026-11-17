@@ -1565,10 +1565,8 @@ export const PT_BR_OVERRIDES = {
   "The AI connection changed. Send your request again.": "A conexão de IA mudou. Envie sua solicitação novamente.",
   "Choose a model for this provider": "Escolher um modelo para este provedor",
 
-}
-
-export default {
-  // openGym 1.4.5 Daily Form localized UI.
+  // Brazilian Daily Form wording is explicit. Never put this before ...pt:
+  // it would be silently overwritten by inherited European Portuguese strings.
   "Daily form": "Forma do dia",
   "How are you today?": "Como você está hoje?",
   "Tap what fits, skip what does not.": "Toque no que combina, pule o resto.",
@@ -1592,4 +1590,7 @@ export default {
   "Not for me": "Não é para mim",
   "check-ins": "check-ins",
   "Average": "Média",
-  "Patterns, not proof. Sleep is rarely the only thing that changed that day.": "Padrões, não provas. O sono raramente é a única coisa que mudou naquele dia.", ...pt, ...PT_BR_OVERRIDES }
+  "Patterns, not proof. Sleep is rarely the only thing that changed that day.": "Padrões, não provas. O sono raramente é a única coisa que mudou naquele dia.",
+}
+
+export default { ...pt, ...PT_BR_OVERRIDES }
