@@ -62,7 +62,10 @@ export default function WeeklyMuscleTargetsCard({ S }) {
   const [expanded, setExpanded] = useState(false)
   const rows = weeklyMuscleSets(S)
   if (!rows.some(row => row.sets > 0) && !S.muscleTargets) return null
-  const shown = expanded ? rows : rows.slice(0, ROW_LIMIT)
+  // Lead with muscle groups the user actually worked, as IronLog's existing
+  // muscle-balance list does; expand to see the complete upstream target order.
+  const sorted = expanded ? rows : [...rows].sort((a, b) => b.sets - a.sets)
+  const shown = expanded ? sorted : sorted.slice(0, ROW_LIMIT)
   return <div className="card" data-weekly-muscle-targets>
     <div className="row between" style={{ gap: 10, marginBottom: 6 }}>
       <div>
