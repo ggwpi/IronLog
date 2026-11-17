@@ -2481,4 +2481,20 @@ export default {
   "The AI connection changed. Send your request again.": "การเชื่อมต่อ AI เปลี่ยนไป โปรดส่งคำขออีกครั้ง",
   "Choose a model for this provider": "เลือกโมเดลสำหรับผู้ให้บริการนี้",
 
+  // openGym v1.4.5 Recovery Hint strings (upstream translations).
+  "Your legs are still recovering from {0}.": "ขาของคุณยังฟื้นตัวอยู่ (ฝึกเมื่อ: {0})",
+  "Your upper body is still recovering from {0}.": "ช่วงบนของคุณยังฟื้นตัวอยู่ (ฝึกเมื่อ: {0})",
+  "Rest day, good timing.": "วันพัก จังหวะดีเลย",
+  "Go a bit lighter today, or swap the session.": "วันนี้เบาลงหน่อย หรือสลับเซสชัน",
+  "Upper body today?": "วันนี้เล่นช่วงบน?",
+  "Legs today?": "วันนี้เล่นขา?",
+  "Your legs haven’t had any work in {0} days.": "ขาของคุณไม่ได้ฝึกมา {0} วันแล้ว",
+  "Your back hasn’t had any work in {0} days.": "หลังของคุณไม่ได้ฝึกมา {0} วันแล้ว",
+  "Your chest hasn’t had any work in {0} days.": "อกของคุณไม่ได้ฝึกมา {0} วันแล้ว",
+  "Your shoulders haven’t had any work in {0} days.": "ไหล่ของคุณไม่ได้ฝึกมา {0} วันแล้ว",
+  "Today’s plan takes care of that.": "แผนวันนี้จัดการเรื่องนี้ให้แล้ว",
+  "A few sets today would be nice.": "วันนี้เล่นสักสองสามเซ็ตก็ดีนะ",
+  "Hidden for today. Back tomorrow.": "ซ่อนไว้สำหรับวันนี้ พรุ่งนี้กลับมา",
+  "Hide for today": "ซ่อนสำหรับวันนี้",
+  "Swap session": "สลับเซสชัน",
 }

@@ -2470,4 +2470,20 @@ export default {
   "The AI connection changed. Send your request again.": "AI bağlantısı değişti. İsteğinizi yeniden gönderin.",
   "Choose a model for this provider": "Bu sağlayıcı için bir model seç",
 
+  // openGym v1.4.5 Recovery Hint strings (upstream translations).
+  "Your legs are still recovering from {0}.": "Bacakların hâlâ toparlanıyor (antrenman: {0}).",
+  "Your upper body is still recovering from {0}.": "Üst vücudun hâlâ toparlanıyor (antrenman: {0}).",
+  "Rest day, good timing.": "Dinlenme günü, tam zamanında.",
+  "Go a bit lighter today, or swap the session.": "Bugün biraz hafif git ya da antrenmanı değiştir.",
+  "Upper body today?": "Bugün üst vücut?",
+  "Legs today?": "Bugün bacak?",
+  "Your legs haven’t had any work in {0} days.": "Bacakların {0} gündür çalışmadı.",
+  "Your back hasn’t had any work in {0} days.": "Sırtın {0} gündür çalışmadı.",
+  "Your chest hasn’t had any work in {0} days.": "Göğsün {0} gündür çalışmadı.",
+  "Your shoulders haven’t had any work in {0} days.": "Omuzların {0} gündür çalışmadı.",
+  "Today’s plan takes care of that.": "Bugünkü plan bunu hallediyor.",
+  "A few sets today would be nice.": "Bugün birkaç set iyi olurdu.",
+  "Hidden for today. Back tomorrow.": "Bugünlük gizlendi. Yarın geri gelir.",
+  "Hide for today": "Bugünlük gizle",
+  "Swap session": "Antrenmanı değiştir",
 }

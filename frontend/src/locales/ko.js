@@ -2470,4 +2470,20 @@ export default {
   "The AI connection changed. Send your request again.": "AI 연결이 변경되었습니다. 요청을 다시 보내세요.",
   "Choose a model for this provider": "이 제공업체의 모델 선택",
 
+  // openGym v1.4.5 Recovery Hint strings (upstream translations).
+  "Your legs are still recovering from {0}.": "하체가 아직 회복 중이에요 (운동: {0}).",
+  "Your upper body is still recovering from {0}.": "상체가 아직 회복 중이에요 (운동: {0}).",
+  "Rest day, good timing.": "휴식일, 타이밍 좋아요.",
+  "Go a bit lighter today, or swap the session.": "오늘은 조금 가볍게 하거나 세션을 바꿔 보세요.",
+  "Upper body today?": "오늘은 상체?",
+  "Legs today?": "오늘은 하체?",
+  "Your legs haven’t had any work in {0} days.": "하체 운동을 안 한 지 {0}일 됐어요.",
+  "Your back hasn’t had any work in {0} days.": "등 운동을 안 한 지 {0}일 됐어요.",
+  "Your chest hasn’t had any work in {0} days.": "가슴 운동을 안 한 지 {0}일 됐어요.",
+  "Your shoulders haven’t had any work in {0} days.": "어깨 운동을 안 한 지 {0}일 됐어요.",
+  "Today’s plan takes care of that.": "오늘 계획이 챙겨 줄 거예요.",
+  "A few sets today would be nice.": "오늘 몇 세트 하면 좋겠어요.",
+  "Hidden for today. Back tomorrow.": "오늘은 숨겼어요. 내일 다시 나와요.",
+  "Hide for today": "오늘은 숨기기",
+  "Swap session": "세션 바꾸기",
 }
