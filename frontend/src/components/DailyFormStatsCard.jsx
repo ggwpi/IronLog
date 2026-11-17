@@ -3,17 +3,19 @@
 // will be ported only after its native data sources are verified.
 import { useStore } from '../store/useStore.js'
 import { t } from '../lib/i18n.js'
-import { fmtNum, todayISO } from '../lib/format.js'
+import { fmtNum, todayISO, isoOf } from '../lib/format.js'
 import { Button } from './ui.jsx'
 import { formDays, formOf, formScore, offerCheckin } from '../lib/daily-form.js'
 
 export default function DailyFormStatsCard({ S }) {
+  const update = useStore(s => s.update)
   const days = formDays(S)
   const offer = offerCheckin(S)
   if (!days.length && S.dailyForm !== true && !offer) return null
-  const update = useStore(s => s.update)
   const today = formOf(S, todayISO())
-  const recent = days.slice(-14)
+  const start = new Date()
+  start.setDate(start.getDate() - 13)
+  const recent = days.filter(day => day.d >= isoOf(start))
   const average = recent.length
     ? recent.reduce((n, row) => n + formScore(row), 0) / recent.length : null
 
