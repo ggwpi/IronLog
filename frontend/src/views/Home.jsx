@@ -11,6 +11,7 @@ import QueueRow from '../components/QueueRow.jsx'
 import { WeeklySetsHomeLine } from '../components/WeeklyMuscleTargetsCard.jsx'
 import DeloadWeekCard from '../components/DeloadWeekCard.jsx'
 import RecoveryHintCard from '../components/RecoveryHintCard.jsx'
+import MiniBodyMap from '../components/MiniBodyMap.jsx'
 import { queueOf, queueView, weekTally, pinState } from '../lib/queue.js'
 import { scheduleModeOf } from '../lib/rotation.js'
 import { useConnectionTrouble } from '../components/SyncBanner.jsx'
@@ -149,7 +150,12 @@ export default function Home() {
         </div>
         {S.active ? <span className="tag home-workout-action"><Icon name={editingSaved ? 'pencil' : 'play'} />{editingSaved ? t('Edit') : t('Resume')}</span>
           : doneToday ? <span className="tag home-workout-action"><Icon name="check" />{t('Done')}</span>
-          : routine ? <span className="tag home-workout-action"><Icon name="play" />{t('Start')}</span>
+          : routine ? (S.showWorkoutMusclePreview === true
+            ? <span className="row" style={{ gap: 8, alignItems: 'center' }}>
+                <MiniBodyMap routines={todayRoutines} body={S.body} />
+                <span className="tag home-workout-action"><Icon name="play" />{t('Start')}</span>
+              </span>
+            : <span className="tag home-workout-action"><Icon name="play" />{t('Start')}</span>)
           : <Icon name="plus" className="chev" />}
       </div>
       {/* The row above starts today's plan in one tap, and so does the Start button in the tab

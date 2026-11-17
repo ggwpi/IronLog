@@ -119,6 +119,7 @@ export const SEARCH = [
   { page: 'look', title: 'Body weight', icon: 'scale', tint: 'var(--green)', kw: 'weight card home' },
   { page: 'look', title: 'Recovery tips', icon: 'figureStrength', tint: 'var(--green)', kw: 'recovery tips tired muscles fatigue rest home card hint' },
   { page: 'look', title: 'Weekly muscle volume', icon: 'figureStrength', tint: 'var(--teal)', kw: 'muscle volume training weekly targets sets home show' },
+  { page: 'look', title: 'Muscle map', icon: 'figureStrength', tint: 'var(--teal)', kw: 'mini body muscle map today home workout row preview plan start' },
   { page: 'look', title: 'Show connection status', icon: 'cloud', tint: 'var(--blue)', kw: 'sync offline banner bar connection', when: c => !c.demo },
   // Data & backup
   { page: 'data', title: 'Export backup (JSON)', icon: 'share', tint: 'var(--blue)', kw: 'export backup json download save' },

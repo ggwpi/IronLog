@@ -834,6 +834,13 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           <Switch checked={S.showWeeklySetsHome === true}
             onChange={v => update(s => { s.showWeeklySetsHome = v })} />
         </Row>
+        {/* OpenGym's Today-row muscle preview is opt-in. The original IronLog hero stays
+            exactly as it was until this setting is explicitly enabled. */}
+        <Row icon="figureStrength" iconTint="var(--teal)" title={t('Muscle map')}
+          subtitle={t('Today') + ' · ' + t('Start')}>
+          <Switch checked={S.showWorkoutMusclePreview === true}
+            onChange={v => update(s => { s.showWorkoutMusclePreview = v })} />
+        </Row>
         {/* Recovery is an opt-in Home card; preserve every existing Home card. */}
         <Row icon="figureStrength" iconTint="var(--green)" title={t('Recovery tips')}
           subtitle={t('A quiet hint about which muscles have rested and which are still recovering.')}>
