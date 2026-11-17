@@ -12,6 +12,7 @@ import { WeeklySetsHomeLine } from '../components/WeeklyMuscleTargetsCard.jsx'
 import DeloadWeekCard from '../components/DeloadWeekCard.jsx'
 import RecoveryHintCard from '../components/RecoveryHintCard.jsx'
 import MiniBodyMap from '../components/MiniBodyMap.jsx'
+import { workoutsLeft } from '../lib/week-left.js'
 import { queueOf, queueView, weekTally, pinState } from '../lib/queue.js'
 import { scheduleModeOf } from '../lib/rotation.js'
 import { useConnectionTrouble } from '../components/SyncBanner.jsx'
@@ -97,6 +98,8 @@ export default function Home() {
   // The streak card's fraction: this calendar week's workouts over the weekdays with a plan, or,
   // in a coach week, the queue's sessions and your own days together (lib/queue.js weekTally).
   const { done: doneThisWeek, planned: plannedPerWeek } = weekTally(S, todayISO())
+  // Upstream v1.4.5 countdown, opt-in to preserve existing IronLog Home composition.
+  const weeklyCountdown = S.showWorkoutsLeftHome === true ? workoutsLeft(S, todayISO()) : null
   const bwPoints = S.bodyweight.slice(-30).map(b => ({ t: weighInAt(b), y: b.w, d: b.d }))
 
   // today's session shown right under the week strip
@@ -129,6 +132,13 @@ export default function Home() {
         </div>
         <div className="week">{strip}</div>
       </>}
+      {/* The native IronLog week strip and Start hero stay untouched for existing profiles. */}
+      {weeklyCountdown && <div className="small dim" data-workouts-left-home
+        style={{ marginBlock: 7, textAlign: 'center' }}>
+        {weeklyCountdown.left > 0
+          ? tn('{0} of {1} left this week', '{0} of {1} left this week', weeklyCountdown.left, weeklyCountdown.of)
+          : t('All done this week. Nice.')}
+      </div>}
       {/* Once today's session is logged the row stops asking for it. The week strip already
           knew (its dot goes 'done'); this row did not, so a finished day kept showing the
           routine name behind a green Start tag and read as still outstanding (issue #4).

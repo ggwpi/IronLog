@@ -93,6 +93,7 @@ export const SEARCH = [
   { page: 'reminders', title: 'Send test notification', icon: 'bell', tint: 'var(--red)', kw: 'test push notification try', when: c => !c.mobile && c.pushOK, via: PUSH },
   // Plan & schedule
   { page: 'plan', title: 'How you train', icon: 'repeat', tint: 'var(--orange)', kw: 'scheduling schedule rotation fixed week split loop round cycle', opts: ['Fixed Week', 'Rotation'] },
+  { page: 'plan', title: 'Workouts per week', icon: 'target', tint: 'var(--green)', kw: 'rotation goal weekly target workouts countdown', when: c => c.rotation },
   { page: 'plan', title: 'Week starts on', icon: 'calendar', tint: 'var(--orange)', kw: 'monday sunday first day week', opts: ['Monday', 'Sunday'], tkw: () => t('week start') },
   { page: 'plan', title: 'Load starter plan', icon: 'clipboard', tint: 'var(--green)', kw: 'starter template beginner program routine' },
   // Units & language
@@ -118,6 +119,7 @@ export const SEARCH = [
   { page: 'look', title: 'Gym check-in', icon: 'qr', tint: 'var(--blue)', kw: 'qr code membership card check in barcode' },
   { page: 'look', title: 'Body weight', icon: 'scale', tint: 'var(--green)', kw: 'weight card home' },
   { page: 'look', title: 'Recovery tips', icon: 'figureStrength', tint: 'var(--green)', kw: 'recovery tips tired muscles fatigue rest home card hint' },
+  { page: 'look', title: 'Workouts left this week', icon: 'target', tint: 'var(--green)', kw: 'weekly countdown home workouts left plan' },
   { page: 'look', title: 'Weekly muscle volume', icon: 'figureStrength', tint: 'var(--teal)', kw: 'muscle volume training weekly targets sets home show' },
   { page: 'look', title: 'Muscle map', icon: 'figureStrength', tint: 'var(--teal)', kw: 'mini body muscle map today home workout row preview plan start' },
   { page: 'look', title: 'Show connection status', icon: 'cloud', tint: 'var(--blue)', kw: 'sync offline banner bar connection', when: c => !c.demo },

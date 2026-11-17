@@ -20,6 +20,7 @@ import { unlock, chime, playOnSilentSupported, vibrateSupported, appleTouchDevic
 import { REST_SOUND_IDS, restSoundOf } from '../lib/rest-sounds.js'
 import { scheduleModeOf, chooseFixedWeek, chooseRotation } from '../lib/rotation.js'
 import { queueOf } from '../lib/queue.js'
+import { weekTargetOf } from '../lib/week-left.js'
 import { api, webauthnOK, passkeyRegister, passkeyError, IS_ANDROID } from '../lib/api.js'
 import { pushSupported, enablePush, disablePush, sendTestPush, syncPushSubscription } from '../lib/push.js'
 import { wakeLockSupported } from '../lib/wakelock.js'
@@ -421,6 +422,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     profiles: (S.equipProfiles || []).length > 0, nameLang: EXERCISE_NAME_LANGS.includes(baseLang(lang)),
     pushOK: !MOBILE && pushSupported(), reminderOn: !!S.reminder?.on, nudge: !!S.reminder?.nudge,
     autoBackup: !!S.autoBackup, synced: !!sync, installTip: !MOBILE && !standalone(), androidWeb: IS_ANDROID,
+    rotation: mode === 'rotation' && !externalQ,
   }
   const mode = scheduleModeOf(S)
   const layout = ['list', 'compact', 'focus'].includes(S.workoutView) ? S.workoutView : 'cards'
@@ -698,6 +700,14 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         {/* Rotation chosen with no loop running yet: the loop is built on Plan. */}
         {mode === 'rotation' && !liveQ && <Row icon="calendar" iconTint="var(--orange)" title={t('Build your loop in Plan')}
           accessory="chevron" onClick={() => nav('/plan')} />}
+        {/* A rotation needs an explicit weekly target: the loop itself is not tied to weekdays.
+            Off preserves the queue's usual progress bar and adds no Home countdown. */}
+        {mode === 'rotation' && !externalQ && <SelectRow icon="target" iconTint="var(--green)"
+          title={t('Workouts per week')}
+          value={weekTargetOf(S) || 0}
+          onChange={v => update(s => { s.weekTarget = v || null })}
+          options={[{ value: 0, label: t('Off'), subtitle: t('No weekly countdown on Home.') },
+            ...[1, 2, 3, 4, 5, 6, 7].map(n => ({ value: n, label: String(n) }))]} />}
         {/* Monday or Sunday: the Plan list, the Home strip, the calendar grid and every "this
             week" total follow it. Stored as a getDay() index (see lib/format.js). */}
         <Row icon="calendar" iconTint="var(--orange)" title={t('Week starts on')}>
@@ -840,6 +850,12 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           subtitle={t('Today') + ' · ' + t('Start')}>
           <Switch checked={S.showWorkoutMusclePreview === true}
             onChange={v => update(s => { s.showWorkoutMusclePreview = v })} />
+        </Row>
+        {/* The openGym weekly countdown is optional and never replaces IronLog's streak. */}
+        <Row icon="target" iconTint="var(--green)" title={t('Workouts left this week')}
+          subtitle={t('Workouts per week') + ' · ' + t('This week')}>
+          <Switch checked={S.showWorkoutsLeftHome === true}
+            onChange={v => update(s => { s.showWorkoutsLeftHome = v })} />
         </Row>
         {/* Recovery is an opt-in Home card; preserve every existing Home card. */}
         <Row icon="figureStrength" iconTint="var(--green)" title={t('Recovery tips')}

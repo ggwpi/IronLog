@@ -28,6 +28,14 @@ Upstream baseline to integrate: `DuarteSantos8/openGym@e4a68a94c42a3c17cbd560d66
 - A small scoped CSS file sizes the map; shared design tokens and original IronLog global CSS are not edited. This is a web preview slice only, not full upstream multi-session/split-day parity; no migration, historical exercise edits, or remote profile data updates are involved.
 - Unit/Home UI and multi-device settings-sync fixture tests are included. Full mobile/RTL/screenshot review still required.
 
+## Workouts left this week (#753, openGym 1.4.5)
+
+- Ported openGym v1.4.5 `week-left.js` and its original unit tests. The countdown uses the existing IronLog `weekTally`, today's still-open planned routines, and an optional 1–7 rotation target, so it does not count future or unrelated workouts as completions.
+- `Settings → Plan & schedule → Workouts per week` sets a rotation target (0/off or 1–7), without altering workout history, routines, rotation queue, or dates. The target is irrelevant to Fixed Week.
+- `Settings → Look & Home → Workouts left this week` opt-in (`showWorkoutsLeftHome`) displays a single text line after the existing IronLog week strip/queue. Off by default to retain the original Home hero, streak, cards, charts, tab bar, splash, gestures and sheets.
+- Added user-data preservation audit coverage for the opt-in flag and rotation target, plus cross-device setting sync regression. No writes to production state or database, no new APIs and no destructive migration.
+- **Parity boundary:** Home/PWA slice only; openGym native widget snapshots and full native platforms remain future work. Visual screenshot checks and restored-user-data tests remain required.
+
 ## Immutable visual baseline
 
 All existing components/screens remain the visual source of truth, including the splash/logo, boot/loading animation, workout-load transitions, Home greeting, Home card arrangement, existing card/expanded card appearance, charts, bottom sheets and swipe gestures, navigation bar, iconography, RTL layout and light/dark palettes. A feature may add a surface where needed, but must not replace or restyle existing IronLog surfaces. Compare screenshots in each state before any production merge.
