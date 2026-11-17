@@ -2489,4 +2489,9 @@ export default {
   "Hidden for today. Back tomorrow.": "Mára elrejtve. Holnap visszajön.",
   "Hide for today": "Elrejtés mára",
   "Swap session": "Edzés cseréje",
+  // openGym v1.4.5 weekly countdown translations.
+  'Workouts per week': 'Edzés hetente',
+  "No weekly countdown on Home.": "Nincs heti visszaszámlálás a kezdőlapon.",
+  "{0} of {1} left this week": "Ezen a héten még {0} a {1}-ból",
+  "All done this week. Nice.": "Ezen a héten mind megvan. Szép.",
 }

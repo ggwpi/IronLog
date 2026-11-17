@@ -2565,4 +2565,9 @@ export default {
   "Hidden for today. Back tomorrow.": "আজকের জন্য লুকানো। কাল ফিরবে।",
   "Hide for today": "আজকের জন্য লুকান",
   "Swap session": "সেশন বদলান",
+  // openGym v1.4.5 weekly countdown translations.
+  'Workouts per week': 'সপ্তাহে ওয়ার্কআউট',
+  "No weekly countdown on Home.": "হোমে সাপ্তাহিক কাউন্টডাউন নেই।",
+  "{0} of {1} left this week": "এই সপ্তাহে {1}টির মধ্যে {0}টি বাকি",
+  "All done this week. Nice.": "এই সপ্তাহের সব শেষ। দারুণ।",
 }
