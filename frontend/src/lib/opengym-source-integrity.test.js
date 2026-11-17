@@ -13,7 +13,7 @@ describe('immutable openGym source provenance', () => {
     expect(blob('./set-trend.js')).toBe('95c4e159b916222ad75c68a44235d6239f7c9bd0')
   })
   it('preserves upstream set trend unit tests byte-for-byte', () => {
-    expect(blob('./set-trend.test.js')).toBe('bfb406fcca15c37424ad3844d009eb41787ec03d6')
+    expect(blob('./set-trend.test.js')).toBe('bfb406fcca15c37424ad384d009eb41787ec03d6')
   })
   it('preserves upstream workouts-left algorithm byte-for-byte', () => {
     expect(blob('./week-left.js')).toBe('25097c8f263823ef16c7deba574811944fab6572')
