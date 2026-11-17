@@ -2463,4 +2463,20 @@ export default {
   "The AI connection changed. Send your request again.": "AI 連線已變更。請重新傳送請求。",
   "Choose a model for this provider": "選擇此供應商的模型",
 
+  // openGym v1.4.5 Recovery Hint strings (upstream translations).
+  "Your legs are still recovering from {0}.": "你的腿還在恢復（訓練：{0}）。",
+  "Your upper body is still recovering from {0}.": "你的上半身還在恢復（訓練：{0}）。",
+  "Rest day, good timing.": "休息日，時機剛好。",
+  "Go a bit lighter today, or swap the session.": "今天練輕一點，或換個訓練。",
+  "Upper body today?": "今天練上半身？",
+  "Legs today?": "今天練腿？",
+  "Your legs haven’t had any work in {0} days.": "你的腿已經 {0} 天沒練了。",
+  "Your back hasn’t had any work in {0} days.": "你的背部已經 {0} 天沒練了。",
+  "Your chest hasn’t had any work in {0} days.": "你的胸部已經 {0} 天沒練了。",
+  "Your shoulders haven’t had any work in {0} days.": "你的肩部已經 {0} 天沒練了。",
+  "Today’s plan takes care of that.": "今天的計畫會照顧到它。",
+  "A few sets today would be nice.": "今天練幾組就很好。",
+  "Hidden for today. Back tomorrow.": "今天先隱藏，明天再回來。",
+  "Hide for today": "今天不再顯示",
+  "Swap session": "換個訓練",
 }

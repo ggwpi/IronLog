@@ -2534,4 +2534,20 @@ export default {
   "The AI connection changed. Send your request again.": "חיבור ה־AI השתנה. שלח את הבקשה שוב.",
   "Choose a model for this provider": "בחר מודל לספק",
 
+  // IronLog Hebrew Recovery Hint translations.
+  "Your legs are still recovering from {0}.": "הרגליים שלך עדיין מתאוששות מהאימון של {0}.",
+  "Your upper body is still recovering from {0}.": "פלג הגוף העליון שלך עדיין מתאושש מהאימון של {0}.",
+  "Rest day, good timing.": "יום מנוחה, בדיוק בזמן.",
+  "Go a bit lighter today, or swap the session.": "כדאי להוריד מעט עומס היום, או להחליף את האימון.",
+  "Upper body today?": "אימון פלג גוף עליון היום?",
+  "Legs today?": "אימון רגליים היום?",
+  "Your legs haven’t had any work in {0} days.": "לא אימנת את הרגליים כבר {0} ימים.",
+  "Your back hasn’t had any work in {0} days.": "לא אימנת את הגב כבר {0} ימים.",
+  "Your chest hasn’t had any work in {0} days.": "לא אימנת את החזה כבר {0} ימים.",
+  "Your shoulders haven’t had any work in {0} days.": "לא אימנת את הכתפיים כבר {0} ימים.",
+  "Today’s plan takes care of that.": "האימון המתוכנן להיום נותן לזה מענה.",
+  "A few sets today would be nice.": "כמה סטים היום יכולים להתאים.",
+  "Hidden for today. Back tomorrow.": "הוסתר להיום. יחזור מחר.",
+  "Hide for today": "הסתר להיום",
+  "Swap session": "החלף אימון",
 }
