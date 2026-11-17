@@ -30,7 +30,7 @@ export default function DailyFormCheckin({ onDone, onSkip }) {
       return <div key={k} style={{ marginBottom: 16 }} data-daily-form-question={k}>
         <div className="row between" style={{ marginBottom: 8 }}>
           <strong>{t(label)}</strong>
-          <span className="muted small">{answers[k] == null ? '—' : answers[k] + ' / 5'}</span>
+          <span className="muted small">{answers[k] == null ? '–' : answers[k] + ' / 5'}</span>
         </div>
         <div role="radiogroup" aria-label={t(label)} className="row" style={{ gap: 5 }}>
           {[1, 2, 3, 4, 5].map(n => <Button key={n} size="sm"
