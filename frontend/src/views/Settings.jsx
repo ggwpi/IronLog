@@ -586,6 +586,10 @@ export default function Settings({ page = null, find = null, via = null, entryKe
       const setWc = (k, v) => update(s => { s.wc = { ...workoutControls(s), [k]: v } })
       return <>
         <Section title={t('Sessions and timed sets')}>
+          <Row icon="chart" iconTint="var(--teal)" title={t('Compare sets with last time')}>
+            <Switch aria-label={t('Compare sets with last time')} checked={S.setTrend === true}
+              onChange={v => update(s => { s.setTrend = v })} />
+          </Row>
           {/* Whose reps a planned session opens with (lib/session-start.js). The plan's by default:
               the routine is what you said you would do, and history and progression decide the
               weight. The other choice is the old behaviour, reps carried over from last time.

@@ -83,3 +83,10 @@ All existing components/screens remain the visual source of truth, including the
 - [ ] Verified non-destructive data migration, backup restoration and rollback
 
 A checkbox can only be checked after implementation and automated/manual proof. **Do not merge this document as evidence of feature completion.**
+
+## Set-by-set trends (openGym v1.4.5 #907)
+
+- Ported upstream's read-only set-by-set calculations and source regression tests: preceding session, warm-ups, assistance, unilateral sets, cardio, holds and estimated 1RM when weight and reps disagree.
+- Rendered inside IronLog's **existing** set-number button and saved-workout bottom sheet. No upstream CSS, card/graph/navigation redesign or splash/loading changes.
+- Opt-in `setTrend === true` only (off by default even if the field is absent). The native IronLog Settings → Workout → Fine-tuning Row/Switch enables it; no historical workouts/sets are rewritten.
+- Added preference-sync and preservation-audit fixtures. **Still pending:** CI for this commit, mobile/RTL screenshots, independently restored backups, full parity and production release gates. Do not merge or deploy.

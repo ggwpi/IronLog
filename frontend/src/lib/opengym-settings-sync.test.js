@@ -24,6 +24,7 @@ describe('upstream fields across IronLog multi-device sync', () => {
     latestPrefs.showWorkoutMusclePreview = true
     latestPrefs.showWorkoutsLeftHome = true
     latestPrefs.weekTarget = 4
+    latestPrefs.setTrend = true
     stampChange(original, latestPrefs, 3000)
 
     const secondDevice = structuredClone(original)
@@ -39,6 +40,7 @@ describe('upstream fields across IronLog multi-device sync', () => {
     expect(merged.showWorkoutMusclePreview).toBe(true)
     expect(merged.showWorkoutsLeftHome).toBe(true)
     expect(merged.weekTarget).toBe(4)
+    expect(merged.setTrend).toBe(true)
     expect(merged.workouts.map(w => w.id)).toEqual(['w1', 'w2'])
     expect(merged.routines).toEqual(original.routines)
   })
