@@ -5,7 +5,7 @@
 import { useState } from 'react'
 import { t } from '../lib/i18n.js'
 import { FORM_KEYS, formScore, isRough } from '../lib/daily-form.js'
-import { Button, Segmented } from './ui.jsx'
+import { Button } from './ui.jsx'
 
 const QUESTIONS = {
   sleep: ['Sleep', 'Barely slept', 'Slept like a log'],
@@ -13,8 +13,6 @@ const QUESTIONS = {
   sore: ['Soreness', 'Nothing aches', 'Everything aches'],
   stress: ['Stress', 'Calm', 'Frazzled'],
 }
-
-const options = [1, 2, 3, 4, 5].map(n => ({ value: String(n), label: String(n) }))
 
 export default function DailyFormCheckin({ onDone, onSkip }) {
   const [answers, setAnswers] = useState({ sleep: null, energy: null, sore: null, stress: null })
@@ -34,9 +32,12 @@ export default function DailyFormCheckin({ onDone, onSkip }) {
           <strong>{t(label)}</strong>
           <span className="muted small">{answers[k] == null ? '—' : answers[k] + ' / 5'}</span>
         </div>
-        <div role="group" aria-label={t(label)}>
-          <Segmented options={options} value={answers[k] == null ? '' : String(answers[k])}
-            onChange={v => setAnswers(a => ({ ...a, [k]: a[k] === Number(v) ? null : Number(v) }))} />
+        <div role="radiogroup" aria-label={t(label)} className="row" style={{ gap: 5 }}>
+          {[1, 2, 3, 4, 5].map(n => <Button key={n} size="sm"
+            role="radio" aria-checked={answers[k] === n} aria-label={String(n)}
+            variant={answers[k] === n ? 'tinted' : 'ghost'}
+            style={{ flex: 1, minWidth: 0 }}
+            onClick={() => setAnswers(a => ({ ...a, [k]: a[k] === n ? null : n }))}>{n}</Button>)}
         </div>
         <div className="row between muted small" style={{ gap: 8, marginTop: 6 }}>
           <span>{t(low)}</span><span>{t(high)}</span>
