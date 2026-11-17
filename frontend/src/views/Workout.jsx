@@ -40,7 +40,7 @@ import { sessionNoProg, setSessionNoProg, setEntryNoProg, joinSessionNoProg } fr
 import { glyphOf } from '../lib/glyphs.js'
 import { markAllSetsDone, sessionHistory } from '../lib/backfill.js'
 import { formulaOf } from '../lib/onerm.js'
-import { setTrendsFor, setTrendOn, trendGlyph, trendLabel } from '../lib/set-trend.js'
+import { setTrendsFor, trendGlyph, trendLabel } from '../lib/set-trend.js'
 import { bindWatchActions } from '../lib/watch-sync.js'
 import { bestSetFor } from '../lib/exercise-history.js'
 import { bindLiveActions } from '../lib/live-activity.js'
@@ -195,7 +195,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   // same one the rows and the progression line were built from (#216).
   const last = lastEntryFor(H, entry.id, entry.rid)
   // Upstream 1.4.5 comparison is read-only and opt-in: old IronLog cards remain pixel-identical.
-  const setTrends = setTrendOn(S) ? setTrendsFor(entry, last, { formula: formulaOf(S) }) : null
+  const setTrends = S?.setTrend === true ? setTrendsFor(entry, last, { formula: formulaOf(S) }) : null
   const trendNote = i => setTrends?.[i] ? ', ' + trendLabel(setTrends[i], S.unit) : ''
   const trendMark = i => {
     const tr = setTrends?.[i]

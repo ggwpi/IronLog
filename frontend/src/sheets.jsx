@@ -40,7 +40,7 @@ import { parseImport, mergeImport } from './lib/import-csv.js'
 import { importHevyData, HevyApiError, HEVY_DEV_SETTINGS, mergeHevyRoutines } from './lib/import-hevy.js'
 import { buildPlanBundle, parsePlan, mergePlan, printPlan, planPrintHTML } from './lib/plan-share.js'
 import { estimate1RM, best1RM, is1RMRecord, REP_CAP, formulaOf, FORMULA_NAMES } from './lib/onerm.js'
-import { setTrendsFor, lastTimeBefore, setTrendOn, trendGlyph } from './lib/set-trend.js'
+import { setTrendsFor, lastTimeBefore, trendGlyph } from './lib/set-trend.js'
 import { exerciseHistory } from './lib/exercise-history.js'
 import { StrengthLevelBlock } from './components/StrengthLevelsCard.jsx'
 import { isBellEx, dbLoadOf, dbLoadFor, withDbLoad, withMeaning, historyAs, entryDbLoad, currentDbLoad, isOneArm, ownedWeightsFor, dumbbellsOf, ownsDumbbells, withDumbbells, presetWeights, cleanWeights } from './lib/dumbbells.js'
@@ -2664,7 +2664,7 @@ function WorkoutDetail({ w, close }) {
   // curve it sits on, which is the question a past workout raises most often.
   const entryRow = (e, i) => {
     const ex = EXIDX[e.id]
-    const trends = setTrendOn(st) ? setTrendsFor(e, lastTimeBefore(st, w, e), { formula: formulaOf(st) }) : null
+    const trends = st?.setTrend === true ? setTrendsFor(e, lastTimeBefore(st, w, e), { formula: formulaOf(st) }) : null
     return <div key={i} className="row wd-ex" style={{ alignItems: 'flex-start' }} {...tappable(() => exerciseHistorySheet(e.id))}>
       {ex && <Thumb ex={ex} />}
       <div className="grow"><div className={`tt ${exerciseNameClass(ex)}`} style={{ fontWeight: 600 }}>{nameOf(e)} {w.prs && w.prs.includes(e.id) && <span className="pr"><Icon name="trophy" />PR</span>}</div>

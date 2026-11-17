@@ -1,6 +1,9 @@
 # IronLog × openGym: full feature parity, IronLog visual design
 
-Status: **IN PROGRESS — NOT SAFE TO MERGE OR DEPLOY**  
+Status: **IN PROGRESS — NOT SAFE TO MERGE OR DEPLOY**
+
+**Immutable upstream source contract:** [OPENGYM_SOURCE_CONTRACT.md](./OPENGYM_SOURCE_CONTRACT.md). openGym v1.4.5 is pinned as a complete Git submodule; every upstream algorithm must stay unmodified, with IronLog-only component/state boundaries. A source snapshot is not proof of runtime integration.
+  
 IronLog baseline: `79fc61eed2000049424591b2bde4ec7f20fa6615`  
 Upstream baseline to integrate: `DuarteSantos8/openGym@e4a68a94c42a3c17cbd560d66ce2e46a7048ab99` (v1.4.5).
 

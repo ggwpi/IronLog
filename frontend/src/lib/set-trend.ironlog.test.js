@@ -3,8 +3,8 @@ import { setTrend, setTrendsFor, setTrendOn, trendGlyph, lastTimeBefore } from '
 const done = (w, r) => ({ w, r, done: true })
 const workout = (id, d, w) => ({ id, d, start: new Date(d + 'T10:00:00').getTime(), entries: [{ id: '0025', target: { mode: 'reps' }, sets: [done(w, 8)] }] })
 describe('IronLog set trends are opt-in, read-only and preserve data', () => {
-  it('keeps existing IronLog visuals unchanged until enabled', () => {
-    expect(setTrendOn({})).toBe(false)
+  it('keeps the upstream default unchanged (UI opt-in is separately verified)', () => {
+    expect(setTrendOn({})).toBe(true)
     expect(setTrendOn({ setTrend: false })).toBe(false)
     expect(setTrendOn({ setTrend: true })).toBe(true)
   })

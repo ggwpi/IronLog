@@ -31,8 +31,8 @@ const num = v => Number(v) || 0
 const sign = n => (n > EPS ? 1 : n < -EPS ? -1 : 0)
 const doneOf = s => (isSideSet(s) ? s.sides.L.done === true && s.sides.R.done === true : s?.done === true)
 
-/** Whether arrows are shown: opt-in only, preserving IronLog's unchanged visual baseline. */
-export const setTrendOn = S => S?.setTrend === true
+/** Whether the arrows are shown (Settings → Workout → Compare sets with last time). On unless switched off. */
+export const setTrendOn = S => S?.setTrend !== false
 
 /**
  * One set against its counterpart: `{ dir, by, delta }` or null when there is nothing honest to
