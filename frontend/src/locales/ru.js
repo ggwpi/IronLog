@@ -2474,4 +2474,20 @@ export default {
   "The AI connection changed. Send your request again.": "Подключение ИИ изменилось. Отправьте запрос ещё раз.",
   "Choose a model for this provider": "Выбрать модель этого провайдера",
 
+  // openGym v1.4.5 Recovery Hint strings (upstream translations).
+  "Your legs are still recovering from {0}.": "Ноги ещё восстанавливаются (тренировка: {0}).",
+  "Your upper body is still recovering from {0}.": "Верх тела ещё восстанавливается (тренировка: {0}).",
+  "Rest day, good timing.": "День отдыха, как раз вовремя.",
+  "Go a bit lighter today, or swap the session.": "Сегодня полегче, или поменяйте тренировку.",
+  "Upper body today?": "Сегодня верх тела?",
+  "Legs today?": "Сегодня ноги?",
+  "Your legs haven’t had any work in {0} days.": "Ноги не работали уже {0} дн.",
+  "Your back hasn’t had any work in {0} days.": "Спина не работала уже {0} дн.",
+  "Your chest hasn’t had any work in {0} days.": "Грудь не работала уже {0} дн.",
+  "Your shoulders haven’t had any work in {0} days.": "Плечи не работали уже {0} дн.",
+  "Today’s plan takes care of that.": "Сегодняшний план это исправит.",
+  "A few sets today would be nice.": "Пара подходов сегодня была бы кстати.",
+  "Hidden for today. Back tomorrow.": "Скрыто на сегодня. Вернётся завтра.",
+  "Hide for today": "Скрыть на сегодня",
+  "Swap session": "Поменять тренировку",
 }
