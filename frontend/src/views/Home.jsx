@@ -10,6 +10,7 @@ import Icon from '../components/Icon.jsx'
 import QueueRow from '../components/QueueRow.jsx'
 import { WeeklySetsHomeLine } from '../components/WeeklyMuscleTargetsCard.jsx'
 import DeloadWeekCard from '../components/DeloadWeekCard.jsx'
+import RecoveryHintCard from '../components/RecoveryHintCard.jsx'
 import { queueOf, queueView, weekTally, pinState } from '../lib/queue.js'
 import { scheduleModeOf } from '../lib/rotation.js'
 import { useConnectionTrouble } from '../components/SyncBanner.jsx'
@@ -236,6 +237,9 @@ export default function Home() {
     {/* New deload suggestions use the existing IronLog Home card style.
         Without a scheduled or suggested deload this renders nothing. */}
     <DeloadWeekCard S={S} />
+
+    {/* Optional Recovery Hint, always hidden for pre-feature profiles. */}
+    <RecoveryHintCard S={S} />
 
     <div className="card tappable home-streak" style={{ cursor: 'pointer' }} {...tappable(() => calendarSheet())}>
       <div className="row between">
