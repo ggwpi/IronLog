@@ -6,6 +6,8 @@ import { buildCombinedEntries } from './session-merge.js'
 import { buildCompletedWorkout } from './finish-workout.js'
 import { lastEntryFor } from './history.js'
 import { isWarmupRow } from './workout-model.js'
+import { cardioStartSpeed } from './cardio-kind.js'
+import { EXIDX } from './exercises.js'
 
 const BENCH = '0025'      // barbell bench press
 const DB_BENCH = '0289'   // dumbbell bench press
@@ -75,7 +77,7 @@ describe('replaceSlotExercise', () => {
 
   it('starts from the new exercise\'s defaults between cardio and lifting, keeping the note, rest and superset', () => {
     expect(replaceSlotExercise({ id: BENCH, sg: 'sgA', sets: 4, mode: 'reps', reps: 8, weight: 60, note: 'n', restSec: 90 }, BIKE))
-      .toEqual({ id: BIKE, sets: 1, min: 20, speed: 8, sg: 'sgA', note: 'n', restSec: 90 })
+      .toEqual({ id: BIKE, sets: 1, min: 20, speed: cardioStartSpeed(EXIDX[BIKE]?.n, EXIDX[BIKE]?.eq), sg: 'sgA', note: 'n', restSec: 90 })
     expect(replaceSlotExercise({ id: BIKE, sets: 2, min: 30, speed: 12, note: 'easy' }, BENCH))
       .toEqual({ id: BENCH, sets: 3, reps: 10, weight: 0, mode: 'reps', note: 'easy' })
   })
