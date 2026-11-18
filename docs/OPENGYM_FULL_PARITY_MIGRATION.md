@@ -93,3 +93,9 @@ A checkbox can only be checked after implementation and automated/manual proof. 
 - Rendered inside IronLog's **existing** set-number button and saved-workout bottom sheet. No upstream CSS, card/graph/navigation redesign or splash/loading changes.
 - Opt-in `setTrend === true` only (off by default even if the field is absent). The native IronLog Settings → Workout → Fine-tuning Row/Switch enables it; no historical workouts/sets are rewritten.
 - Added preference-sync and preservation-audit fixtures. **Still pending:** CI for this commit, mobile/RTL screenshots, independently restored backups, full parity and production release gates. Do not merge or deploy.
+
+## Cardio default-speed original-code slice (v1.4.5)
+- Original upstream `cardio-kind.js` imported unchanged, with pinned Git blob verification. Its `cardioStartSpeed` is used only by IronLog's new-cardio-config creation path, including existing sheets and quick-add flows; active profile `speedUnit` is passed without touching saved values.
+- UI source files remain IronLog's own; no splash, loading, font, bottom-sheet presentation, existing workout record, remote sync, Supabase schema, or production account is changed.
+- Cross-device in-memory merge regression verifies workout history, IDs, weigh-ins and unchanged routine definitions survive; adding a new routine remains a normal explicit user action through the existing IronLog persistence system.
+- Full parity, restored backups and mobile RTL visual comparisons remain release blockers.

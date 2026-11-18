@@ -15,6 +15,9 @@ describe('immutable openGym source provenance', () => {
   it('preserves upstream set trend unit tests byte-for-byte', () => {
     expect(blob('./set-trend.test.js')).toBe('bfb406fcca15c37424ad384d009eb41787ec03d6')
   })
+  it('preserves the new upstream cardio classification and default-pace module byte-for-byte', () => {
+    expect(blob('./cardio-kind.js')).toBe('31434387a57045b43a247755b0970f75df869224')
+  })
   it('preserves upstream workouts-left algorithm byte-for-byte', () => {
     expect(blob('./week-left.js')).toBe('25097c8f263823ef16c7deba574811944fab6572')
   })

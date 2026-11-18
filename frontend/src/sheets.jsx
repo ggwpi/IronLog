@@ -1509,7 +1509,7 @@ export function swapActiveWorkoutExercise(index) {
   // The "+" on a picker row commits with the default config, exactly as it does in the add
   // flows; tapping the row still opens the config sheet first.
   // Worded for the session, not the routine: a swap changes today's workout only.
-  const picker = exercisePicker((ex, quick) => quick ? swapTo(ex, defaultConfig(ex.id)) : exConfigSheet(ex, null, cfg => swapTo(ex, cfg), null, null, null, null, t('Use in this workout')), { title: t('Swap exercise'), like: active.entries[index].id, backups: active.entries[index].target?.subs })
+  const picker = exercisePicker((ex, quick) => quick ? swapTo(ex, defaultConfig(ex.id, undefined, S())) : exConfigSheet(ex, null, cfg => swapTo(ex, cfg), null, null, null, null, t('Use in this workout')), { title: t('Swap exercise'), like: active.entries[index].id, backups: active.entries[index].target?.subs })
   function swapTo(ex, cfg) {
     // The picker is a chooser here, not a stack you keep adding from: one swap, then back to
     // the workout. (The add flow deliberately leaves it open.)
@@ -1778,7 +1778,7 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
   const warmLikeAll = warmAll === null ? t('Like the work sets') : t('Default ({0})', warmAll > 0 ? fmtRest(warmAll) : t('No timer'))
   const cardio = isCardio(ex.id)
   const speedUnit = speedUnitOf(st)
-  const seed = existing || initial || defaultConfig(ex.id)
+  const seed = existing || initial || defaultConfig(ex.id, undefined, st)
   const [c, setC] = useState(() => {
     const cfg = { ...seed }
     // A session's target carries the meaning of its dumbbell weight as a stamp (lib/dumbbells.js);
@@ -1805,7 +1805,7 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
   const triple = mode === 'reps' && activePolicy === 'triple'
   // Keep whatever the other mode already had (sets, weight) and fill only what is missing.
   const setMode = m => setC(x => {
-    const next = { ...defaultConfig(ex.id, m), ...x, mode: m }
+    const next = { ...defaultConfig(ex.id, m, st), ...x, mode: m }
     return m === 'reps' && climbsRange(policyFor({ ...next, id: ex.id }, routine, 'reps'))
       ? { ...next, ...normalizeRepRange(next.reps, next.repsMin, isPerSide(next) ? 2 : 1) }
       : next
