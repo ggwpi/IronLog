@@ -82,6 +82,14 @@ describe('replaceSlotExercise', () => {
       .toEqual({ id: BENCH, sets: 3, reps: 10, weight: 0, mode: 'reps', note: 'easy' })
   })
 
+  it('uses the original 1.4.5 cardio pace in the saved profile speed unit on a new replacement', () => {
+    const profile = { unit: 'lb', speedUnit: 'mph', workouts: [{ id: 'preserved', entries: [{ id: BENCH, sets: [{ w: 80, r: 8, done: true }] }] }] }
+    const before = structuredClone(profile)
+    const actual = replaceSlotExercise({ id: BENCH, sets: 3, reps: 8, weight: 80 }, BIKE, profile)
+    expect(actual.speed).toBe(cardioStartSpeed(EXIDX[BIKE]?.n, EXIDX[BIKE]?.eq, 'mph'))
+    expect(profile).toEqual(before)
+  })
+
   it('keeps a cardio slot\'s minutes and speed on another cardio exercise', () => {
     expect(replaceSlotExercise({ id: BIKE, sets: 2, min: 30, speed: 12 }, '3666'))
       .toEqual({ id: '3666', sets: 2, min: 30, speed: 12 })
