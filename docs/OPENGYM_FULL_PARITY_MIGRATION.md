@@ -2,9 +2,14 @@
 
 Status: **IN PROGRESS — NOT SAFE TO MERGE OR DEPLOY**
 
+The [original Daily Form continuation](./PR69_DAILY_FORM_VERIFICATION_2026-11-19.md) replaces the
+extracted model and connects explicit lighter-session choices through IronLog's existing check-in,
+weigh-in, session creation, finish and stamped daily map. Manual IronLog warm-up weights and old
+history/media/routines remain protected. Native vitals and the broader insight matrix stay open.
+
 Current traceable inventory: [OPENGYM_FEATURE_AUDIT.md](./OPENGYM_FEATURE_AUDIT.md).
 It records every pinned source/configuration path, known original-code/adapted-code boundaries,
-and 504 open v1.4.3–v1.4.5 release criteria. Local browser/test evidence is recorded in
+and 504 v1.4.3–v1.4.5 release criteria (502 still open). Local browser/test evidence is recorded in
 [PR69_VERIFICATION_2026-11-19.md](./PR69_VERIFICATION_2026-11-19.md).
 Neither document closes the full functional/native/data-restore gates.
 

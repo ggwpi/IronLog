@@ -25,6 +25,8 @@ the v1.4.3–v1.4.5 delta individually, including bug fixes; inherited v1.4.2 fe
 regression checks. This is an exhaustive source/release inventory, **not a completed semantic audit
 of every route, service or native platform**. Unchecked means more integration or proof is required.
 
+Two release criteria (1.4.5:230 and :232) are verified for the shared web start/adaptation path by [original code, actual UI/data tests and phone/RTL evidence](./PR69_DAILY_FORM_VERIFICATION_2026-11-19.md). The other 502 criteria remain open. This does not close native or full feature parity.
+
 ## Integration findings and next batches
 
 | Area | Current IronLog integration / evidence | Missing integration or proof |
@@ -39,7 +41,7 @@ of every route, service or native platform**. Unchecked means more integration o
 | Mini muscle map | Existing opt-in Today-row `BodyMap` | Upstream multiple sessions/split-day semantics and new catalogue |
 | Weekly countdown | Original `week-left.js`; existing opt-in Home text and rotation target | Native widgets and complete schedule parity |
 | Deload | Original `deload-cycle.js`; existing Home/Settings and planned rep-session boundaries | All programme-specific behavior, native controls and visual proof |
-| Daily Form | Existing four-question sheet, Stats and stamped daily map | Original complete module, lighter-session adaptation, vitals and Health controls; current model is an earlier adaptation |
+| Daily Form | Complete original model/tests and session-adaptation closure; actual IronLog check-in/Start/weigh-in/finish; explicit load/sets choices, default/Skip/Health gate, 500-character notes/media, manual-warm-up guard and stamped/API compatibility fixtures | Native sleep/vitals collection/prefill, complete insight options and full platform/restore matrix |
 | Form insights | Existing Stats rows and original pure insight functions/tests | New volume/bodyweight/warm-up options and native vital collection |
 | Set trends | Original `set-trend.js` and tests; existing set-number button and history sheet; opt-in outside algorithm | Full device/interaction matrix |
 | Cardio defaults | Original `cardio-kind.js`; all existing new-config entry points pass profile speed units | Distance input now uses original helpers in existing workout controls; resistance entry and full native cardio UI remain open |
@@ -345,9 +347,9 @@ regression evidence. The checked slices above do not close multi-feature release
 
 #### Daily form, vitals and your month as a story
 
-- [ ] [1.4.5:230](https://github.com/DuarteSantos8/openGym/blob/e4a68a94c42a3c17cbd560d66ce2e46a7048ab99/CHANGELOG.md#L230) Daily check-in before a workout: sleep, energy, soreness and stress, 1 to 5, four taps, every one optional. Off until you switch it on (Settings → Workout → Before and during → Daily check-in, or the Daily form card in Stats asks once).
+- [x] [1.4.5:230](https://github.com/DuarteSantos8/openGym/blob/e4a68a94c42a3c17cbd560d66ce2e46a7048ab99/CHANGELOG.md#L230) Daily check-in before a workout: sleep, energy, soreness and stress, 1 to 5, four taps, every one optional. Off until you switch it on (Settings → Workout → Before and during → Daily check-in, or the Daily form card in Stats asks once).
 - [ ] [1.4.5:231](https://github.com/DuarteSantos8/openGym/blob/e4a68a94c42a3c17cbd560d66ce2e46a7048ab99/CHANGELOG.md#L231) A run of rough check-ins now counts towards the automatic deload-week suggestion, together with lifts that stopped climbing.
-- [ ] [1.4.5:232](https://github.com/DuarteSantos8/openGym/blob/e4a68a94c42a3c17cbd560d66ce2e46a7048ab99/CHANGELOG.md#L232) On a rough day the check-in offers to go lighter: 10% off the open sets (rounded to your plates) or one set fewer per exercise. Today only, never picked for you, and the session sits out of progression so your next targets stay put.
+- [x] [1.4.5:232](https://github.com/DuarteSantos8/openGym/blob/e4a68a94c42a3c17cbd560d66ce2e46a7048ab99/CHANGELOG.md#L232) On a rough day the check-in offers to go lighter: 10% off the open sets (rounded to your plates) or one set fewer per exercise. Today only, never picked for you, and the session sits out of progression so your next targets stay put.
 - [ ] [1.4.5:233](https://github.com/DuarteSantos8/openGym/blob/e4a68a94c42a3c17cbd560d66ce2e46a7048ab99/CHANGELOG.md#L233) Stats → Overview → Daily form: what your check-ins and your sleep say about how the workouts went (estimated strength, volume, reps in reserve), only once there is enough to compare, with the number of workouts on each side and a plain word on how sure it is.
 - [ ] [1.4.5:234](https://github.com/DuarteSantos8/openGym/blob/e4a68a94c42a3c17cbd560d66ce2e46a7048ab99/CHANGELOG.md#L234) Vitals from Health Connect and Apple Health: last night's sleep, resting heart rate, HRV and steps next to your usual, on the Daily form card. Settings → Integrations → Health Connect (or Apple Health) → Sleep, resting heart rate, HRV and steps. Read on the phone only, never synced. The check-in fills its sleep from it.
 - [ ] [1.4.5:235](https://github.com/DuarteSantos8/openGym/blob/e4a68a94c42a3c17cbd560d66ce2e46a7048ab99/CHANGELOG.md#L235) Your month in openGym: the year's stories for one month (workouts, hours, volume, weeks with a workout, records, exercise of the month on the muscle map, what was new, one line to go out on), every card shareable. Stats → More → Your month, or Play your month on the recap card on the 1st.

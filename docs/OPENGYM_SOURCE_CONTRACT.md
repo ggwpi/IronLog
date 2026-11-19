@@ -20,6 +20,13 @@ The second command **must** print the pinned commit above. Plain Git checkout ca
 5. If upstream and IronLog semantics conflict (e.g. default visibility of a new badge), leave upstream intact and implement the compatibility decision in IronLog's existing presentation/state boundary, with both upstream and fork-specific tests.
 6. Do not delete or rewrite existing IronLog behavior/data to force full parity. Confirm every integration with full CI and mobile/RTL regression testing; preserve backup/restore/rollback gates. PR #69 remains **Draft** and must not merge to main or reach production until all gates pass.
 
+## Daily Form and lighter-session boundary
+
+The complete original Daily Form/session-adaptation closure is now imported unchanged with raw
+source checks. IronLog retains actual catalogue IDs, cloud merge, translations, deload registration
+and all UI/start/weigh-in paths. The adapter projects only its manual-warm-up guard into the original
+engine and restores metadata afterwards. See [verification and limits](./PR69_DAILY_FORM_VERIFICATION_2026-11-19.md).
+
 ## Cardio distance boundary
 
 Complete unchanged original distance helpers/tests now drive IronLog's existing workout controls
