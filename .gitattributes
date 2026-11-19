@@ -23,3 +23,5 @@ frontend/src/lib/deload-cycle.test.js text eol=lf
 frontend/src/lib/set-tags.js text eol=lf
 frontend/src/lib/opengym-v145/muscle-targets.js text eol=lf
 frontend/src/lib/opengym-v145/muscle-targets.test.js text eol=lf
+# Raw original data blobs must retain the same bytes on Windows and Linux.
+frontend/src/lib/opengym-v145/**/*.json text eol=lf
