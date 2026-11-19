@@ -45,6 +45,15 @@ validation, ordering, unit conversion and chart calculations stay untouched insi
 This does not permit substituting upstream screens or CSS for existing customized surfaces.
 See [cardio evidence and remaining gates](./PR69_CARDIO_GOALS_VERIFICATION_2026-11-19.md).
 
+## Complete local JSON preservation gate
+
+`auditCompleteProfilePreservation` and the local-file
+`scripts/check-ironlog-profile-preservation.mjs` CLI compare every existing JSON root field,
+including future/custom settings; only root protocol clocks may advance monotonically.
+The old selected-field helper remains for compatibility tests of intentional UI edits and
+must not be mistaken for full snapshot certification. No account, migration, sync interception
+or data write occurs. See [scope and verification](./PR69_COMPLETE_PROFILE_AUDIT_2026-11-19.md).
+
 ## Correction of prior Set Trend implementation
 `frontend/src/lib/set-trend.js` and `set-trend.test.js` are restored **byte-for-byte to upstream v1.4.5**. The openGym `setTrendOn` default is ON as upstream originally defines. IronLog's existing Workout and saved-workout bottom sheet show the marker only when `S.setTrend === true` (their own UI preference gate), so existing user visuals remain opt-in without altering upstream behavior. IronLog UI tests cover default-off display, opt-in and unchanged workouts. The unchanged upstream blobs are asserted by the integrity regression.
 

@@ -18,6 +18,11 @@ complete original new feature leaf with IronLog's actual controls, store and sco
 Original editor/engine logic is unchanged. Full activity import/sync, catalogue, distance input
 and native verification remain separate open gates.
 
+The [complete-snapshot preservation gate](./PR69_COMPLETE_PROFILE_AUDIT_2026-11-19.md) adds a
+read-only comparison over every existing JSON root field, including unknown/custom settings,
+plus a local-file CLI. It complements the selected-field UI compatibility helper; it does not
+create backups, restore media, migrate profiles or certify production data.
+
 The CSV/note continuation now imports original CSV modules unchanged, exposes read-only exports
 through existing IronLog controls, routes common own-workout CSV files into the existing import
 confirmation/merge, and retains IronLog's 500-character notes in the editor/history/MCP/CSV boundary.

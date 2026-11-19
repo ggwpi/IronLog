@@ -66,7 +66,7 @@ of every route, service or native platform**. Unchecked means more integration o
 | Trainers / gyms / OIDC / nutrition | Not integrated | Full original services and permissions adapted to IronLog auth/data; no auth replacement or production schema changes |
 | Voice / seasonal / reminders / tools | Existing IronLog timer/theme features retained | Original voice profiles, cues, seasonal/calendar/tools functions and module gates |
 | iOS / Android / Apple Watch / Wear OS / Garmin / Zepp | Pinned source available, existing IronLog projects retained | Source-by-source integration, platform SDK/device builds and native QA; browser tests do not certify these |
-| Data compatibility | Existing no-delete startup guard and read-only audit; fixture JSON, sync, API preservation tests | Full import/export/old-client/offline conflict matrix, invalid/interrupted/storage-full cases, guest adoption and media checks |
+| Data compatibility | No-delete startup guard, selected-field compatibility audit and strict complete-JSON gate/CLI protecting every existing root field; fixture JSON, sync, API preservation tests | Full import/export/old-client/offline conflict matrix, interrupted/storage-full cases, guest adoption, actual media files and independent restored-snapshot certification |
 | Supabase/auth/storage | Existing IronLog implementations retained; no schema or production account changes | Isolated DB-backed regression gate and sanitized restore, with no live-account access |
 | Backup/restore/rollback | JSON fixture round-trip is tested | Independently restorable production/local/media backups are **not** created or certified by this work; production access is prohibited |
 
@@ -87,6 +87,7 @@ of every route, service or native platform**. Unchecked means more integration o
 - [x] Complete original lifetime module replaces the earlier extracted calculation; dependency boundaries retain IronLog history and equipment semantics.
 - [x] Original tempo interpretation through existing exercise configuration and set-menu/sheet controls; real guest JSON edit/clear flow in English/Hebrew and true light/dark.
 - [x] Original cardio goal editor/card/engine tests, actual IronLog persistence and old-client fixtures; phone goal addition/order/save story in English/Hebrew and true light/dark.
+- [x] Complete-snapshot gate/CLI rejects lost or changed custom settings and unknown fields; invalid JSON shapes, private-value diagnostics and unchanged input-file bytes tested without account access.
 - [ ] Full upstream functionality, every custom frontend/backend behavior and native platform verified.
 - [ ] Full UI, accessibility, animation, touch/gesture, splash/loading and device matrix verified.
 - [ ] Data backup restoration and rollback certified. No live data access authorized.
