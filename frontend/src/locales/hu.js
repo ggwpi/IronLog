@@ -1,5 +1,20 @@
 // Hungarian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Daily-form lighter-session controls.
+  "Programme": "Program",
+  "Programme done": "Program kész",
+  "Week {0} of {1}": "{0}. hét / {1}",
+  "{0}, paused": "{0}, szünetel",
+  // Daily-form lighter-session controls.
+  "As planned": "Ahogy terveztük",
+  "10% lighter": "10%-kal könnyebb",
+  "One set fewer": "Eggyel kevesebb sorozat",
+  "Take it easier today?": "Ma lazábban?",
+  "Rough one. Take it easier today?": "Nehéz nap. Ma lazábban?",
+  "Your call. Nothing changes unless you pick it.": "Te döntöd el. Semmi sem változik, ha nem választod.",
+  "Just today. This session sits out of progression, so your next targets stay put.": "Csak ma. Ez az edzés nem számít bele a progresszióba, így a következő céljaid maradnak.",
+  "Lighter day: 10% off the weights. Progression sits this one out.": "Könnyebb nap: 10%-kal kisebb súly. A progresszió most kimarad.",
+  "Lighter day: one set fewer per exercise. Progression sits this one out.": "Könnyebb nap: gyakorlatonként eggyel kevesebb sorozat. A progresszió most kimarad.",
   // Cardio distance controls.
   "Distance ({0})": "Táv ({0})",
   "Log distance instead": "Inkább távot írok",

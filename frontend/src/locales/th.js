@@ -1,5 +1,20 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Daily-form lighter-session controls.
+  "Programme": "โปรแกรม",
+  "Programme done": "จบโปรแกรมแล้ว",
+  "Week {0} of {1}": "สัปดาห์ที่ {0} จาก {1}",
+  "{0}, paused": "{0} พักไว้",
+  // Daily-form lighter-session controls.
+  "As planned": "ตามแผน",
+  "10% lighter": "เบาลง 10%",
+  "One set fewer": "ลดหนึ่งเซ็ต",
+  "Take it easier today?": "วันนี้เบาลงไหม?",
+  "Rough one. Take it easier today?": "วันที่หนัก วันนี้เบาลงไหม?",
+  "Your call. Nothing changes unless you pick it.": "คุณตัดสินใจเอง ไม่มีอะไรเปลี่ยนถ้าคุณไม่เลือก",
+  "Just today. This session sits out of progression, so your next targets stay put.": "แค่วันนี้ เซสชันนี้ไม่นับในความก้าวหน้า เป้าหมายถัดไปจึงคงเดิม",
+  "Lighter day: 10% off the weights. Progression sits this one out.": "วันเบา: น้ำหนักลด 10% ความก้าวหน้าพักรอบนี้",
+  "Lighter day: one set fewer per exercise. Progression sits this one out.": "วันเบา: ลดหนึ่งเซ็ตต่อท่า ความก้าวหน้าพักรอบนี้",
   // Cardio distance controls.
   "Distance ({0})": "ระยะทาง ({0})",
   "Log distance instead": "บันทึกระยะทางแทน",

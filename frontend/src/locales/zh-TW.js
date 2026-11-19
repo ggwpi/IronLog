@@ -1,4 +1,19 @@
 export default {
+  // Daily-form lighter-session controls.
+  "Programme": "訓練週期",
+  "Programme done": "訓練週期完成",
+  "Week {0} of {1}": "第 {0} 週，共 {1} 週",
+  "{0}, paused": "{0}，已暫停",
+  // Daily-form lighter-session controls.
+  "As planned": "照計畫",
+  "10% lighter": "輕 10%",
+  "One set fewer": "少一組",
+  "Take it easier today?": "今天輕一點？",
+  "Rough one. Take it easier today?": "今天不太好過。輕一點？",
+  "Your call. Nothing changes unless you pick it.": "你說了算。不選就什麼都不變。",
+  "Just today. This session sits out of progression, so your next targets stay put.": "僅限今天。這次訓練不計入漸進，下一次的目標維持不變。",
+  "Lighter day: 10% off the weights. Progression sits this one out.": "輕鬆日：重量減 10%。這次漸進先休息。",
+  "Lighter day: one set fewer per exercise. Progression sits this one out.": "輕鬆日：每個動作少一組。這次漸進先休息。",
   // Cardio distance controls.
   "Distance ({0})": "距離（{0}）",
   "Log distance instead": "改記距離",

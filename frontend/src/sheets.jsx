@@ -1,6 +1,6 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { useStore } from './store/useStore.js'
-import { checkinMode, readForm, withForm } from './lib/daily-form.js'
+import { checkinMode, readForm, withForm, goLighter, canGoLighter, LIGHTER_KINDS } from './lib/daily-form.js'
 import DailyFormCheckin from './components/DailyFormCheckin.jsx'
 import { useUI } from './store/useUI.js'
 import { EXDB, EXIDX, BODYPARTS, isCardio, isBodyweightEq, allExercises, equipmentOf, byCategory, smOf, searchExercises, similarExercises, exOr, isAssisted, betterWeight, beatsWeight, isCustomEx } from './lib/exercises.js'
@@ -2972,32 +2972,36 @@ export function DayNoteRow({ iso, note }) {
 /* ============================ workout lifecycle ============================ */
 // `routineIds` accepts `string | string[] | null` — `[r.id]` for one routine,
 // `effectiveRoutineIds(...)` for today's planned session, `[]` / null for explicit freestyle.
-export function startFlow(routineIds, { checked = false } = {}) {
+export function startFlow(routineIds, { checked = false, lighter = null } = {}) {
   // Optional openGym 1.4.5 check-in precedes IronLog's existing weigh-in
   // flow. Profiles predating this feature remain unchanged; dismissing the
   // sheet or skipping never writes to a user profile.
   const today = todayISO()
   if (!checked && checkinMode(S(), today)) {
+    const preview = { entries: buildCombinedEntries(S(), routineIds).entries }
+    const options = LIGHTER_KINDS.filter(kind => canGoLighter(preview, kind))
     ui().openSheet(close => <DailyFormCheckin
-      onDone={answers => {
+      lighter={options}
+      onDone={({ form, lighter: kind }) => {
         close()
-        if (readForm(answers)) update(s => { s.dayForm = withForm(s.dayForm, today, answers) })
-        startFlow(routineIds, { checked: true })
+        if (readForm(form)) update(s => { s.dayForm = withForm(s.dayForm, today, { ...form, lighter: kind }) })
+        startFlow(routineIds, { checked: true, lighter: kind })
       }}
       onSkip={() => { close(); startFlow(routineIds, { checked: true }) }}
     />)
     return
   }
   // Keep IronLog's original weigh-in behavior and all navigation intact.
-  if (S().weighIn === false || !isOn(S(), 'body')) { beginWorkout(routineIds, null); return }
-  return bwSheet({ required: true, onDone: bw => beginWorkout(routineIds, bw) })
+  if (S().weighIn === false || !isOn(S(), 'body')) { beginWorkout(routineIds, null, { lighter }); return }
+  return bwSheet({ required: true, onDone: bw => beginWorkout(routineIds, bw, { lighter }) })
 }
 // `opts` from the Apple Watch (lib/watch-sync.js): a session started there keeps the watch's id,
 // so the sets ticked on it find it, and its start time, however late the phone hears of it.
-export function beginWorkout(routineIds, bw, { id = null, start = null } = {}) {
+export function beginWorkout(routineIds, bw, { id = null, start = null, lighter = null } = {}) {
   const st = S()
   const { entries, routineIds: rids, routines } = buildCombinedEntries(st, routineIds)
   const startAt = Number.isFinite(start) && start > 0 ? start : Date.now()
+  let adapted = 0
   update(s => {
     s.active = {
       id: id || uid(), d: id && start ? isoOf(new Date(startAt)) : todayISO(), start: startAt,
@@ -3010,7 +3014,9 @@ export function beginWorkout(routineIds, bw, { id = null, start = null } = {}) {
       // changing the saved default (Settings → Workout view) mid-session leaves it alone.
       workoutView: st.workoutView || 'cards',
     }
+    if (lighter) adapted = goLighter(s, lighter)
   })
+  if (adapted) toast(lighter === 'load' ? t('Lighter day: 10% off the weights. Progression sits this one out.') : t('Lighter day: one set fewer per exercise. Progression sits this one out.'))
   useUI.getState().stopRest()
   navToWorkout()
 }

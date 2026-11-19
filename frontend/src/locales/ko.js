@@ -1,5 +1,20 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Daily-form lighter-session controls.
+  "Programme": "프로그램",
+  "Programme done": "프로그램 완료",
+  "Week {0} of {1}": "{0}/{1}주차",
+  "{0}, paused": "{0}, 일시정지",
+  // Daily-form lighter-session controls.
+  "As planned": "계획대로",
+  "10% lighter": "10% 가볍게",
+  "One set fewer": "한 세트 줄이기",
+  "Take it easier today?": "오늘은 가볍게?",
+  "Rough one. Take it easier today?": "힘든 날이네요. 오늘은 가볍게?",
+  "Your call. Nothing changes unless you pick it.": "선택은 당신 몫이에요. 고르지 않으면 아무것도 안 바뀌어요.",
+  "Just today. This session sits out of progression, so your next targets stay put.": "오늘만이에요. 이 세션은 프로그레션에서 빠지니 다음 목표는 그대로예요.",
+  "Lighter day: 10% off the weights. Progression sits this one out.": "가벼운 날: 무게 10% 줄임. 이번엔 프로그레션이 쉬어요.",
+  "Lighter day: one set fewer per exercise. Progression sits this one out.": "가벼운 날: 운동마다 한 세트 줄임. 이번엔 프로그레션이 쉬어요.",
   // Cardio distance controls.
   "Distance ({0})": "거리 ({0})",
   "Log distance instead": "대신 거리 기록",

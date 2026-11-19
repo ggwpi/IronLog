@@ -1,5 +1,20 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Daily-form lighter-session controls.
+  "Programme": "训练周期",
+  "Programme done": "训练周期完成",
+  "Week {0} of {1}": "第 {0} 周，共 {1} 周",
+  "{0}, paused": "{0}，已暂停",
+  // Daily-form lighter-session controls.
+  "As planned": "按计划",
+  "10% lighter": "轻 10%",
+  "One set fewer": "少一组",
+  "Take it easier today?": "今天轻一点？",
+  "Rough one. Take it easier today?": "今天不太好过。轻一点？",
+  "Your call. Nothing changes unless you pick it.": "你说了算。不选就什么都不变。",
+  "Just today. This session sits out of progression, so your next targets stay put.": "仅限今天。这次训练不计入渐进，下一次的目标保持不变。",
+  "Lighter day: 10% off the weights. Progression sits this one out.": "轻松日：重量减 10%。这次渐进先歇一歇。",
+  "Lighter day: one set fewer per exercise. Progression sits this one out.": "轻松日：每个动作少一组。这次渐进先歇一歇。",
   // Cardio distance controls.
   "Distance ({0})": "距离（{0}）",
   "Log distance instead": "改记距离",

@@ -1,6 +1,21 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  // Daily-form lighter-session controls.
+  "Programme": "תכנית אימונים",
+  "Programme done": "התכנית הושלמה",
+  "Week {0} of {1}": "שבוע {0} מתוך {1}",
+  "{0}, paused": "{0}, בהשהיה",
+  // Daily-form lighter-session controls.
+  "As planned": "כמתוכנן",
+  "10% lighter": "10% פחות משקל",
+  "One set fewer": "סט אחד פחות",
+  "Take it easier today?": "להקל היום?",
+  "Rough one. Take it easier today?": "יום קשה. להקל היום?",
+  "Your call. Nothing changes unless you pick it.": "הבחירה שלך. שום דבר לא משתנה בלי בחירה מפורשת.",
+  "Just today. This session sits out of progression, so your next targets stay put.": "רק להיום. האימון הזה לא ייספר להתקדמות, ולכן היעדים הבאים יישארו כפי שהם.",
+  "Lighter day: 10% off the weights. Progression sits this one out.": "אימון קל יותר: 10% פחות משקל. האימון לא ייספר להתקדמות.",
+  "Lighter day: one set fewer per exercise. Progression sits this one out.": "אימון קל יותר: סט אחד פחות בכל תרגיל. האימון לא ייספר להתקדמות.",
   // Cardio distance controls.
   "Distance ({0})": "מרחק ({0})",
   "Log distance instead": "רישום מרחק במקום מהירות",

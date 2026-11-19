@@ -1,11 +1,9 @@
 // The openGym 1.4.5 four-question check-in, rendered entirely with IronLog's
 // existing controls and bottom sheet. No parallel UI library or upstream CSS.
-// Go-lighter adaptations are intentionally not offered until the native
-// progression/plate-grid engine has passed parity tests.
 import { useState } from 'react'
 import { t } from '../lib/i18n.js'
 import { FORM_KEYS, formScore, isRough } from '../lib/daily-form.js'
-import { Button } from './ui.jsx'
+import { Button, Segmented } from './ui.jsx'
 
 const QUESTIONS = {
   sleep: ['Sleep', 'Barely slept', 'Slept like a log'],
@@ -14,11 +12,15 @@ const QUESTIONS = {
   stress: ['Stress', 'Calm', 'Frazzled'],
 }
 
-export default function DailyFormCheckin({ onDone, onSkip }) {
+export default function DailyFormCheckin({ lighter = [], onDone, onSkip }) {
   const [answers, setAnswers] = useState({ sleep: null, energy: null, sore: null, stress: null })
+  const [pick, setPick] = useState('planned')
   const hasAnswers = FORM_KEYS.some(k => answers[k] != null)
   const score = formScore(answers)
   const rough = isRough(answers)
+  const options = [{ value: 'planned', label: t('As planned') },
+    ...(lighter.includes('load') ? [{ value: 'load', label: t('10% lighter') }] : []),
+    ...(lighter.includes('sets') ? [{ value: 'sets', label: t('One set fewer') }] : [])]
 
   return <div data-daily-form-checkin>
     <h3>{t('How are you today?')}</h3>
@@ -47,7 +49,12 @@ export default function DailyFormCheckin({ onDone, onSkip }) {
     {rough && <p className="muted small" role="status">
       {t('Today is a take-it-easy day')}
     </p>}
-    <Button variant="primary" icon="play" onClick={() => onDone(answers)}>
+    {rough && lighter.length > 0 && <div role="group" aria-label={t('Take it easier today?')} style={{ marginBottom: 16 }}>
+      <p className="small">{t('Rough one. Take it easier today?')}</p>
+      <Segmented className="seg-inline" options={options} value={pick} onChange={setPick} />
+      <p className="small muted">{pick === 'planned' ? t('Your call. Nothing changes unless you pick it.') : t('Just today. This session sits out of progression, so your next targets stay put.')}</p>
+    </div>}
+    <Button variant="primary" icon="play" onClick={() => onDone({ form: answers, lighter: rough && lighter.includes(pick) ? pick : null })}>
       {hasAnswers ? t('Start workout') : t('Start without answering')}
     </Button>
     <div style={{ height: 8 }} />

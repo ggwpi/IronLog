@@ -1,5 +1,20 @@
 // Russian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Daily-form lighter-session controls.
+  "Programme": "Цикл",
+  "Programme done": "Цикл пройден",
+  "Week {0} of {1}": "Неделя {0} из {1}",
+  "{0}, paused": "{0}, на паузе",
+  // Daily-form lighter-session controls.
+  "As planned": "Как по плану",
+  "10% lighter": "На 10% легче",
+  "One set fewer": "На подход меньше",
+  "Take it easier today?": "Сегодня полегче?",
+  "Rough one. Take it easier today?": "Тяжёлый день. Сегодня полегче?",
+  "Your call. Nothing changes unless you pick it.": "Решать тебе. Ничего не изменится, если ты это не выберешь.",
+  "Just today. This session sits out of progression, so your next targets stay put.": "Только сегодня. Эта тренировка не учитывается в прогрессии, так что следующие цели остаются на месте.",
+  "Lighter day: 10% off the weights. Progression sits this one out.": "Лёгкий день: веса на 10% меньше. Прогрессия в этот раз пропускает.",
+  "Lighter day: one set fewer per exercise. Progression sits this one out.": "Лёгкий день: на один подход меньше в каждом упражнении. Прогрессия в этот раз пропускает.",
   // Cardio distance controls.
   "Distance ({0})": "Дистанция ({0})",
   "Log distance instead": "Записывать дистанцию",

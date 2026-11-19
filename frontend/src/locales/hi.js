@@ -1,5 +1,20 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Daily-form lighter-session controls.
+  "Programme": "प्रोग्राम",
+  "Programme done": "प्रोग्राम पूरा",
+  "Week {0} of {1}": "हफ़्ता {0} / {1}",
+  "{0}, paused": "{0}, रुका हुआ",
+  // Daily-form lighter-session controls.
+  "As planned": "योजना के मुताबिक",
+  "10% lighter": "10% हल्का",
+  "One set fewer": "एक सेट कम",
+  "Take it easier today?": "आज थोड़ा हल्का?",
+  "Rough one. Take it easier today?": "मुश्किल दिन। आज थोड़ा हल्का?",
+  "Your call. Nothing changes unless you pick it.": "तुम्हारी मर्ज़ी। जब तक तुम न चुनो, कुछ नहीं बदलता।",
+  "Just today. This session sits out of progression, so your next targets stay put.": "सिर्फ़ आज। यह सेशन प्रोग्रेशन में नहीं गिना जाएगा, इसलिए तुम्हारे अगले लक्ष्य वहीं रहेंगे।",
+  "Lighter day: 10% off the weights. Progression sits this one out.": "हल्का दिन: वज़न 10% कम। प्रोग्रेशन इस बार छुट्टी पर है।",
+  "Lighter day: one set fewer per exercise. Progression sits this one out.": "हल्का दिन: हर एक्सरसाइज़ में एक सेट कम। प्रोग्रेशन इस बार छुट्टी पर है।",
   // Cardio distance controls.
   "Distance ({0})": "दूरी ({0})",
   "Log distance instead": "इसके बजाय दूरी लिखें",

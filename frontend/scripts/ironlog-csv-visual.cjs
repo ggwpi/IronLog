@@ -60,6 +60,46 @@ fs.writeFileSync(path.join(out, 'run.json'), JSON.stringify({ ...run, status: 'r
       assert.equal(renderedTheme, theme)
       results.push({ label, theme, renderedTheme, lang, screen, direction: await page.evaluate(() => document.documentElement.dir) })
     }
+    if (process.env.IRONLOG_VERIFY_DAILY_FORM === '1') {
+      const original = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))
+      const fixture = await page.evaluate(async () => {
+        const { useStore } = await import('/src/store/useStore.js'), { t } = await import('/src/lib/i18n.js')
+        useStore.setState(s => ({ S: { ...s.S, dailyForm: true, weighIn: false, active: null, dayForm: {},
+          workouts: [{ id: 'keep-daily', d: '2026-11-17', entries: [{ id: '0043', sets: [{ w: 80, r: 8, done: true, note: 'keep-history', media: [{ hash: 'keep' }] }] }] }],
+          routines: [{ id: 'r-fixture', name: 'Fixture plan', ex: [{ id: '0025', mode: 'reps', sets: 3, reps: 8, weight: 80 }] }], week: { 4: ['r-fixture'] },
+        } }))
+        location.hash = '#/home'
+        return { before: structuredClone(useStore.getState().S), lighter: t('10% lighter'), start: t('Start workout') }
+      })
+      await page.locator('.home-workout-hero').click()
+      await page.locator('[data-daily-form-checkin]').waitFor({ state: 'visible' })
+      await page.waitForTimeout(400)
+      await shot('daily-form')
+      if (label === 'migration') {
+        for (const key of ['sleep','energy']) await page.locator(`[data-daily-form-question="${key}"] [role="radio"][aria-label="1"]`).click()
+        await page.getByRole('button', { name: fixture.lighter, exact: true }).click()
+        await shot('daily-form-lighter-choice')
+        await page.getByRole('button', { name: fixture.start, exact: true }).click()
+        await page.waitForFunction(async () => (await import('/src/store/useStore.js')).useStore.getState().S.active?.lighter === 'load')
+        const state = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))
+        assert.deepEqual(state.routines, fixture.before.routines)
+        assert.deepEqual(state.workouts, fixture.before.workouts)
+        assert.deepEqual(state.bodyweight, fixture.before.bodyweight)
+        assert.equal(state.active.noProg, true)
+        assert.ok(state.active.entries.every(e => e.noProg === true))
+        assert.deepEqual(state.active.entries[0].sets.map(s => s.w), [70,70,70])
+        assert.equal(state.dayForm['2026-11-19'].lighter, 'load')
+        assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('gym_state_v1')).active), JSON.parse(JSON.stringify(state.active)))
+        await page.waitForTimeout(400)
+        await shot('daily-form-lighter-workout')
+        results.push({ label, theme, lang, story: 'actual Home Start -> unchanged daily form -> explicit 10% lighter -> original 80-to-70 plate rounding -> session progression pause -> persisted guest JSON; old history/media/routines/bodyweight exact', passed: true })
+      }
+      await page.evaluate(async S => {
+        const { useStore } = await import('/src/store/useStore.js'), { useUI } = await import('/src/store/useUI.js')
+        useUI.setState({ sheets: [], toastMsg: '', toasts: [] }); useStore.setState({ S }); location.hash = '#/workout'
+      }, original)
+      await page.waitForTimeout(400)
+    }
     if (process.env.IRONLOG_VERIFY_FOCUS_METADATA === '1') {
       const original = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))
       const words = await page.evaluate(async () => {

@@ -1,5 +1,20 @@
 // Spanish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Daily-form lighter-session controls.
+  "Programme": "Programa",
+  "Programme done": "Programa terminado",
+  "Week {0} of {1}": "Semana {0} de {1}",
+  "{0}, paused": "{0}, en pausa",
+  // Daily-form lighter-session controls.
+  "As planned": "Como estaba previsto",
+  "10% lighter": "10 % más ligero",
+  "One set fewer": "Una serie menos",
+  "Take it easier today?": "¿Más suave hoy?",
+  "Rough one. Take it easier today?": "Día duro. ¿Más suave hoy?",
+  "Your call. Nothing changes unless you pick it.": "Tú decides. No cambia nada si no lo eliges.",
+  "Just today. This session sits out of progression, so your next targets stay put.": "Solo hoy. Esta sesión no cuenta para la progresión, así que tus próximos objetivos no se mueven.",
+  "Lighter day: 10% off the weights. Progression sits this one out.": "Día ligero: un 10 % menos de peso. La progresión descansa esta vez.",
+  "Lighter day: one set fewer per exercise. Progression sits this one out.": "Día ligero: una serie menos por ejercicio. La progresión descansa esta vez.",
   // Cardio distance controls.
   "Distance ({0})": "Distancia ({0})",
   "Log distance instead": "Anotar la distancia",

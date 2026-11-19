@@ -1,5 +1,20 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Daily-form lighter-session controls.
+  "Programme": "Program",
+  "Programme done": "Program bitti",
+  "Week {0} of {1}": "{0}. hafta / {1}",
+  "{0}, paused": "{0}, duraklatıldı",
+  // Daily-form lighter-session controls.
+  "As planned": "Planlandığı gibi",
+  "10% lighter": "%10 daha hafif",
+  "One set fewer": "Bir set eksik",
+  "Take it easier today?": "Bugün daha hafif mi?",
+  "Rough one. Take it easier today?": "Zor bir gün. Bugün daha hafif mi?",
+  "Your call. Nothing changes unless you pick it.": "Karar senin. Seçmedikçe hiçbir şey değişmez.",
+  "Just today. This session sits out of progression, so your next targets stay put.": "Sadece bugün. Bu seans ilerlemeye sayılmaz, bu yüzden sonraki hedeflerin yerinde kalır.",
+  "Lighter day: 10% off the weights. Progression sits this one out.": "Hafif gün: ağırlıklar %10 az. İlerleme bu sefer pas geçiyor.",
+  "Lighter day: one set fewer per exercise. Progression sits this one out.": "Hafif gün: her egzersizde bir set eksik. İlerleme bu sefer pas geçiyor.",
   // Cardio distance controls.
   "Distance ({0})": "Mesafe ({0})",
   "Log distance instead": "Bunun yerine mesafe gir",

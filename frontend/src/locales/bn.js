@@ -1,5 +1,20 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Daily-form lighter-session controls.
+  "Programme": "প্রোগ্রাম",
+  "Programme done": "প্রোগ্রাম শেষ",
+  "Week {0} of {1}": "সপ্তাহ {0} / {1}",
+  "{0}, paused": "{0}, বিরতিতে",
+  // Daily-form lighter-session controls.
+  "As planned": "পরিকল্পনা মতো",
+  "10% lighter": "১০% হালকা",
+  "One set fewer": "একটি সেট কম",
+  "Take it easier today?": "আজ একটু হালকা?",
+  "Rough one. Take it easier today?": "কঠিন দিন। আজ একটু হালকা?",
+  "Your call. Nothing changes unless you pick it.": "সিদ্ধান্ত তোমার। তুমি না বাছলে কিছুই বদলায় না।",
+  "Just today. This session sits out of progression, so your next targets stay put.": "শুধু আজ। এই সেশন প্রগ্রেশনে গোনা হবে না, তাই তোমার পরের লক্ষ্য যেমন আছে তেমনই থাকবে।",
+  "Lighter day: 10% off the weights. Progression sits this one out.": "হালকা দিন: ওজন ১০% কম। প্রগ্রেশন এবার বিরতিতে।",
+  "Lighter day: one set fewer per exercise. Progression sits this one out.": "হালকা দিন: প্রতিটি এক্সারসাইজে একটি সেট কম। প্রগ্রেশন এবার বিরতিতে।",
   // Cardio distance controls.
   "Distance ({0})": "দূরত্ব ({0})",
   "Log distance instead": "বরং দূরত্ব লিখো",

@@ -1,5 +1,20 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Daily-form lighter-session controls.
+  "Programme": "برنامج",
+  "Programme done": "اكتمل البرنامج",
+  "Week {0} of {1}": "الأسبوع {0} من {1}",
+  "{0}, paused": "{0}، متوقف مؤقتًا",
+  // Daily-form lighter-session controls.
+  "As planned": "كما هو مخطط",
+  "10% lighter": "أخف بنسبة 10%",
+  "One set fewer": "مجموعة أقل",
+  "Take it easier today?": "أخف اليوم؟",
+  "Rough one. Take it easier today?": "يوم صعب. أخف اليوم؟",
+  "Your call. Nothing changes unless you pick it.": "القرار لك. لا يتغير شيء ما لم تختره.",
+  "Just today. This session sits out of progression, so your next targets stay put.": "اليوم فقط. هذه الحصة لا تُحتسب في التدرج، لذا تبقى أهدافك التالية كما هي.",
+  "Lighter day: 10% off the weights. Progression sits this one out.": "يوم أخف: أوزان أقل بنسبة 10%. التدرج يأخذ استراحة هذه المرة.",
+  "Lighter day: one set fewer per exercise. Progression sits this one out.": "يوم أخف: مجموعة أقل في كل تمرين. التدرج يأخذ استراحة هذه المرة.",
   // Cardio distance controls.
   "Distance ({0})": "المسافة ({0})",
   "Log distance instead": "سجّل المسافة بدلًا من ذلك",
