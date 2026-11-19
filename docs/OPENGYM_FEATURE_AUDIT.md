@@ -30,7 +30,7 @@ of every route, service or native platform**. Unchecked means more integration o
 | Area | Current IronLog integration / evidence | Missing integration or proof |
 | --- | --- | --- |
 | Immutable source | Git submodule at the required pin; exact-source hash tests | Every remaining imported module and its dependency semantics |
-| IronLog visuals | Actual existing `Home`, `Stats`, `Workout`, `sheets.jsx`, `ui.jsx`; phone screenshots against `cdf7f16` | Light theme, tablet/desktop, empty/error/loading/splash states, all sheets, gestures and native screens |
+| IronLog visuals | Actual existing `Home`, `Stats`, `Workout`, `sheets.jsx`, `ui.jsx`; selected phone dark screenshots against `cdf7f16` and light/dark English/Hebrew comparisons against `16961600` | Full light/dark scene matrix, tablet/desktop, empty/error/loading/splash states, all sheets, gestures and native screens |
 | Lifetime totals | Existing Stats History card; `lifetime-totals.js` is an earlier extracted adaptation | Original complete `lifetime.js`, likeness and cardio totals |
 | Strength levels | `strength-level.js` original source; existing card and demographics sheet; provenance tests | Full upstream context/settings and platform parity |
 | Relative strength | `relative-strength.js` original source; IronLog chart | Complete upstream context, muscle catalogue and display proof |
@@ -81,7 +81,7 @@ of every route, service or native platform**. Unchecked means more integration o
 - [x] Targeted phone dark-theme Home/Stats/Workout comparison against `cdf7f16`; see verification report for exact pixel differences.
 - [x] Original CSV closure and common own-workout round trips, including tags, units, drops, per-side sets and IronLog 500-character notes, tested without replacing the old merge.
 - [x] Actual browser CSV download/import confirmation and long-note editor in English/Hebrew, with requested light/dark theme verified in the DOM and isolated guest storage.
-- [x] Twelve populated phone scenes compared against `16961600`; eleven exact, one with four one-shade border pixels; this is not the full UI matrix.
+- [x] Twelve populated phone scenes compared against `16961600`; ten exact, two each with four one-shade border pixels; this is not the full UI matrix.
 - [x] Read-only MCP notes/tags and legacy server note-clear behavior have dedicated regression fixtures; no live account read/write.
 - [ ] Full upstream functionality, every custom frontend/backend behavior and native platform verified.
 - [ ] Full UI, accessibility, animation, touch/gesture, splash/loading and device matrix verified.
