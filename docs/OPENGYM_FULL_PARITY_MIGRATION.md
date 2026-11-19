@@ -8,6 +8,13 @@ and 504 open v1.4.3–v1.4.5 release criteria. Local browser/test evidence is re
 [PR69_VERIFICATION_2026-11-19.md](./PR69_VERIFICATION_2026-11-19.md).
 Neither document closes the full functional/native/data-restore gates.
 
+The CSV/note continuation now imports original CSV modules unchanged, exposes read-only exports
+through existing IronLog controls, routes common own-workout CSV files into the existing import
+confirmation/merge, and retains IronLog's 500-character notes in the editor/history/MCP/CSV boundary.
+See [its verification report](./PR69_CSV_NOTES_VERIFICATION_2026-11-19.md) for real light/dark/RTL
+browser evidence and explicit remaining CSV/body/native limitations. This is not full parity or
+a replacement for complete JSON/media backups.
+
 **Immutable upstream source contract:** [OPENGYM_SOURCE_CONTRACT.md](./OPENGYM_SOURCE_CONTRACT.md). openGym v1.4.5 is pinned as a complete Git submodule; every upstream algorithm must stay unmodified, with IronLog-only component/state boundaries. A source snapshot is not proof of runtime integration.
   
 IronLog baseline: `79fc61eed2000049424591b2bde4ec7f20fa6615`  

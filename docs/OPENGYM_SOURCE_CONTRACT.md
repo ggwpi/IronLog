@@ -63,3 +63,32 @@ all alternate start paths or native-vitals collection.
 `.gitattributes` fixes LF text checkout for scripts, CSP/generated hashes and immutable sources on
 Windows; no business logic is changed by line-ending rules. Source-integrity tests still compare
 raw Git blob hashes, without relaxing the upstream provenance assertions.
+
+## Original CSV closure and IronLog note compatibility (second continuation)
+
+The complete pinned `export-csv.js`, `import-csv.js` and ten pure dependencies are now imported
+unchanged under `lib/opengym-v145/`, with four original upstream test files. Sixteen raw Git-blob
+checks protect these exact files. Sibling catalogue, dates, history, translation, Hevy-map and tag
+shims resolve to IronLog's existing implementations; no upstream screen or CSS is mounted.
+
+`lib/ironlog-csv.js` routes only recognized own-workout CSV files through the original reader.
+All other current IronLog third-party/XML readers and its existing date-preserving import merge
+remain in place. Post-parse metadata adaptation restores IronLog's longer set-note column: the
+unmodified upstream reader still has its original 140-character behavior when called directly,
+while the IronLog boundary retains existing 500-character notes. Original serialization is reused
+to associate formula-protected names, sessions, set numbers and IDs; the adapter does not visit
+or rewrite existing stored workouts. Newly imported band references retain definitions through
+IronLog's existing ID union without normalizing existing definitions or dropping unknown fields.
+
+The existing IronLog set-note editor (500 characters, existing keyboard/sheet logic) is now reachable
+from the set menu and inline note. Original `setNoteOf` and `setTagCell` are used for read-only
+history and MCP projection, retaining long notes and omitting media references from the MCP set.
+API fixtures preserve known note round-trips and intentional legacy note clearing separately
+from unknown-tag preservation; the existing server conflict/merge logic is not changed.
+
+CSV is **not** the full JSON/media backup. Its upstream schema omits workout IDs, media and other
+state; only completed sets are exported. Existing days win on import as before. Body/measurement
+CSV export is read-only; full new measurement/multiple-weigh-in imports and sync are not enabled.
+The all/custom date sheet uses existing IronLog controls; upstream report-range presets and
+automatic normalization await their original dependency integration. Coach payload notes, native
+device flows and the remaining parity ledger stay open. See the dedicated CSV verification report.

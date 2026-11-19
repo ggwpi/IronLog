@@ -43,8 +43,9 @@ of every route, service or native platform**. Unchecked means more integration o
 | Form insights | Existing Stats rows and original pure insight functions/tests | New volume/bodyweight/warm-up options and native vital collection |
 | Set trends | Original `set-trend.js` and tests; existing set-number button and history sheet; opt-in outside algorithm | Full device/interaction matrix |
 | Cardio defaults | Original `cardio-kind.js`; all existing new-config entry points pass profile speed units | Distance/pace/resistance/goal model and full cardio UI |
-| Set colour tags | Original `set-tags.js`; existing set menu, accessible shape/name, existing history sheet; six-colour UI, finish, JSON, API old-client and two-device tests | Upstream CSV export/import, full per-side native flows and watch support; not full tag feature parity |
-| Set notes | IronLog already has a custom 500-character set-note editor | Preserve this customization; upstream's 140-character sanitizer must not silently truncate existing notes |
+| Set colour tags | Original `set-tags.js`; existing menu/history; original CSV writer/reader now retain tags on tested plain/warm-up/drop/per-side rows; read-only MCP colour projection | Full per-side native flows/watch support and complete platform matrix; not full tag feature parity |
+| Set notes | Original read helper through existing menu/history/MCP, existing 500-character editor retained; original CSV reader plus separate long-note compatibility adapter | Coach payload note projection and broader native/offline/privacy matrix; original sanitizer must not replace IronLog's editor |
+| CSV | Complete original writer/reader/dependency closure, four original test files, raw-blob checks; existing all/custom sheet and download/native-share boundary; common own-workout CSV imports through existing confirm/merge | Upstream report-range presets, full body/measurement/multiple-reading imports and complete metadata/format/timezone matrix; original CSV omits IDs/media and cannot replace JSON backups |
 | Modules engine / sync | Original `modules.js` and tests; per-key browser/API sync; check-in, Body/Motivation/Strength display gates | Original all-module controls/presets, Settings search, route gates and remaining services |
 | Effort module | Original upstream `effortOf` gate inside IronLog history helper; existing Workout/Stats display boundaries | Settings/search/history chart-detail gates and all native effort surfaces |
 | Body module | Existing Home/Stats gates plus original pre-workout gate; retained weigh-ins and `weighIn` preference; hide/re-enable tests | Measurements/photos routes, settings/search, widget blocks and every alternate start path |
@@ -78,11 +79,16 @@ of every route, service or native platform**. Unchecked means more integration o
 - [x] All 19 IronLog locale packs contain colour names and new menu labels, including Hebrew.
 - [x] Local Chromium tag picker → active set → guest JSON → completed-history display in English and Hebrew/RTL.
 - [x] Targeted phone dark-theme Home/Stats/Workout comparison against `cdf7f16`; see verification report for exact pixel differences.
+- [x] Original CSV closure and common own-workout round trips, including tags, units, drops, per-side sets and IronLog 500-character notes, tested without replacing the old merge.
+- [x] Actual browser CSV download/import confirmation and long-note editor in English/Hebrew, with requested light/dark theme verified in the DOM and isolated guest storage.
+- [x] Twelve populated phone scenes compared against `16961600`; eleven exact, one with four one-shade border pixels; this is not the full UI matrix.
+- [x] Read-only MCP notes/tags and legacy server note-clear behavior have dedicated regression fixtures; no live account read/write.
 - [ ] Full upstream functionality, every custom frontend/backend behavior and native platform verified.
 - [ ] Full UI, accessibility, animation, touch/gesture, splash/loading and device matrix verified.
 - [ ] Data backup restoration and rollback certified. No live data access authorized.
 
 See [PR69_VERIFICATION_2026-11-19.md](./PR69_VERIFICATION_2026-11-19.md) for commands, results and limitations.
+The subsequent CSV/note slice is recorded in [PR69_CSV_NOTES_VERIFICATION_2026-11-19.md](./PR69_CSV_NOTES_VERIFICATION_2026-11-19.md).
 
 ## Release criteria ledger
 
