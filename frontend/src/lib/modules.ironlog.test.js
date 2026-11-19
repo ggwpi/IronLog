@@ -58,6 +58,7 @@ describe('unmodified openGym modules through IronLog cloud-state stamps', () => 
     expect(restored.edited['modules.body']).toBe(9000)
     expect(restored.edited['modules.coach']).toBe(9000)
     expect(restored.workouts).toEqual(saved.workouts)
-    expect(restored.routines).toEqual(saved.routines)
+    expect(restored.routines.map(({ _ts, ...r }) => r)).toEqual(saved.routines)
+    expect(restored.routines[0]._ts).toBe(9000) // Restoring correctly stamps the routine, without editing any of its content
   })
 })

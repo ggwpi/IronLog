@@ -448,3 +448,35 @@ describe('translations', () => {
     for (const g of ROOT_GROUPS) for (const id of g) expect(PAGES[id], id).toBeTruthy()
   })
 })
+
+
+describe('openGym Modules on IronLog original Look & Home switch', () => {
+  it('keeps legacy check-in behavior and writes both original and module preferences', () => {
+    const saved = structuredClone(mocks.S)
+    mount('look')
+    let sw = rowTitled('Gym check-in').querySelector('[role="switch"]')
+    expect(sw.getAttribute('aria-checked')).toBe('true')
+    act(() => sw.click())
+    expect(mocks.S.checkIn).toBe(false)
+    expect(mocks.S.modules).toEqual({ checkin: false })
+    expect(mocks.S.workouts).toEqual(saved.workouts)
+    expect(mocks.S.routines).toEqual(saved.routines)
+
+    mount('look')
+    sw = rowTitled('Gym check-in').querySelector('[role="switch"]')
+    expect(sw.getAttribute('aria-checked')).toBe('false')
+    act(() => sw.click())
+    expect(mocks.S.checkIn).toBe(true)
+    expect(mocks.S.modules).toEqual({ checkin: true })
+  })
+
+  it('uses upstream module choice over an older checkIn flag, without changing it until user interaction', () => {
+    mocks.S.checkIn = true
+    mocks.S.modules = { checkin: false, coach: false }
+    mount('look')
+    const sw = rowTitled('Gym check-in').querySelector('[role="switch"]')
+    expect(sw.getAttribute('aria-checked')).toBe('false')
+    expect(mocks.S.checkIn).toBe(true)
+    expect(mocks.S.modules.coach).toBe(false)
+  })
+})
