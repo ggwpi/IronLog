@@ -31,7 +31,7 @@ of every route, service or native platform**. Unchecked means more integration o
 | --- | --- | --- |
 | Immutable source | Git submodule at the required pin; exact-source hash tests | Every remaining imported module and its dependency semantics |
 | IronLog visuals | Actual existing `Home`, `Stats`, `Workout`, `sheets.jsx`, `ui.jsx`; selected phone dark screenshots against `cdf7f16` and light/dark English/Hebrew comparisons against `16961600` | Full light/dark scene matrix, tablet/desktop, empty/error/loading/splash states, all sheets, gestures and native screens |
-| Lifetime totals | Existing Stats History card; `lifetime-totals.js` is an earlier extracted adaptation | Original complete `lifetime.js`, likeness and cardio totals |
+| Lifetime totals | Existing Stats History card now calls complete unchanged original `lifetime.js`; original tests and six raw source hashes; compatible history/catalogue/equipment boundaries | Likeness/cardio UI and full goal/sport/catalogue parity; imported dependency code alone is not runtime integration |
 | Strength levels | `strength-level.js` original source; existing card and demographics sheet; provenance tests | Full upstream context/settings and platform parity |
 | Relative strength | `relative-strength.js` original source; IronLog chart | Complete upstream context, muscle catalogue and display proof |
 | Weekly muscle targets | Original complete module and original tests under `lib/opengym-v145/`; old public path re-exports it | Dependency adapter intentionally retains isolated `muscles-v145.js`; full exercise-model parity remains open |
@@ -55,7 +55,7 @@ of every route, service or native platform**. Unchecked means more integration o
 | Measurements | Existing cm-backed/custom fields, UI and cloud state | Original BP/pulse/units/range model and compatible imports/exports |
 | Progress photos | Existing IronLog media/history | Original comparisons, tagging/privacy and shared-media permissions |
 | Resistance bands | Not integrated as a complete feature | Original bands model, progression, inventory, chips, per-side support, CSV and sync |
-| Distance / tempo / per-set records | Not integrated as complete features | Original engines, current component boundaries, settings and compatibility fixtures |
+| Distance / tempo / per-set records | Original tempo engine now drives IronLog's exercise configuration, set menu and inline rows; existing controls/sheet host; old-client API/modern clear/finish/CSV/JSON fixtures | Tempo audio/haptic guide, broader native/history matrix, distance controls and per-set records remain open |
 | Circuits / AMRAP / EMOM / Tabata / run-walk | Not integrated | Original engine, planning, session orchestration, timers, native and current UI boundaries |
 | Warm-ups / plates / equipment by gym | Existing IronLog manual warm-ups, plates, bars and dumbbells | Original automatic ramps and gym-scoped settings while retaining IronLog's manual-weight behavior |
 | Challenges / recaps / Wrapped / streak levels | Existing IronLog streak; partial Motivation display gates | Original challenge/recap/notification engines and current UI adapters |
@@ -83,6 +83,8 @@ of every route, service or native platform**. Unchecked means more integration o
 - [x] Actual browser CSV download/import confirmation and long-note editor in English/Hebrew, with requested light/dark theme verified in the DOM and isolated guest storage.
 - [x] Twelve populated phone scenes compared against `16961600`; ten exact, two each with four one-shade border pixels; this is not the full UI matrix.
 - [x] Read-only MCP notes/tags and legacy server note-clear behavior have dedicated regression fixtures; no live account read/write.
+- [x] Complete original lifetime module replaces the earlier extracted calculation; dependency boundaries retain IronLog history and equipment semantics.
+- [x] Original tempo interpretation through existing exercise configuration and set-menu/sheet controls; real guest JSON edit/clear flow in English/Hebrew and true light/dark.
 - [ ] Full upstream functionality, every custom frontend/backend behavior and native platform verified.
 - [ ] Full UI, accessibility, animation, touch/gesture, splash/loading and device matrix verified.
 - [ ] Data backup restoration and rollback certified. No live data access authorized.

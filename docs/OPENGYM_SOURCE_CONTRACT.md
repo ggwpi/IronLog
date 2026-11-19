@@ -20,6 +20,20 @@ The second command **must** print the pinned commit above. Plain Git checkout ca
 5. If upstream and IronLog semantics conflict (e.g. default visibility of a new badge), leave upstream intact and implement the compatibility decision in IronLog's existing presentation/state boundary, with both upstream and fork-specific tests.
 6. Do not delete or rewrite existing IronLog behavior/data to force full parity. Confirm every integration with full CI and mobile/RTL regression testing; preserve backup/restore/rollback gates. PR #69 remains **Draft** and must not merge to main or reach production until all gates pass.
 
+## Complete lifetime module and tempo boundary
+
+`lifetime-totals.js` now re-exports the complete original `opengym-v145/lifetime.js` rather than
+an extracted version. Six additional raw-blob checks protect that module, its original tests,
+and the original cardio/challenge/distance/unit dependency sources. Dependency adapters retain
+IronLog's catalogue, equipment, history, speed and Modules semantics; the volume boundary is still
+IronLog's existing interpretation, so new challenge/volume/goal behavior is not certified by source presence.
+
+Original `tempo.js` supplies all tempo normalization, parsing and precedence. IronLog's existing
+configuration, set menus, controls and sheet host expose those values without replacing any
+upstream algorithm, sync routine or existing component. Data fixtures distinguish old unstamped
+unknown-field preservation from a modern intentional removal. Audio/haptic guide and wider native
+parity remain open. See the [tempo/lifetime evidence](./PR69_TEMPO_LIFETIME_VERIFICATION_2026-11-19.md).
+
 ## Correction of prior Set Trend implementation
 `frontend/src/lib/set-trend.js` and `set-trend.test.js` are restored **byte-for-byte to upstream v1.4.5**. The openGym `setTrendOn` default is ON as upstream originally defines. IronLog's existing Workout and saved-workout bottom sheet show the marker only when `S.setTrend === true` (their own UI preference gate), so existing user visuals remain opt-in without altering upstream behavior. IronLog UI tests cover default-off display, opt-in and unchanged workouts. The unchanged upstream blobs are asserted by the integrity regression.
 

@@ -8,6 +8,11 @@ and 504 open v1.4.3–v1.4.5 release criteria. Local browser/test evidence is re
 [PR69_VERIFICATION_2026-11-19.md](./PR69_VERIFICATION_2026-11-19.md).
 Neither document closes the full functional/native/data-restore gates.
 
+The subsequent [tempo/lifetime continuation](./PR69_TEMPO_LIFETIME_VERIFICATION_2026-11-19.md)
+replaces extracted lifetime code with its complete original module and connects original tempo
+rules to IronLog's exercise settings and set controls. Audio/haptic guides and broader platform
+parity remain open; the existing sync/auth/storage algorithms are unchanged.
+
 The CSV/note continuation now imports original CSV modules unchanged, exposes read-only exports
 through existing IronLog controls, routes common own-workout CSV files into the existing import
 confirmation/merge, and retains IronLog's 500-character notes in the editor/history/MCP/CSV boundary.
