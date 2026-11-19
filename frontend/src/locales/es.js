@@ -1,5 +1,10 @@
 // Spanish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio distance controls.
+  "Distance ({0})": "Distancia ({0})",
+  "Log distance instead": "Anotar la distancia",
+  "Log speed instead": "Anotar la velocidad",
+  "Level {0}": "Nivel {0}",
   // Original weekly cardio goals.
   "{0} of {1} min": "{0} de {1} min",
   "{0} of {1}": "{0} de {1}",

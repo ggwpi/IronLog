@@ -1,5 +1,10 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio distance controls.
+  "Distance ({0})": "距离（{0}）",
+  "Log distance instead": "改记距离",
+  "Log speed instead": "改记速度",
+  "Level {0}": "阻力 {0} 档",
   // Original weekly cardio goals.
   "{0} of {1} min": "{0} / {1} 分钟",
   "{0} of {1}": "第 {0} 张，共 {1} 张",

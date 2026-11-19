@@ -1,4 +1,9 @@
 export default {
+  // Cardio distance controls.
+  "Distance ({0})": "距離（{0}）",
+  "Log distance instead": "改記距離",
+  "Log speed instead": "改記速度",
+  "Level {0}": "阻力 {0} 段",
   // Original weekly cardio goals.
   "{0} of {1} min": "{0} / {1} 分鐘",
   "{0} of {1}": "第 {0} 張，共 {1} 張",

@@ -1,5 +1,10 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio distance controls.
+  "Distance ({0})": "المسافة ({0})",
+  "Log distance instead": "سجّل المسافة بدلًا من ذلك",
+  "Log speed instead": "سجّل السرعة بدلًا من ذلك",
+  "Level {0}": "المستوى {0}",
   // Original weekly cardio goals.
   "{0} of {1} min": "{0} من {1} د",
   "{0} of {1}": "{0} من {1}",

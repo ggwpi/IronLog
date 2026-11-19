@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Workout from './Workout.jsx'
 import { DEF, useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
+import { auditCompleteProfilePreservation } from '../lib/migration-audit.js'
 
 vi.mock('../lib/sound.js', () => ({ beep: vi.fn(), vibrate: vi.fn(), unlock: vi.fn() }))
 vi.mock('../lib/api.js', () => ({ api: vi.fn(() => Promise.resolve({})) }))
@@ -127,6 +128,53 @@ describe('Focus workout view', () => {
 
 // The speed stepper follows the profile's speed unit like the set row does (lib/speed.js): shown,
 // stepped and typed in mph, stored in km/h. It used to say km/h whatever the setting.
+describe('Focus view cardio distance', () => {
+  const BIKE = '2138'
+  const bike = () => ({ id: BIKE, target: { sets: 1, min: 30, speed: 10 }, sets: [{ min: 30, speed: 10, done: false, note: 'א'.repeat(500), tag: 'blue', media: [{ hash: 'keep' }] }] })
+  const row = () => useStore.getState().S.active.entries[0].sets[0]
+  const cell = () => container.querySelector('button[aria-label="Increase distance"]').closest('.stp-w')
+
+  it('uses original kilometre conversion and derived speed with the existing Focus controls', () => {
+    mount(bike(), { unit: 'kg', cardioBy: { [BIKE]: 'distance' } })
+    const metadata = { note: row().note, tag: row().tag, media: clone(row().media) }
+    expect(cell().querySelector('input').value).toBe('5')
+    act(() => container.querySelector('button[aria-label="Increase distance"]').click())
+    expect(row()).toMatchObject({ min: 30, km: 5.5, speed: 11, ...metadata })
+    act(() => container.querySelector('button[aria-label="Increase duration"]').click())
+    expect(row()).toMatchObject({ min: 31, km: 5.5, speed: 10.65, ...metadata })
+  })
+
+  it('shows miles independently of weight units while keeping kilometres in the saved row', () => {
+    mount(bike(), { unit: 'kg', speedUnit: 'mph', cardioBy: { [BIKE]: 'distance' } })
+    expect(cell().querySelector('.stp-l').textContent).toBe('Distance (mi)')
+    expect(cell().querySelector('input').value).toBe('3.11')
+    act(() => container.querySelector('button[aria-label="Increase distance"]').click())
+    expect(row()).toMatchObject({ km: 5.166, speed: 10.33 })
+    expect(useStore.getState().S.unit).toBe('kg')
+  })
+
+  it('switches logging mode in the actual menu without rewriting the active row or existing choices', () => {
+    mount(bike(), { unit: 'kg', cardioBy: { future: 'preserve' } })
+    const before = clone(row())
+    const beforeProfile = clone(useStore.getState().S)
+    const menu = openMenu()
+    act(() => [...menu.querySelectorAll('.menu-item')].find(b => b.querySelector('.tt')?.textContent === 'Log distance instead').click())
+    expect(useStore.getState().S.cardioBy).toEqual({ future: 'preserve', [BIKE]: 'distance' })
+    expect(row()).toEqual(before)
+    expect(auditCompleteProfilePreservation(beforeProfile, useStore.getState().S).ok).toBe(true)
+    expect(cell().querySelector('input').value).toBe('5')
+  })
+
+  it('retains the existing lock on completed sets', () => {
+    const entry = bike(); entry.sets[0].done = true
+    mount(entry, { unit: 'kg', cardioBy: { [BIKE]: 'distance' } })
+    const before = clone(row())
+    expect(cell().querySelector('input').disabled).toBe(true)
+    act(() => container.querySelector('button[aria-label="Increase distance"]').click())
+    expect(row()).toEqual(before)
+  })
+})
+
 describe('Focus view cardio speed', () => {
   const BIKE = '2138'   // stationary bike, cardio
   const bike = () => ({ id: BIKE, target: { sets: 1, min: 20, speed: 8 }, sets: [{ min: 20, speed: 8, done: false }] })

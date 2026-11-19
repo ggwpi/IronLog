@@ -1,5 +1,10 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio distance controls.
+  "Distance ({0})": "Mesafe ({0})",
+  "Log distance instead": "Bunun yerine mesafe gir",
+  "Log speed instead": "Bunun yerine hız gir",
+  "Level {0}": "Seviye {0}",
   // Original weekly cardio goals.
   "{0} of {1} min": "{0} / {1} dk",
   "{0} of {1}": "{0} / {1}",

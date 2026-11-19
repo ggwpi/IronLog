@@ -11,6 +11,7 @@ import { loadKindFor, baseWeightFor, inventoryFor, rowLoad, sameLoad, plateDelta
 import { effectiveRoutines, effectiveRoutineIds, lastEntryFor, bestWeightFor, bestWeightForEntry, buildSets, freestyleConfig, defaultConfig, setsDoneActive, setUnitsTotal, supersetUnits, unitOf, setLabel, modeOf, isBw, isPerSide, repStep, EFFORT, effortOf, stepEffort, capEffort, cascadeWeight, insertWarmupRow, barFloor, makeWarmupAt, canBeWarmup, makeWorkAt, removeRowAt, removeLastSet, setSpanAt, copyRowAt, copySpanAt, insertRowAt, pairAdjacent, unpairSuperset, cleanupSg, applyIntensifierPlan, pinnedNoteFor, exNoteFor, setsRepsOf } from '../lib/history.js'
 import { fmtNum, fmtPlate, exerciseNameText, fmtDate, fmtDaysAgo, todayISO, exCount, DAYN } from '../lib/format.js'
 import { speedUnitOf, toSpeed, fromSpeed } from '../lib/speed.js'
+import { byDistance, withCardioBy, distUnitOf, distLabel, toDist, fromDist, distanceKmOf, settleSpeed } from '../lib/opengym-v145/distance.js'
 import { clampIncline, hasIncline, inclineFits, inclineFrom, INCLINE_STEP } from '../lib/incline.js'
 import { beep, vibrate, unlock } from '../lib/sound.js'
 import { pinState } from '../lib/queue.js'
@@ -302,9 +303,15 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   // Speed is stored in km/h and shown in the profile's unit (lib/speed.js): `view` turns the
   // stored number into the one on screen, `store` the one typed or stepped back into km/h.
   const speedUnit = speedUnitOf(S)
-  const col2 = cardio ? { f: 'speed', step: 0.5, dec: true, hd: speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)'),
+  const distUnit = distUnitOf(S)
+  const byDist = cardio && byDistance(S, entry.id)
+  const col2 = byDist ? { f: 'km', step: distUnit === 'mi' ? 0.1 : 0.5, dec: true, hd: t('Distance ({0})', distLabel(distUnit)),
+    get: s => { const km = distanceKmOf(s); return km > 0 ? Math.round(km * 10000) / 10000 : (Number(s?.km) === 0 ? 0 : undefined) },
+    view: v => toDist(v, distUnit), store: v => fromDist(v, distUnit) }
+    : cardio ? { f: 'speed', step: 0.5, dec: true, hd: speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)'),
     view: v => toSpeed(v, speedUnit), store: v => fromSpeed(v, speedUnit) }
     : timed ? loadCol : repCol
+  const switchCardioBy = () => update(st => { st.cardioBy = withCardioBy(st.cardioBy, entry.id, byDist ? 'speed' : 'distance') })
   // Effort (RIR or RPE, whichever the profile logs) only makes sense for weighted rep sets,
   // not cardio/timed holds, and is opt-in since it adds a third stepper to every row. `opt`
   // because an unlogged effort is not the same as 0 — RIR 0 says the set went to failure.
@@ -327,7 +334,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     // with a fresh clone before the next tap fires. Reading from the store avoids that stale-
     // closure problem entirely and keeps every tap operating on the real current value.
     const fresh = useStore.getState().S.active?.entries[entryIdx]?.sets[i]
-    const cur = fresh ? fresh[col.f] : s[col.f]
+    const cur = col.get ? col.get(fresh || s) : fresh ? fresh[col.f] : s[col.f]
     if (mode === 'reps' && col.f === 'w') return onField(i, col.f, stepLoad(cur, col.step, dir))
     // The step is in the unit on screen: +0.5 mph, not +0.5 km/h shown as +0.31.
     const next = Math.max(0, Math.round(((viewOf(col, cur) || 0) + dir * col.step) * 100) / 100)
@@ -342,7 +349,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   const cell = (s, i, col, cls) => (
     <div className={'stp ' + cls + (wc.steppers ? '' : ' plain')}>
       {wc.steppers && <button aria-label={t('Decrease')} onClick={() => bump(s, i, col, -1)}><Icon name="minus" /></button>}
-      <span className="val"><NumberField decimal={col.dec} nullable={col.opt} value={viewOf(col, s[col.f]) ?? ''}
+      <span className="val"><NumberField decimal={col.dec} nullable={col.opt} value={viewOf(col, col.get ? col.get(s) : s[col.f]) ?? ''}
         onChange={v => onField(i, col.f, col.store ? col.store(v) : v)} /></span>
       {wc.steppers && <button aria-label={t('Increase')} onClick={() => bump(s, i, col, 1)}><Icon name="plus" /></button>}
     </div>
@@ -427,6 +434,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
       ] },
       { title: t('Settings'), items: [
         onProgressionSettings && { icon: 'slider', label: t('Exercise settings'), sub: guidance ? t(guidance.policyLabel) : t('Sets, reps, rest, progression'), onClick: onProgressionSettings },
+        cardio && { icon: 'swap', label: byDist ? t('Log speed instead') : t('Log distance instead'), onClick: switchCardioBy },
         onRest && { icon: 'timer', label: t('Rest timer'), sub: restSub, onClick: onRest },
         plateLoading && { icon: 'plate', label: t('Plate loading'), sub: loadSummary, onClick: () => barWeightSheet(entry.id, cfg) },
         routineUpdate && { icon: 'clipboard', label: t('Update routine'), sub: routineUpdate.sub, onClick: routineUpdate.run },
@@ -1204,6 +1212,8 @@ function ActiveWorkout() {
     // hold put aside must not outrank what you just typed, or the field would read 45 and the ▶
     // would still hold the 30 the row was asking for before.
     if (field === 'sec') delete e.sets[i].planSec
+    // Original distance boundary: speed follows an explicitly logged distance and duration.
+    if (field === 'km' || (field === 'min' && Number(e.sets[i].km) > 0)) settleSpeed(e.sets[i])
     // Changing a work set's weight cascades to the following inherited work sets, so a correction
     // carries through without retyping every row while explicit manual exceptions stay put. A
     // warm-up edit stays on its own row, and the later rungs keep their ramp loads.

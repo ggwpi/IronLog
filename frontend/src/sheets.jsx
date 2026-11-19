@@ -528,7 +528,7 @@ export function importFromApp(file, onDone) {
   const rd = new FileReader()
   rd.onload = () => {
     let parsed
-    try { parsed = parseImport(String(rd.result), { unit: S().unit, customEx: S().customEx, bands: S().bands }) }
+    try { parsed = parseImport(String(rd.result), { unit: S().unit, customEx: S().customEx, bands: S().bands, cardioBy: S().cardioBy }) }
     catch (e) { toast(t('Could not read that file')); return }
     if (parsed.error === 'empty') { toast(t('That file is empty')); return }
     if (parsed.error) { toast(t("We don't recognise that file's columns. Check the docs for supported apps.")); return }

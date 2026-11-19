@@ -5,6 +5,8 @@ import { isOn } from './modules.js'
 import { fmtSpeed, speedUnitOf } from './speed.js'
 import { cardioStartSpeed } from './cardio-kind.js'
 import { hasIncline, inclineFrom } from './incline.js'
+import { hasLevel } from './opengym-v145/incline.js'
+import { fmtDist, fmtPace } from './opengym-v145/distance.js'
 import { EXIDX, isCardio, isBodyweightEq, isAssisted, betterWeight } from './exercises.js'
 import { barWeightFor } from './bar.js'
 import { phaseForSet, modeForSet, modeForEntry, isWarmupRow, isFailureSet, isDropSet, isRestPauseSet, normalizeMode, completedVolumeOf, hasCompletedWork, nextDropWeight, splitBurstReps, makeSideSet, isSideSet, syncSideAggregate, WEIGHT_ORIGIN_MANUAL, dropsOf, clustersOf } from './workout-model.js'
@@ -154,6 +156,10 @@ export function setLabel(id, s, cfg, speedUnit) {
   // to the volume those same sets still count. A set with reps and nothing cardio was a rep set.
   if (!EXPLICIT_MODES.has(cfg?.mode) && mode !== 'reps' && s.r > 0 && !(s.min > 0 || s.speed > 0 || s.sec > 0)) mode = 'reps'
   // A treadmill grade rides along when the set has one (lib/incline.js); a flat set reads as it did.
+  if (mode === 'cardio' && Number(s.km) > 0) {
+    const du = speedUnit === 'mph' ? 'mi' : 'km'
+    return [`${s.min || 0} min`, fmtDist(s.km, du), fmtPace(s, du)].filter(Boolean).join(' · ') + (hasIncline(s) ? ' · ' + t('{0}% incline', fmtNum(Number(s.incline))) : '') + (hasLevel(s) ? ' · ' + t('Level {0}', fmtNum(Number(s.level))) : '')
+  }
   if (mode === 'cardio') return `${s.min || 0} min @ ${fmtSpeed(s.speed || 0, speedUnit)}` + (hasIncline(s) ? ' · ' + t('{0}% incline', fmtNum(Number(s.incline))) : '')
   // A set taken to failure carries its "F" behind the numbers, the mark lifting logs use for it;
   // the history, the text export and the set menu all read it from here.

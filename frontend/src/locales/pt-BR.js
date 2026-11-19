@@ -4,6 +4,11 @@
 import pt from './pt.js'
 
 export const PT_BR_OVERRIDES = {
+  // Cardio distance controls.
+  "Distance ({0})": "Distância ({0})",
+  "Log distance instead": "Registrar a distância",
+  "Log speed instead": "Registrar a velocidade",
+  "Level {0}": "Nível {0}",
   // Original weekly cardio goals.
   "{0} of {1} min": "{0} de {1} min",
   "{0} of {1}": "{0} de {1}",

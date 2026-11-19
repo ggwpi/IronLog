@@ -15,6 +15,7 @@ import {
 } from '../lib/workout-model.js'
 import { weightIncrement, stepWeight } from '../lib/progression.js'
 import { speedUnitOf, toSpeed, fromSpeed } from '../lib/speed.js'
+import { byDistance, withCardioBy, distUnitOf, distLabel, toDist, fromDist, distanceKmOf } from '../lib/opengym-v145/distance.js'
 import { effortPickerSheet, exerciseDetailSheet, exerciseHistorySheet, exerciseNoteSheet, menuSheet, barWeightSheet } from '../sheets.jsx'
 import { baseWeightFor, inventoryFor, loadKindFor, rowLoad } from '../lib/plates.js'
 import { ownedWeightsFor, stepOwned } from '../lib/dumbbells.js'
@@ -129,6 +130,9 @@ export default function FocusView({
   const locked = !set.done && setIdx > firstOpenSet
   const readOnly = set.done || locked
   const mode = modeOf({ ...(entry.target || {}), id: entry.id })
+  const distUnit = distUnitOf(S)
+  const byDist = mode === 'cardio' && byDistance(S, entry.id)
+  const switchCardioBy = () => useStore.getState().update(st => { st.cardioBy = withCardioBy(st.cardioBy, entry.id, byDist ? 'speed' : 'distance') })
   const effort = effortOf(S)
   const effortField = EFFORT[effort]?.f
   const effortValue = effortField ? set[effortField] ?? null : null
@@ -228,6 +232,7 @@ export default function FocusView({
       { icon: 'chartLine', label: t('Progression settings'), onClick: onProgressionSettings },
       onNoProg && { icon: 'pause', label: t('Don’t count for progression'), sub: t('This exercise, this session only'), on: entry.noProg === true, onClick: () => onNoProg(entry.noProg !== true) },
       mode === 'reps' && { icon: 'plate', label: t('Plate loading'), onClick: () => barWeightSheet(entry.id, { ...(entry.target || {}), id: entry.id }) },
+      mode === 'cardio' && { icon: 'swap', label: byDist ? t('Log speed instead') : t('Log distance instead'), onClick: switchCardioBy },
       onPairPrev && { icon: 'link', label: t('Make superset with previous'), onClick: onPairPrev },
       onPairNext && { icon: 'link', label: t('Make superset with next'), onClick: onPairNext },
       { icon: 'shuffle', label: t('Swap exercise'), onClick: onSwap, disabled: busy },
@@ -293,8 +298,10 @@ export default function FocusView({
               onChange={value => onField(setIdx, 'min', value)} />
             {/* Stored in km/h, shown and typed in the profile's speed unit, as on every other
                 cardio input (lib/speed.js). */}
-            <Stepper label={speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)')} ariaLabel="speed" value={toSpeed(set.speed || 0, speedUnit)} step={0.5} disabled={readOnly}
-              onChange={value => onField(setIdx, 'speed', fromSpeed(value, speedUnit))} />
+            {byDist ? <Stepper label={t('Distance ({0})', distLabel(distUnit))} ariaLabel="distance" value={toDist(distanceKmOf(set), distUnit)} step={distUnit === 'mi' ? .1 : .5} disabled={readOnly}
+              onChange={value => onField(setIdx, 'km', fromDist(value, distUnit))} />
+              : <Stepper label={speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)')} ariaLabel="speed" value={toSpeed(set.speed || 0, speedUnit)} step={0.5} disabled={readOnly}
+                onChange={value => onField(setIdx, 'speed', fromSpeed(value, speedUnit))} />}
             {/* The treadmill's grade, where the exercise has one (lib/incline.js). */}
             {(inclineFits(ex) || entry.sets.some(hasIncline)) && <Stepper label={t('Incline (%)')} ariaLabel="incline" value={set.incline || 0} step={INCLINE_STEP} max={INCLINE_MAX} disabled={readOnly}
               onChange={value => onField(setIdx, 'incline', clampIncline(value))} />}

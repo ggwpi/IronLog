@@ -1,5 +1,10 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio distance controls.
+  "Distance ({0})": "거리 ({0})",
+  "Log distance instead": "대신 거리 기록",
+  "Log speed instead": "대신 속도 기록",
+  "Level {0}": "강도 {0}",
   // Original weekly cardio goals.
   "{0} of {1} min": "{1}분 중 {0}분",
   "{0} of {1}": "{0} / {1}",

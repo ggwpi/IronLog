@@ -1,5 +1,10 @@
 // Ukrainian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio distance controls.
+  "Distance ({0})": "Дистанція ({0})",
+  "Log distance instead": "Записувати дистанцію",
+  "Log speed instead": "Записувати швидкість",
+  "Level {0}": "Рівень {0}",
   // Original weekly cardio goals.
   "{0} of {1} min": "{0} з {1} хв",
   "{0} of {1}": "{0} з {1}",

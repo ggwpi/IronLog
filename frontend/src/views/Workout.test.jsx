@@ -1833,6 +1833,22 @@ describe('workout focus view', () => {
     expect(mocks.S.active.entries[0].sets[0]).toMatchObject({ min: 21, speed: 8.5 })
   })
 
+  it.each(['cards', 'list', 'compact'])('logs cardio distance through the existing %s row without changing metadata', async view => {
+    const metadata = { note: 'א'.repeat(500), tag: 'blue', media: [{ hash: 'keep' }] }
+    await mount([exercise('plain-treadmill', [false], {
+      target: { mode: 'cardio', min: 30, speed: 10 }, sets: [{ min: 30, speed: 10, done: false, ...metadata }],
+    })], 0, { workoutView: view, cardioBy: { 'plain-treadmill': 'distance' } })
+    expect(container.textContent).toContain('Distance (km)')
+    let cells = container.querySelector('.setrow').querySelectorAll('.stp')
+    expect(cells[1].querySelector('input').value).toBe('5')
+    await click(cells[1].querySelector('button[aria-label="Increase"]'))
+    await rerender()
+    expect(mocks.S.active.entries[0].sets[0]).toMatchObject({ min: 30, km: 5.5, speed: 11, done: false, ...metadata })
+    cells = container.querySelector('.setrow').querySelectorAll('.stp')
+    await click(cells[0].querySelector('button[aria-label="Increase"]'))
+    expect(mocks.S.active.entries[0].sets[0]).toMatchObject({ min: 31, km: 5.5, speed: 10.65, done: false, ...metadata })
+  })
+
   it('keeps drop and burst rows editable and opens every set action', async () => {
     await mount([exercise('plain-bench', [false], {
       sets: [{

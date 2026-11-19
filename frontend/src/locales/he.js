@@ -1,6 +1,11 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  // Cardio distance controls.
+  "Distance ({0})": "מרחק ({0})",
+  "Log distance instead": "רישום מרחק במקום מהירות",
+  "Log speed instead": "רישום מהירות במקום מרחק",
+  "Level {0}": "רמה {0}",
   // Original weekly cardio goals.
   "{0} of {1} min": "{0} מתוך {1} דק׳",
   "{0} of {1}": "{0} מתוך {1}",

@@ -42,7 +42,12 @@ fs.writeFileSync(path.join(out, 'run.json'), JSON.stringify({ ...run, status: 'r
       useStore.setState({ S, user: null, ready: true, needsMobileOnboarding: false, permSteps: false })
       await setLang(lang)
     }, { lang, theme })
-    const shot = async name => page.screenshot({ path: path.join(out, `${label}-${theme}-${lang}-${name}.png`), fullPage: true, animations: 'disabled' })
+    const shot = async name => {
+      // Keep the same pointer state on both builds after interaction stories; a desktop
+      // Chromium hover must not masquerade as a phone-theme rendering regression.
+      await page.mouse.move(0, 0)
+      return page.screenshot({ path: path.join(out, `${label}-${theme}-${lang}-${name}.png`), fullPage: true, animations: 'disabled' })
+    }
     for (const screen of ['home', 'stats', 'workout']) {
       if (screen === 'workout') await page.evaluate(async () => {
         const { useStore } = await import('/src/store/useStore.js')
@@ -54,6 +59,54 @@ fs.writeFileSync(path.join(out, 'run.json'), JSON.stringify({ ...run, status: 'r
       const renderedTheme = await page.evaluate(() => document.documentElement.dataset.theme)
       assert.equal(renderedTheme, theme)
       results.push({ label, theme, renderedTheme, lang, screen, direction: await page.evaluate(() => document.documentElement.dir) })
+    }
+    if (process.env.IRONLOG_VERIFY_DISTANCE === '1') {
+      const original = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))
+      const words = await page.evaluate(async () => {
+        const { useStore } = await import('/src/store/useStore.js')
+        const { t } = await import('/src/lib/i18n.js')
+        useStore.setState(s => ({ S: { ...s.S, unit: 'kg', speedUnit: 'kmh', cardioBy: { future: 'keep' }, active: {
+          id: 'distance-fixture', name: 'Distance fixture', d: '2026-11-19', start: 1795078200000, cur: 0, workoutView: 'cards',
+          entries: [{ id: '2138', target: { mode: 'cardio', sets: 1, min: 30, speed: 10 }, sets: [{ min: 30, speed: 10, done: false, note: 'Distance fixture', tag: 'blue' }] }],
+        } } }))
+        location.hash = '#/workout'
+        return { more: t('More'), distance: t('Log distance instead') }
+      })
+      await page.waitForTimeout(500)
+      await shot('cardio-speed')
+      await page.evaluate(async () => { const { useStore } = await import('/src/store/useStore.js'); useStore.setState(s => ({ S: { ...s.S, active: { ...s.S.active, workoutView: 'focus' } } })) })
+      await page.locator('[data-testid="focus-set"]').waitFor({ state: 'visible' })
+      await page.waitForTimeout(400)
+      await shot('cardio-focus-speed')
+      if (label === 'migration') {
+        const before = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S.active.entries[0].sets[0]))
+        await page.getByRole('button', { name: words.more, exact: true }).click()
+        await page.locator('.menu-item .tt').filter({ hasText: words.distance }).click()
+        const distance = page.getByRole('button', { name: 'Increase distance', exact: true }).locator('..').locator('input')
+        await distance.waitFor({ state: 'visible' })
+        assert.equal(Number(await distance.inputValue()), 5)
+        const choice = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))
+        assert.deepEqual(choice.cardioBy, { future: 'keep', '2138': 'distance' })
+        assert.deepEqual(choice.active.entries[0].sets[0], before)
+        await distance.fill('6'); await distance.blur()
+        await page.getByRole('button', { name: 'Increase duration', exact: true }).click()
+        let state = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))
+        assert.deepEqual(state.active.entries[0].sets[0], { ...before, min: 31, km: 6, speed: 11.61 })
+        await page.evaluate(async () => { (await import('/src/store/useStore.js')).useStore.getState().update(s => { s.speedUnit = 'mph' }) })
+        assert.equal(Number(await distance.inputValue()), 3.73)
+        await distance.fill('4'); await distance.blur()
+        state = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))
+        assert.equal(state.unit, 'kg')
+        assert.deepEqual(state.active.entries[0].sets[0], { ...before, min: 31, km: 6.4374, speed: 12.46 })
+        await page.waitForTimeout(400)
+        await shot('cardio-focus-distance-miles')
+        await page.evaluate(async () => { const { useStore } = await import('/src/store/useStore.js'); useStore.setState(s => ({ S: { ...s.S, active: { ...s.S.active, workoutView: 'cards' } } })) })
+        await page.waitForTimeout(400)
+        await shot('cardio-distance-miles')
+        results.push({ label, theme, lang, story: 'existing speed cards/Focus preserved; actual logging menu changes preference only; distance/duration edits use original calculations; independent miles with kg and existing note/tag/done retained', passed: true })
+      }
+      await page.evaluate(async S => { (await import('/src/store/useStore.js')).useStore.setState({ S }); location.hash = '#/workout' }, original)
+      await page.waitForTimeout(400)
     }
     if (process.env.IRONLOG_VERIFY_RECOVERY === '1') {
       const original = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))

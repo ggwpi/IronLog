@@ -1,5 +1,10 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio distance controls.
+  "Distance ({0})": "দূরত্ব ({0})",
+  "Log distance instead": "বরং দূরত্ব লিখো",
+  "Log speed instead": "বরং গতি লিখো",
+  "Level {0}": "লেভেল {0}",
   // Original weekly cardio goals.
   "{0} of {1} min": "{1} এর মধ্যে {0} মিনিট",
   "{0} of {1}": "{0} / {1}",
