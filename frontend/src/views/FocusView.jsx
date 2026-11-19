@@ -16,7 +16,11 @@ import {
 import { weightIncrement, stepWeight } from '../lib/progression.js'
 import { speedUnitOf, toSpeed, fromSpeed } from '../lib/speed.js'
 import { byDistance, withCardioBy, distUnitOf, distLabel, toDist, fromDist, distanceKmOf } from '../lib/opengym-v145/distance.js'
-import { effortPickerSheet, exerciseDetailSheet, exerciseHistorySheet, exerciseNoteSheet, menuSheet, barWeightSheet } from '../sheets.jsx'
+import { effortPickerSheet, exerciseDetailSheet, exerciseHistorySheet, exerciseNoteSheet, menuSheet, barWeightSheet, setNoteSheet } from '../sheets.jsx'
+import { SET_TAGS, setTagOf, setTagName, withSetTag } from '../lib/set-tags.js'
+import { setNoteOf } from '../lib/opengym-v145/set-notes.js'
+import { tempoOf } from '../lib/opengym-v145/tempo.js'
+import { setTempoSheet } from '../components/TempoSheet.jsx'
 import { baseWeightFor, inventoryFor, loadKindFor, rowLoad } from '../lib/plates.js'
 import { ownedWeightsFor, stepOwned } from '../lib/dumbbells.js'
 import Icon from '../components/Icon.jsx'
@@ -240,9 +244,19 @@ export default function FocusView({
     ],
   })
 
+  const openTagMenu = () => menuSheet({
+    title: t('Colour tag'), subtitle: t('Set {0}', setIdx + 1),
+    items: [
+      ...SET_TAGS.map(tag => ({ label: <><span style={{ color: tag.color }} aria-hidden="true">{tag.shape}</span> {setTagName(tag.id)}</>, on: setTagOf(set)?.id === tag.id, onClick: () => onMutateSet(setIdx, row => withSetTag(row, tag.id)) })),
+      { icon: 'minus', label: t('None'), on: !setTagOf(set), onClick: () => onMutateSet(setIdx, row => withSetTag(row, null)) },
+    ],
+  })
   const openSetMenu = () => menuSheet({
     title: t('Set {0}', setIdx + 1),
     items: [
+      { icon: 'palette', label: t('Colour tag'), sub: setTagOf(set) ? `${setTagOf(set).shape} ${setTagName(set.tag)}` : t('Your own code for this set'), onClick: openTagMenu },
+      { icon: 'note', label: setNoteOf(set) ? t('Edit note') : t('Note'), sub: setNoteOf(set) || t('A word about this set'), onClick: () => setNoteSheet(entryIdx, setIdx) },
+      !isWarmupRow(set) && mode === 'reps' && { icon: 'stopwatch', label: t('Tempo'), sub: tempoOf(entry.target, set) || t('None'), onClick: () => setTempoSheet(entryIdx, setIdx) },
       { icon: 'flame', label: isWarmupRow(set) ? t('Mark as work set') : t('Mark as warm-up'), onClick: () => onMutateSet(setIdx, toggleWarmup) },
       { icon: 'arrowDown', label: t('Add drop set'), onClick: () => onMutateSet(setIdx, row => addDropTo(row, entry.target)) },
       { icon: 'bolt', label: t('Add burst'), onClick: () => onMutateSet(setIdx, row => addBurstTo(row, entry.target?.intensifier?.type === 'restpause' ? entry.target.intensifier.restSec : (S.restPauseSec || 15))) },

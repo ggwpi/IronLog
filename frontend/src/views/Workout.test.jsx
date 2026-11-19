@@ -1756,7 +1756,7 @@ describe('workout focus view', () => {
     })], 0, { active: { workoutView: 'focus' } })
 
     await click(buttonNamed('Set menu'))
-    await act(async () => { mocks.menuSheet.mock.calls.at(-1)[0].items[1].onClick() })
+    await act(async () => { mocks.menuSheet.mock.calls.at(-1)[0].items.find(item => item?.label === 'Add drop set').onClick() })
     await rerender()
     const left = container.querySelector('[data-focus-side="L"]')
     expect(left.textContent).toContain('Drop 1')
@@ -1765,7 +1765,7 @@ describe('workout focus view', () => {
     expect(mocks.S.active.entries[0].sets[0].sides.R.drops[0].w).toBe(16)
 
     await click(buttonNamed('Set menu'))
-    await act(async () => { mocks.menuSheet.mock.calls.at(-1)[0].items[2].onClick() })
+    await act(async () => { mocks.menuSheet.mock.calls.at(-1)[0].items.find(item => item?.label === 'Add burst').onClick() })
     await rerender()
     const burstLeft = container.querySelector('[data-focus-side="L"]')
     expect(burstLeft.textContent).toContain('Drop 1')
@@ -1867,7 +1867,7 @@ describe('workout focus view', () => {
     expect(mocks.S.active.entries[0].sets[0].r).toBe(9)
     await click(buttonNamed('Set menu'))
     const labels = mocks.menuSheet.mock.calls.at(-1)[0].items.filter(Boolean).map(item => item.label)
-    expect(labels).toEqual(['Mark as warm-up', 'Add drop set', 'Add burst', 'Taken to failure', 'Delete set'])
+    expect(labels).toEqual(['Colour tag', 'Note', 'Tempo', 'Mark as warm-up', 'Add drop set', 'Add burst', 'Taken to failure', 'Delete set'])
     // Taken to failure toggles the mark, and the focus card shows its F.
     await act(async () => { mocks.menuSheet.mock.calls.at(-1)[0].items.filter(Boolean).find(item => item.label === 'Taken to failure').onClick() })
     expect(mocks.S.active.entries[0].sets[0].failure).toBe(true)
@@ -1875,7 +1875,7 @@ describe('workout focus view', () => {
     expect(container.querySelector('.focus-failure').textContent).toBe('F')
   })
 
-  it('does not expose a Focus-only set note action', async () => {
+  it('keeps note editing inside the existing set menu without an extra Focus-only button', async () => {
     await mount([exercise('plain-bench', [false, false])], 0, { active: { workoutView: 'focus' } })
     await click(buttonNamed('Next set'))
     expect(buttonNamed('Set note')).toBeNull()

@@ -60,6 +60,45 @@ fs.writeFileSync(path.join(out, 'run.json'), JSON.stringify({ ...run, status: 'r
       assert.equal(renderedTheme, theme)
       results.push({ label, theme, renderedTheme, lang, screen, direction: await page.evaluate(() => document.documentElement.dir) })
     }
+    if (process.env.IRONLOG_VERIFY_FOCUS_METADATA === '1') {
+      const original = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))
+      const words = await page.evaluate(async () => {
+        const { useStore } = await import('/src/store/useStore.js'), { t } = await import('/src/lib/i18n.js')
+        useStore.setState(s => ({ S: { ...s.S, active: { ...s.S.active, workoutView: 'focus' } } }))
+        return { menu: t('Set menu'), note: t('Note'), edit: t('Edit note'), tag: t('Colour tag'), orange: t('Orange'), tempo: t('Tempo'), save: t('Save') }
+      })
+      await page.locator('[data-testid="focus-set"]').waitFor({ state: 'visible' })
+      await page.waitForTimeout(400)
+      await shot('focus-workout')
+      if (label === 'migration') {
+        const before = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S.active.entries[0].sets))
+        const openAction = async label => {
+          await page.getByRole('button', { name: words.menu, exact: true }).click()
+          await page.locator('.menu-item .tt').filter({ hasText: label }).click()
+        }
+        await openAction(words.note)
+        const textarea = page.locator('textarea[maxlength="500"]')
+        await textarea.fill(longNote)
+        await page.getByRole('button', { name: words.save, exact: true }).click()
+        await openAction(words.tag)
+        await page.locator('.menu-item .tt').filter({ hasText: words.orange }).click()
+        await openAction(words.tempo)
+        await page.getByRole('button', { name: '3-1-1-0', exact: true }).click()
+        await page.getByRole('button', { name: words.save, exact: true }).click()
+        const after = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S.active.entries[0].sets))
+        assert.deepEqual(after, [{ ...before[0], note: longNote, tag: 'orange', tempo: '3-1-1-0' }, ...before.slice(1)])
+        assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('gym_state_v1')).active.entries[0].sets), after)
+        await openAction(words.edit)
+        assert.equal(await textarea.inputValue(), longNote)
+        await page.getByRole('button', { name: words.save, exact: true }).click()
+        await page.evaluate(async () => { const { useStore } = await import('/src/store/useStore.js'); useStore.setState(s => ({ S: { ...s.S, active: { ...s.S.active, workoutView: 'cards' } } })) })
+        await page.waitForTimeout(400)
+        await shot('focus-metadata-in-cards')
+        results.push({ label, theme, lang, story: 'actual Focus set menu -> existing 500-character note editor -> original tag and tempo pickers -> guest JSON -> reopen note -> same metadata in Cards without changing any other set', passed: true })
+      }
+      await page.evaluate(async S => { (await import('/src/store/useStore.js')).useStore.setState({ S }) }, original)
+      await page.waitForTimeout(400)
+    }
     if (process.env.IRONLOG_VERIFY_DISTANCE === '1') {
       const original = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))
       const words = await page.evaluate(async () => {

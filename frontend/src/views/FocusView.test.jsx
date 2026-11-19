@@ -42,6 +42,26 @@ function openMenu() {
   return sheetContainer
 }
 
+function renderLatestSheet() {
+  if (sheetRoot) act(() => sheetRoot.unmount())
+  if (sheetContainer) sheetContainer.remove()
+  const sheet = useUI.getState().sheets.at(-1)
+  sheetContainer = document.createElement('div')
+  document.body.appendChild(sheetContainer)
+  sheetRoot = createRoot(sheetContainer)
+  act(() => sheetRoot.render(sheet.render(() => useUI.getState().closeSheet(sheet.id))))
+  return sheetContainer
+}
+
+function setMenuAction(label) {
+  act(() => container.querySelector('button[aria-label="Set menu"]').click())
+  const menu = renderLatestSheet()
+  const action = [...menu.querySelectorAll('.menu-item')].find(b => b.querySelector('.tt')?.textContent === label)
+  expect(action).toBeTruthy()
+  act(() => action.click())
+  return renderLatestSheet()
+}
+
 beforeEach(() => {
   useUI.setState({ sheets: [], toastMsg: '', timer: null, work: null })
 })
@@ -172,6 +192,59 @@ describe('Focus view cardio distance', () => {
     expect(cell().querySelector('input').disabled).toBe(true)
     act(() => container.querySelector('button[aria-label="Increase distance"]').click())
     expect(row()).toEqual(before)
+  })
+})
+
+describe('Focus existing set metadata controls', () => {
+  const note = 'א'.repeat(500)
+  const entry = () => ({ id: SQUAT, target: { mode: 'reps', tempo: '2-0-1-0' }, sets: [{ w: 60, r: 8, done: false, note, tag: 'blue', media: [{ hash: 'keep' }] }] })
+  const row = () => useStore.getState().S.active.entries[0].sets[0]
+  const button = (sheet, text) => [...sheet.querySelectorAll('button')].find(b => b.textContent === text)
+
+  it('opens the actual 500-character IronLog note editor and saves without changing set fields', () => {
+    mount(entry())
+    const before = clone(row())
+    const sheet = setMenuAction('Edit note')
+    expect(sheet.querySelector('textarea').maxLength).toBe(500)
+    expect(sheet.querySelector('textarea').value).toBe(note)
+    act(() => button(sheet, 'Save').click())
+    expect(row()).toEqual(before)
+    expect(JSON.parse(localStorage.getItem('gym_state_v1')).active.entries[0].sets[0]).toEqual(before)
+  })
+
+  it('sets and clears the original tag through the actual picker without losing metadata', () => {
+    const e = entry(); e.sets[0].done = true
+    mount(e)
+    const before = clone(row())
+    let sheet = setMenuAction('Colour tag')
+    act(() => [...sheet.querySelectorAll('.menu-item')].find(b => b.textContent.includes('Orange')).click())
+    expect(row()).toEqual({ ...before, tag: 'orange' })
+    sheet = setMenuAction('Colour tag')
+    act(() => [...sheet.querySelectorAll('.menu-item')].find(b => b.querySelector('.tt')?.textContent === 'None').click())
+    const { tag, ...untagged } = before
+    expect(row()).toEqual(untagged)
+  })
+
+  it('sets an original tempo preset and clears back to the exercise without changing other fields', () => {
+    mount(entry())
+    const before = clone(row())
+    let sheet = setMenuAction('Tempo')
+    act(() => button(sheet, '3-1-1-0').click())
+    act(() => button(sheet, 'Save').click())
+    expect(row()).toEqual({ ...before, tempo: '3-1-1-0' })
+    sheet = setMenuAction('Tempo')
+    act(() => button(sheet, 'Like the exercise (2-0-1-0)').click())
+    expect(row()).toEqual(before)
+  })
+
+  it.each(['warmup', 'cardio'])('does not offer rep tempo on a %s row', kind => {
+    const e = entry()
+    if (kind === 'warmup') e.sets[0].warmup = true
+    else { e.id = '2138'; e.target.mode = 'cardio'; e.sets[0] = { min: 30, speed: 10, done: false } }
+    mount(e)
+    act(() => container.querySelector('button[aria-label="Set menu"]').click())
+    const sheet = renderLatestSheet()
+    expect([...sheet.querySelectorAll('.menu-item .tt')].map(b => b.textContent)).not.toContain('Tempo')
   })
 })
 
