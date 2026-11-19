@@ -1,5 +1,26 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo controls through IronLog UI.
+  "About as heavy as a blue whale.": "大约一头蓝鲸那么重。",
+  "About {0}× a blue whale.": "大约 {0} 头蓝鲸。",
+  "About as heavy as an elephant.": "大约一头大象那么重。",
+  "About {0}× an elephant.": "大约 {0} 头大象。",
+  "About as heavy as a car.": "大约一辆汽车那么重。",
+  "About {0}× a car.": "大约 {0} 辆汽车。",
+  "About as heavy as a grand piano.": "大约一架三角钢琴那么重。",
+  "About {0}× a grand piano.": "大约 {0} 架三角钢琴。",
+  // Original tempo controls through IronLog UI.
+  "Like the exercise ({0})": "跟随动作（{0}）",
+  // Original tempo controls through IronLog UI.
+  "Lower (s)": "下放（秒）",
+  "Pause at the bottom (s)": "底部停顿（秒）",
+  "Lift (s)": "上举（秒）",
+  "Squeeze at the top (s)": "顶峰收缩（秒）",
+  "Tempo": "节奏",
+  "Seconds for each part of a rep: lower, pause, lift, squeeze. 3-1-1-0 is three down, one at the bottom, one up, straight into the next.": "一次动作每个部分的秒数：下放、停顿、上举、顶峰收缩。3-1-1-0 就是下放三秒、底部一秒、上举一秒，紧接下一次。",
+  "Explosive lift (X)": "爆发式上举（X）",
+  "No tempo": "无节奏",
+  "Tempo for this set": "本组节奏",
   // Original openGym v1.4.5 set-trend wording.
   "{0} less help than last time": "辅助比上次少 {0}",
   "{0} more help than last time": "辅助比上次多 {0}",

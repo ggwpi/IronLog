@@ -1,6 +1,27 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  // Original tempo controls through IronLog UI.
+  "About as heavy as a blue whale.": "כבד בערך כמו לווייתן כחול.",
+  "About {0}× a blue whale.": "בערך פי {0} ממשקל לווייתן כחול.",
+  "About as heavy as an elephant.": "כבד בערך כמו פיל.",
+  "About {0}× an elephant.": "בערך פי {0} ממשקל פיל.",
+  "About as heavy as a car.": "כבד בערך כמו מכונית.",
+  "About {0}× a car.": "בערך פי {0} ממשקל מכונית.",
+  "About as heavy as a grand piano.": "כבד בערך כמו פסנתר כנף.",
+  "About {0}× a grand piano.": "בערך פי {0} ממשקל פסנתר כנף.",
+  // Original tempo controls through IronLog UI.
+  "Like the exercise ({0})": "כמו בתרגיל ({0})",
+  // Original tempo controls through IronLog UI.
+  "Lower (s)": "הורדה (שנ׳)",
+  "Pause at the bottom (s)": "השהיה למטה (שנ׳)",
+  "Lift (s)": "הרמה (שנ׳)",
+  "Squeeze at the top (s)": "כיווץ למעלה (שנ׳)",
+  "Tempo": "קצב חזרה",
+  "Seconds for each part of a rep: lower, pause, lift, squeeze. 3-1-1-0 is three down, one at the bottom, one up, straight into the next.": "שניות לכל שלב בחזרה: הורדה, השהיה, הרמה וכיווץ. 3-1-1-0 פירושו שלוש שניות למטה, שנייה בתחתית, שנייה למעלה ומיד לחזרה הבאה.",
+  "Explosive lift (X)": "הרמה מתפרצת (X)",
+  "No tempo": "ללא קצב חזרה",
+  "Tempo for this set": "קצב החזרה בסט הזה",
   // Original openGym v1.4.5 set-trend wording.
   "{0} less help than last time": "פחות עזרה ב־{0} מהפעם הקודמת",
   "{0} more help than last time": "יותר עזרה ב־{0} מהפעם הקודמת",

@@ -1,5 +1,26 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo controls through IronLog UI.
+  "About as heavy as a blue whale.": "وزن حوت أزرق تقريبًا.",
+  "About {0}× a blue whale.": "نحو {0}× حوت أزرق.",
+  "About as heavy as an elephant.": "وزن فيل تقريبًا.",
+  "About {0}× an elephant.": "نحو {0}× فيل.",
+  "About as heavy as a car.": "وزن سيارة تقريبًا.",
+  "About {0}× a car.": "نحو {0}× سيارة.",
+  "About as heavy as a grand piano.": "وزن بيانو كبير تقريبًا.",
+  "About {0}× a grand piano.": "نحو {0}× بيانو كبير.",
+  // Original tempo controls through IronLog UI.
+  "Like the exercise ({0})": "مثل التمرين ({0})",
+  // Original tempo controls through IronLog UI.
+  "Lower (s)": "نزول (ث)",
+  "Pause at the bottom (s)": "توقف في الأسفل (ث)",
+  "Lift (s)": "رفع (ث)",
+  "Squeeze at the top (s)": "عصر في الأعلى (ث)",
+  "Tempo": "الإيقاع",
+  "Seconds for each part of a rep: lower, pause, lift, squeeze. 3-1-1-0 is three down, one at the bottom, one up, straight into the next.": "ثوانٍ لكل جزء من التكرار: نزول، توقف، رفع، عصر. 3-1-1-0 تعني ثلاثًا نزولًا، وواحدة في الأسفل، وواحدة صعودًا، ثم مباشرة إلى التالي.",
+  "Explosive lift (X)": "رفع انفجاري (X)",
+  "No tempo": "بلا إيقاع",
+  "Tempo for this set": "الإيقاع لهذه المجموعة",
   // Original openGym v1.4.5 set-trend wording.
   "{0} less help than last time": "مساعدة أقل بـ {0} من المرة الماضية",
   "{0} more help than last time": "مساعدة أكثر بـ {0} من المرة الماضية",

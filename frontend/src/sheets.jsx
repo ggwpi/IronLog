@@ -44,6 +44,8 @@ import { setTrendsFor, lastTimeBefore, trendGlyph } from './lib/set-trend.js'
 import { setTagOf, setTagName } from './lib/set-tags.js'
 import { isOn } from './lib/modules.js'
 import { setNoteOf } from './lib/opengym-v145/set-notes.js'
+import { normalizeTempo } from './lib/opengym-v145/tempo.js'
+import { tempoSheet } from './components/TempoSheet.jsx'
 import { exerciseHistory } from './lib/exercise-history.js'
 import { StrengthLevelBlock } from './components/StrengthLevelsCard.jsx'
 import { isBellEx, dbLoadOf, dbLoadFor, withDbLoad, withMeaning, historyAs, entryDbLoad, currentDbLoad, isOneArm, ownedWeightsFor, dumbbellsOf, ownsDumbbells, withDumbbells, presetWeights, cleanWeights } from './lib/dumbbells.js'
@@ -1880,6 +1882,7 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
         reps = range.reps
       }
       const out = { sets, mode: 'reps', reps, weight: Math.max(0, c.weight || 0), ...flags, ...(perSide ? { side: true } : {}), ...prog, ...withNote, ...withWarmups, ...withRest, ...withSetRests, ...withMeant, ...withSubs }
+      if (normalizeTempo(c.tempo)) out.tempo = normalizeTempo(c.tempo)
       // The list is the prescription; sets and reps follow it, so everything that reads the
       // flat target (a config sheet reopened with the toggle off, older builds) still makes sense.
       const list = pyramid ? normalizePyramid(c.pyramid, stride) : []
@@ -2123,6 +2126,9 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
           : { ...x, ...flatFromPyramid(x.pyramid), pyramidDraft: x.pyramid, pyramid: undefined }))} />
       </Row>}
     </div>}
+    {mode === 'reps' && <Row icon="stopwatch" iconTint="var(--blue)" title={t('Tempo')}
+      value={normalizeTempo(c.tempo) || t('None')} accessory="chevron"
+      onClick={() => tempoSheet({ value: normalizeTempo(c.tempo), onDone: v => setC(x => ({ ...x, tempo: v || undefined })) })} />}
     {/* A stepper is too wide to sit in a list row next to a label — it squeezes the text to
         one word per line — so added weight gets the same full-width treatment as sets and
         reps, with its explanation underneath. */}

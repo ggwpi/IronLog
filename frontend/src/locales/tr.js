@@ -1,5 +1,26 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo controls through IronLog UI.
+  "About as heavy as a blue whale.": "Aşağı yukarı bir mavi balina ağırlığında.",
+  "About {0}× a blue whale.": "Aşağı yukarı {0}× mavi balina.",
+  "About as heavy as an elephant.": "Aşağı yukarı bir fil ağırlığında.",
+  "About {0}× an elephant.": "Aşağı yukarı {0}× fil.",
+  "About as heavy as a car.": "Aşağı yukarı bir araba ağırlığında.",
+  "About {0}× a car.": "Aşağı yukarı {0}× araba.",
+  "About as heavy as a grand piano.": "Aşağı yukarı bir kuyruklu piyano ağırlığında.",
+  "About {0}× a grand piano.": "Aşağı yukarı {0}× kuyruklu piyano.",
+  // Original tempo controls through IronLog UI.
+  "Like the exercise ({0})": "Egzersizdeki gibi ({0})",
+  // Original tempo controls through IronLog UI.
+  "Lower (s)": "İndir (sn)",
+  "Pause at the bottom (s)": "Altta duraklama (sn)",
+  "Lift (s)": "Kaldır (sn)",
+  "Squeeze at the top (s)": "Üstte sıkma (sn)",
+  "Tempo": "Tempo",
+  "Seconds for each part of a rep: lower, pause, lift, squeeze. 3-1-1-0 is three down, one at the bottom, one up, straight into the next.": "Bir tekrarın her bölümü için saniye: indir, duraklat, kaldır, sık. 3-1-1-0 üç aşağı, bir altta, bir yukarı, sonra hemen sıradaki demek.",
+  "Explosive lift (X)": "Patlayıcı kaldırış (X)",
+  "No tempo": "Tempo yok",
+  "Tempo for this set": "Bu setin temposu",
   // Original openGym v1.4.5 set-trend wording.
   "{0} less help than last time": "Geçen seferden {0} daha az destek",
   "{0} more help than last time": "Geçen seferden {0} daha fazla destek",

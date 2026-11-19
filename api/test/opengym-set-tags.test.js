@@ -30,3 +30,17 @@ test('keeps IronLog legacy intentional note clearing while protecting an unknown
   assert.equal(next.workouts[0].entries[0].sets[0].tag, 'blue')
   assert.equal(current.workouts[0].entries[0].sets[0].note.length, 500)
 })
+
+test('an old unstamped writer retains set and routine tempos without losing its workout edit', () => {
+  const current = { _ts: 1000, _rev: 1, unit: 'kg', workouts: [{ id: 'fixture', d: '2026-11-19', entries: [{ id: '0025', sets: [{ w: 60, r: 8, done: true, tempo: '5-0-X-0', tag: 'blue' }] }] }],
+    routines: [{ id: 'plan', name: 'Keep', ex: [{ id: '0025', sets: 1, reps: 8, tempo: '3-1-1-0' }] }], bodyweight: [] }
+  const next = structuredClone(current)
+  delete next.workouts[0].entries[0].sets[0].tempo
+  delete next.routines[0].ex[0].tempo
+  next.workouts[0].entries[0].sets[0].r = 9
+  stampPut(current, next, { overRead: true, stamped: false, now: 2000 })
+  assert.equal(next.workouts[0].entries[0].sets[0].tempo, '5-0-X-0')
+  assert.equal(next.workouts[0].entries[0].sets[0].r, 9)
+  assert.equal(next.routines[0].ex[0].tempo, '3-1-1-0')
+  assert.equal(current.workouts[0].entries[0].sets[0].r, 8)
+})

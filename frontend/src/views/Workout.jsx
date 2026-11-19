@@ -44,6 +44,8 @@ import { setTrendsFor, trendGlyph, trendLabel } from '../lib/set-trend.js'
 import { SET_TAGS, setTagOf, setTagName, withSetTag } from '../lib/set-tags.js'
 import { setNoteOf } from '../lib/opengym-v145/set-notes.js'
 import { setNoteSheet } from '../sheets.jsx'
+import { setTempoSheet } from '../components/TempoSheet.jsx'
+import { tempoOf } from '../lib/opengym-v145/tempo.js'
 import { bindWatchActions } from '../lib/watch-sync.js'
 import { bestSetFor } from '../lib/exercise-history.js'
 import { bindLiveActions } from '../lib/live-activity.js'
@@ -474,6 +476,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
         { items: [
           { icon: 'palette', label: t('Colour tag'), sub: tagHere ? `${tagHere.shape} ${setTagName(tagHere.id)}` : t('Your own code for this set'), onClick: () => tagSheet(spanStart, warm ? t('Warm-up') : t('Set {0}', setNumOf(s, i))) },
           { icon: 'note', label: noteHere ? t('Edit note') : t('Note'), sub: noteHere || t('A word about this set'), onClick: () => setNoteSheet(entryIdx, spanStart) },
+          !warm && mode === 'reps' && { icon: 'stopwatch', label: t('Tempo'), sub: tempoOf(entry.target, entry.sets[spanStart]) || t('None'), onClick: () => setTempoSheet(entryIdx, spanStart) },
           !warm && mode === 'reps' && canBeWarmup(s) && entry.sets.some((x, j) => j !== i && !isWarmupRow(x)) && { icon: 'sunrise', label: t('Make it a warm-up set'), onClick: () => setPhaseAt(i, true) },
           warm && mode === 'reps' && { icon: 'dumbbell', label: t('Count it as a working set'), onClick: () => setPhaseAt(i, false) },
           // Taken to failure: a toggle with its check, like the menu's other on/off rows. It counts
@@ -763,6 +766,10 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
             </button>
           </div>}
           {loadLine(String(i))}
+          {!pairTail && mode === 'reps' && !isWarmupRow(s) && tempoOf(entry.target, s) && <button type="button" className="small dim" data-set-tempo
+            style={{ display: 'block', minHeight: 44, textAlign: 'start' }} onClick={() => setTempoSheet(entryIdx, i)}>
+            {t('Tempo')} <bdi dir="ltr">{tempoOf(entry.target, s)}</bdi>
+          </button>}
           {!pairTail && setNoteOf(s) && <button type="button" className="small dim" data-set-note
             style={{ display: 'block', textAlign: 'start', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxWidth: '100%', minHeight: 44 }}
             aria-label={t('Edit note') + ': ' + setNoteOf(s)} onClick={() => setNoteSheet(entryIdx, i)}>

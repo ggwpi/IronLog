@@ -1,5 +1,26 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo controls through IronLog UI.
+  "About as heavy as a blue whale.": "หนักพอ ๆ กับวาฬสีน้ำเงินหนึ่งตัว",
+  "About {0}× a blue whale.": "ราว {0}× วาฬสีน้ำเงิน",
+  "About as heavy as an elephant.": "หนักพอ ๆ กับช้างหนึ่งตัว",
+  "About {0}× an elephant.": "ราว {0}× ช้าง",
+  "About as heavy as a car.": "หนักพอ ๆ กับรถยนต์หนึ่งคัน",
+  "About {0}× a car.": "ราว {0}× รถยนต์",
+  "About as heavy as a grand piano.": "หนักพอ ๆ กับแกรนด์เปียโนหนึ่งหลัง",
+  "About {0}× a grand piano.": "ราว {0}× แกรนด์เปียโน",
+  // Original tempo controls through IronLog UI.
+  "Like the exercise ({0})": "ตามท่าออกกำลังกาย ({0})",
+  // Original tempo controls through IronLog UI.
+  "Lower (s)": "ลง (วินาที)",
+  "Pause at the bottom (s)": "ค้างด้านล่าง (วินาที)",
+  "Lift (s)": "ขึ้น (วินาที)",
+  "Squeeze at the top (s)": "บีบด้านบน (วินาที)",
+  "Tempo": "เทมโป",
+  "Seconds for each part of a rep: lower, pause, lift, squeeze. 3-1-1-0 is three down, one at the bottom, one up, straight into the next.": "วินาทีของแต่ละช่วงในหนึ่งครั้ง: ลง ค้าง ขึ้น บีบ 3-1-1-0 คือ ลงสาม ค้างล่างหนึ่ง ขึ้นหนึ่ง แล้วต่อครั้งถัดไปทันที",
+  "Explosive lift (X)": "ยกแบบระเบิดพลัง (X)",
+  "No tempo": "ไม่มีเทมโป",
+  "Tempo for this set": "เทมโปของเซ็ตนี้",
   // Original openGym v1.4.5 set-trend wording.
   "{0} less help than last time": "แรงช่วยน้อยกว่าครั้งที่แล้ว {0}",
   "{0} more help than last time": "แรงช่วยมากกว่าครั้งที่แล้ว {0}",

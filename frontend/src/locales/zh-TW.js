@@ -1,4 +1,25 @@
 export default {
+  // Original tempo controls through IronLog UI.
+  "About as heavy as a blue whale.": "大約一頭藍鯨那麼重。",
+  "About {0}× a blue whale.": "大約 {0} 頭藍鯨。",
+  "About as heavy as an elephant.": "大約一頭大象那麼重。",
+  "About {0}× an elephant.": "大約 {0} 頭大象。",
+  "About as heavy as a car.": "大約一輛汽車那麼重。",
+  "About {0}× a car.": "大約 {0} 輛汽車。",
+  "About as heavy as a grand piano.": "大約一架平台鋼琴那麼重。",
+  "About {0}× a grand piano.": "大約 {0} 架平台鋼琴。",
+  // Original tempo controls through IronLog UI.
+  "Like the exercise ({0})": "跟動作一樣（{0}）",
+  // Original tempo controls through IronLog UI.
+  "Lower (s)": "下放（秒）",
+  "Pause at the bottom (s)": "底部停頓（秒）",
+  "Lift (s)": "上舉（秒）",
+  "Squeeze at the top (s)": "頂峰收縮（秒）",
+  "Tempo": "節奏",
+  "Seconds for each part of a rep: lower, pause, lift, squeeze. 3-1-1-0 is three down, one at the bottom, one up, straight into the next.": "一下動作每個部分的秒數：下放、停頓、上舉、頂峰收縮。3-1-1-0 就是下放三秒、底部一秒、上舉一秒，直接接下一下。",
+  "Explosive lift (X)": "爆發式上舉（X）",
+  "No tempo": "無節奏",
+  "Tempo for this set": "這組的節奏",
   // Original openGym v1.4.5 set-trend wording.
   "{0} less help than last time": "輔助比上次少 {0}",
   "{0} more help than last time": "輔助比上次多 {0}",

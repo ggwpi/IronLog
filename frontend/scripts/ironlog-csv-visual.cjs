@@ -7,7 +7,7 @@ const { chromium } = require(process.env.IRONLOG_PLAYWRIGHT_MODULE || 'playwrigh
 const out = process.env.IRONLOG_VISUAL_OUT || path.join(os.tmpdir(), 'ironlog-pr69-csv-visual')
 fs.mkdirSync(out, { recursive: true })
 const longNote = 'א'.repeat(499) + 'ב'
-const run = { baseline: '1696160064c61b474e91c91b58107fca029711d0', startedAt: new Date().toISOString(), viewport: { width: 390, height: 844 } }
+const run = { baseline: process.env.IRONLOG_BASELINE_SHA || '1696160064c61b474e91c91b58107fca029711d0', startedAt: new Date().toISOString(), viewport: { width: 390, height: 844 } }
 fs.writeFileSync(path.join(out, 'run.json'), JSON.stringify({ ...run, status: 'running' }, null, 2))
 
 ;(async () => {
@@ -56,6 +56,32 @@ fs.writeFileSync(path.join(out, 'run.json'), JSON.stringify({ ...run, status: 'r
       results.push({ label, theme, renderedTheme, lang, screen, direction: await page.evaluate(() => document.documentElement.dir) })
     }
     if (label === 'migration') {
+      if (process.env.IRONLOG_VERIFY_TEMPO === '1') {
+        const words = await page.evaluate(async () => {
+          const { t } = await import('/src/lib/i18n.js')
+          return { tempo: t('Tempo'), save: t('Save'), none: t('No tempo'), cancel: t('Cancel') }
+        })
+        const before = await page.evaluate(async () => JSON.stringify((await import('/src/store/useStore.js')).useStore.getState().S))
+        await page.locator('button.n').first().click()
+        await page.locator('.menu-item .tt').filter({ hasText: words.tempo }).first().click()
+        await page.getByRole('button', { name: '5-0-X-0', exact: true }).click()
+        await shot('tempo-editor')
+        const fits = await page.locator('.sheet input').evaluateAll(inputs => inputs.every(input => { const r = input.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth }))
+        assert.equal(fits, true, 'tempo steppers must fit the phone viewport')
+        await page.getByRole('button', { name: words.save, exact: true }).click()
+        await page.waitForTimeout(400)
+        assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('gym_state_v1')).active.entries[0].sets[0].tempo), '5-0-X-0')
+        await shot('tempo-workout')
+        await page.locator('[data-set-tempo]').click()
+        await page.getByRole('button', { name: words.none, exact: true }).click()
+        await page.waitForTimeout(400)
+        const after = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))
+        const original = JSON.parse(before)
+        assert.ok(after._ts >= (original._ts || 0), 'actual editing advances the existing sync clock')
+        delete after._ts; delete original._ts
+        assert.deepEqual(after, original)
+        results.push({ label, theme, lang, story: 'actual set menu -> original tempo preset -> saved guest JSON -> inline reopen -> clear without changing original data', passed: true })
+      }
       const words = await page.evaluate(async () => {
         const { t } = await import('/src/lib/i18n.js')
         return { note: t('Note'), save: t('Save'), csv: t('Export as spreadsheet (CSV)'), workouts: t('Workouts (CSV)'), body: t('Body weight & measurements (CSV)'), nothing: t('Nothing new to import'), cancel: t('Cancel'), import: t('Import'), custom: t('Custom'), all: t('All'), from: t('From'), to: t('To') }

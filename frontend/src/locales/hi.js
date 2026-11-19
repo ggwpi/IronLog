@@ -1,5 +1,26 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo controls through IronLog UI.
+  "About as heavy as a blue whale.": "लगभग एक ब्लू व्हेल जितना भारी।",
+  "About {0}× a blue whale.": "लगभग {0}× एक ब्लू व्हेल।",
+  "About as heavy as an elephant.": "लगभग एक हाथी जितना भारी।",
+  "About {0}× an elephant.": "लगभग {0}× एक हाथी।",
+  "About as heavy as a car.": "लगभग एक कार जितना भारी।",
+  "About {0}× a car.": "लगभग {0}× एक कार।",
+  "About as heavy as a grand piano.": "लगभग एक ग्रैंड पियानो जितना भारी।",
+  "About {0}× a grand piano.": "लगभग {0}× एक ग्रैंड पियानो।",
+  // Original tempo controls through IronLog UI.
+  "Like the exercise ({0})": "एक्सरसाइज़ जैसा ({0})",
+  // Original tempo controls through IronLog UI.
+  "Lower (s)": "नीचे (सेकंड)",
+  "Pause at the bottom (s)": "नीचे रुकना (सेकंड)",
+  "Lift (s)": "ऊपर (सेकंड)",
+  "Squeeze at the top (s)": "ऊपर स्क्वीज़ (सेकंड)",
+  "Tempo": "टेम्पो",
+  "Seconds for each part of a rep: lower, pause, lift, squeeze. 3-1-1-0 is three down, one at the bottom, one up, straight into the next.": "रेप के हर हिस्से के सेकंड: नीचे, रुकना, ऊपर, स्क्वीज़। 3-1-1-0 यानी तीन नीचे, एक नीचे रुककर, एक ऊपर, और सीधे अगला।",
+  "Explosive lift (X)": "विस्फोटक लिफ़्ट (X)",
+  "No tempo": "कोई टेम्पो नहीं",
+  "Tempo for this set": "इस सेट का टेम्पो",
   // Original openGym v1.4.5 set-trend wording.
   "{0} less help than last time": "पिछली बार से {0} कम सहारा",
   "{0} more help than last time": "पिछली बार से {0} ज़्यादा सहारा",

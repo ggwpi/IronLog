@@ -1,5 +1,26 @@
 // Hungarian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo controls through IronLog UI.
+  "About as heavy as a blue whale.": "Nagyjából annyi, mint egy kék bálna.",
+  "About {0}× a blue whale.": "Nagyjából {0}× egy kék bálna.",
+  "About as heavy as an elephant.": "Nagyjából annyi, mint egy elefánt.",
+  "About {0}× an elephant.": "Nagyjából {0}× egy elefánt.",
+  "About as heavy as a car.": "Nagyjából annyi, mint egy autó.",
+  "About {0}× a car.": "Nagyjából {0}× egy autó.",
+  "About as heavy as a grand piano.": "Nagyjából annyi, mint egy versenyzongora.",
+  "About {0}× a grand piano.": "Nagyjából {0}× egy versenyzongora.",
+  // Original tempo controls through IronLog UI.
+  "Like the exercise ({0})": "Mint a gyakorlatnál ({0})",
+  // Original tempo controls through IronLog UI.
+  "Lower (s)": "Le (mp)",
+  "Pause at the bottom (s)": "Szünet lent (mp)",
+  "Lift (s)": "Fel (mp)",
+  "Squeeze at the top (s)": "Szorítás fent (mp)",
+  "Tempo": "Tempó",
+  "Seconds for each part of a rep: lower, pause, lift, squeeze. 3-1-1-0 is three down, one at the bottom, one up, straight into the next.": "Másodpercek az ismétlés minden részéhez: le, szünet, fel, szorítás. A 3-1-1-0 három le, egy lent, egy fel, és rögtön a következő.",
+  "Explosive lift (X)": "Robbanékony emelés (X)",
+  "No tempo": "Nincs tempó",
+  "Tempo for this set": "Tempó ehhez a sorozathoz",
   // Original openGym v1.4.5 set-trend wording.
   "{0} less help than last time": "{0}-mal kevesebb segítség, mint legutóbb",
   "{0} more help than last time": "{0}-mal több segítség, mint legutóbb",

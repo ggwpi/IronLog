@@ -1,5 +1,26 @@
 // German UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo controls through IronLog UI.
+  "About as heavy as a blue whale.": "Ungefähr so schwer wie ein Blauwal.",
+  "About {0}× a blue whale.": "Ungefähr {0}× ein Blauwal.",
+  "About as heavy as an elephant.": "Ungefähr so schwer wie ein Elefant.",
+  "About {0}× an elephant.": "Ungefähr {0}× ein Elefant.",
+  "About as heavy as a car.": "Ungefähr so schwer wie ein Auto.",
+  "About {0}× a car.": "Ungefähr {0}× ein Auto.",
+  "About as heavy as a grand piano.": "Ungefähr so schwer wie ein Flügel.",
+  "About {0}× a grand piano.": "Ungefähr {0}× ein Flügel.",
+  // Original tempo controls through IronLog UI.
+  "Like the exercise ({0})": "Wie die Übung ({0})",
+  // Original tempo controls through IronLog UI.
+  "Lower (s)": "Runter (s)",
+  "Pause at the bottom (s)": "Pause unten (s)",
+  "Lift (s)": "Hoch (s)",
+  "Squeeze at the top (s)": "Halten oben (s)",
+  "Tempo": "Tempo",
+  "Seconds for each part of a rep: lower, pause, lift, squeeze. 3-1-1-0 is three down, one at the bottom, one up, straight into the next.": "Sekunden für jeden Teil einer Wiederholung: runter, Pause, hoch, halten. 3-1-1-0 heißt drei runter, eine unten, eine hoch und direkt in die nächste.",
+  "Explosive lift (X)": "Explosiv hoch (X)",
+  "No tempo": "Kein Tempo",
+  "Tempo for this set": "Tempo für diesen Satz",
   // Original openGym v1.4.5 set-trend wording.
   "{0} less help than last time": "{0} weniger Unterstützung als beim letzten Mal",
   "{0} more help than last time": "{0} mehr Unterstützung als beim letzten Mal",

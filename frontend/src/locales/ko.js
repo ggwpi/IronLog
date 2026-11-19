@@ -1,5 +1,26 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo controls through IronLog UI.
+  "About as heavy as a blue whale.": "대왕고래 한 마리쯤 되는 무게예요.",
+  "About {0}× a blue whale.": "대왕고래 약 {0}마리 분량이에요.",
+  "About as heavy as an elephant.": "코끼리 한 마리쯤 되는 무게예요.",
+  "About {0}× an elephant.": "코끼리 약 {0}마리 분량이에요.",
+  "About as heavy as a car.": "자동차 한 대쯤 되는 무게예요.",
+  "About {0}× a car.": "자동차 약 {0}대 분량이에요.",
+  "About as heavy as a grand piano.": "그랜드 피아노 한 대쯤 되는 무게예요.",
+  "About {0}× a grand piano.": "그랜드 피아노 약 {0}대 분량이에요.",
+  // Original tempo controls through IronLog UI.
+  "Like the exercise ({0})": "운동과 같게 ({0})",
+  // Original tempo controls through IronLog UI.
+  "Lower (s)": "내리기 (초)",
+  "Pause at the bottom (s)": "바닥에서 멈춤 (초)",
+  "Lift (s)": "들기 (초)",
+  "Squeeze at the top (s)": "꼭대기에서 쥐어짜기 (초)",
+  "Tempo": "템포",
+  "Seconds for each part of a rep: lower, pause, lift, squeeze. 3-1-1-0 is three down, one at the bottom, one up, straight into the next.": "반복 한 번의 각 구간 초: 내리기, 멈춤, 들기, 쥐어짜기. 3-1-1-0은 3초 내리고, 바닥에서 1초, 1초 올리고, 바로 다음 반복으로.",
+  "Explosive lift (X)": "폭발적으로 들기 (X)",
+  "No tempo": "템포 없음",
+  "Tempo for this set": "이 세트의 템포",
   // Original openGym v1.4.5 set-trend wording.
   "{0} less help than last time": "지난번보다 보조 {0} 덜",
   "{0} more help than last time": "지난번보다 보조 {0} 더",

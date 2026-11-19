@@ -1,5 +1,26 @@
 // Russian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo controls through IronLog UI.
+  "About as heavy as a blue whale.": "Примерно как синий кит.",
+  "About {0}× a blue whale.": "Примерно {0}× синий кит.",
+  "About as heavy as an elephant.": "Примерно как слон.",
+  "About {0}× an elephant.": "Примерно {0}× слон.",
+  "About as heavy as a car.": "Примерно как машина.",
+  "About {0}× a car.": "Примерно {0}× машина.",
+  "About as heavy as a grand piano.": "Примерно как рояль.",
+  "About {0}× a grand piano.": "Примерно {0}× рояль.",
+  // Original tempo controls through IronLog UI.
+  "Like the exercise ({0})": "Как у упражнения ({0})",
+  // Original tempo controls through IronLog UI.
+  "Lower (s)": "Опускание (с)",
+  "Pause at the bottom (s)": "Пауза внизу (с)",
+  "Lift (s)": "Подъём (с)",
+  "Squeeze at the top (s)": "Сжатие вверху (с)",
+  "Tempo": "Темп",
+  "Seconds for each part of a rep: lower, pause, lift, squeeze. 3-1-1-0 is three down, one at the bottom, one up, straight into the next.": "Секунды на каждую часть повтора: опускание, пауза, подъём, сжатие. 3-1-1-0 значит три вниз, одна внизу, одна вверх и сразу следующий.",
+  "Explosive lift (X)": "Взрывной подъём (X)",
+  "No tempo": "Без темпа",
+  "Tempo for this set": "Темп для этого подхода",
   // Original openGym v1.4.5 set-trend wording.
   "{0} less help than last time": "На {0} меньше помощи, чем в прошлый раз",
   "{0} more help than last time": "На {0} больше помощи, чем в прошлый раз",

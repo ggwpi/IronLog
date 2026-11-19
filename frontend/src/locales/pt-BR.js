@@ -4,6 +4,27 @@
 import pt from './pt.js'
 
 export const PT_BR_OVERRIDES = {
+  // Original tempo controls through IronLog UI.
+  "About as heavy as a blue whale.": "Mais ou menos o peso de uma baleia-azul.",
+  "About {0}× a blue whale.": "Mais ou menos {0}× uma baleia-azul.",
+  "About as heavy as an elephant.": "Mais ou menos o peso de um elefante.",
+  "About {0}× an elephant.": "Mais ou menos {0}× um elefante.",
+  "About as heavy as a car.": "Mais ou menos o peso de um carro.",
+  "About {0}× a car.": "Mais ou menos {0}× um carro.",
+  "About as heavy as a grand piano.": "Mais ou menos o peso de um piano de cauda.",
+  "About {0}× a grand piano.": "Mais ou menos {0}× um piano de cauda.",
+  // Original tempo controls through IronLog UI.
+  "Like the exercise ({0})": "Como no exercício ({0})",
+  // Original tempo controls through IronLog UI.
+  "Lower (s)": "Descer (s)",
+  "Pause at the bottom (s)": "Pausa em baixo (s)",
+  "Lift (s)": "Subir (s)",
+  "Squeeze at the top (s)": "Contrair em cima (s)",
+  "Tempo": "Cadência",
+  "Seconds for each part of a rep: lower, pause, lift, squeeze. 3-1-1-0 is three down, one at the bottom, one up, straight into the next.": "Segundos para cada parte de uma rep: descer, pausa, subir, contrair. 3-1-1-0 é três a descer, um em baixo, um a subir e logo a seguinte.",
+  "Explosive lift (X)": "Subida explosiva (X)",
+  "No tempo": "Sem cadência",
+  "Tempo for this set": "Cadência desta série",
   // Original openGym v1.4.5 set-trend wording.
   "{0} less help than last time": "{0} a menos de ajuda que da última vez",
   "{0} more help than last time": "{0} a mais de ajuda que da última vez",
