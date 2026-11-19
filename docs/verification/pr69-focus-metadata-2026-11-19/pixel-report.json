@@ -1,0 +1,254 @@
+[
+  {
+    "theme": "dark",
+    "lang": "en",
+    "screen": "home",
+    "width": 390,
+    "height": 1372,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "screen": "stats",
+    "width": 390,
+    "height": 4062,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "screen": "workout",
+    "width": 390,
+    "height": 844,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "screen": "recovery-enabled",
+    "width": 390,
+    "height": 1723,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "screen": "cardio-speed",
+    "width": 390,
+    "height": 844,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "screen": "cardio-focus-speed",
+    "width": 390,
+    "height": 987,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "screen": "focus-workout",
+    "width": 390,
+    "height": 1044,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "he",
+    "screen": "home",
+    "width": 390,
+    "height": 1372,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "he",
+    "screen": "stats",
+    "width": 390,
+    "height": 4046,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "he",
+    "screen": "workout",
+    "width": 390,
+    "height": 844,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "he",
+    "screen": "recovery-enabled",
+    "width": 390,
+    "height": 1687,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "he",
+    "screen": "cardio-speed",
+    "width": 390,
+    "height": 844,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "he",
+    "screen": "cardio-focus-speed",
+    "width": 390,
+    "height": 987,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "dark",
+    "lang": "he",
+    "screen": "focus-workout",
+    "width": 390,
+    "height": 1044,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "screen": "home",
+    "width": 390,
+    "height": 1372,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "screen": "stats",
+    "width": 390,
+    "height": 4062,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "screen": "workout",
+    "width": 390,
+    "height": 844,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "screen": "recovery-enabled",
+    "width": 390,
+    "height": 1723,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "screen": "cardio-speed",
+    "width": 390,
+    "height": 844,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "screen": "cardio-focus-speed",
+    "width": 390,
+    "height": 987,
+    "changedPixels": 4,
+    "maxChannelDelta": 1
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "screen": "focus-workout",
+    "width": 390,
+    "height": 1044,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "light",
+    "lang": "he",
+    "screen": "home",
+    "width": 390,
+    "height": 1372,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "light",
+    "lang": "he",
+    "screen": "stats",
+    "width": 390,
+    "height": 4046,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "light",
+    "lang": "he",
+    "screen": "workout",
+    "width": 390,
+    "height": 844,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "light",
+    "lang": "he",
+    "screen": "recovery-enabled",
+    "width": 390,
+    "height": 1687,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "light",
+    "lang": "he",
+    "screen": "cardio-speed",
+    "width": 390,
+    "height": 844,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "theme": "light",
+    "lang": "he",
+    "screen": "cardio-focus-speed",
+    "width": 390,
+    "height": 987,
+    "changedPixels": 4,
+    "maxChannelDelta": 1
+  },
+  {
+    "theme": "light",
+    "lang": "he",
+    "screen": "focus-workout",
+    "width": 390,
+    "height": 1044,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  }
+]

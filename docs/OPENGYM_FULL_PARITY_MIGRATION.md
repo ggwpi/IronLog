@@ -28,6 +28,10 @@ read-only comparison over every existing JSON root field, including unknown/cust
 plus a local-file CLI. It complements the selected-field UI compatibility helper; it does not
 create backups, restore media, migrate profiles or certify production data.
 
+The [Focus metadata continuation](./PR69_FOCUS_METADATA_VERIFICATION_2026-11-19.md) exposes the
+same existing note, original tag and tempo editors in IronLog's custom Focus set menu. Default
+layout and backend remain; complete native/tempo-guide/restore gates are still open.
+
 The CSV/note continuation now imports original CSV modules unchanged, exposes read-only exports
 through existing IronLog controls, routes common own-workout CSV files into the existing import
 confirmation/merge, and retains IronLog's 500-character notes in the editor/history/MCP/CSV boundary.
