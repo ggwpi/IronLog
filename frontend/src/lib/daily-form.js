@@ -1,14 +1,13 @@
 // Full unchanged v1.4.5 model. IronLog retains its actual UI, state and cloud paths.
 export * from './opengym-v145/session-engine/frontend/src/lib/daily-form.js'
 import { goLighter as originalGoLighter } from './opengym-v145/session-engine/frontend/src/lib/daily-form.js'
-import { registerCustom, setProfileSteps } from './opengym-v145/session-engine/frontend/src/lib/exercises.js'
+import { syncSessionEngineProfile } from './opengym-session-profile.js'
 import { isWarmupRow, WEIGHT_ORIGIN_MANUAL } from './workout-model.js'
 
 // The isolated original model reads the same custom IDs/default increments as this profile.
 // Registering affects only its private lookup; it never rewrites a profile or the actual UI index.
 export function goLighter(state, kind) {
-  registerCustom(state?.customEx || [])
-  setProfileSteps(state?.wstep)
+  syncSessionEngineProfile(state)
   // IronLog records explicit manual warm-up loads with weightOrigin. Upstream's live ramp
   // protects `edited` rows. Project that guard for this call, then restore the exact metadata.
   const guards = []

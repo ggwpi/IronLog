@@ -8,6 +8,7 @@ import { healthStatus, loadHealth, enableHealth, disableHealth, openHealthConnec
 import { workoutControls } from '../lib/workout-controls.js'
 import { isOn, setModule } from '../lib/modules.js'
 import { speedUnitOf } from '../lib/speed.js'
+import { warmupAutoOf } from '../lib/warmup-ramp.js'
 import { formulaOf, FORMULA_NAMES } from '../lib/onerm.js'
 import { copyText } from '../lib/clipboard.js'
 import { useUI } from '../store/useUI.js'
@@ -557,6 +558,13 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           <Switch checked={S.dailyForm === true}
             onChange={v => update(s => { s.dailyForm = v })} />
         </Row>}
+        {isOn(S, 'plates') && <SelectRow icon="sunrise" iconTint="var(--orange)" title={t('Automatic warm-ups')}
+          value={warmupAutoOf(S)} onChange={value => update(s => { s.warmupAuto = value })}
+          options={[
+            { value: 'off', label: t('Off'), subtitle: t('Only the warm-ups you plan yourself.') },
+            { value: 'compounds', label: t('Compound lifts'), subtitle: t('Squats, presses, rows and friends get a ramp. Curls and raises start cold.') },
+            { value: 'all', label: t('Every loaded lift'), subtitle: t('Heavy lifts get more rungs, light ones one or none.') },
+          ]} />}
         {(wakeOK || !MOBILE) && (
           <Row icon="phoneScreen" iconTint="var(--yellow)" title={t('Keep screen awake')}
             subtitle={wakeOK ? t('The screen stays on while a workout is running, so you don’t have to unlock your phone between sets.') : t('Not supported in this browser.')}>

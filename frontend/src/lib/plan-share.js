@@ -11,6 +11,8 @@
 import { EXIDX, canonicalExId, isBodyweightEq, isCustomEx } from './exercises.js'
 import { cleanBackups } from './routine-backups.js'
 import { cleanUrl } from './media-refs.js'
+import { warmupModeOf, ownRowsOf } from './warmup-ramp.js'
+
 import { modeOf, exLine, MAX_PLANNED_WARMUPS } from './history.js'
 import { deriveSessionName } from './session-merge.js'
 import { isPyramid, normalizePyramid, normalizePyramidRest, normalizePyramidWeight } from './pyramid.js'
@@ -23,6 +25,14 @@ import { convertWeight } from './units.js'
 import { fmtSpeed, speedUnitOf } from './speed.js'
 import { MUSCLES, inMuscleOrder } from './muscles.js'
 import { SG_NAME_MAX } from './superset-meta.js'
+
+// New fields at the existing IronLog plan boundary; validation belongs to the original model.
+const warmupChoiceFields = cfg => {
+  const mode = warmupModeOf(cfg)
+  if (!mode) return {}
+  const rows = mode === 'own' ? ownRowsOf(cfg) : []
+  return { warmup: mode, ...(rows.length ? { warmupRows: rows } : {}) }
+}
 
 const PLAN_FMT = 1
 const WEEK_DAYS = [1, 2, 3, 4, 5, 6, 0]   // every getDay() index; only the reader's own
@@ -139,6 +149,7 @@ function cleanEx(e) {
   if (e.note) o.note = e.note
   const warm = cleanWarmupSets(e.warmupSets)
   if (warm) o.warmupSets = warm
+  Object.assign(o, warmupChoiceFields(e))
   // Drop-sets and rest-pause are part of how the exercise is prescribed, not a logging detail.
   // Without this a shared "3x5 with a double drop" arrived at the other end as a plain 3x5,
   // silently — parsePlan's `dropped` counter only tracks exercises it cannot resolve at all.
@@ -278,6 +289,11 @@ export function parsePlan(raw, destinationUnit = 'kg') {
       const pyramidRest = pyramid.length ? normalizePyramidRest(e.pyramidRest, pyramid.length) : []
       const pyramidWeight = pyramid.length ? normalizePyramidWeight(e.pyramidWeight, pyramid.length) : []
       const { warmupSets, intensifier, restSec, warmupRestSec, warmupRestOff: _warmOff, sideRestSec: _sideRest, subs: _subs, pyramid: _pyramid, pyramidRest: _pyramidRest, pyramidWeight: _pyramidWeight, sgName: _sgName, sgRest: _sgRest, ...passthrough } = e
+      if (warmupModeOf(e)) {
+        delete passthrough.warmup
+        delete passthrough.warmupRows
+        Object.assign(passthrough, warmupChoiceFields(e))
+      }
       if (!known.has(passthrough.id)) passthrough.id = canonicalExId(passthrough.id)
       return convertedExercise({ ...passthrough, ...(pyramid.length ? { pyramid } : {}), ...(pyramidRest.length ? { pyramidRest } : {}), ...(pyramidWeight.length ? { pyramidWeight } : {}), ...(warm ? { warmupSets: warm } : {}), ...(intens ? { intensifier: intens } : {}), ...(rest ? { restSec: rest } : {}), ...(warmOff ? { warmupRestOff: true } : warmRest ? { warmupRestSec: warmRest } : {}), ...(sideRest ? { sideRestSec: sideRest } : {}), ...(subs.length ? { subs } : {}), ...(sgName ? { sgName } : {}), ...(sgRest ? { sgRest } : {}) }, sourceUnit || destination, destination)
     })

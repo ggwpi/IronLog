@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { workoutControls } from '../lib/workout-controls.js'
 import { useUI } from '../store/useUI.js'
-import { exOr, betterWeight } from '../lib/exercises.js'
+import { exOr, betterWeight, isAssisted } from '../lib/exercises.js'
 import { usesBar } from '../lib/bar.js'
 import { loadKindFor, baseWeightFor, inventoryFor, rowLoad, sameLoad, plateDelta, dropGrid } from '../lib/plates.js'
 import { effectiveRoutines, effectiveRoutineIds, lastEntryFor, bestWeightFor, bestWeightForEntry, buildSets, freestyleConfig, defaultConfig, setsDoneActive, setUnitsTotal, supersetUnits, unitOf, setLabel, modeOf, isBw, isPerSide, repStep, EFFORT, effortOf, stepEffort, capEffort, cascadeWeight, insertWarmupRow, barFloor, makeWarmupAt, canBeWarmup, makeWorkAt, removeRowAt, removeLastSet, setSpanAt, copyRowAt, copySpanAt, insertRowAt, pairAdjacent, unpairSuperset, cleanupSg, applyIntensifierPlan, pinnedNoteFor, exNoteFor, setsRepsOf } from '../lib/history.js'
@@ -36,7 +36,8 @@ import { Button, Check, NumberField } from '../components/ui.jsx'
 import { defaultIncrement, weightIncrement, stepWeight } from '../lib/progression.js'
 import { progressionGuidance } from '../lib/progression-copy.js'
 import { buildPlannedEntry, plannedConfigOf, builtOutOfProgression } from '../lib/session-start.js'
-import { routineChangesFromEntry, updateRoutineFromEntry } from '../lib/routines.js'
+import { routineChangesFromEntry, updateRoutineFromEntry, routineSlotIndex } from '../lib/routines.js'
+import { ownWarmupsChange, keepOwnWarmups } from '../lib/opengym-v145/session-engine/frontend/src/lib/routines.js'
 import { sessionNoProg, setSessionNoProg, setEntryNoProg, joinSessionNoProg } from '../lib/session-noprog.js'
 import { glyphOf } from '../lib/glyphs.js'
 import { markAllSetsDone, sessionHistory } from '../lib/backfill.js'
@@ -46,6 +47,7 @@ import { SET_TAGS, setTagOf, setTagName, withSetTag } from '../lib/set-tags.js'
 import { setNoteOf } from '../lib/opengym-v145/set-notes.js'
 import { setNoteSheet } from '../sheets.jsx'
 import { setTempoSheet } from '../components/TempoSheet.jsx'
+import { withWarmupBlock, warmupBuildConfig, warmupModeOf, hasGeneratedWarmups, markWarmupSetupChange, markWarmupEdited, rerampGeneratedWarmups } from '../lib/warmup-ramp.js'
 import { tempoOf } from '../lib/opengym-v145/tempo.js'
 import { bindWatchActions } from '../lib/watch-sync.js'
 import { bestSetFor } from '../lib/exercise-history.js'
@@ -113,7 +115,16 @@ const RTL_LETTER = /[֐-ࣿיִ-﷿ﹰ-﻿]/
 // enough to turn over, far shorter than the rest the set earns once both sides are held.
 const SWITCH_SIDES_SEC = 10
 
-function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSide, onField, onAddSet, onRemoveSet, onAddWarmup, onRemoveSetAt, onCopySetAt, onStartTimed, onPairPrev, onPairNext, onSetRowRef, onProgressionSettings, onRest, onNoProg, routineUpdate, onSwap, onMoveUp, onMoveDown, canMoveUp, canMoveDown, onRemoveExercise, busy }) {
+// New generated rows follow the first work weight through the original ramp engine. Existing
+// manual-count sessions keep IronLog's established behavior and actual profile-unit loading.
+function rerampNewWarmups(state, entry, index) {
+  if (!hasGeneratedWarmups(entry.sets) || isWarmupRow(entry.sets[index]) || entry.sets.findIndex(row => !isWarmupRow(row)) !== index) return
+  const cfg = { ...entry.target, id: entry.id }
+  if (modeOf(cfg) !== 'reps') return
+  entry.sets = rerampGeneratedWarmups(entry.sets, dropGrid(state, cfg), barFloor(state, entry.id), isAssisted(cfg))
+}
+
+function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSide, onField, onAddSet, onRemoveSet, onAddWarmup, onRemoveSetAt, onCopySetAt, onStartTimed, onPairPrev, onPairNext, onSetRowRef, onProgressionSettings, onRest, onNoProg, routineUpdate, onKeepWarmups, onSwap, onMoveUp, onMoveDown, canMoveUp, canMoveDown, onRemoveExercise, busy }) {
   const S = useStore(s => s.S)
   const update = useStore(s => s.update)
   const working = useUI(s => s.work)
@@ -125,7 +136,11 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   // Drops/bursts mutate the row in place — same card, not a new set with its own long rest.
   // A planned exercise (see the exercise's "Intensifier" config) arrives with these already
   // filled in by applyIntensifierPlan; these only add/edit/remove entries live from here on.
-  const mutSet = (i, fn) => update(s => { const row = s.active.entries[entryIdx].sets[i]; s.active.entries[entryIdx].sets[i] = fn(row) }, true)
+  const mutSet = (i, fn) => update(s => {
+    const e = s.active.entries[entryIdx], row = e.sets[i]
+    const before = { ...row, ...(row.sides ? { sides: { L: { ...row.sides.L }, R: { ...row.sides.R } } } : {}) }
+    e.sets[i] = markWarmupSetupChange(e, before, fn(row))
+  }, true)
   // Warm-up or work is the row's phase; switching it moves the row to the edge of the warm-ups.
   const setPhaseAt = (i, warm) => update(s => {
     const e = s.active.entries[entryIdx]
@@ -170,8 +185,9 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
       const e = s.active.entries[entryIdx]
       const row = setSideField(e.sets[i], side, field, v)
       row.sides[side].weightOrigin = WEIGHT_ORIGIN_MANUAL
-      e.sets[i] = row
+      e.sets[i] = markWarmupSetupChange(e, e.sets[i], row)
       e.sets = cascadeWeight(e.sets, i, v, side, e.target?.backoffStep)
+      rerampNewWarmups(s, e, i)
     }, true)
   }
   // Drop/burst edits accept an optional `side` ('L'|'R'): present for a per-side row (edits that
@@ -438,6 +454,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
         onRest && { icon: 'timer', label: t('Rest timer'), sub: restSub, onClick: onRest },
         plateLoading && { icon: 'plate', label: t('Plate loading'), sub: loadSummary, onClick: () => barWeightSheet(entry.id, cfg) },
         routineUpdate && { icon: 'clipboard', label: t('Update routine'), sub: routineUpdate.sub, onClick: routineUpdate.run },
+        onKeepWarmups && { icon: 'sunrise', label: t('Keep these warm-ups'), sub: t('Saved in the routine, scaled to your work weight'), onClick: onKeepWarmups },
       ] },
       { title: t('Order and supersets'), items: [
         onPairPrev && { icon: 'link', label: t('Make superset with previous'), onClick: onPairPrev },
@@ -1203,10 +1220,11 @@ function ActiveWorkout() {
   const total = setUnitsTotal(A.entries)
   const done = setsDoneActive(A)
 
-  const mutEntry = (idx, fn) => update(s => { fn(s.active.entries[idx]) }, true)
+  const mutEntry = (idx, fn) => update(s => { fn(s.active.entries[idx], s) }, true)
   // Clearing an optional field drops the key rather than storing null, so a set only carries
   // what was actually logged — in the session, in history and in a backup.
-  const setField = (idx, i, field, v) => mutEntry(idx, e => {
+  const setField = (idx, i, field, v) => mutEntry(idx, (e, state) => {
+    const before = { ...e.sets[i] }
     if (v == null) delete e.sets[i][field]; else e.sets[i][field] = v
     // Typing a duration IS the new plan, the same way ticking the row ends it: a plan a displaced
     // hold put aside must not outrank what you just typed, or the field would read 45 and the ▶
@@ -1214,12 +1232,14 @@ function ActiveWorkout() {
     if (field === 'sec') delete e.sets[i].planSec
     // Original distance boundary: speed follows an explicitly logged distance and duration.
     if (field === 'km' || (field === 'min' && Number(e.sets[i].km) > 0)) settleSpeed(e.sets[i])
+    e.sets[i] = markWarmupSetupChange(e, before, e.sets[i])
     // Changing a work set's weight cascades to the following inherited work sets, so a correction
     // carries through without retyping every row while explicit manual exceptions stay put. A
     // warm-up edit stays on its own row, and the later rungs keep their ramp loads.
     if (field === 'w') {
       e.sets[i].weightOrigin = WEIGHT_ORIGIN_MANUAL
       e.sets = cascadeWeight(e.sets, i, v, undefined, e.target?.backoffStep)
+      rerampNewWarmups(state, e, i)
     }
   })
   const modeAt = idx => modeOf({ ...(A.entries[idx].target || {}), id: A.entries[idx].id })
@@ -1249,10 +1269,13 @@ function ActiveWorkout() {
   })
   const removeSet = idx => mutEntry(idx, e => { e.sets = removeLastSet(e.sets) })
   const addWarmup = idx => mutEntry(idx, e => {
+    const mark = warmupModeOf(e.target) || hasGeneratedWarmups(e.sets)
+    const count = e.sets.length, first = e.sets.findIndex(row => !isWarmupRow(row)), at = first < 0 ? count : first
     const m = modeOf({ ...(e.target || {}), id: e.id })
     // A warm-up of a dumbbell lift lands on a bell you own when the profile lists them (#376).
     const ramp = (m === 'reps' && ownedWeightsFor(S, { ...(e.target || {}), id: e.id })) || defaultIncrement(e.id, S.unit)
     e.sets = insertWarmupRow(e.sets, m, { ...(e.target || {}), id: e.id }, ramp, barFloor(S, e.id))
+    if (mark) for (let i = at; i < at + e.sets.length - count; i++) e.sets[i] = markWarmupEdited(e.sets[i])
   })
   // The set-number menu's Remove and the swipe both go through deleteActiveSet, Undo and all.
   const removeSetAt = (idx, i) => deleteActiveSet(idx, i, { editing })
@@ -1320,13 +1343,14 @@ function ActiveWorkout() {
   const routineUpdateFor = idx => {
     const entry = A.entries[idx]
     const routine = !editing && entry?.rid ? S.routines.find(r => r.id === entry.rid) : null
-    const found = routine ? routineChangesFromEntry(routine, A.entries, idx) : null
+    const found = routine ? routineChangesFromEntry(routine, A.entries, idx, barFloor(S, entry.id)) : null
     if (!found) return null
     const activeId = A.id
     const entryId = entry.id
     return {
       // A rest reads as the wheel shows it: "3:00", and 0 (no rest of its own) as the default.
       sub: found.changes.map(c => c.key === 'note' ? t('Note')
+        : c.key === 'warmupRows' ? t('Warm-ups')
         : c.key === 'warmupSets' ? t('Warm-up sets') + ' ' + c.from + ' → ' + c.to
         : t('Rest') + ' ' + restWord(c.from) + ' → ' + restWord(c.to)).join(' · '),
       run: () => confirmSheet({
@@ -1339,7 +1363,7 @@ function ActiveWorkout() {
             // The sheet can outlive the workout, or the exercise at this index: fail closed.
             const target = s.routines.find(r => r.id === routine.id)
             if (!target || s.active?.id !== activeId || s.active.entries?.[idx]?.id !== entryId) return
-            applied = updateRoutineFromEntry(target, s.active.entries, idx)
+            applied = updateRoutineFromEntry(target, s.active.entries, idx, barFloor(s, entryId))
           })
           if (applied) useUI.getState().toast(t('Routine updated'))
         },
@@ -1354,6 +1378,29 @@ function ActiveWorkout() {
     if (focusMode) focusPointerEpoch.current++
     swapActiveWorkoutExercise(idx)
   }
+  // Original Keep these warm-ups action; use IronLog's occurrence resolver and store update.
+  const keepWarmupsFor = idx => {
+    const entry = A.entries[idx]
+    const routine = !editing && entry?.rid ? S.routines.find(r => r.id === entry.rid) : null
+    if (!routine || !(entry.sets || []).some(isWarmupRow)) return null
+    const at = routineSlotIndex(routine, A.entries, idx)
+    if (at < 0) return null
+    const rows = ownWarmupsChange(routine.ex[at], entry, barFloor(S, entry.id), { force: true })
+    if (!rows) return null
+    const activeId = A.id, entryId = entry.id
+    return () => {
+      let kept = false
+      update(s => {
+        const target = s.routines.find(r => r.id === routine.id)
+        if (!target || s.active?.id !== activeId || s.active.entries?.[idx]?.id !== entryId) return
+        const slot = target.ex[routineSlotIndex(target, s.active.entries, idx)]
+        if (!slot) return
+        keepOwnWarmups(slot, rows)
+        kept = true
+      })
+      if (kept) useUI.getState().toast(t('Kept. Same warm-ups next time, scaled to your work weight.'))
+    }
+  }
   const blockProps = idx => ({
     editing,
     onSwap: () => swapExercise(idx),
@@ -1366,7 +1413,11 @@ function ActiveWorkout() {
     onToggle: (i, onFocusProgress) => toggle(idx, i, undefined, { onFocusProgress }),
     onToggleSide: (i, side, onFocusProgress) => toggle(idx, i, side, { onFocusProgress }),
     onField: (i, f, v) => setField(idx, i, f, v),
-    onMutateSet: (i, fn) => mutEntry(idx, entry => { entry.sets[i] = fn(entry.sets[i]) }),
+    onMutateSet: (i, fn) => mutEntry(idx, (entry, state) => {
+      const row = entry.sets[i], before = { ...row, ...(row.sides ? { sides: { L: { ...row.sides.L }, R: { ...row.sides.R } } } : {}) }
+      entry.sets[i] = markWarmupSetupChange(entry, before, fn(row))
+      if (before.w !== entry.sets[i].w || ['L', 'R'].some(side => before.sides?.[side]?.w !== entry.sets[i].sides?.[side]?.w)) rerampNewWarmups(state, entry, i)
+    }),
     onAddSet: () => addSet(idx),
     onRemoveSet: () => removeSet(idx),
     onAddWarmup: () => addWarmup(idx),
@@ -1377,6 +1428,7 @@ function ActiveWorkout() {
     onRest: editing ? null : () => openExerciseRest(idx),
     onNoProg: routineKeepsOut(A.entries[idx]) ? null : on => setNoProg(idx, on),
     routineUpdate: routineUpdateFor(idx),
+    onKeepWarmups: keepWarmupsFor(idx),
   })
   const selectFocusEntry = idx => update(s => { if (s.active) s.active.cur = idx })
   const advanceFocusUnit = () => update(s => {
@@ -1476,9 +1528,9 @@ function ActiveWorkout() {
         // Freestyle stamps the meaning of a dumbbell weight and reads last time in it, the way
         // buildPlannedEntry does for a planned exercise (lib/dumbbells.js).
         const built = freestyle
-          ? { target: withMeaning(s, cfg, ex.id), plan: null, sets: applyIntensifierPlan(buildSets(historyAs(past, ex.id, dbLoadFor(s, full)), full, {
+          ? { target: withMeaning(s, cfg, ex.id), plan: null, sets: withWarmupBlock(s, full, applyIntensifierPlan(buildSets(historyAs(past, ex.id, dbLoadFor(s, full)), warmupBuildConfig(full), {
             step: modeOf(full) === 'reps' ? (ownedWeightsFor(s, full) || weightIncrement(full, s.unit)) : defaultIncrement(ex.id, s.unit), preferLast: true,
-          }), full, dropGrid(s, full)) }
+          }), full, dropGrid(s, full)), { grid: dropGrid(s, full), floor: barFloor(s, ex.id), unit: s.unit }) }
           : buildPlannedEntry(past, full, routine, { noProg })
         const insertAt = insertionIndexAfterCurrentUnit(supersetUnits(s.active.entries), s.active.cur, s.active.entries.length)
         s.active.entries.splice(insertAt, 0, joinSessionNoProg(s.active, { id: ex.id, ...built, ...(curRid ? { rid: curRid } : {}), ...(noProg ? { noProg: true } : {}) }))

@@ -7,6 +7,7 @@ import { cardioStartSpeed } from './cardio-kind.js'
 import { hasIncline, inclineFrom } from './incline.js'
 import { hasLevel } from './opengym-v145/incline.js'
 import { fmtDist, fmtPace } from './opengym-v145/distance.js'
+import { hasGeneratedWarmups, rerampGeneratedWarmups } from './warmup-ramp.js'
 import { EXIDX, isCardio, isBodyweightEq, isAssisted, betterWeight } from './exercises.js'
 import { barWeightFor } from './bar.js'
 import { phaseForSet, modeForSet, modeForEntry, isWarmupRow, isFailureSet, isDropSet, isRestPauseSet, normalizeMode, completedVolumeOf, hasCompletedWork, nextDropWeight, splitBurstReps, makeSideSet, isSideSet, syncSideAggregate, WEIGHT_ORIGIN_MANUAL, dropsOf, clustersOf } from './workout-model.js'
@@ -1007,6 +1008,7 @@ function assistedRung(from, to, step) {
 }
 
 export function rerampWarmups(rows, step = 2.5, floor = 0, assisted = false) {
+  if (hasGeneratedWarmups(rows)) return rerampGeneratedWarmups(rows, step, floor, assisted)
   const firstWork = rows.findIndex(x => !isWarmupRow(x))
   if (firstWork <= 0) return rows
   const target = rows[firstWork].w || 0

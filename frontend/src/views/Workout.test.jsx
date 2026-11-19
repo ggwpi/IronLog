@@ -3375,6 +3375,38 @@ describe('Update routine, from the More menu of an exercise', () => {
   const routine = (slot = {}) => ({ id: 'A', name: 'Push', ex: [{ id: 'plain-bench', sets: 1, mode: 'reps', reps: 5, weight: 60, ...slot }] })
   const ownEntry = (extra = {}) => exercise('plain-bench', [false], { rid: 'A', ...extra })
 
+  it('keeps the shown warm-ups as an original scaled recipe without touching workout rows or other slot fields', async () => {
+    const slot = routine({ warmupSets: 1, note: 'routine note', customFuture: 'keep' })
+    await mount([ownEntry({ sets: [{ w: 30, r: 5, warmup: true, done: true, note: 'א'.repeat(500), media: [{ hash: 'keep' }] }, { w: 60, r: 8, done: false }] })], 0, { routines: [slot] })
+    const before = structuredClone(mocks.S.active)
+    await openMore()
+    await act(async () => { item('Keep these warm-ups').onClick() })
+    expect(mocks.S.routines[0].ex[0]).toEqual({ id: 'plain-bench', sets: 1, mode: 'reps', reps: 5, weight: 60, note: 'routine note', customFuture: 'keep', warmup: 'own', warmupRows: [{ wp: 50, r: 5 }] })
+    expect(mocks.S.active).toEqual(before)
+  })
+
+  it('keeps warm-ups in the exact duplicate occurrence from the actual Focus menu', async () => {
+    const first = { id: 'plain-bench', sets: 1, mode: 'reps', reps: 5, weight: 60, note: 'first' }
+    const second = { ...first, note: 'second' }
+    await mount([ownEntry(), ownEntry({ sets: [{ w: 30, r: 5, warmup: true, done: false }, { w: 60, r: 8, done: false }] })], 1,
+      { routines: [{ id: 'A', name: 'Twins', ex: [first, second] }], active: { workoutView: 'focus' } })
+    const before = structuredClone(mocks.S.active)
+    await openMore()
+    await act(async () => { item('Keep these warm-ups').onClick() })
+    expect(mocks.S.routines[0].ex[0]).toEqual(first)
+    expect(mocks.S.routines[0].ex[1]).toEqual({ ...second, warmup: 'own', warmupRows: [{ wp: 50, r: 5 }] })
+    expect(mocks.S.active).toEqual(before)
+  })
+
+  it('rejects a stale Keep action after the running session changes', async () => {
+    await mount([ownEntry({ sets: [{ w: 30, r: 5, warmup: true, done: false }, { w: 60, r: 8, done: false }] })], 0, { routines: [routine()] })
+    await openMore(); const keep = item('Keep these warm-ups').onClick
+    const before = structuredClone(mocks.S.routines)
+    mocks.S.active.id = 'different-session'
+    await act(async () => { keep() })
+    expect(mocks.S.routines).toEqual(before)
+  })
+
   it('is not offered while the routine already says what the session does', async () => {
     await mount([ownEntry()], 0, { routines: [routine()] })
     await openMore()

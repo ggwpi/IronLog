@@ -12,6 +12,7 @@ import { dbLoadFor, historyAs, ownedWeightsFor } from './dumbbells.js'
 import { isAssisted } from './exercises.js'
 import { isDeloadDay, deloadSets } from './deload-cycle.js'
 import { todayISO } from './format.js'
+import { withWarmupBlock, warmupBuildConfig } from './warmup-ramp.js'
 
 /**
  * Where a planned session's reps come from (Settings → During a workout). 'plan', the default:
@@ -66,9 +67,11 @@ export function buildPlannedEntry(stored, cfg, routine, { noProg = false } = {})
   const ramp = (modeOf(cfg) === 'reps' && ownedWeightsFor(st, cfg)) || step
   // Back-off sets step down from the top set by the exercise's own step (lib/backoff.js).
   const backoffStep = modeOf(cfg) === 'reps' && backoffStepOf(cfg, st.unit) ? step : 0
-  const built = applyPrescription(buildSets(st, rowCfg, { step: ramp, rid: routine?.id, useTarget: plan.kind === 'off', planReps }), plan, ramp, barFloor(st, cfg.id), isAssisted(cfg))
+  const built = applyPrescription(buildSets(st, warmupBuildConfig(rowCfg), { step: ramp, rid: routine?.id, useTarget: plan.kind === 'off', planReps }), plan, ramp, barFloor(st, cfg.id), isAssisted(cfg))
   const rows = backoffStep ? applyBackoff(built, backoffStep) : built
-  const sets = applyIntensifierPlan(rows, rowCfg, dropGrid(st, cfg))
+  const sets = withWarmupBlock(stored, rowCfg, applyIntensifierPlan(rows, rowCfg, dropGrid(st, cfg)), {
+    grid: dropGrid(st, cfg), floor: barFloor(st, cfg.id), unit: st.unit,
+  })
   const target = { ...cfg }
   // Stamped on the session, so the meaning it was logged with stays with it (dumbbells.js).
   if (meaning !== 'as') target.dbLoad = meaning

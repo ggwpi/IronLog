@@ -2,6 +2,9 @@ import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { useStore } from './store/useStore.js'
 import { checkinMode, readForm, withForm, goLighter, canGoLighter, LIGHTER_KINDS } from './lib/daily-form.js'
 import DailyFormCheckin from './components/DailyFormCheckin.jsx'
+import { warmupModeOf, ownRowsOf, withWarmupBlock, warmupBuildConfig } from './lib/warmup-ramp.js'
+import { warmupPlanSheet } from './components/WarmupPlanSheet.jsx'
+import { barFloor } from './lib/history.js'
 import { useUI } from './store/useUI.js'
 import { EXDB, EXIDX, BODYPARTS, isCardio, isBodyweightEq, allExercises, equipmentOf, byCategory, smOf, searchExercises, similarExercises, exOr, isAssisted, betterWeight, beatsWeight, isCustomEx } from './lib/exercises.js'
 import { activeProfile, exAvailable, ALL_EQUIPMENT, newProfile, profileEquipment, ACC_V } from './lib/equipment.js'
@@ -1536,7 +1539,7 @@ export function swapActiveWorkoutExercise(index) {
     // A freestyle swap logs dumbbell weights the way the exercise means them now, and starts
     // from last time read in that meaning (lib/dumbbells.js), as a planned one does.
     const built = freestyle
-      ? { target: withMeaning(st, cfg, ex.id), plan: null, sets: applyIntensifierPlan(buildSets(historyAs(past, ex.id, dbLoadFor(st, full)), full, { step: (modeOf(full) === 'reps' && ownedWeightsFor(st, full)) || step, preferLast: true }), full, dropGrid(st, full)) }
+      ? { target: withMeaning(st, cfg, ex.id), plan: null, sets: withWarmupBlock(st, full, applyIntensifierPlan(buildSets(historyAs(past, ex.id, dbLoadFor(st, full)), warmupBuildConfig(full), { step: (modeOf(full) === 'reps' && ownedWeightsFor(st, full)) || step, preferLast: true }), full, dropGrid(st, full)), { grid: dropGrid(st, full), floor: barFloor(st, ex.id), unit: st.unit }) }
       : buildPlannedEntry(past, full, slotRoutine, { noProg: builtOutOfProgression(current, slotRoutine) })
     const replacement = {
       id: ex.id,
@@ -1845,8 +1848,10 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
     const withNote = note ? { note } : {}
     // Only written when there are any, so a plan that never asked for warm-ups keeps the exact
     // shape it had — and reads back as 0 either way (buildSets).
-    const warmupSets = Math.max(0, Math.min(MAX_PLANNED_WARMUPS, Math.round(c.warmupSets) || 0))
-    const withWarmups = warmupSets ? { warmupSets } : {}
+    const warmChoice = warmupModeOf(c)
+    const ownRows = warmChoice === 'own' ? ownRowsOf(c) : []
+    const warmupSets = warmChoice ? 0 : Math.max(0, Math.min(MAX_PLANNED_WARMUPS, Math.round(c.warmupSets) || 0))
+    const withWarmups = warmChoice ? { warmup: warmChoice, ...(ownRows.length ? { warmupRows: ownRows } : {}) } : warmupSets ? { warmupSets } : {}
     // Per-exercise rest (issue #10): written only when a positive value was set, so 0 keeps
     // inheriting the global rest timer and a config that never touched it stays the shape it
     // was. Mode-independent — a heavy triple, a plank and a cardio interval all rest.
@@ -2007,8 +2012,14 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
     {!cardio && c.intensifier?.type !== 'restpause' && <>
       <div className="row cfgrow" style={{ marginBottom: 6 }}>
         <Stepper label={t('Warm-up sets')} value={c.warmupSets || 0} step={1} decimal={false}
-          onChange={v => setC(x => ({ ...x, warmupSets: Math.max(0, Math.min(MAX_PLANNED_WARMUPS, Math.round(v) || 0)) }))} />
+          onChange={v => setC(x => { const { warmup, warmupRows, ...rest } = x; return { ...rest, warmupSets: Math.max(0, Math.min(MAX_PLANNED_WARMUPS, Math.round(v) || 0)) } })} />
       </div>
+      <Row icon="sunrise" title={t('Warm-ups')} accessory="chevron"
+        value={warmupModeOf(c) === 'auto' ? t('Auto') : warmupModeOf(c) === 'own' ? t('My own') : warmupModeOf(c) === 'none' ? t('None') : t('Default')}
+        onClick={() => warmupPlanSheet({ st, ex, value: c, onDone: next => setC(current => {
+          const { warmup, warmupRows, warmupSets, ...rest } = current
+          return { ...rest, ...Object.fromEntries(['warmup', 'warmupRows', 'warmupSets'].filter(key => Object.hasOwn(next, key)).map(key => [key, next[key]])) }
+        }) })} />
       <div className="small dim" style={{ marginBottom: 18 }}>
         {(c.warmupSets || 0) > 0
           ? t('Added before your work sets and left out of volume, records and progression. Each one closes half the gap to the work weight, never below the bar on a barbell lift, and you can still change any of them mid-session.')

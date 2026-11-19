@@ -46,5 +46,11 @@
   "frontend/src/lib/session-noprog.js": "e0c1ea3efdd650adc92e8b4d95a587488f3c00c6",
   "frontend/src/lib/daily-form.test.js": "efbc6c8a9b700b675af93dc4c44fe026f1a68dcb",
   "frontend/src/lib/own-i18n-core.js": "538df9d81dc6bfbc73a5e5f2b11597aadf336b08",
-  "frontend/src/lib/catalogue-langs.js": "fd9d3e5401fb2286c59d7d151f7a88ca9e638228"
+  "frontend/src/lib/catalogue-langs.js": "fd9d3e5401fb2286c59d7d151f7a88ca9e638228",
+  "frontend/src/lib/routines.js": "54b3b765d1edd0b825f2ceb2d252d181cefedab7",
+  "frontend/src/lib/routines.warmup-rows.test.js": "3367ff5457036d0d4964849b62ef3a534e94726b",
+  "frontend/src/lib/warmup-ramp.test.js": "8c6a163382259a8c68e400e16b6213f9bec023e7",
+  "frontend/src/lib/warmup-assisted.test.js": "82021f4b13bf1159b9b24929500e70851e3732a4",
+  "frontend/src/lib/warmup-invariants.test.js": "18143c09d3d0afc4b1fe9dc5fee1ce3d35874533",
+  "frontend/src/lib/session-start.warmups.test.js": "4854cdc5a07dfbd4a97d6f17ea406830c5091abe"
 }

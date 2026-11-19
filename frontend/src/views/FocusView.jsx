@@ -112,7 +112,7 @@ function PlateBadge({ S, entry, set }) {
 }
 
 export default function FocusView({
-  entryIdx, unit, onToggle, onToggleSide, onField, onMutateSet, onStartTimed,
+  entryIdx, unit, onToggle, onToggleSide, onField, onMutateSet, onStartTimed, onKeepWarmups,
   onAddWarmup, onRemoveSetAt, onProgressionSettings, onSwap, onRemoveExercise,
   onNoProg, busy, onSelectEntry, onAdvanceUnit, onPairPrev, onPairNext, onUnpair, pointerEpoch,
 }) {
@@ -237,6 +237,7 @@ export default function FocusView({
       onNoProg && { icon: 'pause', label: t('Don’t count for progression'), sub: t('This exercise, this session only'), on: entry.noProg === true, onClick: () => onNoProg(entry.noProg !== true) },
       mode === 'reps' && { icon: 'plate', label: t('Plate loading'), onClick: () => barWeightSheet(entry.id, { ...(entry.target || {}), id: entry.id }) },
       mode === 'cardio' && { icon: 'swap', label: byDist ? t('Log speed instead') : t('Log distance instead'), onClick: switchCardioBy },
+      onKeepWarmups && { icon: 'sunrise', label: t('Keep these warm-ups'), sub: t('Saved in the routine, scaled to your work weight'), onClick: onKeepWarmups },
       onPairPrev && { icon: 'link', label: t('Make superset with previous'), onClick: onPairPrev },
       onPairNext && { icon: 'link', label: t('Make superset with next'), onClick: onPairNext },
       { icon: 'shuffle', label: t('Swap exercise'), onClick: onSwap, disabled: busy },
