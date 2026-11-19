@@ -1624,6 +1624,9 @@ export const PT_BR_OVERRIDES = {
   "No weekly countdown on Home.": "Sem contagem semanal no Início.",
   "{0} of {1} left this week": "Faltam {0} de {1} nesta semana",
   "All done this week. Nice.": "Tudo feito nesta semana. Mandou bem.",
+  // Original openGym v1.4.5 set colour tags (IronLog menu).
+  "Colour tag": "Cor da série",
+  "Your own code for this set": "Seu código para esta série",
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

@@ -8,6 +8,7 @@ import { t } from '../lib/i18n.js'
 import { lastBW } from '../lib/history.js'
 import { fatigueOf, LB_TO_KG } from '../lib/recovery.js'
 import { recoveryHint, hintText } from '../lib/recovery-hint.js'
+import { isOn } from '../lib/modules.js'
 import { dayOverrideSheet } from '../sheets.jsx'
 import { Button } from './ui.jsx'
 import Icon from './Icon.jsx'
@@ -17,7 +18,7 @@ export default function RecoveryHintCard({ S }) {
   const hint = useMemo(() => {
     // New Home surface is deliberately opt-in; unchanged users retain the
     // exact same Home layout, cards, greeting and loading/transitions.
-    if (S.recoveryHint !== true || S.recoveryHintDay === today) return null
+    if (!isOn(S, 'health') || S.recoveryHint !== true || S.recoveryHintDay === today) return null
     const now = Date.now()
     const bw = lastBW(S)
     const bodyweightKg = bw?.w > 0 ? bw.w * (S.unit === 'lb' ? LB_TO_KG : 1) : undefined
@@ -25,7 +26,7 @@ export default function RecoveryHintCard({ S }) {
       now, today,
       fatigue: fatigueOf(S.workouts, now, { bodyweightKg, unit: S.unit }),
     })
-  }, [S.recoveryHint, S.recoveryHintDay, S.workouts, S.active,
+  }, [S.modules, S.recoveryHint, S.recoveryHintDay, S.workouts, S.active,
     S.routines, S.week, S.dayPlan, S.queue, S.bodyweight, S.unit, today])
   const words = hintText(hint, today)
   if (!words) return null

@@ -16,6 +16,7 @@ vi.mock('../components/LineChart.jsx', () => ({ default: () => null }))
 vi.mock('../components/BodyMap.jsx', () => ({ default: () => null, BodyMapLegend: () => null }))
 vi.mock('../components/StrengthLevelsCard.jsx', () => ({ default: () => React.createElement('div', { 'data-strength-levels-test': true }) }))
 vi.mock('../components/RelativeStrengthCard.jsx', () => ({ default: () => null }))
+vi.mock('../components/DailyFormStatsCard.jsx', () => ({ default: () => React.createElement('div', { 'data-daily-form-test': true }) }))
 import Stats from './Stats.jsx'
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
@@ -28,8 +29,8 @@ const workout = { id: 'w1', d: '2026-11-18', start: 1794950000000, end: 17949536
 const original = { unit: 'kg', body: 'male', targetW: null, effort: 'none',
   bodyweight: [{ d: '2026-11-18', w: 80 }], measurements: [], dayPhotos: {}, workouts: [workout],
   routines: [], exWeights: {}, customEx: [], week: {}, dayPlan: {}, active: null }
-const mount = modules => {
-  mocks.S = { ...structuredClone(original), ...(modules === undefined ? {} : { modules }) }
+const mount = (modules, extra = {}) => {
+  mocks.S = { ...structuredClone(original), ...(modules === undefined ? {} : { modules }), ...extra }
   const untouched = structuredClone(mocks.S)
   act(() => root.render(<Stats />))
   expect(mocks.S).toEqual(untouched)
@@ -38,6 +39,23 @@ const card = title => [...host.querySelectorAll('.card')].find(el => el.querySel
 const tile = title => [...host.querySelectorAll('.stats-summary .tile')].find(el => el.querySelector('.l')?.textContent === title)
 
 describe('original openGym Modules control only the native IronLog Stats surfaces', () => {
+  it('Effort and Health opt-outs hide their cards while retaining ratings and daily form', () => {
+    const effortCard = () => [...host.querySelectorAll('.card h2')].find(el => el.textContent.startsWith('Effort'))
+    const workouts = structuredClone(original.workouts)
+    workouts[0].entries[0].sets[0].rir = 2
+    const extra = { workouts, dayForm: { '2026-11-18': { energy: 4, _ts: 1 } } }
+    mount(undefined, extra)
+    expect(effortCard()).toBeTruthy()
+    expect(host.querySelector('[data-daily-form-test]')).toBeTruthy()
+    mount({ effort: false, health: false }, extra)
+    expect(effortCard()).toBeFalsy()
+    expect(host.querySelector('[data-daily-form-test]')).toBeFalsy()
+    expect(mocks.S.workouts).toEqual(workouts)
+    expect(mocks.S.dayForm).toEqual(extra.dayForm)
+    mount({ effort: true, health: true }, extra)
+    expect(effortCard()).toBeTruthy()
+    expect(host.querySelector('[data-daily-form-test]')).toBeTruthy()
+  })
   it('keeps original Stats visuals and history for all legacy profiles', () => {
     mount()
     expect(tile('Week streak')).toBeTruthy()

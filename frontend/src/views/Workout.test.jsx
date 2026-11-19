@@ -2916,7 +2916,7 @@ describe('workout controls: the more menu and the set menu', () => {
   it('opens a per-set menu from the set number with drop, burst and remove', async () => {
     await mount([exercise('plain-bench', [false, false])])
     await act(async () => { container.querySelector('button[aria-label="Set 2"]').dispatchEvent(new dom.Event('click', { bubbles: true })) })
-    expect(menuItemsOf(lastMenu()).map(it => it.label)).toEqual(['Make it a warm-up set', 'Taken to failure', 'Drop set', 'Rest-pause burst', 'Copy this set', 'Remove this set'])
+    expect(menuItemsOf(lastMenu()).map(it => it.label)).toEqual(['Colour tag', 'Make it a warm-up set', 'Taken to failure', 'Drop set', 'Rest-pause burst', 'Copy this set', 'Remove this set'])
     expect(item('Make it a warm-up set').icon).toBe('sunrise')
 
     await act(async () => { item('Drop set').onClick() })
@@ -2925,6 +2925,29 @@ describe('workout controls: the more menu and the set menu', () => {
     await act(async () => { container.querySelector('button[aria-label="Set 2"]').dispatchEvent(new dom.Event('click', { bubbles: true })) })
     await act(async () => { item('Remove this set').onClick() })
     expect(mocks.S.active.entries[0].sets.length).toBe(1)
+  })
+
+  it.each(['red', 'orange', 'yellow', 'green', 'blue', 'purple'])('sets and clears the original %s tag through IronLog menus without changing training data', async tag => {
+    await mount([exercise('plain-bench', [false, false])])
+    const before = structuredClone(mocks.S.active.entries[0].sets)
+    expect(container.querySelector('[data-set-tag]')).toBeNull()
+    const open = async () => {
+      await act(async () => { container.querySelectorAll('button.n')[1].dispatchEvent(new dom.Event('click', { bubbles: true })) })
+      await act(async () => { item('Colour tag').onClick() })
+    }
+    await open()
+    const ids = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
+    await act(async () => { menuItemsOf(lastMenu())[ids.indexOf(tag)].onClick() })
+    await rerender()
+    expect(mocks.S.active.entries[0].sets).toEqual([before[0], { ...before[1], tag }])
+    expect(container.querySelectorAll('[data-set-tag]')).toHaveLength(1)
+    expect(container.querySelector('[data-set-tag]').closest('button.n').getAttribute('aria-label')).toMatch(/Set 2, /)
+    await open()
+    expect(menuItemsOf(lastMenu())[ids.indexOf(tag)].on).toBe(true)
+    await act(async () => { item('None').onClick() })
+    await rerender()
+    expect(mocks.S.active.entries[0].sets).toEqual(before)
+    expect(container.querySelector('[data-set-tag]')).toBeNull()
   })
 
   it('marks a set as taken to failure from its menu, with an F on its number, and back', async () => {

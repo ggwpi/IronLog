@@ -2518,4 +2518,7 @@ export default {
   "No weekly countdown on Home.": "ไม่มีการนับถอยหลังรายสัปดาห์ที่หน้าแรก",
   "{0} of {1} left this week": "สัปดาห์นี้เหลือ {0} จาก {1}",
   "All done this week. Nice.": "สัปดาห์นี้ครบแล้ว เยี่ยม",
+  // Original openGym v1.4.5 set colour tags (IronLog menu).
+  "Colour tag": "สีของเซต",
+  "Your own code for this set": "รหัสของคุณเองสำหรับเซตนี้",
 }

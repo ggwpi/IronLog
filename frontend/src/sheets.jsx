@@ -41,6 +41,8 @@ import { importHevyData, HevyApiError, HEVY_DEV_SETTINGS, mergeHevyRoutines } fr
 import { buildPlanBundle, parsePlan, mergePlan, printPlan, planPrintHTML } from './lib/plan-share.js'
 import { estimate1RM, best1RM, is1RMRecord, REP_CAP, formulaOf, FORMULA_NAMES } from './lib/onerm.js'
 import { setTrendsFor, lastTimeBefore, trendGlyph } from './lib/set-trend.js'
+import { setTagOf, setTagName } from './lib/set-tags.js'
+import { isOn } from './lib/modules.js'
 import { exerciseHistory } from './lib/exercise-history.js'
 import { StrengthLevelBlock } from './components/StrengthLevelsCard.jsx'
 import { isBellEx, dbLoadOf, dbLoadFor, withDbLoad, withMeaning, historyAs, entryDbLoad, currentDbLoad, isOneArm, ownedWeightsFor, dumbbellsOf, ownsDumbbells, withDumbbells, presetWeights, cleanWeights } from './lib/dumbbells.js'
@@ -2669,7 +2671,7 @@ function WorkoutDetail({ w, close }) {
       {ex && <Thumb ex={ex} />}
       <div className="grow"><div className={`tt ${exerciseNameClass(ex)}`} style={{ fontWeight: 600 }}>{nameOf(e)} {w.prs && w.prs.includes(e.id) && <span className="pr"><Icon name="trophy" />PR</span>}</div>
         <div className="ss">{e.sets.map((s, j) => hasCompletedWork(s)
-          ? setLabel(e.id, s, e.target, speedUnitOf(st)) + hrLabel(s) + (trends?.[j] ? ' ' + trendGlyph(trends[j]) : '')
+          ? setLabel(e.id, s, e.target, speedUnitOf(st)) + hrLabel(s) + (trends?.[j] ? ' ' + trendGlyph(trends[j]) : '') + (setTagOf(s) ? ` ${setTagOf(s).shape} ${setTagName(s.tag)}` : '')
           : null).filter(Boolean).join('  ·  ') || t('no sets')}</div>
         {e.note && <div className="small dim" style={{ marginTop: 3 }}>
           {e.notePin && <Icon name="pin" style={{ fontSize: 12, marginInlineEnd: 4, verticalAlign: '-1px', color: 'var(--yellow)' }} />}{e.note}
@@ -2980,7 +2982,7 @@ export function startFlow(routineIds, { checked = false } = {}) {
     return
   }
   // Keep IronLog's original weigh-in behavior and all navigation intact.
-  if (S().weighIn === false) { beginWorkout(routineIds, null); return }
+  if (S().weighIn === false || !isOn(S(), 'body')) { beginWorkout(routineIds, null); return }
   return bwSheet({ required: true, onDone: bw => beginWorkout(routineIds, bw) })
 }
 // `opts` from the Apple Watch (lib/watch-sync.js): a session started there keeps the watch's id,

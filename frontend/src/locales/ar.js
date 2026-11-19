@@ -2562,4 +2562,7 @@ export default {
   "No weekly countdown on Home.": "لا عدّ تنازلي أسبوعي في الرئيسية.",
   "{0} of {1} left this week": "تبقّى {0} من {1} هذا الأسبوع",
   "All done this week. Nice.": "أنجزت كل شيء هذا الأسبوع. رائع.",
+  // Original openGym v1.4.5 set colour tags (IronLog menu).
+  "Colour tag": "لون المجموعة",
+  "Your own code for this set": "رمزك الخاص لهذه المجموعة",
 }

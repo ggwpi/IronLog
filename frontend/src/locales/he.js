@@ -2571,4 +2571,7 @@ export default {
   "No weekly countdown on Home.": "ללא ספירה לאחור של אימוני השבוע במסך הבית.",
   "{0} of {1} left this week": "נשארו {0} מתוך {1} אימונים השבוע",
   "All done this week. Nice.": "כל האימונים השבוע הושלמו. יפה!",
+  // Original openGym v1.4.5 set colour tags (IronLog menu).
+  "Colour tag": "תג צבע",
+  "Your own code for this set": "הסימון האישי שלך לסט הזה",
 }

@@ -2507,4 +2507,7 @@ export default {
   "No weekly countdown on Home.": "होम पर हफ़्ते की उलटी गिनती नहीं।",
   "{0} of {1} left this week": "इस हफ़्ते {1} में से {0} बाकी",
   "All done this week. Nice.": "इस हफ़्ते का सब हो गया। बढ़िया।",
+  // Original openGym v1.4.5 set colour tags (IronLog menu).
+  "Colour tag": "सेट का रंग",
+  "Your own code for this set": "इस सेट के लिए आपका अपना कोड",
 }

@@ -9,6 +9,12 @@ const blob = path => {
   return createHash('sha1').update('blob ' + bytes.length + '\0').update(bytes).digest('hex')
 }
 describe('immutable openGym source provenance', () => {
+  it('preserves set colour tags and previously integrated strength/deload engines byte-for-byte', () => {
+    expect(blob('./set-tags.js')).toBe('8c6c8fabe7cca9ac70276cc9bd7524150ea9e7e8')
+    expect(blob('./strength-level.js')).toBe('c27a301c3a82da9cf27e84503b6227718e87ac61')
+    expect(blob('./relative-strength.js')).toBe('d9584e52c2c3c0055c83b3ceba47074ca3007410')
+    expect(blob('./deload-cycle.js')).toBe('4f42eb871b31ecf7f17f121b180a0d31945b98b7')
+  })
   it('preserves upstream set trend algorithm byte-for-byte', () => {
     expect(blob('./set-trend.js')).toBe('95c4e159b916222ad75c68a44235d6239f7c9bd0')
   })
@@ -24,6 +30,10 @@ describe('immutable openGym source provenance', () => {
   })
   it('preserves upstream workouts-left algorithm byte-for-byte', () => {
     expect(blob('./week-left.js')).toBe('25097c8f263823ef16c7deba574811944fab6572')
+  })
+  it('imports the complete upstream muscle-target source and original tests unchanged', () => {
+    expect(blob('./opengym-v145/muscle-targets.js')).toBe('2902bfccfaea28c126789a7b5e75a0f5fe53569d')
+    expect(blob('./opengym-v145/muscle-targets.test.js')).toBe('895ebb2d4b6da790ee2205fc54cdf82f849a2915')
   })
   it('pins the entire original repository separately from IronLog UI', () => {
     const gitmodules = readFileSync(new URL('../../../.gitmodules', import.meta.url), 'utf8')

@@ -17,6 +17,7 @@ import { healthRecords, planSync, writtenIds, goneIds } from './health-connect.j
 import { exerciseNameFor } from './i18n-core.js'
 import { EXIDX } from './exercises.js'
 import { speedUnitOf } from './speed.js'
+import { isOn } from './modules.js'
 
 export const HEALTH_FILE = 'opengym-health.json'
 const OFF = { on: false, written: {}, at: 0, error: null }
@@ -85,6 +86,8 @@ export function syncHealth(S) {
   // Not read yet: initHealthSync reads it at launch and syncs then, which covers a save made
   // before that; the save path itself never waits on the file.
   if (!cached || !cached.on) return Promise.resolve(cached)
+  // Original openGym Modules boundary: keep credentials and written IDs for catch-up.
+  if (S && !isOn(S, 'health')) return Promise.resolve(cached)
   if (running) { again = S; return running }
   again = null
   running = (async () => {

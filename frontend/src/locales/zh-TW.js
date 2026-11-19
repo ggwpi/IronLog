@@ -2500,4 +2500,7 @@ export default {
   "No weekly countdown on Home.": "首頁不顯示本週倒數。",
   "{0} of {1} left this week": "本週還剩 {0}/{1} 次",
   "All done this week. Nice.": "本週全部完成，漂亮。",
+  // Original openGym v1.4.5 set colour tags (IronLog menu).
+  "Colour tag": "組顏色",
+  "Your own code for this set": "你為這組定的記號",
 }

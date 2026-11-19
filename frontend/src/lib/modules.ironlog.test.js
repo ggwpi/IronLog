@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { isOn, MODULE_IDS, applyPreset, setModule, presetOf } from './modules.js'
 import { stampChange, mergeStates, stampRestore } from './sync-merge.js'
+import { effortOf } from './history.js'
 
 const original = () => ({
   unit: 'kg', _ts: 1000,
@@ -11,6 +12,19 @@ const original = () => ({
 })
 
 describe('unmodified openGym modules through IronLog cloud-state stamps', () => {
+  it('pauses effort entry via the original upstream gate while retaining all existing ratings', () => {
+    const S = { ...original(), effort: 'rpe' }
+    S.workouts[0].entries[0].sets[0].rpe = 9
+    const before = structuredClone(S.workouts)
+    expect(effortOf(S)).toBe('rpe')
+    setModule(S, 'effort', false)
+    expect(effortOf(S)).toBe('none')
+    expect(S.effort).toBe('rpe')
+    expect(S.workouts).toEqual(before)
+    setModule(S, 'effort', true)
+    expect(effortOf(S)).toBe('rpe')
+    expect(S.workouts).toEqual(before)
+  })
   it('does not switch existing IronLog customizations or data off for an older profile', () => {
     const before = original(), copy = structuredClone(before)
     for (const id of MODULE_IDS) expect(isOn(before, id)).toBe(true)

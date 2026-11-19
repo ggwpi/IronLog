@@ -2507,4 +2507,7 @@ export default {
   "No weekly countdown on Home.": "홈에 주간 카운트다운 없음.",
   "{0} of {1} left this week": "이번 주 {1}회 중 {0}회 남음",
   "All done this week. Nice.": "이번 주 다 끝냈어요. 멋져요.",
+  // Original openGym v1.4.5 set colour tags (IronLog menu).
+  "Colour tag": "세트 색상",
+  "Your own code for this set": "이 세트에 대한 나만의 표시",
 }

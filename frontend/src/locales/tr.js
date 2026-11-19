@@ -2507,4 +2507,7 @@ export default {
   "No weekly countdown on Home.": "Ana sayfada haftalık geri sayım yok.",
   "{0} of {1} left this week": "Bu hafta {1} antrenmandan {0} kaldı",
   "All done this week. Nice.": "Bu hafta hepsi tamam. Harika.",
+  // Original openGym v1.4.5 set colour tags (IronLog menu).
+  "Colour tag": "Set rengi",
+  "Your own code for this set": "Bu set için kendi kodun",
 }

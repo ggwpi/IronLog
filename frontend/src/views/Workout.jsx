@@ -41,6 +41,7 @@ import { glyphOf } from '../lib/glyphs.js'
 import { markAllSetsDone, sessionHistory } from '../lib/backfill.js'
 import { formulaOf } from '../lib/onerm.js'
 import { setTrendsFor, trendGlyph, trendLabel } from '../lib/set-trend.js'
+import { SET_TAGS, setTagOf, setTagName, withSetTag } from '../lib/set-tags.js'
 import { bindWatchActions } from '../lib/watch-sync.js'
 import { bestSetFor } from '../lib/exercise-history.js'
 import { bindLiveActions } from '../lib/live-activity.js'
@@ -444,9 +445,22 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   // counting every row and making the second half look like an extra set.
   const setNumOf = (s, i) => setNumberAt(entry.sets, i)
   const sideTagOf = s => s.side === 'L' ? t('Left') : s.side === 'R' ? t('Right') : null
+  const tagSheet = (i, title) => {
+    const cur = setTagOf(entry.sets[i])?.id || null
+    menuSheet({
+      title: t('Colour tag'), subtitle: title,
+      items: [
+        ...SET_TAGS.map(tag => ({ label: <><span style={{ color: tag.color }} aria-hidden="true">{tag.shape}</span> {setTagName(tag.id)}</>, on: cur === tag.id, onClick: () => mutSet(i, row => withSetTag(row, tag.id)) })),
+        { icon: 'minus', label: t('None'), on: !cur, onClick: () => mutSet(i, row => withSetTag(row, null)) },
+      ],
+    })
+  }
   const openSetMenu = (s, i) => {
     const warm = isWarmupRow(s)
     const sideTag = sideTagOf(s)
+    // Timed L/R rows share one menu, as do the existing copy/delete actions.
+    const [spanStart] = setSpanAt(entry.sets, i)
+    const tagHere = setTagOf(entry.sets[spanStart])
     menuSheet({
       title: warm ? t('Warm-up') : sideTag ? t('Set {0} ({1})', setNumOf(s, i), sideTag) : t('Set {0}', setNumOf(s, i)),
       subtitle: setLabel(entry.id, s, entry.target, speedUnit),
@@ -455,6 +469,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
         // only, the kind a warm-up is added as; one work set always stays. A per-side set keeps
         // its two sides either way (#575), so it goes back and forth like any other.
         { items: [
+          { icon: 'palette', label: t('Colour tag'), sub: tagHere ? `${tagHere.shape} ${setTagName(tagHere.id)}` : t('Your own code for this set'), onClick: () => tagSheet(spanStart, warm ? t('Warm-up') : t('Set {0}', setNumOf(s, i))) },
           !warm && mode === 'reps' && canBeWarmup(s) && entry.sets.some((x, j) => j !== i && !isWarmupRow(x)) && { icon: 'sunrise', label: t('Make it a warm-up set'), onClick: () => setPhaseAt(i, true) },
           warm && mode === 'reps' && { icon: 'dumbbell', label: t('Count it as a working set'), onClick: () => setPhaseAt(i, false) },
           // Taken to failure: a toggle with its check, like the menu's other on/off rows. It counts
@@ -598,10 +613,11 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   // A set taken to failure wears a small "F" on its number, the button every row's menu opens
   // from. The button's own label speaks for it, so a screen reader hears it with the set number.
   const failMark = s => isFailureSet(s) ? <span className="failmark" aria-hidden="true">{t('F')}</span> : null
-  const failSay = (s, label) => isFailureSet(s) ? label + ', ' + t('Taken to failure') : label
+  const failSay = (s, label) => { const tag = setTagOf(s); const l = isFailureSet(s) ? label + ', ' + t('Taken to failure') : label; return tag ? l + ', ' + setTagName(tag.id) : l }
+  const tagMark = s => { const tag = setTagOf(s); return tag ? <span data-set-tag={tag.id} style={{ color: tag.color, marginInlineStart: 3 }} aria-hidden="true">{tag.shape}</span> : null }
   const plainRow = (s, i) => (
     <div ref={el => onSetRowRef?.(i, el)} className={'setrow' + (s.done ? ' done' : '') + (col3 ? ' eff3' : '') + (timed ? ' timed' : '')}>
-      <button type="button" className="n" aria-label={failSay(s, sideTagOf(s) ? t('Set {0} ({1})', setNumOf(s, i), sideTagOf(s)) : t('Set {0}', setNumOf(s, i))) + trendNote(i)} aria-describedby={optsId} title={t('More')} onClick={() => openSetMenu(s, i)}>{setNumOf(s, i)}{failMark(s)}{trendMark(i)}</button>
+      <button type="button" className="n" aria-label={failSay(s, sideTagOf(s) ? t('Set {0} ({1})', setNumOf(s, i), sideTagOf(s)) : t('Set {0}', setNumOf(s, i))) + trendNote(i)} aria-describedby={optsId} title={t('More')} onClick={() => openSetMenu(s, i)}>{setNumOf(s, i)}{failMark(s)}{trendMark(i)}{tagMark(s)}</button>
       {/* Both words sit in the pill's one grid cell (::before/::after, hidden), so Left and
           Right are as wide as the longer of the two in every language and the inputs
           after them line up (#322). */}
@@ -728,7 +744,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
             // ticked on its own (issue #60). Warm-ups split the same way as the work sets they
             // ramp toward, so a warm-up side set shows L/R too (#388).
             <div ref={el => onSetRowRef?.(i, el)} className={'setrow-side' + (s.done ? ' done' : '')}>
-              <button type="button" className="n" aria-label={failSay(s, t('Set {0}', phaseNum)) + trendNote(i)} aria-describedby={optsId} title={t('More')} onClick={() => openSetMenu(s, i)}>{phaseNum}{failMark(s)}{trendMark(i)}</button>
+              <button type="button" className="n" aria-label={failSay(s, t('Set {0}', phaseNum)) + trendNote(i)} aria-describedby={optsId} title={t('More')} onClick={() => openSetMenu(s, i)}>{phaseNum}{failMark(s)}{trendMark(i)}{tagMark(s)}</button>
               <div className="side-rows">
                 {sideRow(s, i, 'L', col1, col2, col3)}
                 {sideExtras(s, i, 'L')}

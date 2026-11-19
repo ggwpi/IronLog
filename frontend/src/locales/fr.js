@@ -2507,4 +2507,7 @@ export default {
   "No weekly countdown on Home.": "Pas de compte à rebours de la semaine sur l’accueil.",
   "{0} of {1} left this week": "Encore {0} sur {1} cette semaine",
   "All done this week. Nice.": "Tout est fait cette semaine. Bien joué.",
+  // Original openGym v1.4.5 set colour tags (IronLog menu).
+  "Colour tag": "Couleur de la série",
+  "Your own code for this set": "Ton propre code pour cette série",
 }

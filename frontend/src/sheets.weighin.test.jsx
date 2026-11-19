@@ -18,7 +18,7 @@ describe('the weigh-in before a workout is a setting', () => {
   beforeEach(() => {
     globalThis.IS_REACT_ACT_ENVIRONMENT = true
     useUI.setState({ sheets: [], toasts: [] })
-    useStore.setState(s => ({ S: { ...s.S, active: null, routines: [], workouts: [], bodyweight: [], weighIn: true } }))
+    useStore.setState(s => ({ S: { ...s.S, modules: undefined, active: null, routines: [], workouts: [], bodyweight: [], weighIn: true } }))
   })
 
   it('on (the default): Start opens the weigh-in and the session waits for it', () => {
@@ -35,6 +35,19 @@ describe('the weigh-in before a workout is a setting', () => {
     expect(useUI.getState().sheets).toHaveLength(1)
     expect(useUI.getState().sheets[0].locked).toBe(true)
     expect(useStore.getState().S.active).toBeNull()
+  })
+
+  it('Body off skips only the pre-workout prompt and preserves weigh-ins and its original preference', () => {
+    const bodyweight = [{ d: '2026-11-17', w: 80, media: 'fixture-reference' }]
+    useStore.setState(s => ({ S: { ...s.S, bodyweight, modules: { body: false } } }))
+    act(() => startFlow([]))
+    expect(useUI.getState().sheets).toHaveLength(0)
+    expect(useStore.getState().S.active.bw).toBeNull()
+    expect(useStore.getState().S.bodyweight).toEqual(bodyweight)
+    expect(useStore.getState().S.weighIn).toBe(true)
+    useStore.setState(s => ({ S: { ...s.S, active: null, modules: { body: true } } }))
+    act(() => startFlow([]))
+    expect(useUI.getState().sheets).toHaveLength(1)
   })
 
   it('off: Start begins the session at once, with no sheet and no body weight', () => {
@@ -56,7 +69,7 @@ describe('the full-screen pre-workout weigh-in keeps the original actions', () =
     navigate = vi.fn()
     setNav(navigate)
     useUI.setState({ sheets: [], toasts: [] })
-    useStore.setState(s => ({ S: { ...s.S, active: null, routines: [], workouts: [], bodyweight: [], weighIn: true, unit: 'kg' } }))
+    useStore.setState(s => ({ S: { ...s.S, modules: undefined, active: null, routines: [], workouts: [], bodyweight: [], weighIn: true, unit: 'kg' } }))
     host = document.createElement('div')
     document.body.appendChild(host)
     root = createRoot(host)

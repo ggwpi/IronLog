@@ -582,7 +582,7 @@ export default function Stats() {
   // curve of its own, because the two only mean something together: the same weight moved
   // with more left in the tank is progress a weight-only chart draws as a flat line.
   const exRir = exPts.map(p => avgRir(p.sets))
-  const showEff = exRir.filter(v => v != null).length >= 3
+  const showEff = isOn(S, 'effort') && exRir.filter(v => v != null).length >= 3
   const effPts = exPts.map((p, i) => (exRir[i] == null ? null : { t: p.t, y: toScale(kind, exRir[i]), d: p.d })).filter(p => p && inExRange(p))
   // Pyramid sets' Max sets: the most reps in one, per workout — the point of a Max set is seeing
   // that number climb, which the top-set weight line does not show.
@@ -692,7 +692,7 @@ export default function Stats() {
         for the existing weekly planned-volume or body-map cards. */}
     <WeeklyMuscleTargetsCard S={S} />
     {/* openGym check-in history uses an additional IronLog card, without replacing existing cards. */}
-    <DailyFormStatsCard S={S} />
+    {isOn(S, 'health') && <DailyFormStatsCard S={S} />}
     {isOn(S, 'strength') && workouts.length > 0 && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
       <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t('Structural balance')}</h2>
         <div className="muted small" style={{ marginTop: 4 }}>{t('See which lift is holding back the rest.')}</div></div>
@@ -710,7 +710,7 @@ export default function Stats() {
           : t('Waist, arms, body fat and anything else you measure, each with its own curve.')}</div></div>
       <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/measurements')}>{t('Open')}</Button>
     </div>}
-    {(hasEffort(S) || hasEstimableEffort(S)) && <EffortCard S={S} />}
+    {isOn(S, 'effort') && (hasEffort(S) || hasEstimableEffort(S)) && <EffortCard S={S} />}
 
     <div className="cols">
       {isOn(S, 'body') && <div className="card">

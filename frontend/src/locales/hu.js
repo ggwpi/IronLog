@@ -2510,4 +2510,7 @@ export default {
   "No weekly countdown on Home.": "Nincs heti visszaszámlálás a kezdőlapon.",
   "{0} of {1} left this week": "Ezen a héten még {0} a {1}-ból",
   "All done this week. Nice.": "Ezen a héten mind megvan. Szép.",
+  // Original openGym v1.4.5 set colour tags (IronLog menu).
+  "Colour tag": "Sorozat színe",
+  "Your own code for this set": "A saját kódod ehhez a sorozathoz",
 }

@@ -92,6 +92,21 @@ describe('turning it on', () => {
 })
 
 describe('keeping in step', () => {
+  it('Health module off pauses native writes/removals without disconnecting, and on catches up', async () => {
+    await hs.enableHealth(state([workout('w1', 17)]))
+    const saved = file()
+    h.calls = []
+    const paused = { ...state([workout('w2', 18)]), modules: { health: false }, deleted: { workouts: { w1: at(20, 9) } } }
+    const untouched = structuredClone(paused)
+    await hs.syncHealth(paused)
+    expect(h.calls).toEqual([])
+    expect(file()).toEqual(saved)
+    expect(paused).toEqual(untouched)
+    await hs.syncHealth({ ...paused, modules: { health: true } })
+    expect(writes().flatMap(w => w.sessions.map(s => s.id))).toEqual(['opengym-w-w2'])
+    expect(removes().flatMap(r => r.sessions)).toContain('opengym-w-w1')
+    expect(file().on).toBe(true)
+  })
   it('writes only what is new, and removes what was deleted', async () => {
     await hs.enableHealth(state([workout('w1', 17)]))
     h.calls = []

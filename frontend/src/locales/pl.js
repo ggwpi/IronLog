@@ -2507,4 +2507,7 @@ export default {
   "No weekly countdown on Home.": "Bez tygodniowego odliczania na ekranie głównym.",
   "{0} of {1} left this week": { one: "Jeszcze {0} z {1} w tym tygodniu", few: "Jeszcze {0} z {1} w tym tygodniu", many: "Jeszcze {0} z {1} w tym tygodniu" },
   "All done this week. Nice.": "Wszystko zrobione w tym tygodniu. Brawo.",
+  // Original openGym v1.4.5 set colour tags (IronLog menu).
+  "Colour tag": "Kolor serii",
+  "Your own code for this set": "Twój własny kod dla tej serii",
 }

@@ -2504,4 +2504,7 @@ export default {
   "No weekly countdown on Home.": "Без тижневого відліку на головній.",
   "{0} of {1} left this week": { one: "Залишилося {0} з {1} цього тижня", few: "Залишилося {0} з {1} цього тижня", many: "Залишилося {0} з {1} цього тижня" },
   "All done this week. Nice.": "Цього тижня все зроблено. Чудово.",
+  // Original openGym v1.4.5 set colour tags (IronLog menu).
+  "Colour tag": "Колір підходу",
+  "Your own code for this set": "Твій власний код для цього підходу",
 }
