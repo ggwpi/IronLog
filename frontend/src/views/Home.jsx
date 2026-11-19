@@ -211,7 +211,7 @@ export default function Home() {
       </div>
     )}
 
-    {S.showWeightCard !== false && <div className="card home-weight-card">
+    {isOn(S, 'body') && S.showWeightCard !== false && <div className="card home-weight-card">
       <div className="row between bw-head">
         <h2 style={{ margin: 0 }}>{t('Body weight')}</h2>
         <div className="row" style={{ gap: 8 }}>
@@ -258,7 +258,7 @@ export default function Home() {
     {/* Optional Recovery Hint, always hidden for pre-feature profiles. */}
     <RecoveryHintCard S={S} />
 
-    <div className="card tappable home-streak" style={{ cursor: 'pointer' }} {...tappable(() => calendarSheet())}>
+    {isOn(S, 'motivation') && <div className="card tappable home-streak" style={{ cursor: 'pointer' }} {...tappable(() => calendarSheet())}>
       <div className="row between">
         <span className="home-streak-flame" aria-hidden="true"><Icon name="flameFill" /></span>
         <div className="home-streak-copy">
@@ -269,6 +269,6 @@ export default function Home() {
         </div>
         <Icon name="calendar" className="chev" style={{ fontSize: 20 }} />
       </div>
-    </div>
+    </div>}
   </div>
 }

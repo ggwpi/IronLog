@@ -49,3 +49,35 @@ describe('openGym Modules reads original IronLog Home check-in card without re-s
     expect(useStore.getState().S.checkIn).toBe(false)
   })
 })
+
+describe('openGym Body and Motivation visibility through native IronLog Home cards', () => {
+  const logged = { id: 'preserved-workout', d: '2026-11-18', entries: [{ id: '0025', sets: [{ w: 50, r: 6, done: true }] }], media: [{ hash: 'original-media' }] }
+  const weighIn = { d: '2026-11-18', w: 80 }
+  it('does not change any legacy card or data when newer Module choices are missing', () => {
+    mount({ workouts: [logged], bodyweight: [weighIn] })
+    expect(host.querySelector('.home-weight-card')).toBeTruthy()
+    expect(host.querySelector('.home-streak')).toBeTruthy()
+    expect(host.querySelector('.home-greeting')).toBeTruthy()
+    expect(host.querySelector('.home-checkin')).toBeTruthy()
+    expect(useStore.getState().S.workouts).toEqual([logged])
+    expect(useStore.getState().S.bodyweight).toEqual([weighIn])
+  })
+  it('hides only the selected Body and Motivation cards, not history, media, or the Home greeting', () => {
+    mount({ modules: { body: false, motivation: false }, workouts: [logged], bodyweight: [weighIn] })
+    expect(host.querySelector('.home-weight-card')).toBeNull()
+    expect(host.querySelector('.home-streak')).toBeNull()
+    expect(host.querySelector('.home-greeting')).toBeTruthy()
+    expect(host.querySelector('.home-checkin')).toBeTruthy()
+    expect(useStore.getState().S.workouts).toEqual([logged])
+    expect(useStore.getState().S.bodyweight).toEqual([weighIn])
+    expect(useStore.getState().S.workouts[0].media).toEqual(logged.media)
+  })
+  it('switching back on restores the original IronLog card structures and respects the older Home-specific preference', () => {
+    mount({ modules: { body: true, motivation: true } })
+    expect(host.querySelector('.home-weight-card')).toBeTruthy()
+    expect(host.querySelector('.home-streak')).toBeTruthy()
+    mount({ modules: { body: true, motivation: true }, showWeightCard: false })
+    expect(host.querySelector('.home-weight-card')).toBeNull()
+    expect(host.querySelector('.home-streak')).toBeTruthy()
+  })
+})

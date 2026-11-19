@@ -105,3 +105,8 @@ A checkbox can only be checked after implementation and automated/manual proof. 
 - Client (`frontend/src/lib/sync-merge.js`) and server (`api/sync-stamps.js`) now synchronize module choices per key. This preserves concurrent settings from different devices in the existing IronLog Supabase-bound profile JSON; NO database migrations, user data writes or deployments were performed.
 - Existing IronLog Home check-in card and its current Settings toggle use upstream `isOn` and `setModule`, while keeping the legacy `checkIn` field for old clients. Rest of the UI, splash/boot/loading, native sheets, navigation and historical records remain unchanged.
 - **Partial integration only:** other module visibility/service gates, backwards old-client toggling after an explicit new Modules setting, full source parity, RTL visuals and backup/restore not yet certified. Do not merge or deploy.
+
+## Body/Motivation/Strength module display gates (partial)
+- Used the exact upstream 1.4.5 `isOn` implementation in **existing** IronLog Home and Stats card rendering, with legacy default-on behavior and the old `showWeightCard` preference retained.
+- Added render-level tests confirming the original Home greeting/QR, Stats exercise-progress/history and all workouts/bodyweight/media survive optional visibility changes; no data, sync or database schema writes.
+- Still needs UI controls for all original modules, remaining views/services and verification of actual mobile/RTL display and independent restored backups; PR stays Draft.
