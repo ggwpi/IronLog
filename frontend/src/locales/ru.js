@@ -2081,7 +2081,7 @@ export default {
   'View measurements': 'Открыть замеры',
   'since previous': 'с прошлого раза',
   '{0} measurement': '{0} замер',
-  '{0} measurements': 'замеров: {0}',
+  "{0} measurements": {"one":"{0} замер","few":"{0} замера","many":"{0} замеров","other":"{0} замера"},
   'Custom measurement': 'Свой замер',
   'Fields': 'Поля',
   'Torso': 'Корпус',
@@ -2514,4 +2514,14 @@ export default {
   // Original openGym v1.4.5 set colour tags (IronLog menu).
   "Colour tag": "Цвет подхода",
   "Your own code for this set": "Твой собственный код для этого подхода",
+  // CSV and per-set notes: original upstream copy; Hebrew supplied by IronLog.
+  "Export as spreadsheet (CSV)": "Экспорт в таблицу (CSV)",
+  "CSV exported": "CSV экспортирован",
+  "Workouts (CSV)": "Тренировки (CSV)",
+  "Body weight & measurements (CSV)": "Вес тела и замеры (CSV)",
+  "A word about this set": "Пара слов об этом подходе",
+  // CSV date boundaries and the original band colour label.
+  "From": "С",
+  "To": "По",
+  "Black": "Чёрная",
 }

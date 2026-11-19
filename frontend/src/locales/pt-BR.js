@@ -1627,6 +1627,16 @@ export const PT_BR_OVERRIDES = {
   // Original openGym v1.4.5 set colour tags (IronLog menu).
   "Colour tag": "Cor da série",
   "Your own code for this set": "Seu código para esta série",
+  // CSV and per-set notes: original upstream copy; Hebrew supplied by IronLog.
+  "Export as spreadsheet (CSV)": "Exportar como planilha (CSV)",
+  "CSV exported": "CSV exportado",
+  "Workouts (CSV)": "Treinos (CSV)",
+  "Body weight & measurements (CSV)": "Peso corporal e medidas (CSV)",
+  "A word about this set": "Uma palavra sobre esta série",
+  // CSV date boundaries and the original band colour label.
+  "From": "De",
+  "To": "Até",
+  "Black": "Preto",
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

@@ -42,6 +42,8 @@ import { markAllSetsDone, sessionHistory } from '../lib/backfill.js'
 import { formulaOf } from '../lib/onerm.js'
 import { setTrendsFor, trendGlyph, trendLabel } from '../lib/set-trend.js'
 import { SET_TAGS, setTagOf, setTagName, withSetTag } from '../lib/set-tags.js'
+import { setNoteOf } from '../lib/opengym-v145/set-notes.js'
+import { setNoteSheet } from '../sheets.jsx'
 import { bindWatchActions } from '../lib/watch-sync.js'
 import { bestSetFor } from '../lib/exercise-history.js'
 import { bindLiveActions } from '../lib/live-activity.js'
@@ -461,6 +463,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     // Timed L/R rows share one menu, as do the existing copy/delete actions.
     const [spanStart] = setSpanAt(entry.sets, i)
     const tagHere = setTagOf(entry.sets[spanStart])
+    const noteHere = setNoteOf(entry.sets[spanStart])
     menuSheet({
       title: warm ? t('Warm-up') : sideTag ? t('Set {0} ({1})', setNumOf(s, i), sideTag) : t('Set {0}', setNumOf(s, i)),
       subtitle: setLabel(entry.id, s, entry.target, speedUnit),
@@ -470,6 +473,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
         // its two sides either way (#575), so it goes back and forth like any other.
         { items: [
           { icon: 'palette', label: t('Colour tag'), sub: tagHere ? `${tagHere.shape} ${setTagName(tagHere.id)}` : t('Your own code for this set'), onClick: () => tagSheet(spanStart, warm ? t('Warm-up') : t('Set {0}', setNumOf(s, i))) },
+          { icon: 'note', label: noteHere ? t('Edit note') : t('Note'), sub: noteHere || t('A word about this set'), onClick: () => setNoteSheet(entryIdx, spanStart) },
           !warm && mode === 'reps' && canBeWarmup(s) && entry.sets.some((x, j) => j !== i && !isWarmupRow(x)) && { icon: 'sunrise', label: t('Make it a warm-up set'), onClick: () => setPhaseAt(i, true) },
           warm && mode === 'reps' && { icon: 'dumbbell', label: t('Count it as a working set'), onClick: () => setPhaseAt(i, false) },
           // Taken to failure: a toggle with its check, like the menu's other on/off rows. It counts
@@ -759,6 +763,11 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
             </button>
           </div>}
           {loadLine(String(i))}
+          {!pairTail && setNoteOf(s) && <button type="button" className="small dim" data-set-note
+            style={{ display: 'block', textAlign: 'start', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxWidth: '100%', minHeight: 44 }}
+            aria-label={t('Edit note') + ': ' + setNoteOf(s)} onClick={() => setNoteSheet(entryIdx, i)}>
+            <Icon name="note" /> {setNoteOf(s)}
+          </button>}
           {/* Drop-sets and rest-pause bursts extend this same row — no long rest, no new set.
               A planned exercise arrives with these already filled in (applyIntensifierPlan);
               every value here is just as editable as the main row's own weight/reps. */}

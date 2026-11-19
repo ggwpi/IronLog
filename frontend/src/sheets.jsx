@@ -43,6 +43,7 @@ import { estimate1RM, best1RM, is1RMRecord, REP_CAP, formulaOf, FORMULA_NAMES } 
 import { setTrendsFor, lastTimeBefore, trendGlyph } from './lib/set-trend.js'
 import { setTagOf, setTagName } from './lib/set-tags.js'
 import { isOn } from './lib/modules.js'
+import { setNoteOf } from './lib/opengym-v145/set-notes.js'
 import { exerciseHistory } from './lib/exercise-history.js'
 import { StrengthLevelBlock } from './components/StrengthLevelsCard.jsx'
 import { isBellEx, dbLoadOf, dbLoadFor, withDbLoad, withMeaning, historyAs, entryDbLoad, currentDbLoad, isOneArm, ownedWeightsFor, dumbbellsOf, ownsDumbbells, withDumbbells, presetWeights, cleanWeights } from './lib/dumbbells.js'
@@ -525,7 +526,7 @@ export function importFromApp(file, onDone) {
   const rd = new FileReader()
   rd.onload = () => {
     let parsed
-    try { parsed = parseImport(String(rd.result), { unit: S().unit, customEx: S().customEx }) }
+    try { parsed = parseImport(String(rd.result), { unit: S().unit, customEx: S().customEx, bands: S().bands }) }
     catch (e) { toast(t('Could not read that file')); return }
     if (parsed.error === 'empty') { toast(t('That file is empty')); return }
     if (parsed.error) { toast(t("We don't recognise that file's columns. Check the docs for supported apps.")); return }
@@ -2671,7 +2672,7 @@ function WorkoutDetail({ w, close }) {
       {ex && <Thumb ex={ex} />}
       <div className="grow"><div className={`tt ${exerciseNameClass(ex)}`} style={{ fontWeight: 600 }}>{nameOf(e)} {w.prs && w.prs.includes(e.id) && <span className="pr"><Icon name="trophy" />PR</span>}</div>
         <div className="ss">{e.sets.map((s, j) => hasCompletedWork(s)
-          ? setLabel(e.id, s, e.target, speedUnitOf(st)) + hrLabel(s) + (trends?.[j] ? ' ' + trendGlyph(trends[j]) : '') + (setTagOf(s) ? ` ${setTagOf(s).shape} ${setTagName(s.tag)}` : '')
+          ? setLabel(e.id, s, e.target, speedUnitOf(st)) + hrLabel(s) + (trends?.[j] ? ' ' + trendGlyph(trends[j]) : '') + (setTagOf(s) ? ` ${setTagOf(s).shape} ${setTagName(s.tag)}` : '') + (setNoteOf(s) ? ` — ${setNoteOf(s)}` : '')
           : null).filter(Boolean).join('  ·  ') || t('no sets')}</div>
         {e.note && <div className="small dim" style={{ marginTop: 3 }}>
           {e.notePin && <Icon name="pin" style={{ fontSize: 12, marginInlineEnd: 4, verticalAlign: '-1px', color: 'var(--yellow)' }} />}{e.note}

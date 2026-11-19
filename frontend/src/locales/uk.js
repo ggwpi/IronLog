@@ -2094,7 +2094,7 @@ export default {
   'View measurements': 'Переглянути виміри',
   'since previous': 'з минулого разу',
   '{0} measurement': '{0} вимір',
-  '{0} measurements': '{0} вимірів',
+  "{0} measurements": {"one":"{0} вимір","few":"{0} виміри","many":"{0} вимірів","other":"{0} виміру"},
   'Custom measurement': 'Власний вимір',
   'Fields': 'Поля',
   'Torso': 'Торс',
@@ -2507,4 +2507,14 @@ export default {
   // Original openGym v1.4.5 set colour tags (IronLog menu).
   "Colour tag": "Колір підходу",
   "Your own code for this set": "Твій власний код для цього підходу",
+  // CSV and per-set notes: original upstream copy; Hebrew supplied by IronLog.
+  "Export as spreadsheet (CSV)": "Експорт у таблицю (CSV)",
+  "CSV exported": "CSV експортовано",
+  "Workouts (CSV)": "Тренування (CSV)",
+  "Body weight & measurements (CSV)": "Вага тіла й заміри (CSV)",
+  "A word about this set": "Кілька слів про цей підхід",
+  // CSV date boundaries and the original band colour label.
+  "From": "З",
+  "To": "До",
+  "Black": "Чорна",
 }

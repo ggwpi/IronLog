@@ -12,6 +12,8 @@ import {
 import { queueView, queueNext, pinState } from '../../frontend/src/lib/queue.js'
 import { exOr, registerCustom } from '../../frontend/src/lib/exercises.js'
 import { isWarmupRow, isFailureSet } from '../../frontend/src/lib/workout-model.js'
+import { setNoteOf } from '../../frontend/src/lib/opengym-v145/set-notes.js'
+import { setTagCell } from '../../frontend/src/lib/set-tags.js'
 import {
   bestSetOf, best1RM, e1rmSeries, DEFAULT_FORMULA, REP_CAP
 } from '../../frontend/src/lib/onerm.js'
@@ -73,7 +75,10 @@ function entryView(e, S) {
       r: Number(s.r) || 0,
       sec: Number(s.sec) || 0,
       min: Number(s.min) || 0,
-      speed: Number(s.speed) || 0
+      speed: Number(s.speed) || 0,
+      // Original upstream read-only metadata projection; keep IronLog's full stored notes.
+      ...(setNoteOf(s) ? { note: setNoteOf(s) } : {}),
+      ...(setTagCell(s) ? { color_tag: setTagCell(s) } : {})
     }))
   }
 }

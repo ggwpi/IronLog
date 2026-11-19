@@ -2077,7 +2077,7 @@ export default {
   'View measurements': 'Zobacz pomiary',
   'since previous': 'od poprzedniego',
   '{0} measurement': '{0} pomiar',
-  '{0} measurements': 'pomiary: {0}',
+  "{0} measurements": {"one":"{0} pomiar","few":"{0} pomiary","many":"{0} pomiarów","other":"{0} pomiaru"},
   'Custom measurement': 'Własny pomiar',
   'Fields': 'Pola',
   'Torso': 'Tułów',
@@ -2510,4 +2510,14 @@ export default {
   // Original openGym v1.4.5 set colour tags (IronLog menu).
   "Colour tag": "Kolor serii",
   "Your own code for this set": "Twój własny kod dla tej serii",
+  // CSV and per-set notes: original upstream copy; Hebrew supplied by IronLog.
+  "Export as spreadsheet (CSV)": "Eksportuj jako arkusz (CSV)",
+  "CSV exported": "Wyeksportowano CSV",
+  "Workouts (CSV)": "Treningi (CSV)",
+  "Body weight & measurements (CSV)": "Masa ciała i pomiary (CSV)",
+  "A word about this set": "Słowo o tej serii",
+  // CSV date boundaries and the original band colour label.
+  "From": "Od",
+  "To": "Do",
+  "Black": "Czarna",
 }

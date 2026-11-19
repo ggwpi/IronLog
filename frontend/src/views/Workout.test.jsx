@@ -2916,7 +2916,7 @@ describe('workout controls: the more menu and the set menu', () => {
   it('opens a per-set menu from the set number with drop, burst and remove', async () => {
     await mount([exercise('plain-bench', [false, false])])
     await act(async () => { container.querySelector('button[aria-label="Set 2"]').dispatchEvent(new dom.Event('click', { bubbles: true })) })
-    expect(menuItemsOf(lastMenu()).map(it => it.label)).toEqual(['Colour tag', 'Make it a warm-up set', 'Taken to failure', 'Drop set', 'Rest-pause burst', 'Copy this set', 'Remove this set'])
+    expect(menuItemsOf(lastMenu()).map(it => it.label)).toEqual(['Colour tag', 'Note', 'Make it a warm-up set', 'Taken to failure', 'Drop set', 'Rest-pause burst', 'Copy this set', 'Remove this set'])
     expect(item('Make it a warm-up set').icon).toBe('sunrise')
 
     await act(async () => { item('Drop set').onClick() })
@@ -2948,6 +2948,21 @@ describe('workout controls: the more menu and the set menu', () => {
     await rerender()
     expect(mocks.S.active.entries[0].sets).toEqual(before)
     expect(container.querySelector('[data-set-tag]')).toBeNull()
+  })
+
+  it('shows an existing long set note and opens the existing IronLog editor from its line and menu', async () => {
+    const note = 'Original IronLog note '.repeat(25).slice(0, 500)
+    await mount([exercise('plain-bench', [false, false], { sets: [{ w: 60, r: 8, done: false, note }, { w: 60, r: 8, done: false }] })])
+    const before = structuredClone(mocks.S.active.entries[0].sets)
+    const line = container.querySelector('[data-set-note]')
+    expect(line.textContent).toContain(note.trim())
+    await act(async () => line.click())
+    expect(mocks.setNoteSheet).toHaveBeenCalledWith(0, 0)
+    await act(async () => container.querySelector('button.n').dispatchEvent(new dom.Event('click', { bubbles: true })))
+    expect(item('Edit note').sub).toBe(note.trim())
+    await act(async () => item('Edit note').onClick())
+    expect(mocks.setNoteSheet).toHaveBeenLastCalledWith(0, 0)
+    expect(mocks.S.active.entries[0].sets).toEqual(before)
   })
 
   it('marks a set as taken to failure from its menu, with an F on its number, and back', async () => {

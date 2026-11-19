@@ -2510,4 +2510,14 @@ export default {
   // Original openGym v1.4.5 set colour tags (IronLog menu).
   "Colour tag": "Colore della serie",
   "Your own code for this set": "Il tuo codice per questa serie",
+  // CSV and per-set notes: original upstream copy; Hebrew supplied by IronLog.
+  "Export as spreadsheet (CSV)": "Esporta come foglio di calcolo (CSV)",
+  "CSV exported": "CSV esportato",
+  "Workouts (CSV)": "Allenamenti (CSV)",
+  "Body weight & measurements (CSV)": "Peso corporeo e misure (CSV)",
+  "A word about this set": "Due parole su questa serie",
+  // CSV date boundaries and the original band colour label.
+  "From": "Da",
+  "To": "Al",
+  "Black": "Nero",
 }

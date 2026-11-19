@@ -2513,4 +2513,14 @@ export default {
   // Original openGym v1.4.5 set colour tags (IronLog menu).
   "Colour tag": "Sorozat színe",
   "Your own code for this set": "A saját kódod ehhez a sorozathoz",
+  // CSV and per-set notes: original upstream copy; Hebrew supplied by IronLog.
+  "Export as spreadsheet (CSV)": "Exportálás táblázatként (CSV)",
+  "CSV exported": "CSV exportálva",
+  "Workouts (CSV)": "Edzések (CSV)",
+  "Body weight & measurements (CSV)": "Testsúly és testméretek (CSV)",
+  "A word about this set": "Pár szó erről a sorozatról",
+  // CSV date boundaries and the original band colour label.
+  "From": "Ettől",
+  "To": "Eddig",
+  "Black": "Fekete",
 }

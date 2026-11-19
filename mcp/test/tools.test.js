@@ -470,6 +470,27 @@ describe('list_workouts', () => {
 /* ---------- get_workout ---------- */
 
 describe('get_workout', () => {
+  test('reads original note/tag metadata without truncating IronLog notes or exposing set media', () => {
+    const w = S.workouts[0], set = w.entries[0].sets[0]
+    set.note = 'א'.repeat(500); set.tag = 'blue'; set.media = [{ hash: 'fixture-private-media' }]
+    const before = structuredClone(S)
+    const out = call('get_workout', { workout_id: w.id }).entries[0].sets[0]
+    expect(out.note).toBe(set.note)
+    expect(out.color_tag).toBe('blue')
+    expect(out).not.toHaveProperty('media')
+    expect(out.w).toBe(Number(set.w) || 0)
+    expect(out.r).toBe(Number(set.r) || 0)
+    expect(S).toEqual(before)
+  })
+  test('keeps the legacy set response shape when metadata is absent or unknown', () => {
+    const w = S.workouts[0], set = w.entries[0].sets[0]
+    set.note = 12; set.tag = 'future-tag'
+    const before = structuredClone(set)
+    const out = call('get_workout', { workout_id: w.id }).entries[0].sets[0]
+    expect(out).not.toHaveProperty('note')
+    expect(out).not.toHaveProperty('color_tag')
+    expect(set).toEqual(before)
+  })
   test('matches the newest workout from list_workouts, every set has a readable label', () => {
     const list = call('list_workouts', {}).workouts
     const w = call('get_workout', { date: list[0].date })

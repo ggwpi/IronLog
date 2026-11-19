@@ -2510,4 +2510,14 @@ export default {
   // Original openGym v1.4.5 set colour tags (IronLog menu).
   "Colour tag": "세트 색상",
   "Your own code for this set": "이 세트에 대한 나만의 표시",
+  // CSV and per-set notes: original upstream copy; Hebrew supplied by IronLog.
+  "Export as spreadsheet (CSV)": "스프레드시트로 내보내기 (CSV)",
+  "CSV exported": "CSV를 내보냈어요",
+  "Workouts (CSV)": "운동 (CSV)",
+  "Body weight & measurements (CSV)": "체중 및 신체 치수 (CSV)",
+  "A word about this set": "이 세트에 대한 한마디",
+  // CSV date boundaries and the original band colour label.
+  "From": "시작",
+  "To": "끝",
+  "Black": "검정",
 }
