@@ -55,6 +55,43 @@ fs.writeFileSync(path.join(out, 'run.json'), JSON.stringify({ ...run, status: 'r
       assert.equal(renderedTheme, theme)
       results.push({ label, theme, renderedTheme, lang, screen, direction: await page.evaluate(() => document.documentElement.dir) })
     }
+    if (process.env.IRONLOG_VERIFY_RECOVERY === '1') {
+      const original = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))
+      const words = await page.evaluate(async () => {
+        const { useStore } = await import('/src/store/useStore.js')
+        const { t } = await import('/src/lib/i18n.js')
+        const work = (d, ids) => ({ id: 'recovery-' + d, name: 'Recovery fixture', d, start: new Date(d + 'T18:00:00').getTime(), end: new Date(d + 'T19:00:00').getTime(), vol: ids.length * 5 * 60 * 8,
+          entries: ids.map(id => ({ id, sets: Array.from({ length: 5 }, () => ({ w: 60, r: 8, done: true })) })) })
+        const upper = d => work(d, ['0025','0027','0091']), legs = d => work(d, ['0043','0085'])
+        useStore.setState(s => ({ S: { ...s.S, recoveryHint: true, recoveryHintDay: null, active: null, routines: [], week: {}, dayPlan: {}, workouts: [upper('2026-10-30'), legs('2026-11-07'), upper('2026-11-09'), legs('2026-11-10'), upper('2026-11-16')] } }))
+        location.hash = '#/home'
+        return { hide: t('Hide for today'), undo: t('Undo') }
+      })
+      const hint = page.locator('[data-recovery-hint="neglect"]')
+      await hint.waitFor({ state: 'visible' })
+      await page.waitForTimeout(400)
+      await shot('recovery-enabled')
+      if (label === 'migration') {
+        await page.getByRole('button', { name: words.hide, exact: true }).click()
+        await page.waitForTimeout(150)
+        assert.equal(await page.locator('[data-recovery-hint]').count(), 0)
+        assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('gym_state_v1')).recoveryHintDay), '2026-11-19')
+        await page.getByRole('button', { name: words.undo, exact: true }).click()
+        await hint.waitFor({ state: 'visible' })
+        const before = await page.evaluate(async () => {
+          const { useStore } = await import('/src/store/useStore.js')
+          useStore.setState(s => ({ S: { ...s.S, activities: { football: { d: '2026-11-17', sport: 'football', min: 90, at: new Date('2026-11-17T18:00:00').getTime(), _ts: 1 } } } }))
+          return structuredClone(useStore.getState().S)
+        })
+        await page.waitForTimeout(400)
+        assert.equal(await page.locator('[data-recovery-hint]').count(), 0, 'stored sport must suppress a false legs-neglected hint')
+        assert.deepEqual(await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S)), before)
+        await shot('recovery-activity')
+        results.push({ label, theme, lang, story: 'unchanged opt-in Home card -> actual dismiss/Undo/guest JSON -> activities-only state update suppresses false leg-neglect advice without profile writes', passed: true })
+      }
+      await page.evaluate(async S => { (await import('/src/store/useStore.js')).useStore.setState({ S }); location.hash = '#/workout' }, original)
+      await page.waitForTimeout(500)
+    }
     if (label === 'migration') {
       if (process.env.IRONLOG_VERIFY_CARDIO === '1') {
         const original = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))

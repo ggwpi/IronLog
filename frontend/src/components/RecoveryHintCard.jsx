@@ -26,7 +26,7 @@ export default function RecoveryHintCard({ S }) {
       now, today,
       fatigue: fatigueOf(S.workouts, now, { bodyweightKg, unit: S.unit }),
     })
-  }, [S.modules, S.recoveryHint, S.recoveryHintDay, S.workouts, S.active,
+  }, [S.modules, S.recoveryHint, S.recoveryHintDay, S.workouts, S.activities, S.active,
     S.routines, S.week, S.dayPlan, S.queue, S.bodyweight, S.unit, today])
   const words = hintText(hint, today)
   if (!words) return null

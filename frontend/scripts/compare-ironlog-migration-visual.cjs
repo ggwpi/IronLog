@@ -6,7 +6,8 @@ const { PNG } = require(process.env.IRONLOG_PNG_MODULE || 'pngjs')
 const dir = process.env.IRONLOG_VISUAL_OUT || path.join(require('node:os').tmpdir(), 'ironlog-pr69-visual')
 const results = []
 const themes = fs.existsSync(path.join(dir, 'baseline-dark-en-home.png')) ? ['dark', 'light'] : ['']
-for (const theme of themes) for (const lang of ['en', 'he']) for (const screen of ['home', 'stats', 'workout']) {
+const screens = ['home', 'stats', 'workout', ...(process.env.IRONLOG_EXTRA_SCREENS || '').split(',').filter(Boolean)]
+for (const theme of themes) for (const lang of ['en', 'he']) for (const screen of screens) {
   const scene = [theme, lang, screen].filter(Boolean).join('-')
   const a = PNG.sync.read(fs.readFileSync(path.join(dir, `baseline-${scene}.png`)))
   const b = PNG.sync.read(fs.readFileSync(path.join(dir, `migration-${scene}.png`)))
