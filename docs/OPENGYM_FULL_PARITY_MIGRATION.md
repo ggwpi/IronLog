@@ -44,12 +44,12 @@ Upstream baseline to integrate: `DuarteSantos8/openGym@e4a68a94c42a3c17cbd560d66
 
 ## Recovery Hint parity boundary (read-only, opt-in)
 
-- The upstream 1.4.5 Home Recovery Hint algorithm and regression cases have been adapted to IronLog's **existing** muscle load/fatigue model. Until the full newer exercise catalogue and history interpretation are migrated, old IronLog groups `upper-back` and `deltoids` represent lats and all deltoid heads. No saved exercise, workout, or body-map field is rewritten.
+- The complete original 1.4.5 Home Recovery Hint module and its original tests are now imported unchanged. A separate read-only boundary projects missing lats/deltoid-head names from IronLog's existing aggregate fatigue values. Explicit split values win. The existing Stats/body-map fatigue algorithm is retained; no saved exercise, workout or body-map field is rewritten.
 - The familiar IronLog Home card appears **only** when the person explicitly enables `Recovery tips` in Look & Home, has sufficiently recent workout history, and has a relevant recovery insight. Prior profiles never see a new Home card by default.
 - Dismissal stores a single day and supports Undo. Toggling Recovery tips on clears a previous dismissal. Both preferences are included in the non-destructive audit.
-- Sport activity stimuli (running, football, cycling) remain **unimplemented** in this fork and are not silently inferred. Recovery advice based on those activities must wait for the actual activity log and recovery parity, with additional integration tests.
+- Existing stored sport maps now count toward the original hint's last-worked dates, preventing false neglect advice after football or a run. An activities-only state change refreshes the actual card. Full activity capture/import/sync and sport-based fatigue/native parity remain open; nothing is inferred or written into a profile automatically.
 - Recovery Hint message/interaction strings are localized for all 19 IronLog locale packs. Non-Hebrew text comes from the pinned openGym v1.4.5 packs, while the fork supplies Hebrew; Brazilian Portuguese keeps its upstream regional overrides and inherits shared strings from pt. Locale-presence/placeholder regression tests were added. This is **not** proof of screenshot or native feature parity.
-- No visual/screenshot comparison or restored production-data test has been performed. The feature is only eligible for preview testing, not production release.
+- Sixteen selected Home/Stats/Workout/enabled-hint phone scenes compare pixel-identically against `d918f8de` in English/Hebrew and true light/dark. Actual dismiss/Undo/guest JSON and activities-only refresh pass. See [the original Recovery Hint report](./PR69_RECOVERY_ORIGINAL_VERIFICATION_2026-11-19.md). Full visuals/native/restored-data certification remains open; this is not production approval.
 
 ## Today's mini body map (openGym v1.4.5, opt-in)
 

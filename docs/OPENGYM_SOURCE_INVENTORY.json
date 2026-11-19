@@ -8421,7 +8421,7 @@
     {"path":"frontend/src/lib/recap-card.test.js","area":"domain","upstreamBlob":"2fd2fe690cefab6cf1865961eff1729c9fa3d817","ironlogBlob":null,"source":"absent-at-original-path","verification":"not-certified"},
     {"path":"frontend/src/lib/recap.js","area":"domain","upstreamBlob":"71264e15150fefe0fe0bab8fd57e78d18a4c30d0","ironlogBlob":null,"source":"absent-at-original-path","verification":"not-certified"},
     {"path":"frontend/src/lib/recap.test.js","area":"domain","upstreamBlob":"a8eb470d49eade575278e42ad8c492b060f3d91f","ironlogBlob":null,"source":"absent-at-original-path","verification":"not-certified"},
-    {"path":"frontend/src/lib/recovery-hint.js","area":"domain","upstreamBlob":"7794a8889a3b01738459c361dc842a23a9a9a37e","ironlogBlob":"7b6366fb1b14cc96ea0e6f7a00b4296d91055fad","source":"different","verification":"not-certified"},
+    {"path":"frontend/src/lib/recovery-hint.js","area":"domain","upstreamBlob":"7794a8889a3b01738459c361dc842a23a9a9a37e","ironlogBlob":"2d1d48cf68f113afe85eead824c692d13ca223dd","source":"different","verification":"not-certified"},
     {"path":"frontend/src/lib/recovery-hint.test.js","area":"domain","upstreamBlob":"f93a7f527cd969509ee6dcf3009dea0a0f7b4bdd","ironlogBlob":"ae28707d5ba480b07bf181743dedd6f40085f2d1","source":"different","verification":"not-certified"},
     {"path":"frontend/src/lib/recovery-sessions.js","area":"domain","upstreamBlob":"b8a5e4027f947d72a8a6d0eb839c9c0e3604a517","ironlogBlob":null,"source":"absent-at-original-path","verification":"not-certified"},
     {"path":"frontend/src/lib/recovery-sessions.test.js","area":"domain","upstreamBlob":"959d8323f9cefd2e6daf9e4dd3a6a1c90d14d9eb","ironlogBlob":null,"source":"absent-at-original-path","verification":"not-certified"},

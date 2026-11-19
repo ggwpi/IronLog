@@ -54,6 +54,16 @@ The old selected-field helper remains for compatibility tests of intentional UI 
 must not be mistaken for full snapshot certification. No account, migration, sync interception
 or data write occurs. See [scope and verification](./PR69_COMPLETE_PROFILE_AUDIT_2026-11-19.md).
 
+## Complete Recovery Hint source and legacy fatigue boundary
+
+The complete original `recovery-hint.js`, original tests and original `recovery.js` dependency
+retain pinned blobs in the isolated namespace. The public hint boundary keeps IronLog opt-in
+and projects only missing split-muscle names from old aggregate fatigue values, without touching
+the input or any profile. It delegates hint rules and text to the original module. The original
+fatigue dependency supplies its original regression context; the actual existing Stats/body-map
+fatigue model is not replaced. The existing Home card adds only an activities-map memo dependency.
+See [actual card/data/RTL evidence and remaining gates](./PR69_RECOVERY_ORIGINAL_VERIFICATION_2026-11-19.md).
+
 ## Correction of prior Set Trend implementation
 `frontend/src/lib/set-trend.js` and `set-trend.test.js` are restored **byte-for-byte to upstream v1.4.5**. The openGym `setTrendOn` default is ON as upstream originally defines. IronLog's existing Workout and saved-workout bottom sheet show the marker only when `S.setTrend === true` (their own UI preference gate), so existing user visuals remain opt-in without altering upstream behavior. IronLog UI tests cover default-off display, opt-in and unchanged workouts. The unchanged upstream blobs are asserted by the integrity regression.
 

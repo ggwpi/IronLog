@@ -35,7 +35,7 @@ of every route, service or native platform**. Unchecked means more integration o
 | Strength levels | `strength-level.js` original source; existing card and demographics sheet; provenance tests | Full upstream context/settings and platform parity |
 | Relative strength | `relative-strength.js` original source; IronLog chart | Complete upstream context, muscle catalogue and display proof |
 | Weekly muscle targets | Original complete module and original tests under `lib/opengym-v145/`; old public path re-exports it | Dependency adapter intentionally retains isolated `muscles-v145.js`; full exercise-model parity remains open |
-| Recovery Hint | Existing opt-in Home card; Health module hides it without changing its preference | Existing adapted algorithm still differs from upstream; sport activities, split muscles and native recovery remain open |
+| Recovery Hint | Complete original module/tests; actual opt-in Home card and IronLog fatigue model retained through read-only old-name projection; stored sport prevents false neglect; activities-only memo refresh; 16 selected baseline scenes pixel-identical | Full activity capture/sync, full catalogue and fatigue/native parity; existing Stats fatigue engine intentionally remains IronLog's |
 | Mini muscle map | Existing opt-in Today-row `BodyMap` | Upstream multiple sessions/split-day semantics and new catalogue |
 | Weekly countdown | Original `week-left.js`; existing opt-in Home text and rotation target | Native widgets and complete schedule parity |
 | Deload | Original `deload-cycle.js`; existing Home/Settings and planned rep-session boundaries | All programme-specific behavior, native controls and visual proof |
@@ -88,6 +88,7 @@ of every route, service or native platform**. Unchecked means more integration o
 - [x] Original tempo interpretation through existing exercise configuration and set-menu/sheet controls; real guest JSON edit/clear flow in English/Hebrew and true light/dark.
 - [x] Original cardio goal editor/card/engine tests, actual IronLog persistence and old-client fixtures; phone goal addition/order/save story in English/Hebrew and true light/dark.
 - [x] Complete-snapshot gate/CLI rejects lost or changed custom settings and unknown fields; invalid JSON shapes, private-value diagnostics and unchanged input-file bytes tested without account access.
+- [x] Complete original Recovery Hint replaces the earlier adapted engine, with IronLog opt-in/fatigue-name boundaries; actual dismiss/Undo/activities-only refresh verified and four enabled-card baseline scenes identical.
 - [ ] Full upstream functionality, every custom frontend/backend behavior and native platform verified.
 - [ ] Full UI, accessibility, animation, touch/gesture, splash/loading and device matrix verified.
 - [ ] Data backup restoration and rollback certified. No live data access authorized.
