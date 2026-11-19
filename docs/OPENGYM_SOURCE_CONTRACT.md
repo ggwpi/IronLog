@@ -20,6 +20,13 @@ The second command **must** print the pinned commit above. Plain Git checkout ca
 5. If upstream and IronLog semantics conflict (e.g. default visibility of a new badge), leave upstream intact and implement the compatibility decision in IronLog's existing presentation/state boundary, with both upstream and fork-specific tests.
 6. Do not delete or rewrite existing IronLog behavior/data to force full parity. Confirm every integration with full CI and mobile/RTL regression testing; preserve backup/restore/rollback gates. PR #69 remains **Draft** and must not merge to main or reach production until all gates pass.
 
+## Cardio distance boundary
+
+Complete unchanged original distance helpers/tests now drive IronLog's existing workout controls
+and history formatting. Menu preference changes do not rewrite rows. CSV restores exact distance
+only for an explicitly selected receiver preference and unambiguous metadata identity; its original
+parser/schema remain unchanged. See [evidence and limitations](./PR69_CARDIO_DISTANCE_VERIFICATION_2026-11-19.md).
+
 ## Complete lifetime module and tempo boundary
 
 `lifetime-totals.js` now re-exports the complete original `opengym-v145/lifetime.js` rather than

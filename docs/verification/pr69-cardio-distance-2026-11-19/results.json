@@ -1,0 +1,334 @@
+[
+  {
+    "label": "baseline",
+    "theme": "dark",
+    "renderedTheme": "dark",
+    "lang": "en",
+    "screen": "home",
+    "direction": "ltr"
+  },
+  {
+    "label": "baseline",
+    "theme": "dark",
+    "renderedTheme": "dark",
+    "lang": "en",
+    "screen": "stats",
+    "direction": "ltr"
+  },
+  {
+    "label": "baseline",
+    "theme": "dark",
+    "renderedTheme": "dark",
+    "lang": "en",
+    "screen": "workout",
+    "direction": "ltr"
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "renderedTheme": "dark",
+    "lang": "en",
+    "screen": "home",
+    "direction": "ltr"
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "renderedTheme": "dark",
+    "lang": "en",
+    "screen": "stats",
+    "direction": "ltr"
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "renderedTheme": "dark",
+    "lang": "en",
+    "screen": "workout",
+    "direction": "ltr"
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "lang": "en",
+    "story": "existing speed cards/Focus preserved; actual logging menu changes preference only; distance/duration edits use original calculations; independent miles with kg and existing note/tag/done retained",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "lang": "en",
+    "story": "unchanged opt-in Home card -> actual dismiss/Undo/guest JSON -> activities-only state update suppresses false leg-neglect advice without profile writes",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "lang": "en",
+    "story": "existing Stats -> original goals editor -> run distance and any-minutes goals -> reorder -> actual guest JSON, eight-week chart and original user data retained",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "lang": "en",
+    "story": "actual set menu -> original tempo preset -> saved guest JSON -> inline reopen -> clear without changing original data",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "lang": "en",
+    "story": "500-character existing note editor -> saved guest JSON; CSV downloads read-only; duplicate import protected; fresh confirmed import retains ID/tag/note and active draft",
+    "passed": true
+  },
+  {
+    "label": "baseline",
+    "theme": "dark",
+    "renderedTheme": "dark",
+    "lang": "he",
+    "screen": "home",
+    "direction": "rtl"
+  },
+  {
+    "label": "baseline",
+    "theme": "dark",
+    "renderedTheme": "dark",
+    "lang": "he",
+    "screen": "stats",
+    "direction": "rtl"
+  },
+  {
+    "label": "baseline",
+    "theme": "dark",
+    "renderedTheme": "dark",
+    "lang": "he",
+    "screen": "workout",
+    "direction": "rtl"
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "renderedTheme": "dark",
+    "lang": "he",
+    "screen": "home",
+    "direction": "rtl"
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "renderedTheme": "dark",
+    "lang": "he",
+    "screen": "stats",
+    "direction": "rtl"
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "renderedTheme": "dark",
+    "lang": "he",
+    "screen": "workout",
+    "direction": "rtl"
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "lang": "he",
+    "story": "existing speed cards/Focus preserved; actual logging menu changes preference only; distance/duration edits use original calculations; independent miles with kg and existing note/tag/done retained",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "lang": "he",
+    "story": "unchanged opt-in Home card -> actual dismiss/Undo/guest JSON -> activities-only state update suppresses false leg-neglect advice without profile writes",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "lang": "he",
+    "story": "existing Stats -> original goals editor -> run distance and any-minutes goals -> reorder -> actual guest JSON, eight-week chart and original user data retained",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "lang": "he",
+    "story": "actual set menu -> original tempo preset -> saved guest JSON -> inline reopen -> clear without changing original data",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "dark",
+    "lang": "he",
+    "story": "500-character existing note editor -> saved guest JSON; CSV downloads read-only; duplicate import protected; fresh confirmed import retains ID/tag/note and active draft",
+    "passed": true
+  },
+  {
+    "label": "baseline",
+    "theme": "light",
+    "renderedTheme": "light",
+    "lang": "en",
+    "screen": "home",
+    "direction": "ltr"
+  },
+  {
+    "label": "baseline",
+    "theme": "light",
+    "renderedTheme": "light",
+    "lang": "en",
+    "screen": "stats",
+    "direction": "ltr"
+  },
+  {
+    "label": "baseline",
+    "theme": "light",
+    "renderedTheme": "light",
+    "lang": "en",
+    "screen": "workout",
+    "direction": "ltr"
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "renderedTheme": "light",
+    "lang": "en",
+    "screen": "home",
+    "direction": "ltr"
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "renderedTheme": "light",
+    "lang": "en",
+    "screen": "stats",
+    "direction": "ltr"
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "renderedTheme": "light",
+    "lang": "en",
+    "screen": "workout",
+    "direction": "ltr"
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "lang": "en",
+    "story": "existing speed cards/Focus preserved; actual logging menu changes preference only; distance/duration edits use original calculations; independent miles with kg and existing note/tag/done retained",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "lang": "en",
+    "story": "unchanged opt-in Home card -> actual dismiss/Undo/guest JSON -> activities-only state update suppresses false leg-neglect advice without profile writes",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "lang": "en",
+    "story": "existing Stats -> original goals editor -> run distance and any-minutes goals -> reorder -> actual guest JSON, eight-week chart and original user data retained",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "lang": "en",
+    "story": "actual set menu -> original tempo preset -> saved guest JSON -> inline reopen -> clear without changing original data",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "lang": "en",
+    "story": "500-character existing note editor -> saved guest JSON; CSV downloads read-only; duplicate import protected; fresh confirmed import retains ID/tag/note and active draft",
+    "passed": true
+  },
+  {
+    "label": "baseline",
+    "theme": "light",
+    "renderedTheme": "light",
+    "lang": "he",
+    "screen": "home",
+    "direction": "rtl"
+  },
+  {
+    "label": "baseline",
+    "theme": "light",
+    "renderedTheme": "light",
+    "lang": "he",
+    "screen": "stats",
+    "direction": "rtl"
+  },
+  {
+    "label": "baseline",
+    "theme": "light",
+    "renderedTheme": "light",
+    "lang": "he",
+    "screen": "workout",
+    "direction": "rtl"
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "renderedTheme": "light",
+    "lang": "he",
+    "screen": "home",
+    "direction": "rtl"
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "renderedTheme": "light",
+    "lang": "he",
+    "screen": "stats",
+    "direction": "rtl"
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "renderedTheme": "light",
+    "lang": "he",
+    "screen": "workout",
+    "direction": "rtl"
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "lang": "he",
+    "story": "existing speed cards/Focus preserved; actual logging menu changes preference only; distance/duration edits use original calculations; independent miles with kg and existing note/tag/done retained",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "lang": "he",
+    "story": "unchanged opt-in Home card -> actual dismiss/Undo/guest JSON -> activities-only state update suppresses false leg-neglect advice without profile writes",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "lang": "he",
+    "story": "existing Stats -> original goals editor -> run distance and any-minutes goals -> reorder -> actual guest JSON, eight-week chart and original user data retained",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "lang": "he",
+    "story": "actual set menu -> original tempo preset -> saved guest JSON -> inline reopen -> clear without changing original data",
+    "passed": true
+  },
+  {
+    "label": "migration",
+    "theme": "light",
+    "lang": "he",
+    "story": "500-character existing note editor -> saved guest JSON; CSV downloads read-only; duplicate import protected; fresh confirmed import retains ID/tag/note and active draft",
+    "passed": true
+  }
+]

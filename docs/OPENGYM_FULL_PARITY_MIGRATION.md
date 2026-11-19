@@ -15,8 +15,13 @@ parity remain open; the existing sync/auth/storage algorithms are unchanged.
 
 The [weekly cardio goals continuation](./PR69_CARDIO_GOALS_VERIFICATION_2026-11-19.md) mounts the
 complete original new feature leaf with IronLog's actual controls, store and scoped style tokens.
-Original editor/engine logic is unchanged. Full activity import/sync, catalogue, distance input
-and native verification remain separate open gates.
+Original editor/engine logic is unchanged. Full activity import/sync, catalogue and native
+verification remain separate open gates.
+
+The [cardio distance continuation](./PR69_CARDIO_DISTANCE_VERIFICATION_2026-11-19.md) connects
+unchanged original distance helpers to actual IronLog Cards/List/Compact/Focus controls and history
+formatting. Explicit receiver preferences and conservative identity checks protect CSV metadata;
+the schema cannot recover source logging intent. Full native/data-restore gates remain open.
 
 The [complete-snapshot preservation gate](./PR69_COMPLETE_PROFILE_AUDIT_2026-11-19.md) adds a
 read-only comparison over every existing JSON root field, including unknown/custom settings,
