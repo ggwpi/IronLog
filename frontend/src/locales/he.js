@@ -1,6 +1,32 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  // Original weekly cardio goals.
+  "{0} of {1} min": "{0} מתוך {1} דק׳",
+  "{0} of {1}": "{0} מתוך {1}",
+  "Add a goal": "הוספת יעד",
+  "Activity": "פעילות",
+  "Per week": "לשבוע",
+  "Show first": "הצגה בראש הרשימה",
+  "Weekly cardio goals": "יעדי אירובי שבועיים",
+  "150 minutes a week is the number health advice keeps repeating. Pick yours, or none.": "150 דקות בשבוע הוא המספר שחוזר בהמלצות הבריאות. אפשר לבחור יעד אחר, או לא להגדיר יעד.",
+  "No goal yet. The card just counts.": "טרם הוגדר יעד. הכרטיס רק מסכם את הפעילות.",
+  "Cardio exercises count by their name, sport from Apple Health, Health Connect or an import by its type.": "תרגילי אירובי נספרים לפי שמם; פעילות ספורט מ־Apple Health, מ־Health Connect או מייבוא נספרת לפי הסוג שלה.",
+  "Goals": "יעדים",
+  "Cardio this week": "אירובי השבוע",
+  "Goal reached. Your heart says thanks.": "היעד הושג. הלב שלך מודה לך.",
+  "Any cardio": "כל פעילות אירובית",
+  "Run": "ריצה",
+  "Ride": "רכיבה",
+  "Swim": "שחייה",
+  "Walk": "הליכה",
+  "Hike": "טיול רגלי",
+  "Rowing": "חתירה",
+  "Elliptical": "מכשיר אליפטי",
+  "Stair climber": "מכשיר מדרגות",
+  "Jump rope": "קפיצה בחבל",
+  "Skiing": "סקי",
+  "Distance": "מרחק",
   // Original tempo controls through IronLog UI.
   "About as heavy as a blue whale.": "כבד בערך כמו לווייתן כחול.",
   "About {0}× a blue whale.": "בערך פי {0} ממשקל לווייתן כחול.",

@@ -56,6 +56,43 @@ fs.writeFileSync(path.join(out, 'run.json'), JSON.stringify({ ...run, status: 'r
       results.push({ label, theme, renderedTheme, lang, screen, direction: await page.evaluate(() => document.documentElement.dir) })
     }
     if (label === 'migration') {
+      if (process.env.IRONLOG_VERIFY_CARDIO === '1') {
+        const original = await page.evaluate(async () => structuredClone((await import('/src/store/useStore.js')).useStore.getState().S))
+        const words = await page.evaluate(async () => {
+          const { t } = await import('/src/lib/i18n.js')
+          const { useStore } = await import('/src/store/useStore.js')
+          useStore.setState(s => ({ S: { ...s.S, workouts: [...s.S.workouts, { id: 'cardio-fixture', name: 'Cardio fixture', d: '2026-11-19', start: 1795076100000, end: 1795078800000, vol: 0, entries: [{ id: '0685', sets: [{ min: 45, km: 7.5, speed: 10, done: true }] }] }] } }))
+          location.hash = '#/stats'
+          return { addGoal: t('Add a goal'), add: t('Add'), run: t('Run'), any: t('Any cardio'), distance: t('Distance'), first: t('Show first') }
+        })
+        const card = page.locator('[data-cardio-week]')
+        await card.waitFor({ state: 'visible' })
+        await card.getByRole('button').click()
+        await page.getByRole('button', { name: words.addGoal, exact: true }).click()
+        await page.locator('[data-kind="run"]').click()
+        await page.getByRole('button', { name: words.distance, exact: true }).click()
+        await shot('cardio-goal-editor')
+        assert.equal(await page.locator('[data-cardio-goal-edit] input').evaluateAll(inputs => inputs.every(input => { const r = input.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth })), true)
+        await page.getByRole('button', { name: words.add, exact: true }).click()
+        await page.getByRole('button', { name: words.addGoal, exact: true }).click()
+        await page.getByRole('button', { name: words.add, exact: true }).click()
+        await page.locator('[data-cardio-goals-sheet] button.lrow').filter({ has: page.getByText(words.any, { exact: true }) }).click()
+        await page.getByRole('button', { name: words.first, exact: true }).click()
+        const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('gym_state_v1')))
+        assert.equal(saved.cardioGoal, 150)
+        assert.deepEqual(saved.cardioGoals, [{ kind: 'any', unit: 'min', v: 150 }, { kind: 'run', unit: 'km', v: 10 }])
+        assert.deepEqual(saved.active, original.active)
+        assert.deepEqual(saved.workouts.slice(0, -1), original.workouts)
+        assert.deepEqual(saved.bodyweight, original.bodyweight)
+        await page.keyboard.press('Escape')
+        await page.waitForTimeout(400)
+        assert.equal(await card.locator('.cardio-bar').count(), 8)
+        await shot('cardio-goals-saved')
+        results.push({ label, theme, lang, story: 'existing Stats -> original goals editor -> run distance and any-minutes goals -> reorder -> actual guest JSON, eight-week chart and original user data retained', passed: true })
+        // Restore only the synthetic test fixture before the independent note/CSV/tempo stories.
+        await page.evaluate(async S => { (await import('/src/store/useStore.js')).useStore.setState({ S }); location.hash = '#/workout' }, original)
+        await page.waitForTimeout(500)
+      }
       if (process.env.IRONLOG_VERIFY_TEMPO === '1') {
         const words = await page.evaluate(async () => {
           const { t } = await import('/src/lib/i18n.js')

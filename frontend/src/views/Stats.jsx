@@ -11,6 +11,8 @@ import { t, exerciseNameFor, exerciseNameClass, getLang } from '../lib/i18n.js'
 import { bwSheet, goalSheet, calendarSheet, dayOverrideSheet, workoutDetailSheet, exerciseHistorySheet, WorkoutRow, bwDeltaColor, weighInsSheet } from '../sheets.jsx'
 import LineChart from '../components/LineChart.jsx'
 import { lifetimeTotals } from '../lib/lifetime-totals.js'
+import CardioWeekCard from '../components/CardioWeek.jsx'
+import '../components/ironlog-cardio-week.css'
 import StrengthLevelsCard from '../components/StrengthLevelsCard.jsx'
 import RelativeStrengthCard from '../components/RelativeStrengthCard.jsx'
 import WeeklyMuscleTargetsCard from '../components/WeeklyMuscleTargetsCard.jsx'
@@ -674,6 +676,7 @@ export default function Stats() {
     </div>}
 
     {/* Same IronLog card/sheet system as the existing Stats UI. No upstream styling. */}
+    <CardioWeekCard S={S} />
     {isOn(S, 'strength') && workouts.length > 0 && <StrengthLevelsCard S={S} />}
 
     <div className="card">

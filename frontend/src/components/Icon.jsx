@@ -13,6 +13,10 @@
 //   · geometry snapped to .5 so it lands on pixel edges at 24px
 
 const P = {
+  // Additional activity icons; original geometry, existing renderer unchanged.
+  snowflake: <path d="M12 3.4v17.2M4.6 7.7l14.8 8.6M4.6 16.3l14.8-8.6M9.8 4.8 12 6.6l2.2-1.8M9.8 19.2l2.2-1.8 2.2 1.8M4.2 10.5l2.7-.9-.5-2.8M19.8 13.5l-2.7.9.5 2.8M4.2 13.5l2.7.9-.5 2.8M19.8 10.5l-2.7-.9.5-2.8" />,
+  stairs: <path d="M3.6 19.4h4.6v-4.6h4.6v-4.6h4.6V5.6h3" />,
+  tree: <path d="M12 3.4 7.6 9.4h2.3l-3.5 4.8h2.7L5.6 19h12.8l-3.5-4.8h2.7l-3.5-4.8h2.3ZM12 19v2" />,
   /* ---- navigation ---- */
   house: <path d="M3.5 10.7 12 3.8l8.5 6.9M5.9 9.4V19a1.4 1.4 0 0 0 1.4 1.4h9.4A1.4 1.4 0 0 0 18.1 19V9.4" />,
   calendar: <><rect x="3.4" y="5.2" width="17.2" height="15.4" rx="3.2" /><path d="M8.2 3.4v3.4M15.8 3.4v3.4M3.4 10.2h17.2" /></>,

@@ -4,6 +4,32 @@
 import pt from './pt.js'
 
 export const PT_BR_OVERRIDES = {
+  // Original weekly cardio goals.
+  "{0} of {1} min": "{0} de {1} min",
+  "{0} of {1}": "{0} de {1}",
+  "Add a goal": "Adicionar uma meta",
+  "Activity": "Atividade",
+  "Per week": "Por semana",
+  "Show first": "Mostrar primeiro",
+  "Weekly cardio goals": "Metas semanais de cardio",
+  "150 minutes a week is the number health advice keeps repeating. Pick yours, or none.": "150 minutos por semana é o número que as dicas de saúde não param de repetir. Escolha o seu, ou nenhum.",
+  "No goal yet. The card just counts.": "Ainda sem meta. O cartão só vai contando.",
+  "Cardio exercises count by their name, sport from Apple Health, Health Connect or an import by its type.": "Os exercícios de cardio contam pelo nome; o esporte do Apple Saúde, do Health Connect ou de uma importação, pelo tipo.",
+  "Goals": "Metas",
+  "Cardio this week": "Cardio nesta semana",
+  "Goal reached. Your heart says thanks.": "Meta batida. Seu coração agradece.",
+  "Any cardio": "Qualquer cardio",
+  "Run": "Corrida",
+  "Ride": "Bike",
+  "Swim": "Natação",
+  "Walk": "Caminhada",
+  "Hike": "Trilha",
+  "Rowing": "Remo",
+  "Elliptical": "Elíptico",
+  "Stair climber": "Simulador de escada",
+  "Jump rope": "Pular corda",
+  "Skiing": "Esqui",
+  "Distance": "Distância",
   // Original tempo controls through IronLog UI.
   "About as heavy as a blue whale.": "Mais ou menos o peso de uma baleia-azul.",
   "About {0}× a blue whale.": "Mais ou menos {0}× uma baleia-azul.",
