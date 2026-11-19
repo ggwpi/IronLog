@@ -34,6 +34,17 @@ upstream algorithm, sync routine or existing component. Data fixtures distinguis
 unknown-field preservation from a modern intentional removal. Audio/haptic guide and wider native
 parity remain open. See the [tempo/lifetime evidence](./PR69_TEMPO_LIFETIME_VERIFICATION_2026-11-19.md).
 
+## New weekly cardio feature leaf
+
+The complete original new `components/CardioWeek.jsx` and its original tests are imported with raw
+Git-blob guards. It calls the existing physical IronLog `ui.jsx`, `Icon`, store and sheet host;
+its engine public path re-exports the isolated original module. No existing IronLog screen,
+component or chart is replaced and no upstream stylesheet is mounted. A new scoped stylesheet
+adapts only this new leaf's data attributes to existing IronLog tokens. Original goal editing,
+validation, ordering, unit conversion and chart calculations stay untouched inside the original code.
+This does not permit substituting upstream screens or CSS for existing customized surfaces.
+See [cardio evidence and remaining gates](./PR69_CARDIO_GOALS_VERIFICATION_2026-11-19.md).
+
 ## Correction of prior Set Trend implementation
 `frontend/src/lib/set-trend.js` and `set-trend.test.js` are restored **byte-for-byte to upstream v1.4.5**. The openGym `setTrendOn` default is ON as upstream originally defines. IronLog's existing Workout and saved-workout bottom sheet show the marker only when `S.setTrend === true` (their own UI preference gate), so existing user visuals remain opt-in without altering upstream behavior. IronLog UI tests cover default-off display, opt-in and unchanged workouts. The unchanged upstream blobs are asserted by the integrity regression.
 

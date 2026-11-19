@@ -31,7 +31,7 @@ of every route, service or native platform**. Unchecked means more integration o
 | --- | --- | --- |
 | Immutable source | Git submodule at the required pin; exact-source hash tests | Every remaining imported module and its dependency semantics |
 | IronLog visuals | Actual existing `Home`, `Stats`, `Workout`, `sheets.jsx`, `ui.jsx`; selected phone dark screenshots against `cdf7f16` and light/dark English/Hebrew comparisons against `16961600` | Full light/dark scene matrix, tablet/desktop, empty/error/loading/splash states, all sheets, gestures and native screens |
-| Lifetime totals | Existing Stats History card now calls complete unchanged original `lifetime.js`; original tests and six raw source hashes; compatible history/catalogue/equipment boundaries | Likeness/cardio UI and full goal/sport/catalogue parity; imported dependency code alone is not runtime integration |
+| Lifetime totals | Existing Stats History card now calls complete unchanged original `lifetime.js`; original tests and six raw source hashes; compatible history/catalogue/equipment boundaries | Likeness UI and full native/catalogue parity; imported dependency code alone is not runtime integration |
 | Strength levels | `strength-level.js` original source; existing card and demographics sheet; provenance tests | Full upstream context/settings and platform parity |
 | Relative strength | `relative-strength.js` original source; IronLog chart | Complete upstream context, muscle catalogue and display proof |
 | Weekly muscle targets | Original complete module and original tests under `lib/opengym-v145/`; old public path re-exports it | Dependency adapter intentionally retains isolated `muscles-v145.js`; full exercise-model parity remains open |
@@ -42,7 +42,8 @@ of every route, service or native platform**. Unchecked means more integration o
 | Daily Form | Existing four-question sheet, Stats and stamped daily map | Original complete module, lighter-session adaptation, vitals and Health controls; current model is an earlier adaptation |
 | Form insights | Existing Stats rows and original pure insight functions/tests | New volume/bodyweight/warm-up options and native vital collection |
 | Set trends | Original `set-trend.js` and tests; existing set-number button and history sheet; opt-in outside algorithm | Full device/interaction matrix |
-| Cardio defaults | Original `cardio-kind.js`; all existing new-config entry points pass profile speed units | Distance/pace/resistance/goal model and full cardio UI |
+| Cardio defaults | Original `cardio-kind.js`; all existing new-config entry points pass profile speed units | Distance/pace/resistance entry and full native cardio UI; weekly goals are tracked separately below |
+| Weekly cardio goals | Complete original `CardioWeek.jsx`, original component/engine tests; Stats leaf uses actual IronLog UI/store and scoped token styling; minutes/distance/sessions, ordering/removal and legacy-goal compatibility tested | Full native devices, complete activity import/sync and distance-entry controls; catalogue semantics remain IronLog's |
 | Set colour tags | Original `set-tags.js`; existing menu/history; original CSV writer/reader now retain tags on tested plain/warm-up/drop/per-side rows; read-only MCP colour projection | Full per-side native flows/watch support and complete platform matrix; not full tag feature parity |
 | Set notes | Original read helper through existing menu/history/MCP, existing 500-character editor retained; original CSV reader plus separate long-note compatibility adapter | Coach payload note projection and broader native/offline/privacy matrix; original sanitizer must not replace IronLog's editor |
 | CSV | Complete original writer/reader/dependency closure, four original test files, raw-blob checks; existing all/custom sheet and download/native-share boundary; common own-workout CSV imports through existing confirm/merge | Upstream report-range presets, full body/measurement/multiple-reading imports and complete metadata/format/timezone matrix; original CSV omits IDs/media and cannot replace JSON backups |
@@ -85,6 +86,7 @@ of every route, service or native platform**. Unchecked means more integration o
 - [x] Read-only MCP notes/tags and legacy server note-clear behavior have dedicated regression fixtures; no live account read/write.
 - [x] Complete original lifetime module replaces the earlier extracted calculation; dependency boundaries retain IronLog history and equipment semantics.
 - [x] Original tempo interpretation through existing exercise configuration and set-menu/sheet controls; real guest JSON edit/clear flow in English/Hebrew and true light/dark.
+- [x] Original cardio goal editor/card/engine tests, actual IronLog persistence and old-client fixtures; phone goal addition/order/save story in English/Hebrew and true light/dark.
 - [ ] Full upstream functionality, every custom frontend/backend behavior and native platform verified.
 - [ ] Full UI, accessibility, animation, touch/gesture, splash/loading and device matrix verified.
 - [ ] Data backup restoration and rollback certified. No live data access authorized.

@@ -13,6 +13,11 @@ replaces extracted lifetime code with its complete original module and connects 
 rules to IronLog's exercise settings and set controls. Audio/haptic guides and broader platform
 parity remain open; the existing sync/auth/storage algorithms are unchanged.
 
+The [weekly cardio goals continuation](./PR69_CARDIO_GOALS_VERIFICATION_2026-11-19.md) mounts the
+complete original new feature leaf with IronLog's actual controls, store and scoped style tokens.
+Original editor/engine logic is unchanged. Full activity import/sync, catalogue, distance input
+and native verification remain separate open gates.
+
 The CSV/note continuation now imports original CSV modules unchanged, exposes read-only exports
 through existing IronLog controls, routes common own-workout CSV files into the existing import
 confirmation/merge, and retains IronLog's 500-character notes in the editor/history/MCP/CSV boundary.
