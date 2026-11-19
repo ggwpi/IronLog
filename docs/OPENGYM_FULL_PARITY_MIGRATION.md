@@ -152,3 +152,11 @@ A checkbox can only be checked after implementation and automated/manual proof. 
 - Used the exact upstream 1.4.5 `isOn` implementation in **existing** IronLog Home and Stats card rendering, with legacy default-on behavior and the old `showWeightCard` preference retained.
 - Added render-level tests confirming the original Home greeting/QR, Stats exercise-progress/history and all workouts/bodyweight/media survive optional visibility changes; no data, sync or database schema writes.
 - Still needs UI controls for all original modules, remaining views/services and verification of actual mobile/RTL display and independent restored backups; PR stays Draft.
+
+## Automatic and saved warm-ups continuation
+
+- Complete original ramp/recipe modules, original editor and tests are wired through actual IronLog controls and sheet host. The existing manual count stays available; default-off global generation, per-slot auto/own/none/count, preview and add/remove rows use original logic.
+- Planned, freestyle and swap paths build the block; first-work-load edits reramp open generated rows on IronLog loading grids. Completed, edited and explicit manual loads remain protected. Keep these warm-ups uses the existing duplicate-occurrence resolver and preserves workout/history data. Plan sharing/import and existing cloud stamping retain new recipe fields.
+- Existing volume/charts remain IronLog's. The editor describes that effective behavior without rewriting a stored future volume preference. No native/provider/store/UI replacement or database migration is introduced.
+- Automated verification: 6,368 frontend passes / 6 unchanged Windows path failures (6,374 tests, 539 files); API 694 passes / 24 existing Windows failures / 46 skips (764 total); MCP 96 passes / 1 existing permission failure plus two Windows fs.watch errors. Plain-Node graph, build, media (6,554 + 6,554), fatigue probes (108,000 + 1,800), 19 locale packs × 2,599 keys and source checks pass. Source-string backlog stays 52.
+- One missing import in the swap path was corrected after the full run caught it; its six tests and the final complete frontend run pass apart from the known platform failures. Latest-head Linux results are recorded in PR #69. No additional visual runner changes or temporary test tools are included in this batch.
