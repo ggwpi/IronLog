@@ -1,0 +1,118 @@
+[
+  {
+    "label": "baseline",
+    "lang": "en",
+    "screen": "home",
+    "dir": "ltr",
+    "title": "Hi Guest.",
+    "bodyText": "Hi Guest\n.\nThursday 19 November\nThis week\nMO\n16\nTU\n17\nWE\n18\nTH\n19\nFR\n20\nSA\n21\nSU\n22\nTODAY\nFixture Plan\nStart\nChoose a different workout\nAt the gym\nCheck in\nBody weight\nGoal\nLog\n80 kg\nTue 17 Nov\nTue 17 Nov · 80 kg\nAll weigh-ins\n1 week streak\n1 / 1 this week · 1 workout total\nGuest mode: your data liv",
+    "errors": []
+  },
+  {
+    "label": "baseline",
+    "lang": "en",
+    "screen": "stats",
+    "dir": "ltr",
+    "title": "Stats",
+    "bodyText": "Stats\nProgress & history\nWorkouts\n1\nThis month\n1\nWeek streak\n1\nWeight 30d\n–\nHistory\nWorkouts\n1\nWork sets\n2\nHours\n1\nStrength\nAbout you\nBarbell Bench Press\nNovice lifter · 0.95×\nUsing the men’s table for now. Add your sex and year of birth for a fairer read.\nActivity (last 12 months)\nTime\nVolume\nDec\nJ",
+    "errors": []
+  },
+  {
+    "label": "baseline",
+    "lang": "en",
+    "screen": "workout",
+    "dir": "ltr",
+    "bodyText": "Fixture workout\n10:00 · 0/2 sets\nFinish\n1\nBarbell Bench Press\nPectorals\nBarbell\nBest: 60 kg\nLast time (2 days ago): 60×8, 60×8\nWEIGHT (KG)\nREPS\nOptions: copy, remove\nCopy set\nDelete\n1\n20 per side\nCopy set\nDelete\n2\nAdd set\nPrev\nNext\nAdd exercise\nAdd session note\nFinish workout early · 0/1 exercises\nG",
+    "errors": []
+  },
+  {
+    "label": "migration",
+    "lang": "en",
+    "screen": "home",
+    "dir": "ltr",
+    "title": "Hi Guest.",
+    "bodyText": "Hi Guest\n.\nThursday 19 November\nThis week\nMO\n16\nTU\n17\nWE\n18\nTH\n19\nFR\n20\nSA\n21\nSU\n22\nTODAY\nFixture Plan\nStart\nChoose a different workout\nAt the gym\nCheck in\nBody weight\nGoal\nLog\n80 kg\nTue 17 Nov\nTue 17 Nov · 80 kg\nAll weigh-ins\n1 week streak\n1 / 1 this week · 1 workout total\nGuest mode: your data liv",
+    "errors": []
+  },
+  {
+    "label": "migration",
+    "lang": "en",
+    "screen": "stats",
+    "dir": "ltr",
+    "title": "Stats",
+    "bodyText": "Stats\nProgress & history\nWorkouts\n1\nThis month\n1\nWeek streak\n1\nWeight 30d\n–\nHistory\nWorkouts\n1\nWork sets\n2\nHours\n1\nStrength\nAbout you\nBarbell Bench Press\nNovice lifter · 0.95×\nUsing the men’s table for now. Add your sex and year of birth for a fairer read.\nActivity (last 12 months)\nTime\nVolume\nDec\nJ",
+    "errors": []
+  },
+  {
+    "label": "migration",
+    "lang": "en",
+    "screen": "workout",
+    "dir": "ltr",
+    "bodyText": "Fixture workout\n10:00 · 0/2 sets\nFinish\n1\nBarbell Bench Press\nPectorals\nBarbell\nBest: 60 kg\nLast time (2 days ago): 60×8, 60×8\nWEIGHT (KG)\nREPS\nOptions: copy, remove\nCopy set\nDelete\n1\n20 per side\nCopy set\nDelete\n2\nAdd set\nPrev\nNext\nAdd exercise\nAdd session note\nFinish workout early · 0/1 exercises\nG",
+    "errors": []
+  },
+  {
+    "label": "migration",
+    "lang": "en",
+    "story": "native IronLog tag picker -> active set -> persisted guest JSON -> completed-workout history",
+    "passed": true
+  },
+  {
+    "label": "baseline",
+    "lang": "he",
+    "screen": "home",
+    "dir": "rtl",
+    "title": "שלום אורח.",
+    "bodyText": "שלום אורח\n.\nיום חמישי, 19 בנובמבר\nהשבוע\nב׳\n16\nג׳\n17\nד׳\n18\nה׳\n19\nו׳\n20\nש׳\n21\nא׳\n22\nהיום\nFixture Plan\nהתחלה\nבחירת אימון אחר\nבחדר הכושר\nכניסה למכון\nמשקל גוף\nיעד\nרישום\n80 kg\nיום ג׳, 17 בנוב׳\nיום ג׳, 17 בנוב׳ · 80 kg\nכל השקילות\nרצף של 1 שבוע\n1 / 1 השבוע · 1 אימון בסך הכול\nמצב אורח: הנתונים נשמרים רק בדפד",
+    "errors": []
+  },
+  {
+    "label": "baseline",
+    "lang": "he",
+    "screen": "stats",
+    "dir": "rtl",
+    "title": "נתונים",
+    "bodyText": "נתונים\nהתקדמות והיסטוריה\nאימונים\n1\nהחודש הזה\n1\nרצף שבועות\n1\nמשקל ב־30 יום\n–\nהיסטוריה\nאימונים\n1\nסטים של עבודה\n2\nשעות\n1\nכוח\nAbout you\nBarbell Bench Press\nNovice lifter · 0.95×\nUsing the men’s table for now. Add your sex and year of birth for a fairer read.\nפעילות (12 החודשים האחרונים)\nזמן\nנפח אימון\nדצ",
+    "errors": []
+  },
+  {
+    "label": "baseline",
+    "lang": "he",
+    "screen": "workout",
+    "dir": "rtl",
+    "bodyText": "Fixture workout\n10:00 · 0/2 סטים\nסיום\n1\nBarbell Bench Press\nחזה\nמוט משקולות\nהשיא: 60 kg\nבאימון הקודם (שלשום): 60×8, 60×8\nמשקל (KG)\nחזרות\nאפשרויות: העתקה, הסרה\nהעתקת סט\nמחיקה\n1\n20 לכל צד\nהעתקת סט\nמחיקה\n2\nהוספת סט\nהקודם\nהבא\nהוספת תרגיל\nהוספת הערת אימון\nסיום מוקדם של האימון · 0/1 תרגילים\nמצב אורח: הנתו",
+    "errors": []
+  },
+  {
+    "label": "migration",
+    "lang": "he",
+    "screen": "home",
+    "dir": "rtl",
+    "title": "שלום אורח.",
+    "bodyText": "שלום אורח\n.\nיום חמישי, 19 בנובמבר\nהשבוע\nב׳\n16\nג׳\n17\nד׳\n18\nה׳\n19\nו׳\n20\nש׳\n21\nא׳\n22\nהיום\nFixture Plan\nהתחלה\nבחירת אימון אחר\nבחדר הכושר\nכניסה למכון\nמשקל גוף\nיעד\nרישום\n80 kg\nיום ג׳, 17 בנוב׳\nיום ג׳, 17 בנוב׳ · 80 kg\nכל השקילות\nרצף של 1 שבוע\n1 / 1 השבוע · 1 אימון בסך הכול\nמצב אורח: הנתונים נשמרים רק בדפד",
+    "errors": []
+  },
+  {
+    "label": "migration",
+    "lang": "he",
+    "screen": "stats",
+    "dir": "rtl",
+    "title": "נתונים",
+    "bodyText": "נתונים\nהתקדמות והיסטוריה\nאימונים\n1\nהחודש הזה\n1\nרצף שבועות\n1\nמשקל ב־30 יום\n–\nהיסטוריה\nאימונים\n1\nסטים של עבודה\n2\nשעות\n1\nכוח\nAbout you\nBarbell Bench Press\nNovice lifter · 0.95×\nUsing the men’s table for now. Add your sex and year of birth for a fairer read.\nפעילות (12 החודשים האחרונים)\nזמן\nנפח אימון\nדצ",
+    "errors": []
+  },
+  {
+    "label": "migration",
+    "lang": "he",
+    "screen": "workout",
+    "dir": "rtl",
+    "bodyText": "Fixture workout\n10:00 · 0/2 סטים\nסיום\n1\nBarbell Bench Press\nחזה\nמוט משקולות\nהשיא: 60 kg\nבאימון הקודם (שלשום): 60×8, 60×8\nמשקל (KG)\nחזרות\nאפשרויות: העתקה, הסרה\nהעתקת סט\nמחיקה\n1\n20 לכל צד\nהעתקת סט\nמחיקה\n2\nהוספת סט\nהקודם\nהבא\nהוספת תרגיל\nהוספת הערת אימון\nסיום מוקדם של האימון · 0/1 תרגילים\nמצב אורח: הנתו",
+    "errors": []
+  },
+  {
+    "label": "migration",
+    "lang": "he",
+    "story": "native IronLog tag picker -> active set -> persisted guest JSON -> completed-workout history",
+    "passed": true
+  }
+]

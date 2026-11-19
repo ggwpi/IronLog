@@ -37,3 +37,29 @@ The second command **must** print the pinned commit above. Plain Git checkout ca
 
 ## Body, Motivation, Strength UI adapter slice (IronLog Home and Stats)
 The original, immutable `modules.js` engine's `isOn(S, id)` now gates the existing IronLog bodyweight, streak and strength-specific display surfaces on Home and Stats; original cards, graphs, sheets, fonts, animation, loading/splash and navigation stay structurally unchanged. An absent `S.modules` still enables every module, retaining old users' visual defaults. Explicit opt-out **hides only UI**; workouts, media, routines, logged bodyweight and any Supabase/cloud document fields stay intact and are not migrated or rewritten. Original IronLog-specific `showWeightCard` setting still has precedence. Other modules/services and module Settings UI remain incomplete, and this slice is NOT feature parity.
+
+## Continuation audit and immutable dependency boundary (2026-11-19)
+
+The [feature audit](./OPENGYM_FEATURE_AUDIT.md) contains a repository-wide source inventory and
+504 individually linked release criteria. These are an inventory of work, not completed parity.
+
+`lib/opengym-v145/muscle-targets.js` and its original tests now contain the complete pinned
+upstream files unchanged. The old `lib/muscle-targets.js` public path only re-exports them.
+Their original relative imports remain intact: sibling `format.js` and `muscles.js` are explicit
+IronLog boundary adapters. The latter uses the existing isolated muscle projection; this does not
+certify the legacy exercise catalogue as the exact new upstream catalogue. No workout is rewritten.
+
+`lib/set-tags.js` is the original upstream blob `8c6c8fabe7cca9ac70276cc9bd7524150ea9e7e8`.
+IronLog's existing set-number button/menu and workout-detail sheet consume it. Plain sets have no
+marker. Tag changes use the existing store, completion, JSON and cloud-stamp paths; older-client
+preservation has a pure API fixture. Existing IronLog set notes keep their custom editor/length.
+CSV import/export and native tag surfaces are still missing; do not label this complete tag parity.
+
+Additional original Modules boundaries gate effort entry/Stats, the pre-workout Body prompt,
+Health sync, Recovery Hint and Daily Form summary. Pausing Health retains credentials and written
+IDs and catches up on re-enabling. This is not full module/service parity, in-flight cancellation,
+all alternate start paths or native-vitals collection.
+
+`.gitattributes` fixes LF text checkout for scripts, CSP/generated hashes and immutable sources on
+Windows; no business logic is changed by line-ending rules. Source-integrity tests still compare
+raw Git blob hashes, without relaxing the upstream provenance assertions.

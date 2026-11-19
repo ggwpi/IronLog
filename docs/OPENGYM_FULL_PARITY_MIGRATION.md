@@ -2,6 +2,12 @@
 
 Status: **IN PROGRESS — NOT SAFE TO MERGE OR DEPLOY**
 
+Current traceable inventory: [OPENGYM_FEATURE_AUDIT.md](./OPENGYM_FEATURE_AUDIT.md).
+It records every pinned source/configuration path, known original-code/adapted-code boundaries,
+and 504 open v1.4.3–v1.4.5 release criteria. Local browser/test evidence is recorded in
+[PR69_VERIFICATION_2026-11-19.md](./PR69_VERIFICATION_2026-11-19.md).
+Neither document closes the full functional/native/data-restore gates.
+
 **Immutable upstream source contract:** [OPENGYM_SOURCE_CONTRACT.md](./OPENGYM_SOURCE_CONTRACT.md). openGym v1.4.5 is pinned as a complete Git submodule; every upstream algorithm must stay unmodified, with IronLog-only component/state boundaries. A source snapshot is not proof of runtime integration.
   
 IronLog baseline: `79fc61eed2000049424591b2bde4ec7f20fa6615`  
