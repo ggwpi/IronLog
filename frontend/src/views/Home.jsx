@@ -13,6 +13,7 @@ import DeloadWeekCard from '../components/DeloadWeekCard.jsx'
 import RecoveryHintCard from '../components/RecoveryHintCard.jsx'
 import MiniBodyMap from '../components/MiniBodyMap.jsx'
 import { workoutsLeft } from '../lib/week-left.js'
+import { isOn } from '../lib/modules.js'
 import { queueOf, queueView, weekTally, pinState } from '../lib/queue.js'
 import { scheduleModeOf } from '../lib/rotation.js'
 import { useConnectionTrouble } from '../components/SyncBanner.jsx'
@@ -183,7 +184,7 @@ export default function Home() {
 
     {/* Jump to the gym check-in cards (QR membership codes). Shown here as a quick tap on
         arrival at the gym; folds away per user via the "Gym check-in" switch in Settings. */}
-    {S.checkIn !== false && (
+    {isOn(S, 'checkin') && (
       <div className="card tappable home-checkin" style={{ cursor: 'pointer' }} {...tappable(() => nav('/checkin'))}>
         <div className="row between">
           <div className="row" style={{ gap: 9 }}>

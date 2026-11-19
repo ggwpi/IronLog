@@ -6,6 +6,7 @@ import { DeloadSettingsRows } from '../components/DeloadWeekCard.jsx'
 import { setRecoveryHint } from '../lib/recovery-hint.js'
 import { healthStatus, loadHealth, enableHealth, disableHealth, openHealthConnect, onHealthChange } from '../lib/health-sync.js'
 import { workoutControls } from '../lib/workout-controls.js'
+import { isOn, setModule } from '../lib/modules.js'
 import { speedUnitOf } from '../lib/speed.js'
 import { formulaOf, FORMULA_NAMES } from '../lib/onerm.js'
 import { copyText } from '../lib/clipboard.js'
@@ -840,7 +841,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         {/* Membership QR codes on Home (views/CheckIn.jsx); off = no Home card, no route. */}
         <Row icon="qr" iconTint="var(--blue)" title={t('Gym check-in')}
           subtitle={t('Show a card on Home with your membership QR codes.')}>
-          <Switch checked={S.checkIn !== false} onChange={v => update(s => { s.checkIn = v })} />
+          <Switch checked={isOn(S, 'checkin')} onChange={v => update(s => { s.checkIn = v; setModule(s, 'checkin', v) })} />
         </Row>
         {/* openGym 1.4.5 targets summary: opt-in, never changes existing Home cards. */}
         <Row icon="figureStrength" iconTint="var(--teal)" title={t('Weekly muscle volume')}

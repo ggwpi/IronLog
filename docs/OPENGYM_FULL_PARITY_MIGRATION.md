@@ -99,3 +99,9 @@ A checkbox can only be checked after implementation and automated/manual proof. 
 - UI source files remain IronLog's own; no splash, loading, font, bottom-sheet presentation, existing workout record, remote sync, Supabase schema, or production account is changed.
 - Cross-device in-memory merge regression verifies workout history, IDs, weigh-ins and unchanged routine definitions survive; adding a new routine remains a normal explicit user action through the existing IronLog persistence system.
 - Full parity, restored backups and mobile RTL visual comparisons remain release blockers.
+
+## Original openGym Modules engine + IronLog cloud integration (partial)
+- Imported original `modules.js` and upstream tests unchanged and pinned their content hashes.
+- Client (`frontend/src/lib/sync-merge.js`) and server (`api/sync-stamps.js`) now synchronize module choices per key. This preserves concurrent settings from different devices in the existing IronLog Supabase-bound profile JSON; NO database migrations, user data writes or deployments were performed.
+- Existing IronLog Home check-in card and its current Settings toggle use upstream `isOn` and `setModule`, while keeping the legacy `checkIn` field for old clients. Rest of the UI, splash/boot/loading, native sheets, navigation and historical records remain unchanged.
+- **Partial integration only:** other module visibility/service gates, backwards old-client toggling after an explicit new Modules setting, full source parity, RTL visuals and backup/restore not yet certified. Do not merge or deploy.

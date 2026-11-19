@@ -411,3 +411,29 @@ test('PUT /api/data: an older app\'s two changes of one setting in a row both la
   assert.ok(onDisk._unstamped?.ed?.restSec > 0);
   assert.equal(onDisk._prior?.restSec?.length, 2);   // 100, then 120
 });
+
+test('openGym module preferences are stamped per key by the existing cloud API without touching records', () => {
+  const cur = stored();
+  cur.modules = { body: true, coach: true };
+  const next = clone(cur);
+  next.modules.body = false;
+  stampPut(cur, next, { overRead: true, stamped: false, now: NOW });
+  assert.ok(next.edited['modules.body'] >= NOW);
+  assert.equal(next.edited['modules.coach'], undefined);
+  assert.equal(next.edited.modules, undefined);
+  assert.deepEqual(next.workouts, cur.workouts);
+  assert.deepEqual(next.routines, cur.routines);
+});
+
+test('an older client not sending Modules cannot erase the stored openGym choices', () => {
+  const cur = stored();
+  cur.modules = { body: false, coach: true };
+  cur.edited['modules.body'] = NOW - 100;
+  const next = clone(cur);
+  delete next.modules;
+  delete next.edited;
+  stampPut(cur, next, { overRead: true, stamped: false, now: NOW });
+  assert.deepEqual(next.modules, cur.modules);
+  assert.equal(next.edited['modules.body'], NOW - 100);
+  assert.deepEqual(next.workouts, cur.workouts);
+});
