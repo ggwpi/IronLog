@@ -652,6 +652,7 @@ export default function Stats() {
     <div className="hdr"><div><h1>{t('Stats')}</h1><div className="sub">{t('Progress & history')}</div></div>
       <button className="iconbtn" onClick={() => nav('/history')} aria-label={t('History')}><Icon name="history" /></button></div>
 
+    <Button variant="tinted" icon="calculator" onClick={() => nav('/tools')}>{t('Tools')}</Button>
     <div className="tiles stats-summary">
       <div className="tile"><div className="l"><span>{t('Workouts')}</span><Icon name="dumbbell" /></div><div className="v">{workouts.length}</div></div>
       <div className="tile"><div className="l"><span>{t('This month')}</span><Icon name="calendar" /></div><div className="v">{monthW}</div></div>

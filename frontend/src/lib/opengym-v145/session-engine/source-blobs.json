@@ -69,5 +69,10 @@
   "frontend/src/lib/session-merge.js": "fef144538a7fc8a51b59207b497e75f84a09c00b",
   "frontend/src/lib/muscles.js": "f5045a2f55b4d18c0869bf6c4729750a715634fe",
   "frontend/src/lib/print-doc.js": "55d9ea18adb959da03b5f7341decb783afc69701",
-  "frontend/src/lib/print-pictures.js": "67a3782edc5228e1fda4ac00dc9c2bb99e00c4e6"
+  "frontend/src/lib/print-pictures.js": "67a3782edc5228e1fda4ac00dc9c2bb99e00c4e6",
+  "frontend/src/lib/calculators.js": "e31e76df6268e8fdd0f759361301cb5eeb216fbb",
+  "frontend/src/lib/set-records.js": "eb426880789d48a854774c3086ae463e641bf924",
+  "frontend/src/lib/calculators.test.js": "327372a5d5735cec8185158501de20540a58bc93",
+  "frontend/src/lib/counted-log.js": "4b466d5e61191b8bf50f3d4d9c250a984355ec6c",
+  "frontend/src/lib/counted-log.test.js": "2801306ad811545afbe6a2258fe12bf387781938"
 }

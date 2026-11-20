@@ -12,7 +12,8 @@ Programmes add two routes under Plan; the existing routes and main navigation re
 The programme batch connects original block scheduling, starter templates, week targets,
 start/pause/resume/end/repeat and file interchange to those boundaries. Original tests and
 additional actual-store/UI/API regressions cover the integration; full release parity remains open.
-Journal, Tools, community, trainer dashboards, assistant connections and integration services
+Tools now connects the original lifting/body/pace calculators through existing IronLog controls.
+Journal, community, trainer dashboards, assistant connections and integration services
 remain open Web expansion work. Native platforms remain outside the user-directed milestone.
 The full-source ledger below is an inventory, not a percentage-complete measure.
 

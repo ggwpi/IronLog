@@ -1,5 +1,21 @@
 # IronLog × openGym: full feature parity, IronLog visual design
 
+## Tools continuation (2026-11-20)
+
+- Stats opens a new Tools route using the existing IronLog steppers, segmented controls,
+  exercise picker, cards and tables. No main-navigation replacement or redesign.
+- Complete original calculators and their source tests provide %1RM, RPE loads, DOTS/Wilks/IPF GL,
+  BMI/FFMI/Navy estimates and pace/race times. The complete original counted-log reader supplies
+  its read-only training view. All original source bytes are covered by the existing blob guard.
+- Temporary calculator inputs stay in component state. Only explicitly editing height invokes
+  IronLog's existing store update and generic cloud sync. Body history, measurements, notes and
+  unknown settings are preserved. Existing profile kg/lb and cm/in boundaries are reused.
+- Eighteen original model tests and actual-control regression tests pass, including no-write
+  behavior, intentional height changes and Hebrew/RTL. Nineteen locale packs have 2,862 matching
+  keys; the existing source-string backlog remains 52. Focused tests: 112 pass. Build/media, generated assets, Node graphs and fatigue/history probes pass. Full local frontend: 6,766 passed / six identical Windows-mobile baseline failures; API: 727 passed / 24 identical baseline failures / 46 skipped; MCP: 98 passed / its existing permission failure and two watcher permission errors. Current-head Linux CI follows.
+  Local phone screenshots of both programme editor and calculator tables were checked in Hebrew RTL
+  at 390 × 712 using synthetic demo data; no browser console errors.
+
 ## Multiweek programmes continuation (2026-11-20)
 
 - The next user-directed milestone adds new Web/PWA features to the existing isolated free
@@ -22,7 +38,7 @@
   MCP: 98 passed, its existing Windows permission failure and two watcher permission errors.
   Build, 6,554 stills + 6,554 animations, both plain-Node graphs, generated assets and
   108,000 fatigue / 1,800 history probes pass. Nineteen locale packs now have 2,816 matching
-  keys; the source-string backlog remains 52. Current-head Linux CI is still required.
+  keys; the source-string backlog remains 52. Programmes commit 170ce3f1 passed all five Linux jobs in Tests #250.
 
 
 Status: **IN PROGRESS — NOT SAFE TO MERGE OR DEPLOY**

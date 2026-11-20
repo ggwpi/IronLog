@@ -1,5 +1,19 @@
 # Immutable openGym v1.4.5 source + IronLog presentation contract
 
+## Tools continuation (2026-11-20)
+
+- Stats opens a new Tools route using the existing IronLog steppers, segmented controls,
+  exercise picker, cards and tables. No main-navigation replacement or redesign.
+- Complete original calculators and their source tests provide %1RM, RPE loads, DOTS/Wilks/IPF GL,
+  BMI/FFMI/Navy estimates and pace/race times. The complete original counted-log reader supplies
+  its read-only training view. All original source bytes are covered by the existing blob guard.
+- Temporary calculator inputs stay in component state. Only explicitly editing height invokes
+  IronLog's existing store update and generic cloud sync. Body history, measurements, notes and
+  unknown settings are preserved. Existing profile kg/lb and cm/in boundaries are reused.
+- Eighteen original model tests and actual-control regression tests pass, including no-write
+  behavior, intentional height changes and Hebrew/RTL. Nineteen locale packs have 2,862 matching
+  keys; the existing source-string backlog remains 52. Full current-head suites/build/CI follow.
+
 ## Multiweek programmes continuation (2026-11-20)
 
 - The next user-directed milestone adds new Web/PWA features to the existing isolated free
