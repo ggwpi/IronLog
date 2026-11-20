@@ -49,6 +49,7 @@ import PermissionSteps from './views/PermissionSteps.jsx'
 import Home from './views/Home.jsx'
 import CheckIn from './views/CheckIn.jsx'
 import Plan from './views/Plan.jsx'
+import Programmes, { ProgrammeEdit } from './views/Programmes.jsx'
 import RoutineEdit from './views/RoutineEdit.jsx'
 import Workout from './views/Workout.jsx'
 import Stats from './views/Stats.jsx'
@@ -261,6 +262,8 @@ function Shell() {
           catch-all redirect below. */}
       {isOn(S, 'checkin') && <Route path="/checkin" element={<CheckIn />} />}
       <Route path="/plan" element={<Plan />} />
+      <Route path="/plan/programmes" element={<Programmes />} />
+      <Route path="/plan/prog/:id" element={<ProgrammeEdit />} />
       <Route path="/plan/r/:id" element={<RoutineEdit />} />
       <Route path="/workout" element={<Workout />} />
       <Route path="/stats" element={<Stats />} />

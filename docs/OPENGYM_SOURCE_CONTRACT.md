@@ -1,5 +1,21 @@
 # Immutable openGym v1.4.5 source + IronLog presentation contract
 
+## Multiweek programmes continuation (2026-11-20)
+
+- The next user-directed milestone adds new Web/PWA features to the existing isolated free
+  preview. Production deployment, main merge and native-app expansion remain excluded.
+- The complete original programme model, starter builder, session target calculation, progression
+  copy and programme plan interchange retain pinned upstream Git blobs. The existing IronLog
+  session builder delegates programme targets while retaining its warm-ups, notes and metadata.
+- New programme routes use actual IronLog controls, sheets, store and theme tokens. They support
+  creation, three starters, 1–16 weeks, week effort/%1RM/deload, start/pause/resume/end/repeat and
+  sharing/importing. Home's existing layout gains a programme link only for a running programme.
+- Programme definitions use the existing per-key conflict protocol; the running programme uses
+  the existing setting stamps. API old-client protection and previous-schedule restoration have
+  regression coverage. No SQL migration, alternative store, account or production data operation.
+- IronLog's profile-wide weight unit remains the presentation boundary. Independent per-exercise
+  unit preferences and the remaining Web product areas are separate open integrations.
+
 Current milestone: existing IronLog Web/PWA functionality first, using its current production
 architecture and components. New product areas and native platforms are deferred. This changes
 execution priority, not the immutable-source, existing-UI or user-data preservation requirements.

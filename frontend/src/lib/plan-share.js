@@ -1,3 +1,6 @@
+import * as programmeShare from './opengym-v145/programme-share/frontend/src/lib/plan-share.js'
+import { syncSessionEngineProfile } from './opengym-session-profile.js'
+import { syncUpstreamLocale } from './opengym-locale.js'
 // Share a weekly plan.
 //
 // Two jobs:
@@ -226,7 +229,15 @@ function cleanCustom(c) {
 }
 
 /** Build the shareable bundle: every routine, the week schedule, referenced customs. */
+export function buildProgrammeBundle(S, id) {
+  syncSessionEngineProfile(S); syncUpstreamLocale()
+  return programmeShare.buildProgrammeBundle(S, id)
+}
 export function buildPlanBundle(S, name) {
+  if (Object.keys(S.programmes || {}).length) {
+    syncSessionEngineProfile(S); syncUpstreamLocale()
+    return programmeShare.buildPlanBundle(S, name)
+  }
   const unit = planUnit(S.unit == null ? 'kg' : S.unit)
   if (!unit) unitError()
   const routines = (S.routines || []).map(r => ({
@@ -260,6 +271,7 @@ export function parsePlan(raw, destinationUnit = 'kg') {
   const notPlan = () => Object.assign(new Error(t('this isn’t an openGym plan file')), { code: 'not-plan' })
   let data = raw
   if (typeof raw === 'string') { try { data = JSON.parse(raw) } catch { throw notPlan() } }
+  if (data && (Object.hasOwn(data, 'programmes') || Object.hasOwn(data, 'programme_fmt'))) return programmeShare.parsePlan(data, destinationUnit)
   const destination = planUnit(destinationUnit)
   if (!data || typeof data !== 'object' || Array.isArray(data) || !data.opengym_plan || !Array.isArray(data.routines) || !destination) {
     throw notPlan()
@@ -332,6 +344,7 @@ export function parsePlan(raw, destinationUnit = 'kg') {
  *    leaves empty become rest days — a half-overwritten week would silently mix two plans)
  */
 export function mergePlan(s, bundle, { schedule } = {}) {
+  if (Object.hasOwn(bundle, 'programmes')) return programmeShare.mergePlan(s, bundle, { schedule })
   const destination = planUnit(s.unit == null ? 'kg' : s.unit)
   if (!destination) unitError()
   const source = convertedBundle(bundle, destination)

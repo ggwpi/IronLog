@@ -14,6 +14,7 @@ import { isDeloadDay, deloadSets } from './deload-cycle.js'
 import { todayISO } from './format.js'
 import { withWarmupBlock, warmupBuildConfig } from './warmup-ramp.js'
 import { bandClimbReps } from './bands.js'
+import { programmeStatus, programmeSlot, programmePlan } from './programmes.js'
 
 /**
  * Where a planned session's reps come from (Settings → During a workout). 'plan', the default:
@@ -40,12 +41,14 @@ export function buildPlannedEntry(stored, cfg, routine, { noProg = false } = {})
   const st = historyAs(stored, cfg.id, meaning)
   // `plan` is kept on the entry purely so the workout can explain the number it chose.
   let plan = noProg ? { policy: 'off', kind: 'off' } : nextPrescription(st, cfg, routine)
+  const iso = stored?.active?.d || todayISO()
+  const slot = noProg ? null : programmeSlot(stored, routine?.id, cfg.id, iso)
   // openGym 1.4.5: a manually enabled deload week affects new, planned
   // lifting sessions only. Existing workouts and saved routine definitions
   // remain untouched; rehab/no-progression routines keep their own behavior.
-  const cycle = !noProg && !!routine && modeOf(cfg) === 'reps'
+  const cycle = !noProg && !slot && !!routine && modeOf(cfg) === 'reps'
     && !(Array.isArray(cfg.pyramid) && cfg.pyramid.length)
-    && isDeloadDay(stored, stored?.active?.d || todayISO())
+    && isDeloadDay(stored, iso, !!programmeStatus(stored, iso)?.current)
   if (cycle) {
     const lastW = sessionsFor(st, cfg.id, cfg, routine?.id).filter(x => x.mode === 'reps').at(-1)?.weight
     const n = deloadSets(cfg.sets)
@@ -62,7 +65,9 @@ export function buildPlannedEntry(stored, cfg, routine, { noProg = false } = {})
   // plates exist), not the unit default; a timed exercise's `inc` is seconds, so it keeps the
   // default for its optional load.
   const step = modeOf(cfg) === 'reps' ? weightIncrement(cfg, st.unit) : defaultIncrement(cfg.id, st.unit)
-  const planReps = !startsFromLast(st) || cycle
+  const policyKind = plan.kind
+  if (slot) plan = programmePlan(st, cfg, plan, slot, step)
+  const planReps = !startsFromLast(st) || cycle || plan.kind === 'programme'
   // Warm-ups ramp over the dumbbells you own when the profile lists them (issue #376): a rung
   // lands on the heaviest bell under it, never on a weight in between that no rack holds.
   const ramp = (modeOf(cfg) === 'reps' && ownedWeightsFor(st, cfg)) || step
@@ -70,7 +75,7 @@ export function buildPlannedEntry(stored, cfg, routine, { noProg = false } = {})
   const backoffStep = modeOf(cfg) === 'reps' && backoffStepOf(cfg, st.unit) ? step : 0
   const climbReps = plan.reps != null ? bandClimbReps(st, rowCfg, { step: ramp, rid: routine?.id, useTarget: plan.kind === 'off', planReps }) : 0
   if (climbReps) plan = { ...plan, reps: climbReps, rowReps: undefined, why: undefined }
-  const built = applyPrescription(buildSets(st, warmupBuildConfig(rowCfg), { step: ramp, rid: routine?.id, useTarget: plan.kind === 'off', planReps }), plan, ramp, barFloor(st, cfg.id), isAssisted(cfg))
+  const built = applyPrescription(buildSets(st, warmupBuildConfig(rowCfg), { step: ramp, rid: routine?.id, useTarget: policyKind === 'off', planReps }), plan, ramp, barFloor(st, cfg.id), isAssisted(cfg))
   const rows = backoffStep ? applyBackoff(built, backoffStep) : built
   const sets = withWarmupBlock(stored, rowCfg, applyIntensifierPlan(rows, rowCfg, dropGrid(st, cfg)), {
     grid: dropGrid(st, cfg), floor: barFloor(st, cfg.id), unit: st.unit,
@@ -98,7 +103,7 @@ export function buildPlannedEntry(stored, cfg, routine, { noProg = false } = {})
     && rows.some(s => !isWarmupRow(s) && s.r !== cfg.reps)
   // `planned` is what the routine asked for, kept apart from the target the prescription moved,
   // so the next session can tell an edited plan from a progressed one (nextPrescription).
-  return { target, plan, sets, planned: plannedOf(cfg), ...(carried ? { carried: true } : {}), ...(cycle ? { deload: true } : {}) }
+  return { target, plan, sets, planned: plannedOf(cfg), ...(carried ? { carried: true } : {}), ...(cycle || slot?.deload ? { deload: true } : {}) }
 }
 
 /**

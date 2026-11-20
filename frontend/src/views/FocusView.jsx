@@ -1,3 +1,4 @@
+import { rpeAs } from '../lib/programmes.js'
 import { useState } from 'react'
 import { BandChips } from '../components/Bands.jsx'
 import { usesBands, setBandsOf, toggleSetBand } from '../lib/bands.js'
@@ -303,7 +304,7 @@ export default function FocusView({
         {pinnedNote && <div className="focus-note pinned"><Icon name="flag" />{t('From {0}:', fmtDate(pinnedNote.d, true))} {pinnedNote.note}</div>}
         {entry.note && <div className="focus-note">{entry.note}</div>}
         {last && <div className="focus-last">{t('Last time')} · {fmtDate(last.d)}</div>}
-        {guidance && <button className="focus-guidance" onClick={onProgressionSettings}><Icon name="lightbulb" />{t(guidance.policyLabel)}</button>}
+        {guidance && <button className="focus-guidance" onClick={onProgressionSettings}><Icon name="lightbulb" />{t(guidance.policyLabel)}{entry.plan?.kind === 'programme' && <> · {t(...guidance.why)}{guidance.prog?.rpe != null && (' · ' + rpeAs(guidance.prog.rpe, effort).k + ' ' + fmtNum(rpeAs(guidance.prog.rpe, effort).v))}</>}</button>}
       </div>
       <Prescription entry={entry} setIdx={setIdx} unit={S.unit} fallbackRest={S.restSec}>
         <PlanBadge entry={entry} mode={mode} />

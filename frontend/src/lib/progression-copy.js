@@ -1,4 +1,5 @@
 import { POLICY_NAME } from './progression.js'
+import { progressionGuidance as original } from './opengym-v145/session-engine/frontend/src/lib/progression-copy.js'
 
 /**
  * Presentation-only view of a progression result. The engine remains the source of truth for
@@ -6,6 +7,7 @@ import { POLICY_NAME } from './progression.js'
  * explicit in the workout guidance.
  */
 export function progressionGuidance(plan) {
+  if (plan?.kind === 'programme') return original(plan)
   if (!plan?.why || plan.kind === 'off' || plan.policy === 'off') return null
   const policyLabel = POLICY_NAME[plan.policy]
   if (!policyLabel) return null

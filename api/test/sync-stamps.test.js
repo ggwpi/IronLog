@@ -16,6 +16,18 @@ import { stampPut } from '../sync-stamps.js';
 
 const clone = v => JSON.parse(JSON.stringify(v));
 const NOW = 1_800_000_000_000;
+test('programme edits are stamped per definition; incapable clients retain existing definitions and run', () => {
+  const cur = { _ts: NOW, programmes: { a: { id: 'a', weeks: [{ rpe: 7 }] }, b: { id: 'b', weeks: [{}] } },
+    programme: { id: 'a', startedOn: '2026-11-16', saved: { week: { 1: ['r'] } } } };
+  const next = clone(cur); next.programmes.a.weeks[0].rpe = 8;
+  stampPut(cur, next, { overRead: true, now: NOW + 10 });
+  assert.equal(next.edited['programmes.a'], NOW + 10);
+  assert.equal(next.edited['programmes.b'], undefined);
+  const old = { _ts: NOW + 20, workouts: [] };
+  stampPut(next, old, { overRead: true, now: NOW + 20 });
+  assert.deepEqual(old.programmes, next.programmes);
+  assert.deepEqual(old.programme, next.programme);
+});
 const stored = () => ({
   _ts: NOW - 5000, _rev: 3, restSec: 90, queue: { ids: ['a'] }, week: { 1: 'r1' },
   workouts: [{ id: 'w1', d: '2026-10-01', start: 1, end: 2 }, { id: 'w2', d: '2026-10-02', start: 3, end: 4 }],

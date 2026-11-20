@@ -2171,3 +2171,12 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
   left:calc(-1 * var(--eb-l,0px));right:calc(-1 * var(--eb-r,0px));
   box-shadow:0 0 28px rgba(0,0,0,.28);
 }
+
+/* Programme leaves use the existing IronLog tokens and controls. */
+.prog-run{margin-bottom:16px}.prog-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prog-bar{height:4px;border-radius:2px;background:var(--surface-3);margin-top:10px;overflow:hidden}
+.prog-bar span{display:block;height:100%;background:var(--acc)}
+.prog-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.prog-actions.col{flex-direction:column;margin-top:16px}
+.prog-pct{flex:none;display:flex;align-items:baseline;gap:3px;background:var(--surface-2);border-radius:10px;padding:0 10px}
+.prog-pct .num{width:4ch;min-height:40px;text-align:end}.prog-pct i{font-style:normal;color:var(--label-2)}
+.prog-weeks .stp{flex:none;width:136px}

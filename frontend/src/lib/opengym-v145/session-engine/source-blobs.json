@@ -52,5 +52,22 @@
   "frontend/src/lib/warmup-ramp.test.js": "8c6a163382259a8c68e400e16b6213f9bec023e7",
   "frontend/src/lib/warmup-assisted.test.js": "82021f4b13bf1159b9b24929500e70851e3732a4",
   "frontend/src/lib/warmup-invariants.test.js": "18143c09d3d0afc4b1fe9dc5fee1ce3d35874533",
-  "frontend/src/lib/session-start.warmups.test.js": "4854cdc5a07dfbd4a97d6f17ea406830c5091abe"
+  "frontend/src/lib/session-start.warmups.test.js": "4854cdc5a07dfbd4a97d6f17ea406830c5091abe",
+  "frontend/src/lib/starter.js": "90d639e4904822194e279503cb50ad18d345c949",
+  "frontend/src/lib/equipment.js": "0aeabd6c30fcd05f555262f2671bf56c41232aa2",
+  "frontend/src/lib/machine-kinds.js": "55d5692c5907270dc8a890dbffea7ffa0e20b5ab",
+  "api/coach/core/starter-plans.js": "eb977478ae8b6cbaf332ac1afedfe1c5fbdada87",
+  "frontend/src/lib/progression-copy.js": "e053170335f08a53bf4f3dfe8582e70fefb7e124",
+  "frontend/src/lib/finish-workout.js": "77c3a69e687d23264814cee84e78f33eb7e3948b",
+  "frontend/src/lib/workout-pause.js": "dc6d0220f0eb9e3b37420511600d3d13e15726cb",
+  "frontend/src/lib/programmes.test.js": "d26fd375aa02bd1b4b86f3ddacfd145d5116dd7a",
+  "frontend/src/lib/programmes.sync.test.js": "647f692ce4b2beb1aaedc193534d26c693ea2286",
+  "frontend/src/lib/circuit.js": "c97aef2480c26f1fab6b1db28928e2163e10517f",
+  "frontend/src/lib/tempo.js": "9a5b0a6f67f78c18d849303667558bf27c1e2aad",
+  "frontend/src/lib/routine-backups.js": "503b8a7c7b39058a2dcf24128f1570db4c93afff",
+  "frontend/src/lib/media-refs.js": "1625237e84159c348bc0411f4bd4ec6c112d311e",
+  "frontend/src/lib/session-merge.js": "fef144538a7fc8a51b59207b497e75f84a09c00b",
+  "frontend/src/lib/muscles.js": "f5045a2f55b4d18c0869bf6c4729750a715634fe",
+  "frontend/src/lib/print-doc.js": "55d9ea18adb959da03b5f7341decb783afc69701",
+  "frontend/src/lib/print-pictures.js": "67a3782edc5228e1fda4ac00dc9c2bb99e00c4e6"
 }

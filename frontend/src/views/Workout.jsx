@@ -1,3 +1,4 @@
+import { rpeAs } from '../lib/programmes.js'
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import SwipeCards from '../components/SwipeCards.jsx'
 import { BandChips } from '../components/Bands.jsx'
@@ -749,7 +750,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     {guidance && onProgressionSettings && <button type="button" className={'progline' + (plan.kind === 'deload' ? ' warn' : '')}
       aria-label={t('Open exercise settings')} onClick={onProgressionSettings}>
       <Icon name={plan.kind === 'up' ? 'arrowUp' : plan.kind === 'deload' ? 'arrowDown' : 'lightbulb'} />
-      <span><strong>{t(guidance.policyLabel)}</strong> · {t(...guidance.why)}</span>
+      <span><strong>{t(guidance.policyLabel)}</strong> · {t(...guidance.why)}{guidance.prog?.rpe != null && (' · ' + rpeAs(guidance.prog.rpe, effortOf(S)).k + ' ' + fmtNum(rpeAs(guidance.prog.rpe, effortOf(S)).v))}</span>
     </button>}
     </>}
     <div className="card" style={{ marginTop: 10, marginBottom: 0 }}>

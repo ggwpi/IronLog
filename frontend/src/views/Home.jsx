@@ -1,3 +1,4 @@
+import { programmeChip } from '../lib/programmes.js'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
@@ -118,6 +119,7 @@ export default function Home() {
       <button className="iconbtn" onClick={() => nav('/settings')} aria-label={trouble ? t('Settings') + ', ' + t('Connection problem') : t('Settings')}><Icon name="gear" />{trouble && <span className="tab-dot" aria-hidden="true" />}</button>
     </div>
 
+    {S.programme && programmeChip(S) && <Button variant="tinted" onClick={() => nav('/plan/programmes')}>{programmeChip(S)}</Button>}
     <div className="home-training">
       {/* A coach week runs by order, not by weekday, so its progress row stands in for the
           seven dots (components/QueueRow.jsx). The today row below stays as it is: the queue's

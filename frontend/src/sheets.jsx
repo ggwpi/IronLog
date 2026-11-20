@@ -51,7 +51,7 @@ import { exerciseMuscleSnapshot, loadOfWorkouts, MUSCLES, MUSCLE_NAME, muscleWei
 import { parseImport, mergeImport } from './lib/import-csv.js'
 import { previewOriginalBodyImport } from './lib/ironlog-csv.js'
 import { importHevyData, HevyApiError, HEVY_DEV_SETTINGS, mergeHevyRoutines } from './lib/import-hevy.js'
-import { buildPlanBundle, parsePlan, mergePlan, printPlan, planPrintHTML } from './lib/plan-share.js'
+import { buildProgrammeBundle, buildPlanBundle, parsePlan, mergePlan, printPlan, planPrintHTML } from './lib/plan-share.js'
 import { estimate1RM, best1RM, is1RMRecord, REP_CAP, formulaOf, FORMULA_NAMES } from './lib/onerm.js'
 import { setTrendsFor, lastTimeBefore, trendGlyph } from './lib/set-trend.js'
 import { setTagOf, setTagName } from './lib/set-tags.js'
@@ -2406,6 +2406,16 @@ export const planToolsSheet = () => ui().openSheet(close => <PlanTools close={cl
 
 // The three things the Plan menu and this sheet both do with a plan, so the two can never drift.
 export const planHasRoutines = st => (st.routines || []).some(r => r.ex && r.ex.length)
+export async function exportProgrammeFile(id) {
+  const bundle = buildProgrammeBundle(S(), id)
+  if (!bundle) return
+  const json = JSON.stringify(bundle, null, 2)
+  const name = 'ironlog-programme-' + todayISO() + '.json'
+  if (MOBILE) { try { await shareExport(json, name) } catch { /* dismissed */ } return }
+  const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }))
+  const a = document.createElement('a'); a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url)
+  toast(t('Plan file saved. Send it to a friend!'))
+}
 export async function exportPlanFile() {
   const st = S(), user = useStore.getState().user
   const bundle = buildPlanBundle(st, user?.name ? t('{0}’s plan', user.name) : '')
@@ -2474,6 +2484,7 @@ function PlanImport({ bundle, close }) {
   return <>
     <h3>{bundle.name ? t('Import “{0}”', bundle.name) : t('Import this plan')}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>
+      {bundle.programmes?.length > 0 && <p>{t('Programmes')}: {bundle.programmes.length}</p>}
       {routineCount(bundle.routineCount)}
       {' · ' + exCount(bundle.exerciseCount)}
       {bundle.scheduledDays > 0

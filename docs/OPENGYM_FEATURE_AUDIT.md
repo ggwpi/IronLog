@@ -2,20 +2,19 @@
 
 PR #69 remains **Draft, incomplete, not approved for merge or production**.
 
-## Current milestone: existing IronLog Web/PWA functionality
+## Current milestone: expand IronLog Web/PWA in the isolated preview
 
-The user's current priority is the functionality already present in the previous production
-Web/PWA, before adding new product areas. Baseline: `origin/main` at `79fc61ee`, with the
-existing Supabase/Vercel implementation inherited from `feat/supabase-backend`. The current
-app retains the same 20 route declarations. This milestone covers authentication/profiles,
-offline/cloud synchronization, media, Home/Stats/history, existing plans and workout layouts,
-body data, settings and the existing Coach integration. Regression suites and the existing
-isolated cloud CI gate are the acceptance evidence; native devices are outside this milestone.
+The owner accepted workouts, body weight, photos and cross-device sync on 2026-11-20 and
+requested continued addition of new Web features before a production/PWA release. The existing
+Supabase/Vercel architecture and actual IronLog components remain the integration boundaries.
+Programmes add two routes under Plan; the existing routes and main navigation remain.
 
-New programmes pages, Journal, Tools, community, trainer dashboards, assistant connections
-and integration services are deferred expansion work. The full-source ledger below remains
-an inventory of the eventual broader goal. Its checked percentage is not a completion metric
-for this milestone. Do not add new product areas to make that ledger look more complete.
+The programme batch connects original block scheduling, starter templates, week targets,
+start/pause/resume/end/repeat and file interchange to those boundaries. Original tests and
+additional actual-store/UI/API regressions cover the integration; full release parity remains open.
+Journal, Tools, community, trainer dashboards, assistant connections and integration services
+remain open Web expansion work. Native platforms remain outside the user-directed milestone.
+The full-source ledger below is an inventory, not a percentage-complete measure.
 
 Audited source pin: `e4a68a94c42a3c17cbd560d66ce2e46a7048ab99`.
 Continuation baseline: `cdf7f169f644c0a0c7e600400d0d5ae1b65b4a0c`.

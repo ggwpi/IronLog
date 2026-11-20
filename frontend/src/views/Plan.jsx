@@ -16,6 +16,7 @@ import { workoutControls } from '../lib/workout-controls.js'
 import { tappable } from '../lib/use-sheet-keyboard.js'
 import { useListReorder, moved } from '../lib/use-list-reorder.js'
 import { glyphOf, DEFAULT_GLYPH } from '../lib/glyphs.js'
+import { programmeChip } from '../lib/programmes.js'
 import { DEMO } from '../lib/demo.js'
 import { MOBILE } from '../lib/mobile.js'
 import { coachAvailable } from '../lib/coach.js'
@@ -276,6 +277,7 @@ function Schedule({ S, update, nav, mode }) {
   const editing = editLoop && !external
 
   return <>
+    <Section><Row icon="calendar" title={t('Programmes')} subtitle={programmeChip(S) || t('Your routines as a block of weeks, each week with its own %1RM or RPE.')} accessory="chevron" onClick={() => nav('/plan/programmes')} /></Section>
     <Section className="plan-mode" footer={mode === 'rotation'
       ? t('Routines in a loop. Whatever is next stays next until you train it, whatever the day.')
       : t('The same routines on the same weekdays, every week.')}>

@@ -1,10 +1,35 @@
 # IronLog × openGym: full feature parity, IronLog visual design
 
+## Multiweek programmes continuation (2026-11-20)
+
+- The next user-directed milestone adds new Web/PWA features to the existing isolated free
+  preview. Production deployment, main merge and native-app expansion remain excluded.
+- The complete original programme model, starter builder, session target calculation, progression
+  copy and programme plan interchange retain pinned upstream Git blobs. The existing IronLog
+  session builder delegates programme targets while retaining its warm-ups, notes and metadata.
+- New programme routes use actual IronLog controls, sheets, store and theme tokens. They support
+  creation, three starters, 1–16 weeks, week effort/%1RM/deload, start/pause/resume/end/repeat and
+  sharing/importing. Home's existing layout gains a programme link only for a running programme.
+- Programme definitions use the existing per-key conflict protocol; the running programme uses
+  the existing setting stamps. API old-client protection and previous-schedule restoration have
+  regression coverage. No SQL migration, alternative store, account or production data operation.
+- IronLog's profile-wide weight unit remains the presentation boundary. Independent per-exercise
+  unit preferences and the remaining Web product areas are separate open integrations.
+- Validation: 356 focused frontend/model/source/sync/UI tests and 23 actual API stamp tests pass.
+  Complete local frontend: 6,737 passed, six existing Windows/mobile failures, one transient
+  shell-start timeout (passed on rerun) and one newly exposed plural-coverage failure (fixed,
+  passed on rerun). Complete API: 727 passed, 24 identical baseline failures, 46 skipped.
+  MCP: 98 passed, its existing Windows permission failure and two watcher permission errors.
+  Build, 6,554 stills + 6,554 animations, both plain-Node graphs, generated assets and
+  108,000 fatigue / 1,800 history probes pass. Nineteen locale packs now have 2,816 matching
+  keys; the source-string backlog remains 52. Current-head Linux CI is still required.
+
+
 Status: **IN PROGRESS — NOT SAFE TO MERGE OR DEPLOY**
 
-Current user-directed milestone: finish the existing IronLog Web/PWA functionality first.
+Current user-directed milestone: continue adding Web/PWA features after the owner’s isolated-preview acceptance.
 Use the existing production architecture and 20 route declarations as the baseline; new Web
-product areas and native platforms are deferred. See the milestone in the feature audit.
+product areas are now being added in batches; native platforms remain deferred. See the milestone in the feature audit.
 The complete release ledger below is not a percentage-complete measure for this milestone.
 
 The [original Daily Form continuation](./PR69_DAILY_FORM_VERIFICATION_2026-11-19.md) replaces the
