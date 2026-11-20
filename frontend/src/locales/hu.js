@@ -1,5 +1,8 @@
 // Hungarian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // CSV range presets.
+  "3 months": "3 hónap",
+  "4 weeks": "4 hét",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "Fel, amilyen gyorsan csak tudod. Az útmutató egy fürge másodpercet ad rá.",
   "Tempo {0}": "Tempó {0}",

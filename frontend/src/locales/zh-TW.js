@@ -1,4 +1,7 @@
 export default {
+  // CSV range presets.
+  "3 months": "3 個月",
+  "4 weeks": "4 週",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "盡可能快地上舉。引導只給它短短一秒。",
   "Tempo {0}": "節奏 {0}",

@@ -11,6 +11,7 @@
  * and appearance settings, and every other profile's everything.
  */
 import { glyphStr } from './glyphs.js';
+import { setNoteOf } from './opengym-set-notes.js';
 import { LIBRARY, LIB_BY_ID, libraryHas, libraryName, librarySlice, isStretch, MAX_LIBRARY, ownsNoDumbbells } from './library.js';
 
 export const CONTRACT = 1;
@@ -418,7 +419,14 @@ function cleanWorkout(w) {
       id: ident(en.id),
       name: libraryName(en.id),
       target: targetOf(en),
-      sets: setsOf(en).slice(0, MAX_SETS_PER_ENTRY).map(cleanSet)
+      sets: setsOf(en).slice(0, MAX_SETS_PER_ENTRY).map(s => {
+        const out = cleanSet(s);
+        const note = setNoteOf(s);
+        // Preserve IronLog's existing editor cap at the outbound boundary. The original
+        // reader stays unchanged; set media and all other unlisted fields stay private.
+        if (note) out.note = note.slice(0, NOTE_MAX);
+        return out;
+      })
     }))
   };
 }

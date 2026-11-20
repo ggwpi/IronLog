@@ -1,5 +1,8 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // CSV range presets.
+  "3 months": "3 ay",
+  "4 weeks": "4 hafta",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "Olabildiğince hızlı yukarı. Rehber buna hızlı bir saniye verir.",
   "Tempo {0}": "Tempo {0}",

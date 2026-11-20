@@ -1,5 +1,8 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // CSV range presets.
+  "3 months": "3 个月",
+  "4 weeks": "4 周",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "尽可能快地上举。引导只给它短短一秒。",
   "Tempo {0}": "节奏 {0}",

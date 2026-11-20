@@ -1,5 +1,8 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // CSV range presets.
+  "3 months": "3개월",
+  "4 weeks": "4주",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "최대한 빠르게 들어 올리세요. 가이드는 재빠른 1초를 줘요.",
   "Tempo {0}": "템포 {0}",

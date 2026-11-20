@@ -5,6 +5,7 @@ import { useUI } from '../store/useUI.js'
 import { t, tn } from '../lib/i18n.js'
 import { todayISO } from '../lib/format.js'
 import { workoutsCSV, bodyCSV, csvCounts } from '../lib/ironlog-csv.js'
+import { reportRange } from '../lib/opengym-v145/report.js'
 import { MOBILE, shareExport } from '../lib/mobile.js'
 import { Button, Segmented, Row, TextField } from './ui.jsx'
 
@@ -23,9 +24,9 @@ export function CsvExportSheet({ close }) {
   const [range, setRange] = useState('all')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState(today)
-  const selected = range === 'all' ? undefined : { from: from || null, to: to || null }
+  const selected = range === 'all' ? undefined : range === 'custom' ? { from: from || null, to: to || null } : reportRange(range, { today })
   const counts = csvCounts(S, selected)
-  const invalid = range !== 'all' && !!from && !!to && from > to
+  const invalid = range === 'custom' && !!from && !!to && from > to
   const save = async kind => {
     if (invalid) return
     const state = useStore.getState().S
@@ -36,7 +37,7 @@ export function CsvExportSheet({ close }) {
   }
   return <>
     <h3>{t('Export as spreadsheet (CSV)')}</h3>
-    <Segmented value={range} onChange={setRange} options={[{ value: 'all', label: t('All') }, { value: 'custom', label: t('Custom') }]} />
+    <Segmented value={range} onChange={setRange} options={[{ value: 'all', label: t('All') }, { value: '3m', label: t('3 months') }, { value: '4w', label: t('4 weeks') }, { value: 'custom', label: t('Custom') }]} />
     {range === 'custom' && <>
       <Row icon="calendar" title={t('From')}><TextField type="date" aria-label={t('From')} value={from} max={to || today} onChange={e => setFrom(e.target.value)} /></Row>
       <Row icon="calendar" title={t('To')}><TextField type="date" aria-label={t('To')} value={to} min={from} max={today} onChange={e => setTo(e.target.value)} /></Row>

@@ -1,5 +1,8 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // CSV range presets.
+  "3 months": "৩ মাস",
+  "4 weeks": "৪ সপ্তাহ",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "যত দ্রুত পারেন তুলুন। গাইড এর জন্য এক ঝটপট সেকেন্ড দেয়।",
   "Tempo {0}": "টেম্পো {0}",

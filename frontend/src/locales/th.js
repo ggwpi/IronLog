@@ -1,5 +1,8 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // CSV range presets.
+  "3 months": "3 เดือน",
+  "4 weeks": "4 สัปดาห์",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "ขึ้นให้เร็วที่สุด ตัวช่วยนับให้เวลาแค่หนึ่งวินาทีสั้นๆ",
   "Tempo {0}": "เทมโป {0}",

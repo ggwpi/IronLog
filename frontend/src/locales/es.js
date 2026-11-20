@@ -1,5 +1,8 @@
 // Spanish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // CSV range presets.
+  "3 months": "3 meses",
+  "4 weeks": "4 semanas",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "Sube tan rápido como puedas. La guía le da un segundito.",
   "Tempo {0}": "Tempo {0}",

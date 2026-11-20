@@ -1,5 +1,8 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // CSV range presets.
+  "3 months": "3 أشهر",
+  "4 weeks": "4 أسابيع",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "إلى الأعلى بأسرع ما تستطيع. الدليل يعطيها ثانية خاطفة.",
   "Tempo {0}": "الإيقاع {0}",

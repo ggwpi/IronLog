@@ -1,5 +1,8 @@
 // Ukrainian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // CSV range presets.
+  "3 months": "3 місяці",
+  "4 weeks": "4 тижні",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "Вгору якнайшвидше. Підказка дає на це одну швидку секунду.",
   "Tempo {0}": "Темп {0}",

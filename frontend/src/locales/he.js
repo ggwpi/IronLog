@@ -1,6 +1,9 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  // CSV range presets.
+  "3 months": "3 חודשים",
+  "4 weeks": "4 שבועות",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "הרמה מהירה ככל האפשר. המדריך מקצה לה שנייה אחת.",
   "Tempo {0}": "טמפו {0}",

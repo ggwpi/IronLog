@@ -4,6 +4,9 @@
 import pt from './pt.js'
 
 export const PT_BR_OVERRIDES = {
+  // CSV range presets.
+  "3 months": "3 meses",
+  "4 weeks": "4 semanas",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "A subir o mais rápido que conseguires. O guia dá-lhe um segundo rapidinho.",
   "Tempo {0}": "Cadência {0}",

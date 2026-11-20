@@ -1,5 +1,8 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // CSV range presets.
+  "3 months": "3 महीने",
+  "4 weeks": "4 हफ़्ते",
   // Original tempo guide.
   "Up as fast as you can. The guide gives it one quick second.": "जितनी तेज़ी से हो सके ऊपर। गाइड इसे एक फुर्तीला सेकंड देता है।",
   "Tempo {0}": "टेम्पो {0}",

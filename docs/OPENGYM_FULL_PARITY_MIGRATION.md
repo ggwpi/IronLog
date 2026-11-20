@@ -203,3 +203,30 @@ API names match ed247ff4 exactly. Plain-Node MCP loading, production build, 6,55
 animations, locale parity, 108,000 fatigue and 1,800 history comparisons pass. No live data or
 production environment was accessed. Resistance commit ed247ff4 has all five Linux CI jobs green
 in Tests #240 (run 44658984478).
+
+
+## CSV range presets and Coach set-note boundaries (2026-11-20)
+
+The existing CSV sheet now offers four weeks and three months, calculated by the complete
+unchanged original report module. All/open-ended custom ranges and inverted-date protection keep
+IronLog's existing behavior. The original report's other dependencies remain behind explicit
+IronLog storage/native-fetch/secret/Modules boundaries; importing them does not enable reports,
+nutrition pairing, network calls or writes. Full performance-report/nutrition parity is not claimed.
+Actual sheet tests cover counts, downloads, no fetch/profile writes and switching away from an
+invalid custom draft. Source checks and month-end/leap-year/inclusive-day regressions pass.
+
+Coach full-session snapshots now use the complete original set-note reader through a boundary
+that retains IronLog's 500-character cap. Review, question, debrief and running-session fixtures
+keep Hebrew notes without media, future fields or source mutation. Empty/non-string notes remain
+absent and oversized values remain bounded. The existing numeric allowlist, authentication and
+provider selection are unchanged. All 52 targeted payload/source/privacy tests pass. No provider
+or live account was called. Root documentation-tool dependencies were installed from the existing
+lockfile with verified SHA-512 integrity; catalogue/prompt and API-document generation checks pass.
+
+Full local validation: frontend 6,455 pass / six unchanged Windows path failures (6,461 / 543
+files); API 701 pass / 24 unchanged Windows failures / 46 skips (771 total), with identical failing
+names to the prior batch. MCP 97 pass / one unchanged permissions failure and two existing
+watcher errors. Production build, plain-Node MCP/core loading, 6,554 stills/6,554 animations,
+108,000 fatigue and 1,800 history comparisons pass. All 19 locales have 2,618 keys; the existing
+missing-string backlog stays at 52. Tempo commit 997f82cb has all five Linux CI jobs green in
+Tests #241 (run 44660273239). Native/hardware, restore and wider feature-parity gates remain open.

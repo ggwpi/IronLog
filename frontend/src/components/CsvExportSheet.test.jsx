@@ -21,6 +21,7 @@ const date = (label, value) => {
 beforeEach(() => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true
   vi.useFakeTimers()
+  vi.setSystemTime(new Date('2026-11-20T12:00:00'))
   mocks.mobile = false; mocks.share.mockReset(); blobs = []; downloads = []; close = vi.fn()
   const OriginalURL = globalThis.URL
   vi.stubGlobal('URL', class extends OriginalURL {
@@ -39,6 +40,30 @@ beforeEach(() => {
 afterEach(() => { act(() => root.unmount()); host.remove(); vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); vi.restoreAllMocks() })
 
 describe('CSV through original IronLog controls', () => {
+  it('uses original inclusive four-week and three-month ranges without changing profile data', async () => {
+    const fetch = vi.spyOn(globalThis, 'fetch')
+    act(() => button('4 weeks').click())
+    expect(host.querySelector('[data-csv-count="workouts"]').textContent).toContain('0 workouts')
+    expect(host.querySelector('[data-csv-count="body"]').textContent).toContain('0 weigh-ins')
+    act(() => button('3 months').click())
+    expect(host.querySelector('[data-csv-count="workouts"]').textContent).toContain('1 workout')
+    expect(host.querySelector('[data-csv-count="body"]').textContent).toContain('1 weigh-in')
+    await act(async () => button('Workouts (CSV)').click())
+    expect(parseCSV(await blobs[0].text())).toHaveLength(2)
+    expect(useStore.getState().S).toEqual(saved)
+    expect(fetch).not.toHaveBeenCalled()
+  })
+  it('keeps legacy open-ended custom dates and ignores an inverted draft when a preset is selected', () => {
+    act(() => button('Custom').click())
+    expect(host.querySelector('[data-csv-count="workouts"]').textContent).toContain('1 workout')
+    act(() => { date('From', '2026-11-10'); date('To', '2026-11-01') })
+    expect(button('Workouts (CSV)').disabled).toBe(true)
+    act(() => button('3 months').click())
+    expect(button('Workouts (CSV)').disabled).toBe(false)
+    act(() => button('All').click())
+    expect(host.querySelector('[data-csv-count="workouts"]').textContent).toContain('1 workout')
+    expect(useStore.getState().S).toEqual(saved)
+  })
   it('downloads original workout CSV with an IronLog filename and never updates stored state', async () => {
     expect(host.querySelector('[data-csv-count="workouts"]').textContent).toContain('1 workout')
     await act(async () => button('Workouts (CSV)').click())
