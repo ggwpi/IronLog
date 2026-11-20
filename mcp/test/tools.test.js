@@ -470,6 +470,17 @@ describe('list_workouts', () => {
 /* ---------- get_workout ---------- */
 
 describe('get_workout', () => {
+  test('reads resistance without losing long notes or mutating stored cardio data', () => {
+    const w = S.workouts[0]
+    w.entries = [{ id: '2138', target: { mode: 'cardio' }, sets: [{ min: 20, speed: 25, level: 8, done: true, note: 'א'.repeat(500), media: [{ hash: 'private' }] }] }]
+    const before = structuredClone(S)
+    const out = call('get_workout', { workout_id: w.id }).entries[0].sets[0]
+    expect(out.level).toBe(8)
+    expect(out.label).toContain('Level 8')
+    expect(out.note).toBe('א'.repeat(500))
+    expect(out).not.toHaveProperty('media')
+    expect(S).toEqual(before)
+  })
   test('reads original note/tag metadata without truncating IronLog notes or exposing set media', () => {
     const w = S.workouts[0], set = w.entries[0].sets[0]
     set.note = 'א'.repeat(500); set.tag = 'blue'; set.media = [{ hash: 'fixture-private-media' }]

@@ -160,3 +160,22 @@ A checkbox can only be checked after implementation and automated/manual proof. 
 - Existing volume/charts remain IronLog's. The editor describes that effective behavior without rewriting a stored future volume preference. No native/provider/store/UI replacement or database migration is introduced.
 - Automated verification: 6,368 frontend passes / 6 unchanged Windows path failures (6,374 tests, 539 files); API 694 passes / 24 existing Windows failures / 46 skips (764 total); MCP 96 passes / 1 existing permission failure plus two Windows fs.watch errors. Plain-Node graph, build, media (6,554 + 6,554), fatigue probes (108,000 + 1,800), 19 locale packs × 2,599 keys and source checks pass. Source-string backlog stays 52.
 - One missing import in the swap path was corrected after the full run caught it; its six tests and the final complete frontend run pass apart from the known platform failures. Latest-head Linux results are recorded in PR #69. No additional visual runner changes or temporary test tools are included in this batch.
+
+
+## Cardio resistance integration (2026-11-20)
+
+The unchanged pinned resistance helpers supply bounds and column selection. IronLog's existing
+Cards/List/Compact/Focus controls, routine editor, history/text/finish, plan interchange, own and
+third-party CSV, and read-only MCP now retain resistance levels. The searchable Level switch in
+Workout → Fine-tuning is off by default. Existing grade controls, navigation and saved rows remain
+under their original IronLog components; no schema/auth/storage changes or remote data access.
+
+Regression cases cover 1–30 bounds and clearing, default-hidden and completed controls, long Hebrew
+notes/media, planned/previous rows, plan and CSV round trips, and old/modern sync writes.
+Final local frontend: 6,381 passed, six unchanged Windows path failures (6,387 total / 539 files).
+API: 696 passed, 24 unchanged Windows failures, 46 skipped (766 total); failing names match the
+preceding warm-up run. MCP: 97 passed, one unchanged Windows permissions failure, two existing
+watcher EPERM errors. Plain-Node import graph, production build, 6,554 stills/6,554 animations,
+108,000 fatigue and 1,800 history comparisons pass. All 19 locales contain 2,600 matching keys.
+Warm-up commit 3d75d41b has green Linux CI run 44613304455 (all five jobs).
+These checks verify this integration; broader native, restore and full feature parity remain open.

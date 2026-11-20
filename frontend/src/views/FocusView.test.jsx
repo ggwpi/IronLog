@@ -76,6 +76,29 @@ afterEach(() => {
 })
 
 describe('Focus workout view', () => {
+  it('edits an opted-in cardio level while preserving notes, media and old default controls', () => {
+    const row = { min: 30, speed: 10, level: 8, done: false, note: 'א'.repeat(500), tag: 'blue', media: [{ hash: 'keep' }] }
+    mount({ id: '2138', target: { sets: 1, min: 30, speed: 10 }, sets: [row] }, { unit: 'kg', showCardioLevel: true })
+    const increase = container.querySelector('button[aria-label="Increase level"]')
+    expect(increase).toBeTruthy()
+    act(() => increase.click())
+    expect(useStore.getState().S.active.entries[0].sets[0]).toEqual({ ...row, level: 9 })
+    act(() => useStore.getState().update(s => { s.active.entries[0].sets[0].level = 30 }))
+    act(() => container.querySelector('button[aria-label="Increase level"]').click())
+    expect(useStore.getState().S.active.entries[0].sets[0].level).toBe(30)
+    act(() => useStore.getState().update(s => { s.active.entries[0].sets[0].level = 1 }))
+    act(() => container.querySelector('button[aria-label="Decrease level"]').click())
+    expect(useStore.getState().S.active.entries[0].sets[0]).toEqual({ ...row, level: undefined })
+  })
+  it('keeps resistance hidden by default and locks completed cardio rows', () => {
+    mount({ id: '2138', target: { mode: 'cardio' }, sets: [{ min: 30, speed: 10, level: 8, done: true }] })
+    expect(container.querySelector('button[aria-label="Increase level"]')).toBeNull()
+    expect(useStore.getState().S.active.entries[0].sets[0].level).toBe(8)
+    act(() => useStore.getState().update(s => { s.showCardioLevel = true }))
+    const increase = container.querySelector('button[aria-label="Increase level"]')
+    expect(increase).toBeTruthy()
+    expect(increase.disabled).toBe(true)
+  })
   it('omits a plan that repeats the prescription and keeps plate guidance in the badge row', () => {
     mount({
       id: SQUAT,

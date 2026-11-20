@@ -1,5 +1,7 @@
 // German UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio resistance controls.
+  "Level": "Stufe",
   // Original automatic and saved warm-up controls.
   "Default": "Standard",
   // Original automatic and saved warm-up controls.

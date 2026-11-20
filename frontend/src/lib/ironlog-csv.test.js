@@ -6,6 +6,15 @@ import { assertUserDataPreserved } from './migration-audit.js'
 
 const longNote = 'הערת IronLog עם פרטים על האחיזה. '.repeat(18).slice(0, 499) + 'א'
 const at = (d, h) => new Date(`${d}T${h}:00:00`).getTime()
+it('round trips original resistance metadata and full IronLog notes without changing the source', () => {
+  const S = { unit: 'kg', workouts: [{ id: 'bike', name: 'Bike', d: '2026-11-19', start: at('2026-11-19', '09:00'), end: at('2026-11-19', '09:30'), entries: [{ id: '2138', target: { mode: 'cardio' }, sets: [{ min: 30, speed: 10, level: 8, note: longNote, done: true, media: [{ hash: 'keep' }] }] }] }] }
+  const before = structuredClone(S)
+  const csv = workoutsCSV(S)
+  expect(csv).toContain('resistance_level')
+  const row = parseWorkoutCSV(csv).workouts[0].entries[0].sets[0]
+  expect(row).toMatchObject({ min: 30, speed: 10, level: 8, note: longNote, done: true })
+  expect(S).toEqual(before)
+})
 const fixture = () => ({
   unit: 'kg', lang: 'he', _ts: 1000, exWeights: {}, customEx: [{ id: 'cx-ironlog', n: 'Grip, "custom"', bp: 'lower arms', custom: true, photo: 'fixture-media', other: { retained: true } }],
   routines: [{ id: 'fixture-plan', ex: [{ id: 'cx-ironlog', sets: 3 }] }], bodyweight: [{ d: '2026-11-01', w: 80 }],

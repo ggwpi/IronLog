@@ -1,5 +1,7 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio resistance controls.
+  "Level": "강도",
   // Original automatic and saved warm-up controls.
   "Default": "기본값",
   // Original automatic and saved warm-up controls.

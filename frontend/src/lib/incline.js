@@ -49,3 +49,5 @@ export const hasIncline = s => Number(s?.incline) > 0
 
 /** What a new row takes over from the set it follows: its incline, when it had one. */
 export const inclineFrom = s => (hasIncline(s) ? { incline: Number(s.incline) } : {})
+// New resistance fields delegate to the complete immutable upstream module.
+export { LEVEL_MAX, clampLevel, levelFits, hasLevel, levelFrom, cardioCol } from './opengym-v145/incline.js'

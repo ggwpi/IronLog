@@ -1,5 +1,7 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio resistance controls.
+  "Level": "লেভেল",
   // Original automatic and saved warm-up controls.
   "Default": "ডিফল্ট",
   // Original automatic and saved warm-up controls.

@@ -61,6 +61,17 @@ describe('plan-share units', () => {
 })
 
 describe('what survives a shared plan', () => {
+  it('round trips cardio resistance and grade using original bounds without mutating the source', () => {
+    const state = stateWith({ id: '2138', mode: 'cardio', min: 30, speed: 10, level: 8, incline: 4.5 })
+    const before = structuredClone(state)
+    const bundle = buildPlanBundle(state, 'Cardio')
+    expect(parsePlan(bundle).routines[0].ex[0]).toMatchObject({ level: 8, incline: 4.5 })
+    bundle.routines[0].ex[0].level = 99
+    expect(parsePlan(bundle).routines[0].ex[0].level).toBe(30)
+    bundle.routines[0].ex[0].level = 0
+    expect(parsePlan(bundle).routines[0].ex[0]).not.toHaveProperty('level')
+    expect(state).toEqual(before)
+  })
   it('carries Per side on a timed hold, and on reps work; never on cardio', () => {
     const hold = roundTrip({ mode: 'time', sec: 30, sets: 2, reps: undefined, weight: undefined, side: true })
     expect(hold).toMatchObject({ mode: 'time', sec: 30, sets: 2, side: true })

@@ -21,6 +21,7 @@ import { SET_TAGS, setTagOf, setTagName, withSetTag } from '../lib/set-tags.js'
 import { setNoteOf } from '../lib/opengym-v145/set-notes.js'
 import { tempoOf } from '../lib/opengym-v145/tempo.js'
 import { setTempoSheet } from '../components/TempoSheet.jsx'
+import { cardioCol, clampLevel, LEVEL_MAX } from '../lib/incline.js'
 import { baseWeightFor, inventoryFor, loadKindFor, rowLoad } from '../lib/plates.js'
 import { ownedWeightsFor, stepOwned } from '../lib/dumbbells.js'
 import Icon from '../components/Icon.jsx'
@@ -136,6 +137,7 @@ export default function FocusView({
   const mode = modeOf({ ...(entry.target || {}), id: entry.id })
   const distUnit = distUnitOf(S)
   const byDist = mode === 'cardio' && byDistance(S, entry.id)
+  const cardioField = S.showCardioLevel === true ? cardioCol(ex, entry.sets) : null
   const switchCardioBy = () => useStore.getState().update(st => { st.cardioBy = withCardioBy(st.cardioBy, entry.id, byDist ? 'speed' : 'distance') })
   const effort = effortOf(S)
   const effortField = EFFORT[effort]?.f
@@ -318,7 +320,8 @@ export default function FocusView({
               : <Stepper label={speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)')} ariaLabel="speed" value={toSpeed(set.speed || 0, speedUnit)} step={0.5} disabled={readOnly}
                 onChange={value => onField(setIdx, 'speed', fromSpeed(value, speedUnit))} />}
             {/* The treadmill's grade, where the exercise has one (lib/incline.js). */}
-            {(inclineFits(ex) || entry.sets.some(hasIncline)) && <Stepper label={t('Incline (%)')} ariaLabel="incline" value={set.incline || 0} step={INCLINE_STEP} max={INCLINE_MAX} disabled={readOnly}
+            {cardioField === 'level' ? <Stepper label={t('Level')} ariaLabel="level" value={set.level ?? null} step={1} max={LEVEL_MAX} decimal={false} disabled={readOnly}
+              onChange={value => onField(setIdx, 'level', clampLevel(value))} /> : (inclineFits(ex) || entry.sets.some(hasIncline)) && <Stepper label={t('Incline (%)')} ariaLabel="incline" value={set.incline || 0} step={INCLINE_STEP} max={INCLINE_MAX} disabled={readOnly}
               onChange={value => onField(setIdx, 'incline', clampIncline(value))} />}
           </> : <>
             <Stepper label={t('Load ({0})', S.unit)} ariaLabel="load" value={set.w || 0} step={loadStep} onStep={stepLoad} disabled={readOnly}

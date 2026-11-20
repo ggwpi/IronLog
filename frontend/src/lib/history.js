@@ -5,7 +5,7 @@ import { isOn } from './modules.js'
 import { fmtSpeed, speedUnitOf } from './speed.js'
 import { cardioStartSpeed } from './cardio-kind.js'
 import { hasIncline, inclineFrom } from './incline.js'
-import { hasLevel } from './opengym-v145/incline.js'
+import { hasLevel, levelFrom } from './opengym-v145/incline.js'
 import { fmtDist, fmtPace } from './opengym-v145/distance.js'
 import { hasGeneratedWarmups, rerampGeneratedWarmups } from './warmup-ramp.js'
 import { EXIDX, isCardio, isBodyweightEq, isAssisted, betterWeight } from './exercises.js'
@@ -161,7 +161,7 @@ export function setLabel(id, s, cfg, speedUnit) {
     const du = speedUnit === 'mph' ? 'mi' : 'km'
     return [`${s.min || 0} min`, fmtDist(s.km, du), fmtPace(s, du)].filter(Boolean).join(' · ') + (hasIncline(s) ? ' · ' + t('{0}% incline', fmtNum(Number(s.incline))) : '') + (hasLevel(s) ? ' · ' + t('Level {0}', fmtNum(Number(s.level))) : '')
   }
-  if (mode === 'cardio') return `${s.min || 0} min @ ${fmtSpeed(s.speed || 0, speedUnit)}` + (hasIncline(s) ? ' · ' + t('{0}% incline', fmtNum(Number(s.incline))) : '')
+  if (mode === 'cardio') return `${s.min || 0} min @ ${fmtSpeed(s.speed || 0, speedUnit)}` + (hasIncline(s) ? ' · ' + t('{0}% incline', fmtNum(Number(s.incline))) : '') + (hasLevel(s) ? ' · ' + t('Level {0}', fmtNum(Number(s.level))) : '')
   // A set taken to failure carries its "F" behind the numbers, the mark lifting logs use for it;
   // the history, the text export and the set menu all read it from here.
   const fail = isFailureSet(s) ? ' ' + t('F') : ''
@@ -256,7 +256,7 @@ export function exLine(cfg, unit, speedUnit) {
   const load = !cfg.weight ? ''
     : backoff ? ' · ' + (isBw(cfg) ? '+' : '') + backoffWeights(cfg.weight, n, backoff).map(fmtNum).join(' → ') + ' ' + unit
       : ' · ' + (isBw(cfg) ? '+' : '') + fmtNum(cfg.weight) + ' ' + unit
-  if (mode === 'cardio') return `${n} × ${cfg.min || 20} min @ ${fmtSpeed(cfg.speed || 8, speedUnit)}`
+  if (mode === 'cardio') return `${n} × ${cfg.min || 20} min @ ${fmtSpeed(cfg.speed || 8, speedUnit)}` + (hasLevel(cfg) ? ' · ' + t('Level {0}', fmtNum(Number(cfg.level))) : '')
   // A timed hold has no rep count to spell a split out of ("8/side" below) — "per side" says it
   // happens twice, once each side (buildWorkSets), rather than trying to divide a duration.
   if (mode === 'time') return `${setsRepsOf(cfg)}${load}${isPerSide(cfg) ? ' · ' + t('per side') : ''}`
@@ -587,7 +587,7 @@ function buildWorkSets(S, cfg, options = {}) {
   if (mode === 'cardio') {
     for (let i = 0; i < n; i++) {
       const prev = prevAt(i)
-      sets.push({ min: prev ? prev.min : (cfg.min || 20), speed: prev ? prev.speed : (cfg.speed || 8), ...inclineFrom(prev), done: false })
+      sets.push({ min: prev ? prev.min : (cfg.min || 20), speed: prev ? prev.speed : (cfg.speed || 8), ...inclineFrom(prev || cfg), ...levelFrom(hasLevel(cfg) ? cfg : prev), done: false })
     }
     return sets
   }
@@ -1056,6 +1056,7 @@ export function insertWarmupRow(rows, mode, target, step = 2.5, floor = 0) {
       min: prev ? prev.min : (work ? work.min : (target.min || 20)),
       speed: prev ? prev.speed : (work ? work.speed : (target.speed || 8)),
       ...inclineFrom(prev || work),
+      ...levelFrom(prev || work),
       done: false, phase: 'warmup', warmup: true,
     }
     : mode === 'time'

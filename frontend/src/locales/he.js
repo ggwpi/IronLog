@@ -1,6 +1,8 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  // Cardio resistance controls.
+  "Level": "רמה",
   // Original automatic and saved warm-up controls.
   "Default": "ברירת מחדל",
   // Original automatic and saved warm-up controls.

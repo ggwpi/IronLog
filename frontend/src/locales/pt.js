@@ -1,5 +1,7 @@
 // Portuguese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio resistance controls.
+  "Level": "Nível",
   // Original automatic and saved warm-up controls.
   "Default": "Predefinido",
   // Original automatic and saved warm-up controls.

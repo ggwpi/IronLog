@@ -5,6 +5,7 @@ import DailyFormCheckin from './components/DailyFormCheckin.jsx'
 import { warmupModeOf, ownRowsOf, withWarmupBlock, warmupBuildConfig } from './lib/warmup-ramp.js'
 import { warmupPlanSheet } from './components/WarmupPlanSheet.jsx'
 import { barFloor } from './lib/history.js'
+import { clampLevel, levelFits, levelFrom, LEVEL_MAX, inclineFrom } from './lib/incline.js'
 import { useUI } from './store/useUI.js'
 import { EXDB, EXIDX, BODYPARTS, isCardio, isBodyweightEq, allExercises, equipmentOf, byCategory, smOf, searchExercises, similarExercises, exOr, isAssisted, betterWeight, beatsWeight, isCustomEx } from './lib/exercises.js'
 import { activeProfile, exAvailable, ALL_EQUIPMENT, newProfile, profileEquipment, ACC_V } from './lib/equipment.js'
@@ -1873,7 +1874,7 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
       ...(c.warmupRestOff === true ? { warmupRestOff: true } : c.warmupRestSec > 0 ? { warmupRestSec: Math.round(c.warmupRestSec) } : {}),
       ...(perSide && c.sideRestSec > 0 ? { sideRestSec: Math.round(c.sideRestSec) } : {}),
     }
-    if (cardio) onSave({ sets, min: Math.max(1, Math.round(c.min) || 20), speed: Math.max(0, c.speed || 8), ...withNote, ...withRest, ...withSubs })
+    if (cardio) onSave({ sets, min: Math.max(1, Math.round(c.min) || 20), speed: Math.max(0, c.speed || 8), ...inclineFrom(c), ...levelFrom(c), ...withNote, ...withRest, ...withSubs })
     else if (mode === 'time') onSave({ sets, mode: 'time', sec: Math.max(1, Math.round(c.sec) || 45), weight: Math.max(0, c.weight || 0), ...flags, ...(perSide ? { side: true } : {}), ...prog, ...withNote, ...withWarmups, ...withRest, ...withSetRests, ...withMeant, ...withFailure, ...withSubs })
     else {
       // A unilateral target is stored even: the split has to divide, and a typed 15 would
@@ -1938,6 +1939,8 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
         {/* Typed and stepped in the profile's unit, kept in km/h (lib/speed.js). */}
         <Stepper label={speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)')} value={toSpeed(c.speed, speedUnit)} step={0.5}
           onChange={v => setC(x => ({ ...x, speed: fromSpeed(v, speedUnit) }))} />
+          {st.showCardioLevel === true && levelFits(ex) && <Stepper label={t('Level')} value={c.level ?? null} step={1} max={LEVEL_MAX} decimal={false}
+            onChange={v => setC(x => ({ ...x, level: clampLevel(v) }))} />}
       </> : mode === 'time' ? <>
         <Stepper label={t('Sets')} value={c.sets} step={1} decimal={false} onChange={v => setC(x => ({ ...x, sets: v }))} />
         <Stepper label={t('Seconds')} value={c.sec} step={5} decimal={false} onChange={v => setC(x => ({ ...x, sec: v }))} />

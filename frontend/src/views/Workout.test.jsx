@@ -1849,6 +1849,22 @@ describe('workout focus view', () => {
     expect(mocks.S.active.entries[0].sets[0]).toMatchObject({ min: 31, km: 5.5, speed: 10.65, done: false, ...metadata })
   })
 
+  it.each(['cards', 'list', 'compact'])('edits and clears resistance through the existing %s row without changing metadata', async view => {
+    const metadata = { note: 'א'.repeat(500), tag: 'blue', media: [{ hash: 'keep' }] }
+    await mount([exercise('plain-bike', [false], {
+      target: { mode: 'cardio', min: 30, speed: 10 }, sets: [{ min: 30, speed: 10, level: 1, done: false, ...metadata }],
+    })], 0, { workoutView: view, showCardioLevel: true })
+    expect(container.textContent).toContain('Level')
+    const cell = () => container.querySelector('.setrow').querySelectorAll('.stp')[2]
+    await click(cell().querySelector('button[aria-label="Increase"]'))
+    expect(mocks.S.active.entries[0].sets[0]).toEqual({ min: 30, speed: 10, level: 2, done: false, ...metadata })
+    await rerender()
+    await click(cell().querySelector('button[aria-label="Decrease"]'))
+    await rerender()
+    await click(cell().querySelector('button[aria-label="Decrease"]'))
+    expect(mocks.S.active.entries[0].sets[0]).toEqual({ min: 30, speed: 10, done: false, ...metadata })
+  })
+
   it('keeps drop and burst rows editable and opens every set action', async () => {
     await mount([exercise('plain-bench', [false], {
       sets: [{

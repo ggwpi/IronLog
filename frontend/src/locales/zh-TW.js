@@ -1,4 +1,6 @@
 export default {
+  // Cardio resistance controls.
+  "Level": "阻力段",
   // Original automatic and saved warm-up controls.
   "Default": "預設",
   // Original automatic and saved warm-up controls.

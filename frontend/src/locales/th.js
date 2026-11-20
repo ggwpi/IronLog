@@ -1,5 +1,7 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio resistance controls.
+  "Level": "ระดับ",
   // Original automatic and saved warm-up controls.
   "Default": "ค่าเริ่มต้น",
   // Original automatic and saved warm-up controls.

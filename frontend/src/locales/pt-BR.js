@@ -4,6 +4,8 @@
 import pt from './pt.js'
 
 export const PT_BR_OVERRIDES = {
+  // Cardio resistance controls.
+  "Level": "Nível",
   // Original automatic and saved warm-up controls.
   "Default": "Padrão",
   // Original automatic and saved warm-up controls.

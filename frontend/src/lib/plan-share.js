@@ -12,6 +12,7 @@ import { EXIDX, canonicalExId, isBodyweightEq, isCustomEx } from './exercises.js
 import { cleanBackups } from './routine-backups.js'
 import { cleanUrl } from './media-refs.js'
 import { warmupModeOf, ownRowsOf } from './warmup-ramp.js'
+import { clampIncline, clampLevel } from './incline.js'
 
 import { modeOf, exLine, MAX_PLANNED_WARMUPS } from './history.js'
 import { deriveSessionName } from './session-merge.js'
@@ -150,6 +151,9 @@ function cleanEx(e) {
   const warm = cleanWarmupSets(e.warmupSets)
   if (warm) o.warmupSets = warm
   Object.assign(o, warmupChoiceFields(e))
+  const incline = clampIncline(e.incline), level = clampLevel(e.level)
+  if (incline > 0) o.incline = incline
+  if (level > 0) o.level = level
   // Drop-sets and rest-pause are part of how the exercise is prescribed, not a logging detail.
   // Without this a shared "3x5 with a double drop" arrived at the other end as a plain 3x5,
   // silently — parsePlan's `dropped` counter only tracks exercises it cannot resolve at all.
@@ -294,6 +298,11 @@ export function parsePlan(raw, destinationUnit = 'kg') {
         delete passthrough.warmupRows
         Object.assign(passthrough, warmupChoiceFields(e))
       }
+      delete passthrough.incline
+      delete passthrough.level
+      const incline = clampIncline(e.incline), level = clampLevel(e.level)
+      if (incline > 0) passthrough.incline = incline
+      if (level > 0) passthrough.level = level
       if (!known.has(passthrough.id)) passthrough.id = canonicalExId(passthrough.id)
       return convertedExercise({ ...passthrough, ...(pyramid.length ? { pyramid } : {}), ...(pyramidRest.length ? { pyramidRest } : {}), ...(pyramidWeight.length ? { pyramidWeight } : {}), ...(warm ? { warmupSets: warm } : {}), ...(intens ? { intensifier: intens } : {}), ...(rest ? { restSec: rest } : {}), ...(warmOff ? { warmupRestOff: true } : warmRest ? { warmupRestSec: warmRest } : {}), ...(sideRest ? { sideRestSec: sideRest } : {}), ...(subs.length ? { subs } : {}), ...(sgName ? { sgName } : {}), ...(sgRest ? { sgRest } : {}) }, sourceUnit || destination, destination)
     })

@@ -1,5 +1,7 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio resistance controls.
+  "Level": "Seviye",
   // Original automatic and saved warm-up controls.
   "Default": "Varsayılan",
   // Original automatic and saved warm-up controls.

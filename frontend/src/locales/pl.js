@@ -1,5 +1,7 @@
 // Polish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Cardio resistance controls.
+  "Level": "Poziom",
   // Original automatic and saved warm-up controls.
   "Default": "Domyślnie",
   // Original automatic and saved warm-up controls.
