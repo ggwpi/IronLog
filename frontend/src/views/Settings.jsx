@@ -10,6 +10,7 @@ import { isOn, setModule } from '../lib/modules.js'
 import { bandsSheet } from '../components/Bands.jsx'
 import { bandsOf } from '../lib/bands.js'
 import ModulesSettings from '../components/ModulesSettings.jsx'
+import { switchGym } from '../lib/gym-inventory.js'
 import { speedUnitOf } from '../lib/speed.js'
 import { warmupAutoOf } from '../lib/warmup-ramp.js'
 import { dailyModeOf, settleAll } from '../lib/weigh-ins.js'
@@ -1476,7 +1477,7 @@ function EquipmentCard({ S, update }) {
       <Switch checked={!!S.equipFilterOn} onChange={v => update(s => { s.equipFilterOn = v })} />
     </Row>}
     {profiles.length > 0 && <SelectRow icon="house" iconTint="var(--blue)" title={t('Active profile')}
-      value={S.activeEquipId || ''} onChange={v => update(s => { s.activeEquipId = v })}
+      value={S.activeEquipId || ''} onChange={v => update(s => { switchGym(s, v) })}
       options={profiles.map(p => ({ value: p.id, label: p.name }))} />}
     {profiles.map(p => (
       <Row key={p.id} icon="house" iconTint="var(--teal)" title={p.name}

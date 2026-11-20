@@ -1,5 +1,18 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "已经到底了：{0} {1} 是最重的一档，所以重量不变。",
+  "My gym": "我的健身房",
+  "Weight stack": "配重片",
+  "Weights": "Weights",
+  "Add weights": "Add weights",
+  "First ({0})": "起始 ({0})",
+  "Count": "Count",
+  "Fill in": "填入",
+  "Copy from": "复制自",
+  "Choose": "Choose",
+  "Switch to {0}?": "切换到{0}？",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "还没做的组会按那里的杠铃片、哑铃和配重片调整。",
+  "Switch": "切换",
   "Routine type": "计划类型",
   "Regular": "常规",
   "Circuit": "循环",

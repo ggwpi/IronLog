@@ -122,6 +122,7 @@ export function buildCompletedWorkout(active, { end = Date.now(), prs = [], snap
     routineId: routineIds[0] ?? null,
     name: active.name,
     bw: active.bw,
+    ...(active.gym && typeof active.gym === 'object' ? { gym: structuredClone(active.gym) } : {}),
     entries,
     prs,
     ...(Array.isArray(active.circuits) && active.circuits.length ? { circuits: withoutAdvances(structuredClone(active.circuits)) } : {}),

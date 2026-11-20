@@ -1,6 +1,19 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "זה כל טווח המשקולות במכשיר: {0} {1} הוא המשקל המרבי, לכן המשקל נשאר.",
+  "My gym": "חדר הכושר שלי",
+  "Weight stack": "משקולות המכשיר",
+  "Weights": "משקלים",
+  "Add weights": "הוספת משקלים",
+  "First ({0})": "ראשון ({0})",
+  "Count": "כמות",
+  "Fill in": "מילוי",
+  "Copy from": "העתקה מתוך",
+  "Choose": "בחירה",
+  "Switch to {0}?": "לעבור אל {0}?",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "סטים שטרם ביצעת יותאמו לפלטות, למשקולות ולמכשירים שבמקום.",
+  "Switch": "מעבר",
   "Routine type": "סוג אימון",
   "Regular": "רגיל",
   "Circuit": "אימון מעגלי",

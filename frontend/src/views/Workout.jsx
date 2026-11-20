@@ -4,6 +4,7 @@ import { BandChips } from '../components/Bands.jsx'
 import { usesBands, setBandsOf, toggleSetBand } from '../lib/bands.js'
 import { isOn } from '../lib/modules.js'
 import CircuitCard from '../components/CircuitCard.jsx'
+import { gymsOf, activeGym, switchGym, reRoundOpenSets } from '../lib/gym-inventory.js'
 import SwipeRow from '../components/SwipeRow.jsx'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
@@ -1565,9 +1566,23 @@ function ActiveWorkout() {
   // values as Settings), then what to add, what to change about this workout, and Discard last.
   // Layout here stays this session's own (s.active.workoutView); the settings sheet's Layout is
   // the saved one.
+  const gyms = gymsOf(S)
+  const gymNow = activeGym(S)
+  const openGymMenu = () => menuSheet({ title: t('Active profile'), items: gyms.map(g => ({
+    icon: 'house', label: g.name, on: g.id === gymNow?.id,
+    onClick: () => {
+      if (g.id === gymNow?.id) return
+      confirmSheet({ title: t('Switch to {0}?', g.name),
+        message: t('Sets you haven’t done yet move onto the plates, dumbbells and stacks there.'),
+        confirmText: t('Switch'),
+        onConfirm: () => update(s => { if (switchGym(s, g.id)) reRoundOpenSets(s) }),
+      })
+    },
+  })) })
   const openViewMenu = () => menuSheet({
     sections: [
       { items: [
+        !editing && !A.backfill && gyms.length > 1 && { icon: 'house', label: t('Active profile'), sub: gymNow?.name, onClick: openGymMenu },
         { icon: 'gear', accent: true, chevron: true, label: t('Workout settings'),
           sub: [S.restSec > 0 ? t('{0} rest', fmtRest(S.restSec)) : t('No rest timer'), S.sound ? t('Sound') : t('Silent')].join(' · '),
           onClick: workoutSettingsSheet },

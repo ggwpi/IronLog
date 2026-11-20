@@ -1,5 +1,18 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "สุดสแต็กแล้ว: {0} {1} หนักที่สุด น้ำหนักจึงคงเดิม",
+  "My gym": "ยิมของฉัน",
+  "Weight stack": "สแต็กน้ำหนัก",
+  "Weights": "Weights",
+  "Add weights": "Add weights",
+  "First ({0})": "แรก ({0})",
+  "Count": "Count",
+  "Fill in": "เติม",
+  "Copy from": "คัดลอกจาก",
+  "Choose": "Choose",
+  "Switch to {0}?": "เปลี่ยนไป {0} ไหม",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "เซ็ตที่ยังไม่ได้ทำจะปรับตามแผ่นน้ำหนัก ดัมเบล และชุดน้ำหนักที่นั่น",
+  "Switch": "เปลี่ยน",
   "Routine type": "ประเภทรูทีน",
   "Regular": "ปกติ",
   "Circuit": "เซอร์กิต",

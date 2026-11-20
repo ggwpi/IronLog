@@ -2,6 +2,11 @@
 
 Status: **IN PROGRESS — NOT SAFE TO MERGE OR DEPLOY**
 
+Current user-directed milestone: finish the existing IronLog Web/PWA functionality first.
+Use the existing production architecture and 20 route declarations as the baseline; new Web
+product areas and native platforms are deferred. See the milestone in the feature audit.
+The complete release ledger below is not a percentage-complete measure for this milestone.
+
 The [original Daily Form continuation](./PR69_DAILY_FORM_VERIFICATION_2026-11-19.md) replaces the
 extracted model and connects explicit lighter-session choices through IronLog's existing check-in,
 weigh-in, session creation, finish and stamped daily map. Manual IronLog warm-up weights and old
@@ -9,7 +14,7 @@ history/media/routines remain protected. Native vitals and the broader insight m
 
 Current traceable inventory: [OPENGYM_FEATURE_AUDIT.md](./OPENGYM_FEATURE_AUDIT.md).
 It records every pinned source/configuration path, known original-code/adapted-code boundaries,
-and 504 v1.4.3–v1.4.5 release criteria (502 still open). Local browser/test evidence is recorded in
+and 504 v1.4.3–v1.4.5 release criteria (500 still open). Local browser/test evidence is recorded in
 [PR69_VERIFICATION_2026-11-19.md](./PR69_VERIFICATION_2026-11-19.md).
 Neither document closes the full functional/native/data-restore gates.
 
@@ -349,3 +354,29 @@ plus two watcher errors. Build, 6,554+6,554 media, Node graphs and fatigue/histo
 All 19 packs contain 2,702 keys; pre-existing untranslated backlog remains 52. Modules head
 adc765ac has all five Linux CI jobs green in Tests #247, run 44704354710. This new head needs
 its own CI; native/full restored-profile/full upstream parity remain unverified.
+
+## Existing Web/PWA equipment completion (2026-11-20)
+
+Compared origin/main at 79fc61ee and the existing Supabase branch. Vercel routing, cloud entry
+point, authentication, frontend API and cloud-generation storage are inherited; the earlier
+cloud-handler deltas are the two request capabilities and Coach module gate. No replacement
+backend or new product routes are needed for the current milestone.
+
+The original per-gym inventory model now runs through the existing store update, Settings and
+workout menu. Existing inventory sheets copy from another gym; machine stacks are edited in
+existing exercise-detail/configuration sheets. Original parsers, unit-aware readers, switch-time
+rounding and stack progression remain unchanged. Completed sets, previous workout/media/notes,
+unknown inventory metadata and concurrent offline changes have regressions. Stacks sync using
+existing per-exercise stamped maps. Eleven focused tests pass, including actual sheet interactions.
+
+Full local frontend: 6,646 passed / the same six Windows failures (6,652 / 564 files). API:
+726 passed / the identical 24 Windows failures / 46 skips (796). MCP: 98 passed / one existing
+permissions failure plus two watcher errors. Build, 6,554+6,554 media, generated assets/docs, Node
+graphs and fatigue/history probes pass. Final field-style changes were followed by all eleven
+focused tests, another build and media staging. Nineteen locale packs have 2,715 keys; the old
+source-string backlog stays 52. No Python/browser/manual test artifacts or production access.
+
+Circuit head 5c368ba1 passed all five Linux jobs in Tests #248, run 44711400214, including the
+isolated cloud database/auth/sync gate. The following equipment commit needs its own CI.
+New programmes pages, Journal, Tools, community, trainers, assistants, integrations and native
+platforms remain deferred expansion work. This does not certify full v1.4.5 feature parity.

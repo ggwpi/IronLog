@@ -1,5 +1,18 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "스택 끝이에요: {0} {1}이(가) 가장 무거우니 무게를 유지해요.",
+  "My gym": "내 헬스장",
+  "Weight stack": "웨이트 스택",
+  "Weights": "Weights",
+  "Add weights": "Add weights",
+  "First ({0})": "첫 무게 ({0})",
+  "Count": "Count",
+  "Fill in": "채우기",
+  "Copy from": "복사해 올 곳",
+  "Choose": "Choose",
+  "Switch to {0}?": "{0}(으)로 바꿀까요?",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "아직 안 한 세트는 그곳의 원판, 덤벨, 스택에 맞춰 조정돼요.",
+  "Switch": "바꾸기",
   "Routine type": "루틴 유형",
   "Regular": "일반",
   "Circuit": "서킷",

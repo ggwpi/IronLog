@@ -1,5 +1,18 @@
 // Polish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "To cały stos: {0} {1} to najwięcej, więc ciężar zostaje.",
+  "My gym": "Moja siłownia",
+  "Weight stack": "Stos obciążenia",
+  "Weights": "Weights",
+  "Add weights": "Add weights",
+  "First ({0})": "Pierwszy ({0})",
+  "Count": "Count",
+  "Fill in": "Wypełnij",
+  "Copy from": "Kopiuj z",
+  "Choose": "Choose",
+  "Switch to {0}?": "Przełączyć na {0}?",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "Serie, których jeszcze nie zrobiłeś, dopasują się do tamtejszych talerzy, hantli i stosów.",
+  "Switch": "Przełącz",
   "Routine type": "Typ planu",
   "Regular": "Zwykła",
   "Circuit": "Obwód",

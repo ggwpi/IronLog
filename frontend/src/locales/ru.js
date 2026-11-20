@@ -1,5 +1,18 @@
 // Russian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "Это весь стек: {0} {1} и есть максимум, так что вес остаётся.",
+  "My gym": "Мой зал",
+  "Weight stack": "Стек грузов",
+  "Weights": "Weights",
+  "Add weights": "Add weights",
+  "First ({0})": "Первый ({0})",
+  "Count": "Count",
+  "Fill in": "Заполнить",
+  "Copy from": "Скопировать из",
+  "Choose": "Choose",
+  "Switch to {0}?": "Перейти в {0}?",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "Подходы, которые ты ещё не сделал, подстроятся под блины, гантели и стеки там.",
+  "Switch": "Сменить",
   "Routine type": "Тип программы",
   "Regular": "Обычная",
   "Circuit": "Круговая",

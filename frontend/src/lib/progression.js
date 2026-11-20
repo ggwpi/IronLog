@@ -23,6 +23,7 @@ import { normalizeRepRange } from './rep-range.js'
 import { isPyramid } from './pyramid.js'
 import { backoffAt } from './backoff.js'
 import { ownedWeightsFor, ownedUp, ownedDeload, ownedAround } from './dumbbells.js'
+import { machineWeightsFor, machinePrescription } from './machine-stacks.js'
 
 export const POLICIES = ['off', 'linear', 'greyskull', 'double', 'triple', 'time']
 
@@ -443,6 +444,7 @@ export function stallCount(sessions, policy) {
  * startsFromLast in session-start.js).
  */
 export function nextPrescription(S, cfg, routine) {
+  if (machineWeightsFor(S, cfg)) return machinePrescription(S, cfg, routine)
   const mode = modeOf(cfg)
   const policy = policyFor(cfg, routine, mode)
   const unit = S.unit || 'kg'

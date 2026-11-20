@@ -2,6 +2,21 @@
 
 PR #69 remains **Draft, incomplete, not approved for merge or production**.
 
+## Current milestone: existing IronLog Web/PWA functionality
+
+The user's current priority is the functionality already present in the previous production
+Web/PWA, before adding new product areas. Baseline: `origin/main` at `79fc61ee`, with the
+existing Supabase/Vercel implementation inherited from `feat/supabase-backend`. The current
+app retains the same 20 route declarations. This milestone covers authentication/profiles,
+offline/cloud synchronization, media, Home/Stats/history, existing plans and workout layouts,
+body data, settings and the existing Coach integration. Regression suites and the existing
+isolated cloud CI gate are the acceptance evidence; native devices are outside this milestone.
+
+New programmes pages, Journal, Tools, community, trainer dashboards, assistant connections
+and integration services are deferred expansion work. The full-source ledger below remains
+an inventory of the eventual broader goal. Its checked percentage is not a completion metric
+for this milestone. Do not add new product areas to make that ledger look more complete.
+
 Audited source pin: `e4a68a94c42a3c17cbd560d66ce2e46a7048ab99`.
 Continuation baseline: `cdf7f169f644c0a0c7e600400d0d5ae1b65b4a0c`.
 IronLog UI baseline remains its existing components, not upstream screens or CSS.
@@ -60,7 +75,7 @@ Four release criteria are verified for shared web paths: Daily Form 1.4.5:230/:2
 | Resistance bands | Complete original model, editor/chips and original tests; Root configuration save, Cards/List/Compact/Focus, original seeding/progression, history labels, CSV and read-only MCP; metadata, kg resistance, per-key preferences and old-client guards | Full per-side/plan interchange, summary, native and restored-profile matrices remain open |
 | Distance / tempo / per-set records | Complete original distance helpers/tests now drive Cards/List/Compact/Focus and distance history labels; explicit receiver CSV mode, finish/JSON/offline/sync/API fixtures; original tempo uses existing configuration/menu/inline controls; custom Focus set menu opens the same original tag/tempo and 500-character note editors; resistance levels use original bounds/column selection in existing controls with compatibility fixtures; the complete original tempo guide/audio queue now opens from the existing editor and returns completion through IronLog, with stale-state and metadata guards | Broader native/history matrix and per-set records remain open; real-device background audio/haptics remain unverified |
 | Circuits / AMRAP / EMOM / Tabata / run-walk | Complete unchanged original models, clock, speech, card and tests; existing IronLog routine picker, all four workout layouts, player sheet, finish/history results and saved run/walk progression; per-owner clock restoration, metadata and old-client compatibility tests | Native device/background cues, broader per-side/portable-plan and restored-profile matrices remain open |
-| Warm-ups / plates / equipment by gym | Complete original ramp/recipe models and editor; actual IronLog Settings, planned/freestyle/swap builders, live-ramp controls and Keep action in all layouts; manual/completed guards, duplicate-slot handling, plan interchange and old-client fixtures | Gym-scoped equipment, complete volume options and native/restore matrix remain open; existing charts keep IronLog volume semantics |
+| Warm-ups / plates / equipment by gym | Complete original ramp/recipe models and editor; existing IronLog Settings, session builders and workout layouts; original per-gym inventory/switch/copy and machine-stack readers/progression now feed existing editors and store updates, with metadata/offline/legacy regressions | Complete volume options, per-exercise units and native/restore matrix remain open; existing charts keep IronLog volume semantics |
 | Challenges / recaps / Wrapped / streak levels | Existing IronLog streak; partial Motivation display gates | Original challenge/recap/notification engines and current UI adapters |
 | Sharing / community | Existing IronLog sharing behavior | Original card export, community data/services, permissions and UI adapters |
 | Coach | Existing customized frontend/backend integration retained | All upstream mid-workout adaptation, providers, consent, scheduling and capability gates |

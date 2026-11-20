@@ -4,6 +4,19 @@
 import pt from './pt.js'
 
 export const PT_BR_OVERRIDES = {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "É a pilha inteira: {0} {1} é o máximo que dá, então o peso fica.",
+  "My gym": "Minha academia",
+  "Weight stack": "Pilha de pesos",
+  "Weights": "Weights",
+  "Add weights": "Add weights",
+  "First ({0})": "Primeiro ({0})",
+  "Count": "Count",
+  "Fill in": "Preencher",
+  "Copy from": "Copiar de",
+  "Choose": "Choose",
+  "Switch to {0}?": "Trocar para {0}?",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "As séries que você ainda não fez passam para as anilhas, halteres e placas de lá.",
+  "Switch": "Trocar",
   "Routine type": "Tipo de rotina",
   "Regular": "Normal",
   "Circuit": "Circuito",

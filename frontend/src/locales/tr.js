@@ -1,5 +1,18 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "Bloğun tamamı bu: {0} {1} en ağırı, o yüzden ağırlık sabit kalır.",
+  "My gym": "Salonum",
+  "Weight stack": "Ağırlık bloğu",
+  "Weights": "Weights",
+  "Add weights": "Add weights",
+  "First ({0})": "İlk ({0})",
+  "Count": "Count",
+  "Fill in": "Doldur",
+  "Copy from": "Şuradan kopyala",
+  "Choose": "Choose",
+  "Switch to {0}?": "{0} salonuna geçilsin mi?",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "Henüz yapmadığın setler oradaki plakalara, dambıllara ve yığınlara göre ayarlanır.",
+  "Switch": "Geç",
   "Routine type": "Rutin türü",
   "Regular": "Normal",
   "Circuit": "Devre",

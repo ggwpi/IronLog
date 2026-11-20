@@ -1,5 +1,18 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "এটিই পুরো স্ট্যাক: সবচেয়ে ভারী {0} {1}, তাই ওজন একই থাকছে।",
+  "My gym": "আমার জিম",
+  "Weight stack": "ওজনের স্ট্যাক",
+  "Weights": "Weights",
+  "Add weights": "Add weights",
+  "First ({0})": "প্রথম ({0})",
+  "Count": "Count",
+  "Fill in": "পূরণ করুন",
+  "Copy from": "যেখান থেকে কপি করবেন",
+  "Choose": "Choose",
+  "Switch to {0}?": "{0}-এ বদলাবেন?",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "যে সেটগুলো এখনও করেননি, সেগুলো সেখানকার প্লেট, ডাম্বেল আর স্ট্যাক অনুযায়ী বদলে যাবে।",
+  "Switch": "বদলান",
   "Routine type": "রুটিনের ধরন",
   "Regular": "সাধারণ",
   "Circuit": "সার্কিট",

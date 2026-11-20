@@ -1,5 +1,18 @@
 // German UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "Das ist der ganze Block: {0} {1} ist das Schwerste, also bleibt das Gewicht.",
+  "My gym": "Mein Gym",
+  "Weight stack": "Gewichtsblock",
+  "Weights": "Weights",
+  "Add weights": "Add weights",
+  "First ({0})": "Erstes ({0})",
+  "Count": "Count",
+  "Fill in": "Ausfüllen",
+  "Copy from": "Übernehmen von",
+  "Choose": "Choose",
+  "Switch to {0}?": "Zu {0} wechseln?",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "Sätze, die du noch nicht gemacht hast, passen sich an die Scheiben, Kurzhanteln und Blöcke dort an.",
+  "Switch": "Wechseln",
   "Routine type": "Art der Routine",
   "Regular": "Normal",
   "Circuit": "Zirkel",

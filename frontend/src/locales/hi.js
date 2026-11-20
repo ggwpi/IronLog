@@ -1,5 +1,18 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "यही पूरा स्टैक है: {0} {1} सबसे भारी है, इसलिए वज़न वही रहता है।",
+  "My gym": "मेरा जिम",
+  "Weight stack": "वज़न स्टैक",
+  "Weights": "Weights",
+  "Add weights": "Add weights",
+  "First ({0})": "पहला ({0})",
+  "Count": "Count",
+  "Fill in": "भरें",
+  "Copy from": "इससे कॉपी करें",
+  "Choose": "Choose",
+  "Switch to {0}?": "{0} पर जाएँ?",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "जो सेट अभी बाकी हैं, वे वहाँ की प्लेट्स, डम्बल और स्टैक के हिसाब से बदल जाएँगे।",
+  "Switch": "बदलें",
   "Routine type": "रूटीन का प्रकार",
   "Regular": "सामान्य",
   "Circuit": "सर्किट",

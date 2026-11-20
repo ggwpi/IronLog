@@ -1,5 +1,18 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "هذه المجموعة كلها: {0} {1} هو الأثقل، لذا يبقى الوزن كما هو.",
+  "My gym": "صالتي",
+  "Weight stack": "مجموعة الأوزان",
+  "Weights": "Weights",
+  "Add weights": "Add weights",
+  "First ({0})": "الأول ({0})",
+  "Count": "Count",
+  "Fill in": "املأ",
+  "Copy from": "نسخ من",
+  "Choose": "Choose",
+  "Switch to {0}?": "التبديل إلى {0}؟",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "المجموعات التي لم تؤدّها بعد تتكيف مع الأقراص والدمبلز وأوزان الأجهزة هناك.",
+  "Switch": "بدّل",
   "Routine type": "نوع الروتين",
   "Regular": "عادي",
   "Circuit": "دائرة",

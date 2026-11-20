@@ -14,6 +14,9 @@ import { clampLevel, levelFits, levelFrom, LEVEL_MAX, inclineFrom } from './lib/
 import { useUI } from './store/useUI.js'
 import { EXDB, EXIDX, BODYPARTS, isCardio, isBodyweightEq, allExercises, equipmentOf, byCategory, smOf, searchExercises, similarExercises, exOr, isAssisted, betterWeight, beatsWeight, isCustomEx } from './lib/exercises.js'
 import { activeProfile, exAvailable, ALL_EQUIPMENT, newProfile, profileEquipment, ACC_V } from './lib/equipment.js'
+import GymInventoryRow from './components/GymInventoryRow.jsx'
+import MachineStackEditor from './components/MachineStackEditor.jsx'
+import { canHaveStack } from './lib/machine-stacks.js'
 import { fmtDate, fmtDateRange, fmtNum, fmtPlate, exerciseNameText, fmtVol, fmtDur, durPart, todayISO, isoOf, uid, exCount, routineCount, setsWorkCount, DAYN, DAYS, weekOrder, weekStartOf, weekDayOffset, MONTHS_LONG, ACCENTS } from './lib/format.js'
 import { lastEntryFor, bestWeightFor, bestWeightForEntry, buildSets, effectiveRoutineIds, workoutDay, workoutVolume, setsDone, setsDoneActive, setUnitsTotal, lastBW, sessionSections, setLabel, defaultConfig, cleanupSg, modeOf, effortOf, EFFORT, capEffort, stepEffort, isBw, isPerSide, sideReps, workSetsDone, applyIntensifierPlan, MAX_PLANNED_WARMUPS, NOTE_MAX } from './lib/history.js'
 import { usesBar, hasBarOverride, isNoBar, barTypeWeight, ownBarDefault, barPicks, withBarDefault, withStandardBars, defaultBarWeight, BAR_TYPES } from './lib/bar.js'
@@ -951,6 +954,7 @@ function PlateInventorySheet({ close }) {
   const reset = () => update(s => { s.plates = withStandardPlates(s) })
   return <>
     <h3>{t('Plates')}</h3>
+    <GymInventoryRow kind="plates" />
     <div className="muted small" style={{ marginBottom: 14 }}>
       {t('Pairs of each size you own. Every set row loads from this list, so a home gym with one pair of 45s is never told to use two.')}
     </div>
@@ -988,6 +992,7 @@ function DumbbellInventorySheet({ close }) {
   }
   return <>
     <h3>{t('Dumbbells')}</h3>
+    <GymInventoryRow kind="dumbbells" />
     <div className="muted small" style={{ marginBottom: 14 }}>
       {t('The weights you own, one bell each. Progression, deloads, warm-ups and the + and − buttons of dumbbell lifts land only on these.')}
     </div>
@@ -1023,6 +1028,7 @@ function BarDefaultsSheet({ close }) {
   const name = eq => { const n = t(eq); return n.charAt(0).toLocaleUpperCase() + n.slice(1) }
   return <>
     <h3>{t('Your bars')}</h3>
+    <GymInventoryRow kind="barDefaults" />
     <div className="muted small" style={{ marginBottom: 14 }}>
       {t('What the bars at your gym weigh. Every exercise with that bar counts plates from it, unless you gave the exercise its own. Logged weights stay totals.')}
     </div>
@@ -1149,6 +1155,7 @@ function ExerciseDetail({ ex, close }) {
       <DbLoadPicker ex={ex} value={dbLoadFor(st, ex.id)}
         onChange={v => update(s => { s.dbLoad = withDbLoad(s.dbLoad, ex.id, v) })} />
     </>}
+    {canHaveStack(ex) && <><h4 className="sec">{t('Weight stack')}</h4><MachineStackEditor ex={ex} /></>}
     {/* No one-rep max on an assistance machine: the load is the help you were given, so the
         calculator would answer "your 1RM is 23 kg" about a number that gets smaller as you get
         stronger (issue #232). Cardio has none for the same kind of reason. */}
@@ -2267,6 +2274,7 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
       <DbLoadPicker ex={ex} cfg={c} value={dbLoadFor(st, { ...c, id: ex.id })}
         onChange={v => setC(x => ({ ...x, dbLoad: v === dbLoadFor(st, ex.id) ? undefined : v }))} />
     </>}
+    {canHaveStack(ex) && !bw && mode === 'reps' && <><h4 className="sec">{t('Weight stack')}</h4><MachineStackEditor ex={ex} /></>}
     {/* How the weight is plate-loaded and what the bar weighs — per exercise, not per plan, so
         it sits apart from the config fields above and writes straight to S.barWeights/S.loadKind. */}
     {mode === 'reps' && <>

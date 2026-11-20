@@ -1,5 +1,9 @@
 # Immutable openGym v1.4.5 source + IronLog presentation contract
 
+Current milestone: existing IronLog Web/PWA functionality first, using its current production
+architecture and components. New product areas and native platforms are deferred. This changes
+execution priority, not the immutable-source, existing-UI or user-data preservation requirements.
+
 ## Pinned source (never edit vendor source)
 Source repository: https://github.com/DuarteSantos8/openGym
 Pinned commit: `e4a68a94c42a3c17cbd560d66ce2e46a7048ab99`
@@ -238,3 +242,14 @@ circuit configuration, regular-routine snapshots and results; ambiguous legacy u
 before persistence. Explicit v2 clears/reset retain existing semantics. Existing rest/speech,
 watch and Live Activity adapters forward original clock DTOs; hardware is not certified.
 No auth, schema, storage writer, historical values or existing UI shell was replaced.
+
+## Existing equipment boundaries
+
+The full original gym-inventory model is imported unchanged and guarded by its pinned Git blob.
+The existing IronLog store update settles inventory copies before existing change stamping.
+Settings and workout-menu switches, inventory-copy pickers and machine-stack fields use actual
+IronLog controls. Legacy global inventories seed each existing gym without changing their values;
+existing gym data, completed weights, long notes and metadata remain. Saved workouts retain gym
+metadata. Original stack readers/parsers and progression run only for explicitly configured stacks;
+the prior prescription path remains for other exercises. Stack entries use the existing stamped-map
+merge on client/API. No new auth system, database writer, table, schema migration or service was added.

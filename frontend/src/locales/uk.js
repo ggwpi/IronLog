@@ -1,5 +1,18 @@
 // Ukrainian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "That’s the whole stack: {0} {1} is the heaviest it goes, so the weight stays.": "Це весь стек: {0} {1} і є максимум, тож вага лишається.",
+  "My gym": "Мій зал",
+  "Weight stack": "Стек вантажів",
+  "Weights": "Weights",
+  "Add weights": "Add weights",
+  "First ({0})": "Перший ({0})",
+  "Count": "Count",
+  "Fill in": "Заповнити",
+  "Copy from": "Скопіювати з",
+  "Choose": "Choose",
+  "Switch to {0}?": "Перейти до {0}?",
+  "Sets you haven’t done yet move onto the plates, dumbbells and stacks there.": "Підходи, які ти ще не зробив, підлаштуються під млинці, гантелі й стеки там.",
+  "Switch": "Змінити",
   "Routine type": "Тип програми",
   "Regular": "Звичайна",
   "Circuit": "Кругове",

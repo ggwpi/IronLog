@@ -1,4 +1,5 @@
 import { cloudStorage as localStorage } from '../lib/cloud-generation.js'
+import { syncGymInventory } from '../lib/gym-inventory.js'
 import { create } from 'zustand'
 import { api, setRemoteAuth } from '../lib/api.js'
 import { localTZ } from '../lib/format.js'
@@ -1351,6 +1352,7 @@ export const useStore = create((set, get) => {
       const prev = get().S
       const S = clone(prev)
       mut(S)
+      syncGymInventory(S, prev)
       // What the change removed, and which routines, workouts, settings and plan days it touched,
       // each with one time that comes after every stamp the copy already carries: a conflict then
       // keeps a removal and the edit made last, even from a device whose clock runs behind
