@@ -1,5 +1,17 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Modules": "โมดูล",
+  "Start from": "เริ่มจาก",
+  "Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.": "ปิดสิ่งที่คุณไม่ใช้ ไม่มีอะไรถูกลบ เปิดกลับมาเมื่อไรก็ยังอยู่ครบ",
+  "Plates and warm-ups": "แผ่นน้ำหนักและวอร์มอัพ",
+  "Strength levels": "ระดับความแข็งแรงแต่ละท่า",
+  "Watch": "นาฬิกา",
+  "Motivation": "แรงจูงใจ",
+  "Training": "การฝึก",
+  "Body and health": "ร่างกายและสุขภาพ",
+  "Extras": "ส่วนเสริม",
+  "Just training": "แค่การฝึก",
+  "Training and body": "การฝึกและร่างกาย",
   "Add your bands": "เพิ่มยางยืดของคุณ",
   "Bands": "ยางยืด",
   "Band {0}": "ยางยืด {0}",

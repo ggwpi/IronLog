@@ -2,6 +2,7 @@ import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import SwipeCards from '../components/SwipeCards.jsx'
 import { BandChips } from '../components/Bands.jsx'
 import { usesBands, setBandsOf, toggleSetBand } from '../lib/bands.js'
+import { isOn } from '../lib/modules.js'
 import SwipeRow from '../components/SwipeRow.jsx'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
@@ -383,7 +384,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   // The rows and their drop-set sub-rows form one sequence in the order the bar sees them, keyed
   // `i` for a set and `i:dN` for its N-th drop; a rest-pause burst keeps the set's weight, so it
   // is not in the sequence.
-  const plateLoading = mode === 'reps' && !editing
+  const plateLoading = mode === 'reps' && !editing && isOn(S, 'plates')
   const loadKind = plateLoading ? loadKindFor(S, cfg) : 'none'
   const base = baseWeightFor(S, entry.id)
   const loadSeq = loadKind === 'none' ? [] : (() => {

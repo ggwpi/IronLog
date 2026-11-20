@@ -1,5 +1,17 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Modules": "模块",
+  "Start from": "起点",
+  "Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.": "用不上的就关掉。不会删除任何东西：重新打开，一切都还在。",
+  "Plates and warm-ups": "杠铃片和热身",
+  "Strength levels": "各动作力量等级",
+  "Watch": "手表",
+  "Motivation": "激励",
+  "Training": "训练",
+  "Body and health": "身体与健康",
+  "Extras": "附加功能",
+  "Just training": "只管训练",
+  "Training and body": "训练与身体",
   "Add your bands": "添加你的弹力带",
   "Bands": "弹力带",
   "Band {0}": "弹力带 {0}",

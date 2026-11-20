@@ -1,5 +1,17 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Modules": "मॉड्यूल",
+  "Start from": "यहाँ से शुरू करें",
+  "Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.": "जो इस्तेमाल नहीं करते, उसे बंद कर दें। कुछ भी डिलीट नहीं होता: फिर से चालू करें और सब वहीं मिलेगा।",
+  "Plates and warm-ups": "प्लेटें और वार्म-अप",
+  "Strength levels": "ताक़त के स्तर",
+  "Watch": "घड़ी",
+  "Motivation": "प्रेरणा",
+  "Training": "ट्रेनिंग",
+  "Body and health": "शरीर और सेहत",
+  "Extras": "एक्स्ट्रा",
+  "Just training": "बस ट्रेनिंग",
+  "Training and body": "ट्रेनिंग और शरीर",
   "Add your bands": "अपने बैंड जोड़ें",
   "Bands": "बैंड",
   "Band {0}": "बैंड {0}",

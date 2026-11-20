@@ -9,6 +9,7 @@ import { workoutControls } from '../lib/workout-controls.js'
 import { isOn, setModule } from '../lib/modules.js'
 import { bandsSheet } from '../components/Bands.jsx'
 import { bandsOf } from '../lib/bands.js'
+import ModulesSettings from '../components/ModulesSettings.jsx'
 import { speedUnitOf } from '../lib/speed.js'
 import { warmupAutoOf } from '../lib/warmup-ramp.js'
 import { dailyModeOf, settleAll } from '../lib/weigh-ins.js'
@@ -83,7 +84,8 @@ export function SettingsRoute() {
   // `ios` now, not after an async platform check: the Apple Watch page is iPhone only, and a route
   // that did not know yet sent every visit to it straight back to the root.
   // (Unknown counts as yes inside the phone app: the page itself then says there is no watch.)
-  const ctx = { user: useStore(s => s.user), mobile: MOBILE, cloudCoach: !!useStore(s => s.config?.coach?.cloud), ios: MOBILE && platformNow() !== 'android' }
+  const moduleState = useStore(s => s.S)
+  const ctx = { user: useStore(s => s.user), mobile: MOBILE, cloudCoach: !!useStore(s => s.config?.coach?.cloud), ios: MOBILE && platformNow() !== 'android', coachOn: isOn(moduleState, 'coach'), watchOn: isOn(moduleState, 'watch') }
   if (page && (!PAGES[page] || !pageVisible(PAGES[page].parent || page, ctx))) return <Navigate to="/settings" replace />
   if (page === 'coach') return <Navigate to="/coach/setup" replace />
   return <Settings key={page || 'root'} page={page || null} find={loc.state?.find || null} via={loc.state?.via || null} entryKey={loc.key} />
@@ -432,6 +434,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     rotation: scheduleModeOf(S) === 'rotation' && !externalQ,
     weighInTimes: S.weighInTimes === true || (S.bodyweight || []).some(b => Array.isArray(b.ins)),
     bodyOn: isOn(S, 'body'),
+    coachOn: isOn(S, 'coach'), watchOn: isOn(S, 'watch'), effortOn: isOn(S, 'effort'), healthOn: isOn(S, 'health'), platesOn: isOn(S, 'plates'),
   }
   const mode = scheduleModeOf(S)
   const layout = ['list', 'compact', 'focus'].includes(S.workoutView) ? S.workoutView : 'cards'
@@ -440,6 +443,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
   const themeLabel = { dark: t('Dark'), light: t('Light'), system: t('System') }[S.theme || 'dark'] || t('Dark')
   // The value a root row shows, so most questions are answered without opening the page.
   const preview = {
+    modules: () => t('Modules'),
     workout: () => (S.restSec > 0 ? t('{0} rest', fmtRest(S.restSec)) : t('No rest timer')) + ' · ' + layoutLabel,
     alerts: () => [S.sound ? t('Sound') : null, canVibrate && S.vibrate !== false ? t('Vibrate') : null, S.timerFlash ? t('Flash') : null].filter(Boolean).join(' · ') || t('Silent'),
     reminders: () => (S.reminder?.on ? (S.reminder.time || DEF.reminder?.time || '') : t('Off')),
@@ -487,7 +491,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
   // warm-up rest"). Absent is like the work sets, 0 no timer (lib/supersetFlow.js warmupRestSecFor).
   const warmAll = typeof S.warmupRestSec === 'number' ? S.warmupRestSec : null
   const setWarm = v => update(s => { if (v === null) delete s.warmupRestSec; else s.warmupRestSec = v })
-  const warmupRestRow = <Row icon="timer" iconTint="var(--yellow)" title={t('Rest between warm-ups')} accessory="chevron"
+  const warmupRestRow = isOn(S, 'plates') && <Row icon="timer" iconTint="var(--yellow)" title={t('Rest between warm-ups')} accessory="chevron"
     subtitle={t('The last warm-up still gets the full rest before your first work set.')}
     value={warmAll === null ? t('Like the work sets') : warmAll > 0 ? fmtRest(warmAll) : t('No timer')}
     onClick={() => menuSheet({
@@ -503,6 +507,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     })} />
 
   const pages = {
+    modules: () => <ModulesSettings S={S} update={update} />,
     watch: () => <WatchSettingsPage />,
     workout: () => <>
       <Section title={t('Rest')} footer={t('Each exercise can have its own rest too. Set it in the exercise settings of a routine.')}>
@@ -513,12 +518,12 @@ export default function Settings({ page = null, find = null, via = null, entryKe
       <Section title={t('Logging')}>
         {/* Two names for the same judgement, so the column asks in the scale you already think in.
             The (i) sits before the control: you read it on the way to the choice, not after it. */}
-        <Row icon="gauge" iconTint="var(--purple)" title={t('Effort per set')}>
+        {isOn(S, 'effort') && <Row icon="gauge" iconTint="var(--purple)" title={t('Effort per set')}>
           <button className="helpbtn" aria-label={t('What are RIR and RPE?')} onClick={effortHelpSheet}><Icon name="info" /></button>
           <Segmented className="seg-inline"
             options={[{ value: 'none', label: t('Off') }, { value: 'rir', label: t('RIR') }, { value: 'rpe', label: t('RPE') }]}
             value={effortOf(S)} onChange={v => update(s => { s.effort = v; delete s.showRir })} />
-        </Row>
+        </Row>}
         {/* The line under each exercise that the rows are held against (#173). Tapping the line in
             a workout switches it too; this is where the choice can be found without knowing that. */}
         <SelectRow icon="history" iconTint="var(--blue)" title={t('Shown under each exercise')}
@@ -554,10 +559,10 @@ export default function Settings({ page = null, find = null, via = null, entryKe
       <Section title={t('Before and during')}>
         {/* The quick weigh-in that opens on Start (sheets.jsx startFlow, issue #137); off skips
             straight to the session. Home and Stats still log weight by hand. */}
-        <Row icon="scale" iconTint="var(--green)" title={t('Weigh in before workouts')}
+        {isOn(S, 'body') && <Row icon="scale" iconTint="var(--green)" title={t('Weigh in before workouts')}
           subtitle={t('Asks for your body weight when a workout starts. Off starts the session straight away.')}>
           <Switch checked={S.weighIn !== false} onChange={v => update(s => { s.weighIn = v })} />
-        </Row>
+        </Row>}
         {/* Optional openGym Daily Form: disabled unless explicitly enabled. */}
         {S.modules?.health !== false && <Row icon="moon" iconTint="var(--indigo)"
           title={t('Daily form')} subtitle={t('Check in before workouts?')}>
@@ -927,7 +932,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         {MOBILE && android && S.autoBackup && <BackupFolderRow />}
       </Section>
       <Section><Row icon="share" iconTint="var(--blue)" title={t('Export as spreadsheet (CSV)')} accessory="chevron" onClick={csvExportSheet} /></Section>
-      {MOBILE && <HealthConnectCard S={S} toast={toast} android={android} />}
+      {MOBILE && isOn(S, 'health') && <HealthConnectCard S={S} toast={toast} android={android} />}
       <Section title={t('Bring data in')}>
         <Row icon="download" iconTint="var(--teal)" title={t('Import backup')} accessory="chevron" onClick={() => fileRef.current.click()} />
         <Row icon="download" iconTint="var(--teal)" title={t('Import from another app')}
@@ -1463,7 +1468,7 @@ function EquipmentCard({ S, update }) {
     ? ownBars.map(eq => { const n = t(eq); return n.charAt(0).toLocaleUpperCase() + n.slice(1) + ' ' + fmtPlate(ownBarDefault(S, eq)) + ' ' + unit }).join(' · ')
     : t('Standard bars. Tap if yours are lighter.')
   return <Section title={t('Equipment')} footer={t('Filters the exercise library and picker, and flags routine exercises that need something you don’t have in the active profile.')}>
-    <Row icon="plate" iconTint="var(--orange)" title={t('Plates')} subtitle={plateSummary} accessory="chevron" onClick={() => plateInventorySheet()} />
+    {isOn(S, 'plates') && <Row icon="plate" iconTint="var(--orange)" title={t('Plates')} subtitle={plateSummary} accessory="chevron" onClick={() => plateInventorySheet()} />}
     <Row icon="dumbbell" iconTint="var(--teal)" title={t('Dumbbells')} subtitle={dumbbellSummary} accessory="chevron" onClick={() => dumbbellInventorySheet()} />
     <Row icon="barbell" iconTint="var(--blue)" title={t('Your bars')} subtitle={barSummary} accessory="chevron" onClick={() => barDefaultsSheet()} />
     <Row icon="link" iconTint="var(--teal)" title={t('Resistance bands')} value={String(bandsOf(S).length)} accessory="chevron" onClick={bandsSheet} />

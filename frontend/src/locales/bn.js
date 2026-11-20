@@ -1,5 +1,17 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Modules": "মডিউল",
+  "Start from": "যেখান থেকে শুরু",
+  "Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.": "যা ব্যবহার করেন না, বন্ধ করে দিন। কিছুই মুছে যায় না: আবার চালু করলেই সব আগের মতো পাবেন।",
+  "Plates and warm-ups": "প্লেট ও ওয়ার্ম-আপ",
+  "Strength levels": "স্ট্রেংথ লেভেল",
+  "Watch": "ঘড়ি",
+  "Motivation": "অনুপ্রেরণা",
+  "Training": "ট্রেনিং",
+  "Body and health": "শরীর ও স্বাস্থ্য",
+  "Extras": "এক্সট্রা",
+  "Just training": "শুধু ট্রেনিং",
+  "Training and body": "ট্রেনিং ও শরীর",
   "Add your bands": "আপনার ব্যান্ড যোগ করুন",
   "Bands": "ব্যান্ড",
   "Band {0}": "ব্যান্ড {0}",

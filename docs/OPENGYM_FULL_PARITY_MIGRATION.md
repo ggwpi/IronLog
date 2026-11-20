@@ -307,3 +307,24 @@ unchanged permissions failure and two existing watcher errors. Build, 6,554+6,55
 loading, generated artifacts, 108,000 fatigue and 1,800 history probes pass. All 19 locales have
 2,655 keys; the pre-existing untranslated backlog remains 52. No manual browser/Python/debug
 test scripts or live-data operations were used. Current-head Linux CI remains a separate gate.
+
+## Modules settings, routing and service pause/resume (2026-11-20)
+
+The existing IronLog Settings shell hosts controls for nine existing feature areas and the
+original presets. Original map/default/preset algorithms are unchanged. Actual picker/switch
+tests keep workouts, Hebrew notes, media, body data and unknown module choices. Route tests
+exercise Body, check-in and Coach deep links, then restore the original measurements route.
+Search/page and plate/warm-up display gates follow the same model. Upstream-only services are
+not shown as functioning switches; native/connection-confirmation matrices remain open.
+
+Existing client, Supabase cadence and self-hosted cadence boundaries pause scheduled Coach work
+without clearing consent, configuration, history or proposals. Watch queue tests verify pause,
+re-enable and switching off during an in-flight drain, without prematurely acknowledging ticks.
+Native-bridge fixtures verify paused snapshots and unchanged device/session data; Body/Health
+values are hidden from snapshots. The isolated cloud cadence fixture tests off and resume.
+
+Full frontend: 6,577 passed / six unchanged Windows failures (6,583 / 555 files). API: 716 passed /
+24 existing Windows failures / 46 skips (786); MCP: 98 passed / one existing permissions failure
+and two watcher errors. Build/media, Node-loading, generated artifacts, fatigue/history probes
+and 19 locales with 2,667 keys pass. The translation backlog remains 52. Band head fd31b115 has
+all five Linux jobs green in Tests #246, run 44702296146. This following head needs its own CI.

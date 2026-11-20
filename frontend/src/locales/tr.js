@@ -1,5 +1,17 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Modules": "Modüller",
+  "Start from": "Başlangıç noktası",
+  "Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.": "Kullanmadığını kapat. Hiçbir şey silinmez: tekrar aç, her şey yerinde.",
+  "Plates and warm-ups": "Diskler ve ısınmalar",
+  "Strength levels": "Güç seviyeleri",
+  "Watch": "Saat",
+  "Motivation": "Motivasyon",
+  "Training": "Antrenman",
+  "Body and health": "Vücut ve sağlık",
+  "Extras": "Ekstralar",
+  "Just training": "Sadece antrenman",
+  "Training and body": "Antrenman ve vücut",
   "Add your bands": "Bantlarını ekle",
   "Bands": "Bantlar",
   "Band {0}": "Bant {0}",

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BandChips } from '../components/Bands.jsx'
 import { usesBands, setBandsOf, toggleSetBand } from '../lib/bands.js'
+import { isOn } from '../lib/modules.js'
 import { useStore } from '../store/useStore.js'
 import { exOr } from '../lib/exercises.js'
 import { clampIncline, hasIncline, inclineFits, INCLINE_MAX, INCLINE_STEP } from '../lib/incline.js'
@@ -105,6 +106,7 @@ function PlanBadge({ entry, mode }) {
 }
 
 function PlateBadge({ S, entry, set }) {
+  if (!isOn(S, 'plates')) return null
   if (modeOf({ ...(entry.target || {}), id: entry.id }) !== 'reps') return null
   const load = rowLoad(loadKindFor(S, { ...(entry.target || {}), id: entry.id }), set.w, baseWeightFor(S, entry.id), inventoryFor(S))
   if (!load) return null

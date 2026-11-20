@@ -1,5 +1,17 @@
 // Ukrainian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Modules": "Модулі",
+  "Start from": "Почати з",
+  "Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.": "Вимкни те, чим не користуєшся. Нічого не видаляється: увімкни знову, і все на місці.",
+  "Plates and warm-ups": "Блини й розминка",
+  "Strength levels": "Рівні сили",
+  "Watch": "Годинник",
+  "Motivation": "Мотивація",
+  "Training": "Тренування",
+  "Body and health": "Тіло і здоров'я",
+  "Extras": "Додатково",
+  "Just training": "Лише тренування",
+  "Training and body": "Тренування й тіло",
   "Add your bands": "Додати свої резинки",
   "Bands": "Резинки",
   "Band {0}": "Резинка {0}",

@@ -545,6 +545,13 @@ suite(
         "delete from ironlog.settings where key='coach-cadence-scan'"
       )
     })
+    await db.transaction((c) => c.query('update ironlog.profiles set state=$2 where user_id=$1', [A.id, { ...S, modules: { coach: false } }]))
+    await scanCoachCadence(db)
+    assert.equal((await call('GET', '/api/coach/status')).body.job, null)
+    await db.transaction(async (c) => {
+      await c.query('update ironlog.profiles set state=$2 where user_id=$1', [A.id, S])
+      await c.query("delete from ironlog.settings where key='coach-cadence-scan'")
+    })
     await scanCoachCadence(db)
     assert.equal(
       (await call('GET', '/api/coach/status')).body.job.kind,

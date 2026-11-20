@@ -1,5 +1,17 @@
 // Russian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Modules": "Модули",
+  "Start from": "Начать с",
+  "Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.": "Выключи то, чем не пользуешься. Ничего не удаляется: включи снова, и всё на месте.",
+  "Plates and warm-ups": "Блины и разминка",
+  "Strength levels": "Уровни силы",
+  "Watch": "Часы",
+  "Motivation": "Мотивация",
+  "Training": "Тренировки",
+  "Body and health": "Тело и здоровье",
+  "Extras": "Дополнительно",
+  "Just training": "Только тренировки",
+  "Training and body": "Тренировки и тело",
   "Add your bands": "Добавить свои резинки",
   "Bands": "Резинки",
   "Band {0}": "Резинка {0}",

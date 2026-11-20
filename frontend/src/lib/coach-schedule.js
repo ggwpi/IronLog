@@ -14,19 +14,20 @@
 // The check itself is cheap and says no early: without automatic reviews on, or with the Coach
 // off on this phone, it stops here, before the Coach's code is even loaded.
 import { MOBILE } from './mobile.js'
+import { isOn } from './modules.js'
 
 const TICK_MS = 60000
 
 /** Whether this state could have a review due here at all, before anything is loaded. */
 export function mayBeDue(store) {
   const cadence = store?.S?.coach?.cadence
-  return store?.coachLocal?.mode === 'byok' && !!cadence && cadence !== 'off'
+  return isOn(store?.S, 'coach') && store?.coachLocal?.mode === 'byok' && !!cadence && cadence !== 'off'
 }
 /** Whether the paired server could have run one this phone has not heard of. */
 export function mayHaveNews(store) {
   const cadence = store?.S?.coach?.cadence
   // A paired phone without a key of its own uses its server's Coach (coachAvailable, lib/coach.js).
-  return store?.coachLocal?.mode !== 'byok' && !!store?.config?.coach?.enabled && !!store?.user && !!cadence && cadence !== 'off'
+  return isOn(store?.S, 'coach') && store?.coachLocal?.mode !== 'byok' && !!store?.config?.coach?.enabled && !!store?.user && !!cadence && cadence !== 'off'
 }
 
 let running = false
@@ -39,6 +40,7 @@ export async function checkScheduledReview(getStore, foreground = false) {
   running = true
   try {
     const api = await import('./coach-api.js')
+    if (!isOn(getStore()?.S, 'coach')) return null
     return await (own ? api.scheduledReview() : api.scheduledNotice())
   } catch { return null } finally { running = false }
 }

@@ -20,6 +20,7 @@ import { installEdgeSwipeBack, BACK_PREVIEW_EVENT } from './lib/edge-swipe-back.
 import { startWatchSync, bindWatchAppActions, patchSetIn } from './lib/watch-sync.js'
 import { stampWorkout } from './lib/sync-merge.js'
 import { setKnownBands, setBandWeightDecimals } from './lib/bands.js'
+import { isOn } from './lib/modules.js'
 import './components/ironlog-bands.css'
 import { logWeighIn } from './lib/bodyweight.js'
 import { startWidgetSync } from './lib/widgets.js'
@@ -256,7 +257,7 @@ function Shell() {
       <Route path="/home" element={<Home />} />
       {/* Gym check-in — switched off in Settings, the route falls through to the
           catch-all redirect below. */}
-      {S.checkIn !== false && <Route path="/checkin" element={<CheckIn />} />}
+      {isOn(S, 'checkin') && <Route path="/checkin" element={<CheckIn />} />}
       <Route path="/plan" element={<Plan />} />
       <Route path="/plan/r/:id" element={<RoutineEdit />} />
       <Route path="/workout" element={<Workout />} />
@@ -265,17 +266,17 @@ function Shell() {
       <Route path="/library" element={<Library />} />
       <Route path="/muscles" element={<Muscles />} />
       <Route path="/structural-balance" element={<StructuralBalance />} />
-      <Route path="/progress-photos" element={<ProgressPhotos />} />
-      <Route path="/measurements" element={<Measurements />} />
+      <Route path="/progress-photos" element={isOn(S, 'body') ? <ProgressPhotos /> : <Navigate to="/stats" replace />} />
+      <Route path="/measurements" element={isOn(S, 'body') ? <Measurements /> : <Navigate to="/stats" replace />} />
       <Route path="/settings" element={<SettingsRoute />} />
       <Route path="/settings/:page" element={<SettingsRoute />} />
       {/* The Coach screens gate themselves on the instance config; the routes exist
           unconditionally so a deep link from a notification lands somewhere sane
           rather than on the catch-all. */}
-      <Route path="/coach" element={<CoachChat />} />
-      <Route path="/coach/intake" element={<CoachIntake />} />
+      <Route path="/coach" element={isOn(S, 'coach') ? <CoachChat /> : <Navigate to="/home" replace />} />
+      <Route path="/coach/intake" element={isOn(S, 'coach') ? <CoachIntake /> : <Navigate to="/home" replace />} />
       <Route path="/coach/proposal" element={<Navigate to="/coach" replace />} />
-      <Route path="/coach/setup" element={<CoachSetup />} />
+      <Route path="/coach/setup" element={isOn(S, 'coach') ? <CoachSetup /> : <Navigate to="/home" replace />} />
       <Route path="/admin" element={user?.admin ? <Admin /> : <Navigate to="/home" replace />} />
       <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>

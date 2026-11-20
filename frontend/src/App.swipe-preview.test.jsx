@@ -29,6 +29,21 @@ const scrolledTo = async y => {
   await act(async () => { window.dispatchEvent(new Event('scroll')) })
 }
 
+it('guards hidden module deep links and restores body routes without changing stored workouts', async () => {
+  const before = structuredClone(useStore.getState().S)
+  act(() => useStore.setState({ S: { ...before, checkIn: true, modules: { body: false, coach: false, checkin: false } } }))
+  for (const route of ['measurements', 'progress-photos']) {
+    await go('#/' + route); expect(window.location.hash).toBe('#/stats')
+  }
+  for (const route of ['checkin', 'coach', 'coach/setup', 'coach/intake']) {
+    await go('#/' + route); expect(window.location.hash).toBe('#/home')
+  }
+  act(() => useStore.setState(s => ({ S: { ...s.S, modules: { ...s.S.modules, body: true } } })))
+  await go('#/measurements'); expect(window.location.hash).toBe('#/measurements')
+  expect(useStore.getState().S.workouts).toEqual(before.workouts)
+  expect(useStore.getState().S.bodyweight).toEqual(before.bodyweight)
+})
+
 beforeEach(async () => {
   originalS = useStore.getState().S
   useStore.setState({ S: JSON.parse(JSON.stringify(DEF)) })

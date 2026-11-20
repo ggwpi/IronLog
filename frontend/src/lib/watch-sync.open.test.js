@@ -73,6 +73,25 @@ function bridge({ installed = true } = {}) {
 describe('startWatchSync', () => {
   const S0 = { unit: 'kg', restSec: 90, workouts: [], routines: [], active: null }
   const ui = store({ timer: null })
+  it('sends an empty paused snapshot and resumes with existing settings and session intact', async () => {
+    vi.useFakeTimers()
+    try {
+      health.on = true
+      const b = bridge(); _setWatchPluginForTest(b)
+      const S = { ...S0, modules: { watch: false }, active: live() }, before = structuredClone(S.active)
+      const st = store({ S }), stop = await startWatchSync({ useStore: st, useUI: ui })
+      await vi.runAllTimersAsync()
+      let snap = JSON.parse(b.sendSnapshot.mock.calls.at(-1)[0].json)
+      expect(snap.active).toBeNull(); expect(snap.ready).toBeNull(); expect(snap.settings.health).toBe(false)
+      expect(b.drain).not.toHaveBeenCalled(); expect(b.sendClips).not.toHaveBeenCalled()
+      st.setState({ S: { ...S, modules: { watch: true, health: false } } })
+      await vi.runAllTimersAsync()
+      snap = JSON.parse(b.sendSnapshot.mock.calls.at(-1)[0].json)
+      expect(snap.active.id).toBe(before.id); expect(snap.settings.health).toBe(false)
+      expect(st.getState().S.active).toEqual(before); expect(b.drain).toHaveBeenCalled()
+      stop()
+    } finally { vi.useRealTimers() }
+  })
 
   it('opens the watch app for a workout started on the phone, once', async () => {
     const b = bridge()

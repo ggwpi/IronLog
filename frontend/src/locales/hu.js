@@ -1,5 +1,17 @@
 // Hungarian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Modules": "Modulok",
+  "Start from": "Kiindulás",
+  "Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.": "Kapcsold ki, amit nem használsz. Semmi sem törlődik: kapcsold vissza, és minden megvan.",
+  "Plates and warm-ups": "Tárcsák és bemelegítés",
+  "Strength levels": "Erőszintek",
+  "Watch": "Óra",
+  "Motivation": "Motiváció",
+  "Training": "Edzés",
+  "Body and health": "Test és egészség",
+  "Extras": "Extrák",
+  "Just training": "Csak edzés",
+  "Training and body": "Edzés és test",
   "Add your bands": "Saját gumik hozzáadása",
   "Bands": "Gumik",
   "Band {0}": "{0}. gumi",

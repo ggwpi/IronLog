@@ -209,3 +209,16 @@ and unstamped clients preserve new inventory/configuration/set fields. Structura
 safe set identity are rejected before persistence; upgraded clients can edit/clear them and an
 explicit reset retains existing semantics. Band-exercise preferences use the existing per-key
 conflict mechanism on both sides. This adds no tables, authentication or database writer.
+
+## Modules controls and service boundaries
+
+The immutable original Modules engine controls nine feature areas already present in IronLog.
+IronLog's existing Settings page/header, sections, rows, switches and picker host the controls
+and original presets. Unsupported upstream-only services are not advertised as working toggles.
+Module changes preserve unknown choices and existing profile data; existing per-key sync applies.
+Routes, search and plate display read the same original `isOn` predicate. Coach availability
+and automatic scheduling are gated at existing client/Supabase/self-hosted boundaries; proposal
+algorithms, consent, providers, authentication and configuration remain. The watch bridge pauses
+before draining/acknowledging queued ticks, checks again after an in-flight drain and resumes
+without changing device preferences. Hidden Body/Health values are removed from watch snapshots.
+These synthetic tests do not certify hardware or every native/connection-confirmation surface.

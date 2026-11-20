@@ -15,7 +15,8 @@ export function useCoachGate() {
   const user = useStore(s => s.user)
   const coachMode = useStore(s => s.coachLocal?.mode)
   const ready = useStore(s => s.ready)
-  const ok = coachAvailable(config, user, { demo: DEMO, mobile: MOBILE, coachMode })
+  const state = useStore(s => s.S)
+  const ok = coachAvailable(config, user, { demo: DEMO, mobile: MOBILE, coachMode, state })
   const fresh = !user || !!(config && 'coach' in config)
   const [asked, setAsked] = useState(false)
   useEffect(() => {

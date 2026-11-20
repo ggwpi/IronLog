@@ -9,6 +9,7 @@ import { t } from '../lib/i18n.js'
 import { ACCENT_NAMES } from '../lib/format.js'
 
 export const PAGES = {
+  modules: { title: 'Modules', icon: 'slider', tint: 'var(--blue)' },
   workout: { title: 'Workout', icon: 'play', tint: 'var(--green)' },
   alerts: { title: 'Timer alerts', icon: 'speaker', tint: 'var(--pink)' },
   reminders: { title: 'Reminders', icon: 'bell', tint: 'var(--red)' },
@@ -26,7 +27,7 @@ export const PAGES = {
 export const PAGE_IDS = Object.keys(PAGES)
 
 // The root, top to bottom. Whether a row shows is pageVisible's call.
-export const ROOT_GROUPS = [['workout', 'alerts', 'reminders'], ['plan', 'units', 'equipment'], ['look', 'coach', 'watch'], ['data', 'about']]
+export const ROOT_GROUPS = [['modules', 'workout', 'alerts', 'reminders'], ['plan', 'units', 'equipment'], ['look', 'coach', 'watch'], ['data', 'about']]
 
 /**
  * Whether a page exists for this device and profile. Reminders need a push server (signed in) or
@@ -34,6 +35,7 @@ export const ROOT_GROUPS = [['workout', 'alerts', 'reminders'], ['plan', 'units'
  * runs on the server, set up by its admin).
  */
 export function pageVisible(page, ctx) {
+  if (page === 'coach' && ctx.coachOn === false || page === 'watch' && ctx.watchOn === false) return false
   if (page === 'reminders') return !!(ctx.user || ctx.mobile)
   if (page === 'coach') return !!(ctx.mobile || (ctx.user && ctx.cloudCoach))
   // The iPhone app only: the watch app ships inside it.
@@ -211,6 +213,8 @@ export function searchSettings(query, ctx, tr = t) {
     consider({ page: id, title: PAGES[id].title, icon: PAGES[id].icon, tint: PAGES[id].tint }, true)
   }
   for (const e of SEARCH) {
+    const gate = { 'Effort per set': 'effortOn', 'Weigh in before workouts': 'bodyOn', 'Daily form': 'healthOn', 'Automatic warm-ups': 'platesOn', 'Rest between warm-ups': 'platesOn', 'Plates': 'platesOn' }[e.title]
+    if (gate && ctx[gate] === false) continue
     if (!pageVisible(PAGES[e.page].parent || e.page, ctx)) continue
     if (e.when && !e.when(ctx)) continue
     consider(e, false)

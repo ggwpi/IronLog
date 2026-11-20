@@ -1,5 +1,17 @@
 // Spanish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Modules": "Módulos",
+  "Start from": "Empezar con",
+  "Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.": "Desactiva lo que no uses. No se borra nada: actívalo de nuevo y todo sigue ahí.",
+  "Plates and warm-ups": "Discos y calentamientos",
+  "Strength levels": "Niveles de fuerza",
+  "Watch": "Reloj",
+  "Motivation": "Motivación",
+  "Training": "Entrenamiento",
+  "Body and health": "Cuerpo y salud",
+  "Extras": "Extras",
+  "Just training": "Solo entrenar",
+  "Training and body": "Entrenamiento y cuerpo",
   "Add your bands": "Añadir tus bandas",
   "Bands": "Bandas",
   "Band {0}": "Banda {0}",

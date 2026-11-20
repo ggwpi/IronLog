@@ -1,6 +1,18 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  "Modules": "מודולים",
+  "Start from": "נקודת התחלה",
+  "Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.": "אפשר לכבות את מה שאינכם משתמשים בו. דבר לא נמחק: הפעילו שוב וכל הנתונים עדיין יהיו שם.",
+  "Plates and warm-ups": "פלטות וחימום",
+  "Strength levels": "רמות כוח",
+  "Watch": "שעון",
+  "Motivation": "מוטיבציה",
+  "Training": "אימונים",
+  "Body and health": "מדדי גוף ובריאות",
+  "Extras": "תוספות",
+  "Just training": "אימונים בלבד",
+  "Training and body": "אימונים ומדדי גוף",
   "Add your bands": "הוספת הגומיות שלך",
   "Bands": "גומיות",
   "Band {0}": "גומייה {0}",

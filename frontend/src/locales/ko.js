@@ -1,5 +1,17 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Modules": "모듈",
+  "Start from": "시작점",
+  "Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.": "안 쓰는 건 꺼 두세요. 아무것도 삭제되지 않아요. 다시 켜면 전부 그대로 있어요.",
+  "Plates and warm-ups": "플레이트와 워밍업",
+  "Strength levels": "리프트별 근력 수준",
+  "Watch": "워치",
+  "Motivation": "동기 부여",
+  "Training": "운동",
+  "Body and health": "몸과 건강",
+  "Extras": "추가 기능",
+  "Just training": "운동만",
+  "Training and body": "운동과 몸",
   "Add your bands": "내 밴드 추가",
   "Bands": "밴드",
   "Band {0}": "밴드 {0}",

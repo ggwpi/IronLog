@@ -1,5 +1,17 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Modules": "الوحدات",
+  "Start from": "ابدأ من",
+  "Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.": "أوقف ما لا تستخدمه. لا يُحذف شيء: أعد تشغيله وستجد كل شيء في مكانه.",
+  "Plates and warm-ups": "الأقراص والإحماء",
+  "Strength levels": "مستويات القوة",
+  "Watch": "الساعة",
+  "Motivation": "التحفيز",
+  "Training": "التمرين",
+  "Body and health": "الجسم والصحة",
+  "Extras": "إضافات",
+  "Just training": "التمرين فقط",
+  "Training and body": "التمرين والجسم",
   "Add your bands": "أضف أشرطتك",
   "Bands": "الأشرطة",
   "Band {0}": "شريط {0}",
