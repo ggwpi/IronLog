@@ -72,7 +72,7 @@ const PER_KEY = new Set(['week', 'dayPlan', 'exNotes', 'barWeights', 'modules', 
 // dayPhotos a progress photo filed under a day (#557), one entry per photo.
 export const STAMPED_MAPS = ['balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'dayNotes', 'dayPhotos', 'dayForm'];
 import { protectLegacyBodyData } from './body-compat/legacy.js';
-import { protectLegacyBands } from './training-compat.js';
+import { protectLegacyBands, protectLegacyCircuits } from './training-compat.js';
 const ENTRY_META = new Set(['id', '_ts', '_f', '_u']);
 const ENTRY_LISTS = ['routines', 'customEx', 'equipProfiles', 'gymCards', 'workouts'];
 
@@ -458,13 +458,14 @@ export function keepUnknown(cur, next, { bodyDataVersion = 0, trainingDataVersio
       const absent = [];
       if (trainingDataVersion >= 1) {
         const remember = (old, n, place) => {
-          if (Object.hasOwn(old, 'bands') && !Object.hasOwn(n, 'bands')) absent.push(n);
+          if (!isMap(old) || !isMap(n)) return;
+          for (const key of ['bands', ...(trainingDataVersion >= 2 ? ['circuits', 'sgCircuit', 'preType'] : [])]) if (Object.hasOwn(old, key) && !Object.hasOwn(n, key)) absent.push([n, key]);
           for (const field of NESTED[place] || []) for (const [o, v] of pairItems(list(old[field]), list(n[field]))) remember(o, v, `${place}.${field}`);
         };
         remember(before.get(x.id), x, f);
       }
       keepKeys(before.get(x.id), x, f);
-      for (const item of absent) delete item.bands;
+      for (const [item, key] of absent) delete item[key];
     }
   }
   return next;
@@ -526,6 +527,7 @@ export function stampPut(cur, next, { overRead = false, stamped = false, bodyDat
     if (!stamped) keepUnknown(cur, next, { bodyDataVersion, trainingDataVersion });
     if (!(bodyDataVersion >= 1)) protectLegacyBodyData(cur, next);
     if (!(trainingDataVersion >= 1)) protectLegacyBands(cur, next, pairItems);
+    if (!(trainingDataVersion >= 2)) protectLegacyCircuits(cur, next, pairItems);
     if (!stamped && overRead) {
       const fp = fingerprint(sent);
       const own = isMap(cur._unstamped) && cur._unstamped.fp === fp ? cur._unstamped : null;

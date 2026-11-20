@@ -222,3 +222,19 @@ algorithms, consent, providers, authentication and configuration remain. The wat
 before draining/acknowledging queued ticks, checks again after an in-flight drain and resumes
 without changing device preferences. Hidden Body/Health values are removed from watch snapshots.
 These synthetic tests do not certify hardware or every native/connection-confirmation surface.
+
+## Circuit boundaries
+
+The full original circuit/copy/speech models, clock, card and original tests have raw Git-blob
+guards. IronLog's existing routine rows, sheet host, media, buttons and four workout layouts
+host planning, clock controls and results. Original presets, scoring, partial results and
+run/walk progression remain unchanged. The boundary retains unknown configuration metadata,
+strips private advance commands from saved scores using the original helper, and checkpoints
+the raw run in the existing owner's active session. Account changes and stale station ids
+cannot write ticks into another owner's or replacement exercise's rows.
+
+The existing profile PUT now advertises trainingDataVersion: 2. Incapable v0/v1 writers retain
+circuit configuration, regular-routine snapshots and results; ambiguous legacy unlinks fail
+before persistence. Explicit v2 clears/reset retain existing semantics. Existing rest/speech,
+watch and Live Activity adapters forward original clock DTOs; hardware is not certified.
+No auth, schema, storage writer, historical values or existing UI shell was replaced.

@@ -1,0 +1,9 @@
+/* New circuit leaves inherit IronLog's palette, typography and generic controls. */
+[data-circuit-card]{display:flex;align-items:center;gap:10px;padding:14px;margin-block:10px;border-radius:var(--r-card);background:var(--surface);border:1px solid var(--sep)}
+[data-circuit-card] .cc-m{flex:1;min-width:0;display:grid;gap:3px}
+[data-circuit-card] .cc-t{font-weight:600}
+[data-circuit-card] .cc-s,[data-circuit-results] .cr-s{font-size:.85em;color:var(--label-2)}
+[data-circuit-results]{display:grid;gap:10px;margin-block:14px;text-align:start}
+[data-circuit-results] .cr-i{padding:12px;border-radius:var(--r);background:var(--surface-2)}
+[data-circuit-results] .cr-h{display:flex;align-items:center;gap:6px;color:var(--label-2)}
+[data-circuit-results] .cr-v{font-size:1.2em;font-weight:600;margin-block:5px}

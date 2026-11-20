@@ -328,3 +328,24 @@ Full frontend: 6,577 passed / six unchanged Windows failures (6,583 / 555 files)
 and two watcher errors. Build/media, Node-loading, generated artifacts, fatigue/history probes
 and 19 locales with 2,667 keys pass. The translation backlog remains 52. Band head fd31b115 has
 all five Linux jobs green in Tests #246, run 44702296146. This following head needs its own CI.
+
+## Original circuits through IronLog (2026-11-20)
+
+Full original Circuit/AMRAP/EMOM/Intervals/Tabata/run-walk planning, clock and scoring models
+are connected through IronLog's existing routine rows, sheet host and Cards/List/Compact/Focus.
+Regular restores the original routine; saved run/walk sessions alone advance their programme.
+Actual UI tests cover all presets, all four layouts, ticking/completion/save/results, Hebrew
+500-character notes, unknown metadata, owner-switch clock restoration and stale-slot safety.
+The existing owner-specific active-session persistence holds a raw clock checkpoint. Original
+speech/clock DTOs feed the existing native bridges without claiming real-device validation.
+
+Request capability trainingDataVersion: 2 protects circuit configuration, preType and results
+from v0/v1 writers. Seven API regressions cover stamped/unstamped preservation, modern clears
+and unsafe legacy unlinks. Supabase, auth, schema and production data remain untouched.
+
+Full frontend: 6,635 passed / six unchanged Windows failures (6,641 / 561 files). API: 723 pass /
+24 identical Windows failures / 46 skips (793). MCP: 98 pass / one existing permissions failure
+plus two watcher errors. Build, 6,554+6,554 media, Node graphs and fatigue/history probes pass.
+All 19 packs contain 2,702 keys; pre-existing untranslated backlog remains 52. Modules head
+adc765ac has all five Linux CI jobs green in Tests #247, run 44704354710. This new head needs
+its own CI; native/full restored-profile/full upstream parity remain unverified.

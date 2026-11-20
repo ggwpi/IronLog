@@ -1584,11 +1584,14 @@ paths:
                     stamp what changed against the stored document.
                 trainingDataVersion:
                   type: integer
-                  const: 1
+                  enum: [1, 2]
                   description: >-
                     Declare resistance-band support before intentionally editing band inventory,
                     exercise preferences or per-set bands. Omit it for older clients; band data
                     are preserved and ambiguous structural edits of banded rows are rejected.
+                    Version 2 also supports circuit configurations, saved results and restoring
+                    regular routines. Earlier clients preserve those fields and cannot unlink
+                    circuit groups without upgrading.
                 bodyDataVersion:
                   type: integer
                   const: 1

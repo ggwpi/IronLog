@@ -729,7 +729,7 @@ export const useStore = create((set, get) => {
     // An older app's owed copy over the revision it read: the server stamps what that app changed
     // against the copy it holds, exactly as it would for that app (api/sync-stamps.js).
     const legacy = readLegacy()
-    const body = { state: S, stamped: !(legacy && legacy.owner === get().user?.id), bodyDataVersion: 1, trainingDataVersion: 1 }
+    const body = { state: S, stamped: !(legacy && legacy.owner === get().user?.id), bodyDataVersion: 1, trainingDataVersion: 2 }
     if (asReplace != null) { body.baseRev = asReplace.rev; if (asReplace.wid) body.baseWid = asReplace.wid }
     else if (!force && base) { body.baseRev = base.rev; if (base.wid) body.baseWid = base.wid }
     try {

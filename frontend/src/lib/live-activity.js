@@ -24,6 +24,8 @@ import { isWarmupRow } from './workout-model.js'
 import { restSecFor } from './supersetFlow.js'
 import { speedUnitOf } from './speed.js'
 import { accentPair, accentValue } from './accent.js'
+import { circuitClock } from './circuit.js'
+import { readCircuitRun } from './watch-sync.js'
 
 export const LIVE_VERSION = 1
 const APPLIED_KEY = 'gym_live_applied'
@@ -85,13 +87,14 @@ function setView (S, A, { entryIdx, setIdx, restAfter }) {
  * The activity's fixed part (`attributes`: what stays the same for the workout) and its state, or
  * null when no workout is running here. `timer` is the rest as useUI holds it.
  */
-export function buildLiveActivity (S, timer = null) {
+export function buildLiveActivity (S, timer = null, hold = {}) {
   const A = S && S.active
   if (!A || !Array.isArray(A.entries) || !A.entries.length || A.editingWorkoutId) return null
   const next = upcomingSets(S)
   let done = 0, total = 0
   for (const e of A.entries) for (const s of e?.sets || []) { total++; if (s?.done) done++ }
-  const rest = timer && !timer.ready && timer.kind !== 'switch' ? timer : null
+  const clock = circuitClock(hold.circuit)
+  const rest = clock ? (clock.kind === 'rest' ? clock : null) : timer && !timer.ready && timer.kind !== 'switch' ? timer : null
   const pair = accentPair(accentValue(S))
   return {
     attributes: {
@@ -115,6 +118,7 @@ export function buildLiveActivity (S, timer = null) {
       restEndsAt: rest && !rest.paused ? num(rest.endsAt) : null,
       restLeft: rest && rest.paused ? num(rest.left) : null,
       restTotal: rest ? num(rest.total) : null,
+      ...(clock?.kind === 'hold' ? { holdKind: 'hold', holdEndsAt: clock.paused ? null : clock.endsAt, holdLeft: clock.paused ? clock.left : null, holdTotal: clock.total } : {}),
       done,
       total,
     },
@@ -220,7 +224,7 @@ export async function startLiveActivitySync ({ useStore, useUI }) {
     // An empty, not yet restored copy would end the activity of a workout that is still running.
     if (!storeReady()) return
     try {
-      const live = buildLiveActivity(useStore.getState().S, useUI.getState().timer)
+      const live = buildLiveActivity(useStore.getState().S, useUI.getState().timer, { circuit: readCircuitRun() })
       const json = live ? JSON.stringify(live) : ''
       if (json === last) return
       if (live) await p.LiveActivity.update({ wid: live.attributes.wid, attributes: JSON.stringify(live.attributes), state: JSON.stringify(live.state) })
@@ -229,6 +233,7 @@ export async function startLiveActivitySync ({ useStore, useUI }) {
     } catch { /* not now: the next change tries again */ }
   }
   const schedule = () => { if (!supported) return; clearTimeout(tm); tm = setTimeout(send, SEND_DEBOUNCE_MS) }
+  window.addEventListener('gym-circuit-change', schedule)
   const offStore = useStore.subscribe((s, prev) => {
     if (s.ready && !prev.ready) { drainLiveEvents(); schedule() }
     else if (s.S !== prev.S) schedule()
@@ -247,7 +252,7 @@ export async function startLiveActivitySync ({ useStore, useUI }) {
   // At launch: a workout that ended while the app was gone takes its activity with it.
   if (supported) send()
   drainLiveEvents()
-  return () => { offStore(); offUI(); sub?.remove?.(); document.removeEventListener('visibilitychange', onVisible); clearTimeout(tm) }
+  return () => { window.removeEventListener('gym-circuit-change', schedule); offStore(); offUI(); sub?.remove?.(); document.removeEventListener('visibilitychange', onVisible); clearTimeout(tm) }
 }
 
 // Test seams.

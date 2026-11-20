@@ -29,10 +29,21 @@ import { todayISO } from './format.js'
 import { sanitizeHr } from './heart-rate.js'
 import { readWatchPrefs, settingsForWatch, writeWatchStatus, onWatchPrefs } from './watch-settings.js'
 import { isOn } from './modules.js'
+import { circuitClock } from './circuit.js'
 
 export const SNAPSHOT_VERSION = 1
 const APPLIED_KEY = 'gym_watch_applied'
 const APPLIED_MAX = 300
+let circuitSource = () => null
+let scheduleCircuitWatch = null
+export function bindCircuitSource(read) { circuitSource = typeof read === 'function' ? read : () => null }
+export const readCircuitRun = () => circuitSource()
+export function circuitChanged() { scheduleCircuitWatch?.(); if (typeof window !== 'undefined') window.dispatchEvent(new Event('gym-circuit-change')) }
+export function watchRestTimer(timer, run = circuitSource()) {
+  const clock = circuitClock(run)
+  if (!clock) return timer
+  return clock.kind === 'rest' ? { endsAt: clock.endsAt, total: clock.total, ...(clock.paused ? { paused: true, left: clock.left } : {}) } : null
+}
 const SEND_DEBOUNCE_MS = 400
 // Routines the watch can start besides today's: enough to choose from, small enough to send.
 const READY_MAX = 8
@@ -470,7 +481,7 @@ export async function startWatchSync ({ useStore, useUI }) {
       const healthActive = healthOn && isOn(S, 'health') && prefs.enabled
       // Settings → Apple Watch: off, the watch is told there is nothing (no workout, nothing ready).
       const snap = prefs.enabled
-        ? buildSnapshot(S, { timer: useUI.getState().timer, ready: readyFor(S) })
+        ? buildSnapshot(S, { timer: watchRestTimer(useUI.getState().timer), ready: readyFor(S) })
         : { v: SNAPSHOT_VERSION, unit: S.unit === 'lb' ? 'lb' : 'kg', active: null, ready: null }
       snap.settings = { ...settingsForWatch(prefs, healthActive), ...watchExtras(S) }
       // With Apple Health on: the deleted workouts, so the watch removes the copies it saved.
@@ -494,6 +505,7 @@ export async function startWatchSync ({ useStore, useUI }) {
     } catch { /* no watch, or not now: the next change tries again */ }
   }
   const schedule = () => { if (!linked) return; clearTimeout(tm); tm = setTimeout(send, SEND_DEBOUNCE_MS) }
+  scheduleCircuitWatch = schedule
   const offStore = useStore.subscribe((s, prev) => {
     // Boot done: what the watch sent meanwhile is applied now, and the watch hears the real state.
     if (s.ready && !prev.ready) { drainWatchEvents(); schedule() }
@@ -519,7 +531,7 @@ export async function startWatchSync ({ useStore, useUI }) {
   document.addEventListener('visibilitychange', onVisible)
   schedule()
   drainWatchEvents()
-  return () => { offStore(); offUI(); offPrefs(); offHealth(); offLang(); sub?.remove?.(); subLink?.remove?.(); document.removeEventListener('visibilitychange', onVisible); clearTimeout(tm) }
+  return () => { if (scheduleCircuitWatch === schedule) scheduleCircuitWatch = null; offStore(); offUI(); offPrefs(); offHealth(); offLang(); sub?.remove?.(); subLink?.remove?.(); document.removeEventListener('visibilitychange', onVisible); clearTimeout(tm) }
 }
 
 // Test seams.

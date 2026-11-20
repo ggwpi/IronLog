@@ -1,4 +1,7 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
+import { CircuitResults } from './components/CircuitCard.jsx'
+import { useCircuit } from './store/useCircuit.js'
+import { applyProgramAdvances } from './lib/circuit-data.js'
 import { BandChips } from './components/Bands.jsx'
 import { usesBands, withBandEx, setBandsOf, toggleSetBand } from './lib/bands.js'
 import { useStore } from './store/useStore.js'
@@ -1886,6 +1889,8 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
     // have to mean splitting: for a hold it means doing the whole thing once per side, so the
     // flag now survives the switch and buildWorkSets doubles the planned sets instead.
     const flags = {}
+    if (c.sgCircuit) flags.sgCircuit = structuredClone(c.sgCircuit)
+    if (c.preType) flags.preType = structuredClone(c.preType)
     if (bw !== isBodyweightEq(ex.id)) flags.bodyweight = bw
     // Free text, e.g. a pyramid's per-set loading ("bar only, +1 plate/side each set") — the
     // sets/reps/weight fields are one flat target and have no room for that on their own.
@@ -2805,6 +2810,7 @@ function WorkoutDetail({ w, close }) {
     }) : entryRows(groups[0]?.units || [])}
     {/* Progress photos and form-check videos: added and removed right here, on the saved record. */}
     <WorkoutMediaSection w={w} />
+    <CircuitResults w={w} />
     <div className="small muted" style={{ margin: '4px 0 6px' }}>{t('Session note')}</div>
     <textarea ref={noteRef} className="input" rows={2} maxLength={NOTE_MAX} value={note}
       placeholder={t('How the session went as a whole.')}
@@ -3621,6 +3627,7 @@ function FinishSummary({ w, prs, e1prs = [], close }) {
     <CardioDone st={st} w={w} />
     {/* The moment for a progress photo or the clip of a set: the workout is already saved, so
         what is added here goes straight onto its record. */}
+    <CircuitResults w={w} />
     <div style={{ textAlign: 'start' }}><WorkoutMediaSection w={w} hint /></div>
     <Button variant="primary" onClick={() => closeThenNav(close, '/home')}>{t('Nice!')}</Button>
   </div>
@@ -3659,6 +3666,7 @@ export function finishWorkoutSheet({ onDiscard } = {}) {
 // what the phone's Finish and save runs.
 export const finishWorkoutNow = () => doFinishWorkout()
 function doFinishWorkout() {
+  useCircuit.getState().wrapUp()
   const st = S()
   const A = st.active
   if (!A) return
@@ -3703,6 +3711,7 @@ function doFinishWorkout() {
       })
       s.workouts.push(w)
     }
+    applyProgramAdvances(s.routines, A.circuits)
     s.active = null
     // A rotation pass this app manages starts its next pass the moment the last session lands
     // (lib/rotation.js). A planner's queue is left alone: it completes and waits for its writer.

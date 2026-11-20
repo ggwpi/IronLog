@@ -22,6 +22,8 @@ import { stampWorkout } from './lib/sync-merge.js'
 import { setKnownBands, setBandWeightDecimals } from './lib/bands.js'
 import { isOn } from './lib/modules.js'
 import './components/ironlog-bands.css'
+import CircuitSheetHost from './components/CircuitSheets.jsx'
+import './components/ironlog-circuit.css'
 import { logWeighIn } from './lib/bodyweight.js'
 import { startWidgetSync } from './lib/widgets.js'
 import { startLiveActivitySync } from './lib/live-activity.js'
@@ -301,6 +303,7 @@ function Shell() {
       {!noTabs && <TabBar onStart={startFlow} />}
       <RestTimer />
       <Modals />
+      <CircuitSheetHost />
       <Toast />
       <TimerFlash />
     </>

@@ -3,6 +3,7 @@ import SwipeCards from '../components/SwipeCards.jsx'
 import { BandChips } from '../components/Bands.jsx'
 import { usesBands, setBandsOf, toggleSetBand } from '../lib/bands.js'
 import { isOn } from '../lib/modules.js'
+import CircuitCard from '../components/CircuitCard.jsx'
 import SwipeRow from '../components/SwipeRow.jsx'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
@@ -2158,6 +2159,7 @@ function ActiveWorkout() {
               </span>
             </div>
             <div id={'workout-unit-' + u.join('-')}>
+            {!isCollapsed && <CircuitCard unit={u} />}
             {/* One line per exercise, and the line is the way back in: a tap opens the sets again
                 to fix a number, without making it the current exercise. */}
             {isCollapsed ? <button type="button" className="wl-summary" aria-expanded="false" title={t('Show the sets')}
@@ -2195,6 +2197,7 @@ function ActiveWorkout() {
       {/* The chips stand in for "Exercise 2 / 5": the number is on the current chip, and the
           others say what is done and what is waiting (#323). */}
       {chipRow || <div className="muted small" style={{ marginBottom: 6 }}>{isSuperset ? t('Superset {0} / {1}', unitIdx + 1, units.length) : t('Exercise {0} / {1}', unitIdx + 1, units.length)}</div>}
+      <CircuitCard unit={unit} />
       <SwipeCards index={unitIdx} count={units.length} revision={A}
         timerKey={timer && `${timer.endsAt}:${timer.forIdx ?? ''}`} workKey={work?.endsAt}
         onNavigate={navigateUnit} renderPreview={direction => {
