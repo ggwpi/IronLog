@@ -4,6 +4,17 @@
 import pt from './pt.js'
 
 export const PT_BR_OVERRIDES = {
+  "Health": "Saúde",
+  "Notes": "Notas",
+  // Blood pressure and pulse.
+  "Blood pressure": "Pressão arterial",
+  "Systolic": "Sistólica",
+  "Diastolic": "Diastólica",
+  "Resting pulse": "Pulso em repouso",
+  "Blood pressure takes both numbers, like 120 over 80.": "A pressão arterial leva os dois números, tipo 120 por 80.",
+  "The first number is the higher one, like 120 over 80.": "O primeiro número é o maior, tipo 120 por 80.",
+  "That pulse looks off. Check it again?": "Esse pulso parece estranho. Confere de novo?",
+  "That blood pressure looks off. Check it again?": "Essa pressão parece estranha. Confere de novo?",
   "Activities": "Atividades",
   "Measurement unit": "Unidade de medida",
   // Weigh-in times and daily aggregation.

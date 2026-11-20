@@ -1,5 +1,16 @@
 // French UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Health": "Santé",
+  "Notes": "Notes",
+  // Blood pressure and pulse.
+  "Blood pressure": "Tension artérielle",
+  "Systolic": "Systolique",
+  "Diastolic": "Diastolique",
+  "Resting pulse": "Pouls au repos",
+  "Blood pressure takes both numbers, like 120 over 80.": "La tension prend les deux chiffres, comme 120 sur 80.",
+  "The first number is the higher one, like 120 over 80.": "Le premier chiffre est le plus haut, comme 120 sur 80.",
+  "That pulse looks off. Check it again?": "Ce pouls a l’air bizarre. Tu revérifies ?",
+  "That blood pressure looks off. Check it again?": "Cette tension a l’air bizarre. Tu revérifies ?",
   "Activities": "Activités",
   "Measurement unit": "Unité de mesure",
   // Weigh-in times and daily aggregation.

@@ -258,3 +258,31 @@ probes (108,000 comparisons plus 1,800 history comparisons) pass. All 19 locales
 the source-string backlog remains 52. No Python/debug test scripts, live data access, schema or
 production changes. Native Health reading capture/export, BP/pulse controls, remaining body goals,
 full restored-profile/media and native device matrices still require integration/verification.
+
+## Body measurement integration and existing deployment boundary (2026-11-20)
+
+The existing IronLog forms now expose paired blood pressure, pulse, note history and compatible
+custom-unit changes using the original model's validation and series. Independent cm/in display
+preference does not convert stored measurements. Existing cards, chart renderer, fields and sheet
+host remain. Regressions cover invalid pairs/ranges, raw precision, Hebrew notes and units changing
+while a form is open. All 19 locale packs contain 2,639 keys, with no increase to the 52-string
+pre-existing translation backlog.
+
+`bodyDataVersion: 1` is a per-request capability on the existing profile PUT, not a persisted
+profile flag. Both API handlers protect newer fields from incapable stamped/unstamped writers,
+including BP-only/zero-score days and timed reading conversion during kg/lb switches. Modern
+explicit clears, legacy visible-day deletion and reset behavior are covered. The server uses
+the complete raw original reading model and a generated original converter, with provenance and
+cross-runtime parity checks. No schema, authentication or storage redesign was introduced.
+
+Full local verification: frontend 6,537 pass / six unchanged Windows failures (6,543 / 548 files);
+API 711 pass / the same 24 Windows failures / 46 skips (781 total). MCP 97 pass / one unchanged
+permissions failure plus two existing watcher errors. Build, media 6,554+6,554, plain-Node loading,
+generated assets/docs and fatigue/history probes pass. e3d0236f has all five Linux CI jobs green
+in Tests #243, run 44669504747; the following commit must pass its own CI.
+
+Read `CLAUDE.md`, `docs/IRONLOG_CLOUD.md` and the earlier deployment audit; compared the existing
+cloud handler/profile implementation against `origin/main` and `origin/feat/supabase-backend`.
+The working Supabase/Vercel boundary is inherited. Historical cleanup/provisioning instructions
+are not migration actions and were not executed. This batch neither deploys nor accesses live data.
+It does not certify the remaining upstream functionality or native/restore/visual matrices.

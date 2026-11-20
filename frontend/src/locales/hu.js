@@ -1,5 +1,16 @@
 // Hungarian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Health": "Egészség",
+  "Notes": "Jegyzetek",
+  // Blood pressure and pulse.
+  "Blood pressure": "Vérnyomás",
+  "Systolic": "Szisztolés",
+  "Diastolic": "Diasztolés",
+  "Resting pulse": "Nyugalmi pulzus",
+  "Blood pressure takes both numbers, like 120 over 80.": "A vérnyomáshoz mindkét szám kell, például 120/80.",
+  "The first number is the higher one, like 120 over 80.": "Az első szám a nagyobb, például 120/80.",
+  "That pulse looks off. Check it again?": "Ez a pulzus furcsának tűnik. Megnézed újra?",
+  "That blood pressure looks off. Check it again?": "Ez a vérnyomás furcsának tűnik. Megnézed újra?",
   "Activities": "Tevékenységek",
   "Measurement unit": "Mértékegység",
   // Weigh-in times and daily aggregation.

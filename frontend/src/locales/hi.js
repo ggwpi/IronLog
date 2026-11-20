@@ -1,5 +1,16 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Health": "सेहत",
+  "Notes": "नोट्स",
+  // Blood pressure and pulse.
+  "Blood pressure": "ब्लड प्रेशर",
+  "Systolic": "सिस्टोलिक",
+  "Diastolic": "डायस्टोलिक",
+  "Resting pulse": "आराम की पल्स",
+  "Blood pressure takes both numbers, like 120 over 80.": "ब्लड प्रेशर में दोनों नंबर चाहिए, जैसे 120 बटा 80।",
+  "The first number is the higher one, like 120 over 80.": "पहला नंबर बड़ा होता है, जैसे 120 बटा 80।",
+  "That pulse looks off. Check it again?": "यह पल्स अजीब लग रही है। फिर से जांचें?",
+  "That blood pressure looks off. Check it again?": "यह ब्लड प्रेशर अजीब लग रहा है। फिर से जांचें?",
   "Activities": "गतिविधियाँ",
   "Measurement unit": "माप की इकाई",
   // Weigh-in times and daily aggregation.

@@ -106,6 +106,7 @@ export const SEARCH = [
   { page: 'units', title: 'Weight decimals', icon: 'ruler', tint: 'var(--teal)', kw: 'decimals precision microplates rounding' },
   { page: 'units', title: 'Speed unit', icon: 'figureRun', tint: 'var(--teal)', kw: 'speed mph kmh km/h miles cardio' },
   { page: 'units', title: 'Time', icon: 'timer', tint: 'var(--teal)', kw: 'weigh-ins bodyweight time multiple readings clock morning', when: c => c.bodyOn !== false },
+  { page: 'units', title: 'Measurement unit', icon: 'ruler', tint: 'var(--teal)', kw: 'measurement circumference centimetres inches cm in', when: c => c.bodyOn !== false },
   { page: 'units', title: 'Daily weigh-in value', icon: 'scale', tint: 'var(--teal)', kw: 'weigh-ins daily average morning first last readings', when: c => c.bodyOn !== false && c.weighInTimes, opts: ['Morning (first)', 'Average', 'Last'] },
   { page: 'units', title: '1RM formula', icon: 'chart', tint: 'var(--teal)', kw: '1rm one rep max epley brzycki lombardi formula estimate' },
   // Equipment

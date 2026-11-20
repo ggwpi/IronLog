@@ -1,5 +1,16 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Health": "الصحة",
+  "Notes": "الملاحظات",
+  // Blood pressure and pulse.
+  "Blood pressure": "ضغط الدم",
+  "Systolic": "الانقباضي",
+  "Diastolic": "الانبساطي",
+  "Resting pulse": "نبض الراحة",
+  "Blood pressure takes both numbers, like 120 over 80.": "ضغط الدم يحتاج الرقمين، مثل 120 على 80.",
+  "The first number is the higher one, like 120 over 80.": "الرقم الأول هو الأعلى، مثل 120 على 80.",
+  "That pulse looks off. Check it again?": "هذا النبض يبدو غريبًا. تتحقق مرة أخرى؟",
+  "That blood pressure looks off. Check it again?": "هذا الضغط يبدو غريبًا. تتحقق مرة أخرى؟",
   "Activities": "الأنشطة",
   "Measurement unit": "وحدة القياس",
   // Weigh-in times and daily aggregation.

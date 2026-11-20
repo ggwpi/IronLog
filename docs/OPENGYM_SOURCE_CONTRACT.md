@@ -184,3 +184,12 @@ formatting/validation/series calculations serve new units through existing IronL
 untouched canonical values retain their original precision. Existing centimetre behavior stays at
 its old boundary. Server compatibility preserves new daily/nested/custom-unit fields from old
 writers while retaining intentional clears of known fields and modern stamped changes.
+
+The body-data capability is declared on each PUT request as `bodyDataVersion: 1`, never inferred
+from echoed profile fields or the existing generic `stamped` flag. Both existing API handlers
+protect typed fields and days that an incapable normalizer cannot represent. Visible legacy-day
+deletes, known-field clears, capable-client changes and explicit resets retain existing semantics.
+The server's reading model is the full original raw Git blob. Its weight converter is mechanically
+compiled from the full pinned original units module by `scripts/build-body-sync-assets.mjs`;
+source hash, standalone output, regeneration and cross-runtime behavior are checked. Neither
+boundary changes authentication, database schema, production data or the conflict protocol.

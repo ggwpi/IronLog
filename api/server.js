@@ -2488,7 +2488,7 @@ const routes = {
     // undone by the next device that merges (sync-stamps.js).
     // A document nested too deep to compare is the bad request the stringify below refuses too.
     const report = {};
-    try { stampPut(cur, body.state, { overRead: body.baseRev != null && body.baseRev === curRev, stamped: body.stamped === true, report }); }
+    try { stampPut(cur, body.state, { overRead: body.baseRev != null && body.baseRev === curRev, stamped: body.stamped === true, bodyDataVersion: body.bodyDataVersion === 1 ? 1 : 0, report }); }
     catch (e) { if (e instanceof RangeError) return json(res, 400, { error: 'invalid state' }); throw e; }
     body.state._rev = curRev + 1;          // server-owned; whatever the client sent is ignored
     // A writer that does not stamp (an older app) takes the revision it is told for the document it

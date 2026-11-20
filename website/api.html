@@ -1565,6 +1565,11 @@ main.api-main .lead { color: var(--fg-2); max-width: 58ch; margin: 14px 0 0; fon
     <span class="p-type">boolean</span>
     <span class="p-desc">True when the client stamps its own changes in <code>deleted</code>, <code>edited</code> and each entry's <code>_ts</code>/<code>_f</code>, as the app does. Omit it to have the server stamp what changed against the stored document.</span>
   </div>
+  <div class="prow">
+    <span class="p-name">bodyDataVersion</span>
+    <span class="p-type">always 1</span>
+    <span class="p-desc">Declare support for timed weigh-ins, typed measurement units, blood pressure, pulse and measurement notes. Send 1 when intentionally editing these fields. Without this request capability, the server protects body data that older clients cannot represent. It is not a profile setting.</span>
+  </div>
 </div>
     <p class="ep-h">Responses</p>
     <div class="ptab">

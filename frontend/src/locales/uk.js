@@ -1,5 +1,16 @@
 // Ukrainian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Health": "Здоров'я",
+  "Notes": "Нотатки",
+  // Blood pressure and pulse.
+  "Blood pressure": "Тиск",
+  "Systolic": "Верхній",
+  "Diastolic": "Нижній",
+  "Resting pulse": "Пульс у спокої",
+  "Blood pressure takes both numbers, like 120 over 80.": "Для тиску потрібні обидва числа, наприклад 120 на 80.",
+  "The first number is the higher one, like 120 over 80.": "Перше число більше, наприклад 120 на 80.",
+  "That pulse looks off. Check it again?": "Пульс виглядає дивно. Перевірите ще раз?",
+  "That blood pressure looks off. Check it again?": "Тиск виглядає дивно. Перевірите ще раз?",
   "Activities": "Активності",
   "Measurement unit": "Одиниця вимірювання",
   // Weigh-in times and daily aggregation.

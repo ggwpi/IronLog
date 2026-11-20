@@ -55,6 +55,7 @@ export function prepareState(cur, body) {
     stampPut(cur, next, {
       overRead: body.baseRev != null && body.baseRev === rev,
       stamped: body.stamped === true,
+      bodyDataVersion: body.bodyDataVersion === 1 ? 1 : 0,
       report,
     })
   } catch (e) {

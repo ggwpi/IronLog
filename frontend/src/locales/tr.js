@@ -1,5 +1,16 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Health": "Sağlık",
+  "Notes": "Notlar",
+  // Blood pressure and pulse.
+  "Blood pressure": "Tansiyon",
+  "Systolic": "Büyük tansiyon",
+  "Diastolic": "Küçük tansiyon",
+  "Resting pulse": "Dinlenik nabız",
+  "Blood pressure takes both numbers, like 120 over 80.": "Tansiyon iki sayı ister, örneğin 120’ye 80.",
+  "The first number is the higher one, like 120 over 80.": "İlk sayı büyük olandır, örneğin 120’ye 80.",
+  "That pulse looks off. Check it again?": "Bu nabız tuhaf görünüyor. Bir daha kontrol eder misin?",
+  "That blood pressure looks off. Check it again?": "Bu tansiyon tuhaf görünüyor. Bir daha kontrol eder misin?",
   "Activities": "Aktiviteler",
   "Measurement unit": "Ölçü birimi",
   // Weigh-in times and daily aggregation.

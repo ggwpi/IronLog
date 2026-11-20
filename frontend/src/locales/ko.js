@@ -1,5 +1,16 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Health": "건강",
+  "Notes": "메모",
+  // Blood pressure and pulse.
+  "Blood pressure": "혈압",
+  "Systolic": "수축기",
+  "Diastolic": "이완기",
+  "Resting pulse": "안정 시 맥박",
+  "Blood pressure takes both numbers, like 120 over 80.": "혈압은 두 숫자가 필요해요. 예: 120/80.",
+  "The first number is the higher one, like 120 over 80.": "첫 숫자가 더 높아요. 예: 120/80.",
+  "That pulse looks off. Check it again?": "맥박이 좀 이상해 보여요. 다시 확인할까요?",
+  "That blood pressure looks off. Check it again?": "혈압이 좀 이상해 보여요. 다시 확인할까요?",
   "Activities": "활동",
   "Measurement unit": "측정 단위",
   // Weigh-in times and daily aggregation.

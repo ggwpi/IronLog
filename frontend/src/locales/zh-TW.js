@@ -1,4 +1,15 @@
 export default {
+  "Health": "健康",
+  "Notes": "筆記",
+  // Blood pressure and pulse.
+  "Blood pressure": "血壓",
+  "Systolic": "收縮壓",
+  "Diastolic": "舒張壓",
+  "Resting pulse": "靜止脈搏",
+  "Blood pressure takes both numbers, like 120 over 80.": "血壓需要兩個數字，例如 120/80。",
+  "The first number is the higher one, like 120 over 80.": "第一個數字較高，例如 120/80。",
+  "That pulse looks off. Check it again?": "這個脈搏看起來怪怪的。再量一次？",
+  "That blood pressure looks off. Check it again?": "這個血壓看起來怪怪的。再量一次？",
   "Activities": "活動",
   "Measurement unit": "測量單位",
   // Weigh-in times and daily aggregation.

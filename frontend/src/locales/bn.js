@@ -1,5 +1,16 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Health": "স্বাস্থ্য",
+  "Notes": "নোট",
+  // Blood pressure and pulse.
+  "Blood pressure": "রক্তচাপ",
+  "Systolic": "সিস্টোলিক",
+  "Diastolic": "ডায়াস্টোলিক",
+  "Resting pulse": "বিশ্রামের পালস",
+  "Blood pressure takes both numbers, like 120 over 80.": "রক্তচাপে দুটো সংখ্যাই লাগে, যেমন 120 বাই 80।",
+  "The first number is the higher one, like 120 over 80.": "প্রথম সংখ্যাটা বড়, যেমন 120 বাই 80।",
+  "That pulse looks off. Check it again?": "এই পালসটা অদ্ভুত লাগছে। আবার দেখবেন?",
+  "That blood pressure looks off. Check it again?": "এই রক্তচাপটা অদ্ভুত লাগছে। আবার দেখবেন?",
   "Activities": "কার্যকলাপ",
   "Measurement unit": "মাপের ইউনিট",
   // Weigh-in times and daily aggregation.

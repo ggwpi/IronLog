@@ -1,5 +1,16 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Health": "健康",
+  "Notes": "备注",
+  // Blood pressure and pulse.
+  "Blood pressure": "血压",
+  "Systolic": "收缩压",
+  "Diastolic": "舒张压",
+  "Resting pulse": "静息脉搏",
+  "Blood pressure takes both numbers, like 120 over 80.": "血压需要两个数字，比如 120/80。",
+  "The first number is the higher one, like 120 over 80.": "第一个数字较高，比如 120/80。",
+  "That pulse looks off. Check it again?": "这个脉搏看起来不太对。再量一次？",
+  "That blood pressure looks off. Check it again?": "这个血压看起来不太对。再量一次？",
   "Activities": "活动",
   "Measurement unit": "测量单位",
   // Weigh-in times and daily aggregation.

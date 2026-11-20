@@ -1,6 +1,17 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  "Health": "בריאות",
+  "Notes": "הערות",
+  // Blood pressure and pulse.
+  "Blood pressure": "לחץ דם",
+  "Systolic": "סיסטולי",
+  "Diastolic": "דיאסטולי",
+  "Resting pulse": "דופק במנוחה",
+  "Blood pressure takes both numbers, like 120 over 80.": "לחץ דם דורש את שני הערכים, למשל 120 על 80.",
+  "The first number is the higher one, like 120 over 80.": "הערך הראשון הוא הגבוה יותר, למשל 120 על 80.",
+  "That pulse looks off. Check it again?": "ערך הדופק נראה חריג. כדאי לבדוק שוב.",
+  "That blood pressure looks off. Check it again?": "ערך לחץ הדם נראה חריג. כדאי לבדוק שוב.",
   "Activities": "פעילויות",
   "Measurement unit": "יחידת מדידה",
   // Weigh-in times and daily aggregation.

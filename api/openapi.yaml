@@ -1582,6 +1582,14 @@ paths:
                     True when the client stamps its own changes in `deleted`, `edited` and
                     each entry's `_ts`/`_f`, as the app does. Omit it to have the server
                     stamp what changed against the stored document.
+                bodyDataVersion:
+                  type: integer
+                  const: 1
+                  description: >-
+                    Declare support for timed weigh-ins, typed measurement units, blood
+                    pressure, pulse and measurement notes. Send 1 when intentionally editing
+                    these fields. Without this request capability, the server protects body
+                    data that older clients cannot represent. It is not a profile setting.
       responses:
         '200':
           description: Saved.

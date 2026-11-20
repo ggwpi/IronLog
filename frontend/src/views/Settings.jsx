@@ -10,6 +10,7 @@ import { isOn, setModule } from '../lib/modules.js'
 import { speedUnitOf } from '../lib/speed.js'
 import { warmupAutoOf } from '../lib/warmup-ramp.js'
 import { dailyModeOf, settleAll } from '../lib/weigh-ins.js'
+import { lengthUnitOf } from '../lib/measurements.js'
 import { formulaOf, FORMULA_NAMES } from '../lib/onerm.js'
 import { copyText } from '../lib/clipboard.js'
 import { useUI } from '../store/useUI.js'
@@ -794,6 +795,9 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         </Row>
         {isOn(S, 'body') && <Row icon="timer" iconTint="var(--teal)" title={t('Time')} subtitle={t('Weigh-ins')}>
           <Switch aria-label={t('Time') + ' · ' + t('Weigh-ins')} checked={S.weighInTimes === true} onChange={v => update(s => { s.weighInTimes = v })} />
+        </Row>}
+        {isOn(S, 'body') && <Row icon="ruler" iconTint="var(--teal)" title={t('Measurement unit')}>
+          <Segmented className="seg-inline" value={lengthUnitOf(S)} options={[{ value: 'cm', label: 'cm' }, { value: 'in', label: 'in' }]} onChange={v => update(s => { s.measureUnit = v })} />
         </Row>}
         {isOn(S, 'body') && (S.weighInTimes === true || (S.bodyweight || []).some(b => Array.isArray(b.ins))) && <SelectRow icon="scale" iconTint="var(--teal)" title={t('Daily weigh-in value')}
           value={dailyModeOf(S)} onChange={v => update(s => { s.bwDaily = v; settleAll(s, v) })}

@@ -1,5 +1,16 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Health": "สุขภาพ",
+  "Notes": "โน้ต",
+  // Blood pressure and pulse.
+  "Blood pressure": "ความดันโลหิต",
+  "Systolic": "ตัวบน",
+  "Diastolic": "ตัวล่าง",
+  "Resting pulse": "ชีพจรขณะพัก",
+  "Blood pressure takes both numbers, like 120 over 80.": "ความดันต้องมีสองตัวเลข เช่น 120/80",
+  "The first number is the higher one, like 120 over 80.": "ตัวเลขแรกคือค่าที่สูงกว่า เช่น 120/80",
+  "That pulse looks off. Check it again?": "ชีพจรนี้ดูแปลก ๆ ลองเช็กอีกทีไหม?",
+  "That blood pressure looks off. Check it again?": "ความดันนี้ดูแปลก ๆ ลองเช็กอีกทีไหม?",
   "Activities": "กิจกรรม",
   "Measurement unit": "หน่วยวัด",
   // Weigh-in times and daily aggregation.
