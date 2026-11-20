@@ -2,6 +2,25 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## IronLog architecture — read before upgrading upstream
+
+This repository is IronLog. The upstream overview below describes openGym's self-hosted mode;
+it does not replace the existing IronLog cloud implementation. Start with
+`docs/IRONLOG_CLOUD.md` and compare the working `origin/main` / `origin/feat/supabase-backend`
+implementation before designing integration changes.
+
+- `vercel.json` routes `/api/*` to `api/cloud-handler.js`. Existing `api/cloud/` handlers use
+  Supabase Postgres/Storage while preserving the upstream profile JSON and conflict protocol.
+  Reuse them; do not introduce another authentication system or browser database writer.
+- `frontend/src/lib/api.js` and `store/useStore.js` are the client boundaries. UI rendering is
+  in React views/components; backend handlers do not choose or fetch UI components.
+- Reuse actual IronLog views plus `components/ui.jsx`, its cards, charts, sheets, theme and RTL.
+  Integrate unchanged upstream business modules through those boundaries instead of replacing
+  IronLog screens or inventing a second UI/storage architecture.
+- For PR #69, read `docs/OPENGYM_SOURCE_CONTRACT.md` and
+  `docs/OPENGYM_FULL_PARITY_MIGRATION.md`. Historical cleanup/provisioning procedures in cloud
+  rollout notes are not upgrade steps. Preserve existing accounts, profile documents and files.
+
 ## What this is
 
 openGym is a self-hosted gym & body-weight tracker PWA. Two containers (`api` + `web`) plus a
