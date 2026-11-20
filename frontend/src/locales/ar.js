@@ -1,5 +1,17 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Activities": "الأنشطة",
+  "Measurement unit": "وحدة القياس",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "قيمة الوزن اليومية",
+  "Morning (first)": "الصباح (الأول)",
+  "Before breakfast is the one to compare.": "وزن ما قبل الفطور هو الأنسب للمقارنة.",
+  "Every weigh-in of the day counts the same.": "كل أوزان اليوم لها الوزن نفسه.",
+  "Last": "الأخير",
+  "The most recent one of the day.": "آخر وزن في اليوم.",
+  "Edit weigh-in": "تعديل الوزن",
+  "Weigh-in updated": "تم تحديث الوزن",
+  "Weigh-in deleted": "تم حذف الوزن",
   // CSV range presets.
   "3 months": "3 أشهر",
   "4 weeks": "4 أسابيع",

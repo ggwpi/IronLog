@@ -230,3 +230,31 @@ watcher errors. Production build, plain-Node MCP/core loading, 6,554 stills/6,55
 108,000 fatigue and 1,800 history comparisons pass. All 19 locales have 2,618 keys; the existing
 missing-string backlog stays at 52. Tempo commit 997f82cb has all five Linux CI jobs green in
 Tests #241 (run 44660273239). Native/hardware, restore and wider feature-parity gates remain open.
+
+
+## Multiple daily readings and safe body-data imports (2026-11-20)
+
+Original weigh-ins and measurement models/tests are retained unchanged, with raw-blob guards.
+IronLog's existing forms/history now support opt-in time logging, individual reading edit/move,
+delete/Undo, first/average/last daily values and the original chart-time reader. Legacy single-day
+behavior remains the default. Reading/day metadata survive writes, merges and unit conversion.
+An explicit cross-day move remaps a colliding day-local id through the original id generator;
+time/metadata collisions are rejected before mutation rather than replacing a different reading.
+
+Own-body CSV and explicitly enabled timed foreign/XML imports use the original parser/merger on
+a compatibility projection. The actual preview and import agree, including additional readings on
+existing days and measurement-only files. Existing measurement days/definitions stay unchanged;
+new accepted data are appended. Custom typed units and zero scores use original validation/display/
+series rules through IronLog's existing form/chart components. Untouched canonical centimetres and
+mass precision remain stored exactly, even when the displayed value rounds. Unknown record/field
+metadata are retained. Legacy server writers cannot drop reading lists, tombstones, typed units or
+new measurement fields; known clears and modern stamped changes retain their existing semantics.
+
+Final local frontend: 6,527 pass / six unchanged Windows path failures (6,533 tests, 547 files).
+API: 704 pass / 24 unchanged Windows failures / 46 skip (774 total); failure names match the prior
+batch. MCP: 97 pass / one unchanged permissions failure, plus two existing watcher errors. API/MCP
+Node loading, production build, 6,554 stills/6,554 animations, generated assets/API docs and fatigue
+probes (108,000 comparisons plus 1,800 history comparisons) pass. All 19 locales have 2,629 keys;
+the source-string backlog remains 52. No Python/debug test scripts, live data access, schema or
+production changes. Native Health reading capture/export, BP/pulse controls, remaining body goals,
+full restored-profile/media and native device matrices still require integration/verification.

@@ -1,6 +1,18 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  "Activities": "פעילויות",
+  "Measurement unit": "יחידת מדידה",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "הערך היומי לשקילה",
+  "Morning (first)": "בוקר (ראשונה)",
+  "Before breakfast is the one to compare.": "השקילה לפני ארוחת הבוקר מתאימה להשוואה.",
+  "Every weigh-in of the day counts the same.": "לכל שקילה ביום יש משקל שווה.",
+  "Last": "אחרונה",
+  "The most recent one of the day.": "השקילה האחרונה באותו יום.",
+  "Edit weigh-in": "עריכת שקילה",
+  "Weigh-in updated": "השקילה עודכנה",
+  "Weigh-in deleted": "השקילה נמחקה",
   // CSV range presets.
   "3 months": "3 חודשים",
   "4 weeks": "4 שבועות",

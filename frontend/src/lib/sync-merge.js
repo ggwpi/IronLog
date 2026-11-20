@@ -78,6 +78,7 @@ import { bestWeightForEntry } from './history.js'
 import { convertStateUnit, convertBodyWeight } from './units.js'
 import { sanitizeAccent } from './accent.js'
 import { readDayNote as readNote } from './day-notes.js'
+import { mergeDay, dailyModeOf, settleAll } from './weigh-ins.js'
 
 const clone = o => JSON.parse(JSON.stringify(o))
 const list = v => (Array.isArray(v) ? v : [])
@@ -164,11 +165,18 @@ export function mergeWorkoutMedia(kept, other) {
 const byDayStart = (a, b) => (a.d === b.d ? (a.start || 0) - (b.start || 0) : a.d < b.d ? -1 : 1)
 
 /** One entry per day; where both have a day, the one edited later (`t`); sorted by day. */
-export function mergeBodyweight(a = [], b = []) {
+export function mergeBodyweight(a = [], b = [], options = {}) {
+  const { readings = true, mode = 'first' } = typeof options === 'string' ? { mode: options } : options
   const byDay = new Map()
   for (const e of [...list(a), ...list(b)]) {
     if (!e || e.d == null) continue
     const cur = byDay.get(e.d)
+    if (readings && cur && (Array.isArray(cur.ins) || Array.isArray(e.ins))) {
+      const merged = mergeDay(cur, e, mode)
+      if (merged) byDay.set(e.d, merged)
+      else byDay.delete(e.d)
+      continue
+    }
     if (!cur || (e.t || 0) > (cur.t || 0)) byDay.set(e.d, e)
   }
   return [...byDay.values()].sort((x, y) => (x.d < y.d ? -1 : 1))
@@ -818,9 +826,10 @@ export function mergeStates(a0, b0, { prefer } = {}) {
       })
     }
   }
-  out.bodyweight = mergeBodyweight(n.bodyweight, o.bodyweight).map(clone)
+  out.bodyweight = mergeBodyweight(n.bodyweight, o.bodyweight, { mode: dailyModeOf(out) }).map(clone)
+  settleAll(out)
   // A day's body measurements are one check-in, kept and merged the way a weigh-in is.
-  if (list(n.measurements).length || list(o.measurements).length) out.measurements = mergeBodyweight(n.measurements, o.measurements).map(clone)
+  if (list(n.measurements).length || list(o.measurements).length) out.measurements = mergeBodyweight(n.measurements, o.measurements, { readings: false }).map(clone)
   if (list(n.favEx).length || list(o.favEx).length) out.favEx = [...new Set([...list(n.favEx), ...list(o.favEx)])]
   // What either device removed stays removed (the `deleted` section above). A workout taken out
   // this way leaves its exercises' kept loads to be read again, as an edit of it would: from the
@@ -1011,6 +1020,10 @@ export function highestStamp(S) {
   }
   for (const f of STAMPED_MAPS) if (isMap(S[f])) for (const v of Object.values(S[f])) see(stampOf(v))
   for (const e of [...list(S.bodyweight), ...list(S.measurements)]) if (e && typeof e === 'object') see(e.t)
+  for (const e of list(S.bodyweight)) {
+    for (const r of list(e?.ins)) see(r?.t)
+    if (isMap(e?.gone)) for (const at of Object.values(e.gone)) see(at)
+  }
   return m
 }
 
@@ -1044,6 +1057,11 @@ export function stampChange(prev, next, wall = Date.now()) {
     for (const e of list(next[f])) {
       if (!e || typeof e !== 'object' || e.d == null || e.t == null) continue
       const old = before.get(e.d)
+      if (f === 'bodyweight' && Array.isArray(e.ins) && (!old || old.t !== e.t)) {
+        const oldReadings = new Map(list(old?.ins).filter(r => r?.id != null).map(r => [String(r.id), r]))
+        for (const r of e.ins) if (r && r.t != null && (!oldReadings.has(String(r.id)) || oldReadings.get(String(r.id)).t !== r.t)) r.t = Math.max(Number(r.t) || 0, now)
+        if (isMap(e.gone)) for (const id of Object.keys(e.gone)) if (e.gone[id] !== old?.gone?.[id]) e.gone[id] = Math.max(Number(e.gone[id]) || 0, now)
+      }
       if (!old || old.t !== e.t) e.t = Math.max(Number(e.t) || 0, now)
     }
   }

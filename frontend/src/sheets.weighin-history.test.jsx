@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client'
 import { DEF, useStore } from './store/useStore.js'
 import { useUI } from './store/useUI.js'
 import { bwSheet, weighInsSheet } from './sheets.jsx'
+import { readingsOf } from './lib/weigh-ins.js'
 
 const clone = v => JSON.parse(JSON.stringify(v))
 const mounted = []
@@ -40,6 +41,25 @@ beforeEach(() => {
 afterEach(() => { act(() => { mounted.splice(0).forEach(root => root.unmount()) }) })
 
 describe('weigh-ins sheet', () => {
+  it('keeps all timed readings visible and deletes/undoes only the selected one', () => {
+    const bodyweight = [{ d: '2026-09-13', w: 80, t: 200, custom: 'keep', ins: [
+      { id: 'am', at: '07:00', w: 80, t: 100, custom: 'keep', media: [{ hash: 'reading' }] }, { id: 'pm', at: '19:00', w: 82, t: 200 },
+    ] }]
+    install({ bodyweight })
+    weighInsSheet()
+    const list = mountTopSheet()
+    expect(list.textContent).toContain('2 weigh-ins')
+    expect(list.querySelectorAll('[data-reading]')).toHaveLength(2)
+    expect(list.textContent).toContain('07:00'); expect(list.textContent).toContain('19:00')
+    act(() => list.querySelector('[data-reading="am"] button[aria-label^="Delete weigh-in"]').click())
+    const confirm = mountTopSheet()
+    act(() => button(confirm, 'Delete').click())
+    expect(useStore.getState().S.bodyweight[0].ins.map(r => r.id)).toEqual(['pm'])
+    act(() => useUI.getState().toastAction.run())
+    expect(useStore.getState().S.bodyweight[0].ins[0]).toMatchObject({ ...bodyweight[0].ins[0], t: expect.any(Number) })
+    expect(useStore.getState().S.bodyweight[0].ins[0].t).toBeGreaterThan(200)
+    expect(useStore.getState().S.bodyweight[0].custom).toBe('keep')
+  })
   it('lists every weigh-in under its week, newest first, with the week\'s average and change', () => {
     weighInsSheet()
     const host = mountTopSheet()
@@ -137,6 +157,38 @@ describe('log sheet date', () => {
     expect(bw.map(b => b.d)).toEqual(['2026-09-01', '2026-09-03', '2026-09-05', '2026-09-07', '2026-09-09', '2026-09-13'])
     expect(bw.find(b => b.d === '2026-09-05')).toMatchObject({ w: 79 })
     expect(useUI.getState().sheets).toHaveLength(0)
+  })
+
+  it('adds a timed reading to an existing day through the actual editor without replacing its first reading', () => {
+    install({ weighInTimes: true, bodyweight: [{ d: '2026-09-13', w: 80, t: new Date('2026-09-13T07:00:00').getTime(), future: 'keep' }] })
+    bwSheet()
+    const log = mountTopSheet()
+    setDate(log, '2026-09-13')
+    const input = log.querySelector('input[type="time"]')
+    expect(input.dir).toBe('ltr')
+    act(() => {
+      Object.getOwnPropertyDescriptor(input.constructor.prototype, 'value').set.call(input, '19:00')
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+    })
+    act(() => button(log, '+1').click())
+    act(() => button(log, 'Save').click())
+    const day = useStore.getState().S.bodyweight[0]
+    expect(day.w).toBe(80)
+    expect(readingsOf(day).map(r => [r.at, r.w])).toEqual([['07:00', 80], ['19:00', 81]])
+    expect(day.future).toBe('keep')
+  })
+
+  it('edits one reading while keeping the other reading and all metadata', () => {
+    const bodyweight = [{ d: '2026-09-13', w: 80, t: 200, ins: [{ id: 'am', at: '07:00', w: 80, t: 100, future: 'keep' }, { id: 'pm', at: '19:00', w: 82, t: 200, media: [{ hash: 'keep' }] }] }]
+    install({ bodyweight })
+    bwSheet({ edit: { d: '2026-09-13', id: 'pm' } })
+    const log = mountTopSheet()
+    act(() => button(log, '+1').click())
+    act(() => button(log, 'Save').click())
+    const result = useStore.getState().S.bodyweight[0]
+    expect(result.ins[0]).toEqual(bodyweight[0].ins[0])
+    expect(result.ins[1]).toMatchObject({ ...bodyweight[0].ins[1], w: 83, t: expect.any(Number) })
+    expect(result.w).toBe(80)
   })
 
   it('leaves an earlier day that already has a weigh-in as it is', () => {

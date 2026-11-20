@@ -1,5 +1,17 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Activities": "กิจกรรม",
+  "Measurement unit": "หน่วยวัด",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "ค่าน้ำหนักประจำวัน",
+  "Morning (first)": "ตอนเช้า (ครั้งแรก)",
+  "Before breakfast is the one to compare.": "ก่อนอาหารเช้าคือค่าที่ควรเอามาเทียบ",
+  "Every weigh-in of the day counts the same.": "ทุกครั้งที่ชั่งในวันนั้นนับเท่ากัน",
+  "Last": "ล่าสุด",
+  "The most recent one of the day.": "ครั้งล่าสุดของวัน",
+  "Edit weigh-in": "แก้ไขการชั่งน้ำหนัก",
+  "Weigh-in updated": "อัปเดตการชั่งน้ำหนักแล้ว",
+  "Weigh-in deleted": "ลบการชั่งน้ำหนักแล้ว",
   // CSV range presets.
   "3 months": "3 เดือน",
   "4 weeks": "4 สัปดาห์",

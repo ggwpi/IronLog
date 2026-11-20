@@ -165,3 +165,22 @@ Guide completion calls the actual IronLog Done handler only while the session, e
 and full row snapshot still match. Previewing an unsaved tempo never writes it into the set or
 offers completion against a different saved tempo. Actual Focus completion and stale-session,
 row/target changes have automated regressions. Hardware/background audio is not certified.
+
+
+## Multiple readings and typed measurement boundaries
+
+The complete original weigh-ins model and original tests remain unchanged. Existing IronLog
+weight forms/history/chart components call it through a metadata-preserving write/merge adapter.
+Legacy single-reading behavior remains until time logging is chosen or a day already has readings.
+Nested reading/removal clocks use IronLog's existing monotonic change stamp. Legacy day-scoped ids
+are remapped only for an explicit move that would otherwise overwrite a different target reading;
+ambiguous time/metadata moves are rejected before mutation. No exercise ids or stored dates are
+rewritten automatically. Moves, delete/Undo and merges retain custom metadata.
+
+Own-body CSV/timed imports use the complete original parser/merger on a projection. Existing
+measurement days and definitions remain byte-for-byte values; only new accepted data are appended.
+The actual import preview uses the same engine without modifying the profile. Original typed-unit
+formatting/validation/series calculations serve new units through existing IronLog forms/charts;
+untouched canonical values retain their original precision. Existing centimetre behavior stays at
+its old boundary. Server compatibility preserves new daily/nested/custom-unit fields from old
+writers while retaining intentional clears of known fields and modern stamped changes.

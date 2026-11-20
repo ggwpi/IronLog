@@ -1,5 +1,17 @@
 // Hungarian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Activities": "Tevékenységek",
+  "Measurement unit": "Mértékegység",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "Napi mérési érték",
+  "Morning (first)": "Reggel (első)",
+  "Before breakfast is the one to compare.": "A reggeli előtti az, amit érdemes összevetni.",
+  "Every weigh-in of the day counts the same.": "A nap minden mérése egyformán számít.",
+  "Last": "Utolsó",
+  "The most recent one of the day.": "A nap legutóbbi mérése.",
+  "Edit weigh-in": "Mérés szerkesztése",
+  "Weigh-in updated": "Mérés frissítve",
+  "Weigh-in deleted": "Mérés törölve",
   // CSV range presets.
   "3 months": "3 hónap",
   "4 weeks": "4 hét",

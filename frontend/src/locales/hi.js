@@ -1,5 +1,17 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Activities": "गतिविधियाँ",
+  "Measurement unit": "माप की इकाई",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "दिन का वज़न मान",
+  "Morning (first)": "सुबह (पहला)",
+  "Before breakfast is the one to compare.": "नाश्ते से पहले वाला ही तुलना के लिए सही है।",
+  "Every weigh-in of the day counts the same.": "दिन का हर वज़न बराबर गिना जाता है।",
+  "Last": "आखिरी",
+  "The most recent one of the day.": "दिन का सबसे नया वज़न।",
+  "Edit weigh-in": "वज़न बदलें",
+  "Weigh-in updated": "वज़न अपडेट हुआ",
+  "Weigh-in deleted": "वज़न हटाया गया",
   // CSV range presets.
   "3 months": "3 महीने",
   "4 weeks": "4 हफ़्ते",

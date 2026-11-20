@@ -1,5 +1,17 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Activities": "Aktiviteler",
+  "Measurement unit": "Ölçü birimi",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "Günlük tartı değeri",
+  "Morning (first)": "Sabah (ilk)",
+  "Before breakfast is the one to compare.": "Kahvaltıdan önceki, karşılaştırılacak olandır.",
+  "Every weigh-in of the day counts the same.": "Günün her tartısı eşit sayılır.",
+  "Last": "Son",
+  "The most recent one of the day.": "Günün en son tartısı.",
+  "Edit weigh-in": "Tartıyı düzenle",
+  "Weigh-in updated": "Tartı güncellendi",
+  "Weigh-in deleted": "Tartım silindi",
   // CSV range presets.
   "3 months": "3 ay",
   "4 weeks": "4 hafta",

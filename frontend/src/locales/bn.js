@@ -1,5 +1,17 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Activities": "কার্যকলাপ",
+  "Measurement unit": "মাপের ইউনিট",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "দিনের ওজন মাপার মান",
+  "Morning (first)": "সকাল (প্রথম)",
+  "Before breakfast is the one to compare.": "সকালের নাস্তার আগেরটাই তুলনার জন্য সেরা।",
+  "Every weigh-in of the day counts the same.": "দিনের প্রতিটি ওজন মাপা সমানভাবে গোনা হয়।",
+  "Last": "শেষ",
+  "The most recent one of the day.": "দিনের সবচেয়ে নতুনটি।",
+  "Edit weigh-in": "ওজন মাপা এডিট করুন",
+  "Weigh-in updated": "ওজন মাপা আপডেট হয়েছে",
+  "Weigh-in deleted": "ওজন মাপা মুছে ফেলা হয়েছে",
   // CSV range presets.
   "3 months": "৩ মাস",
   "4 weeks": "৪ সপ্তাহ",

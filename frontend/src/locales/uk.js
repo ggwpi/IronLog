@@ -1,5 +1,17 @@
 // Ukrainian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Activities": "Активності",
+  "Measurement unit": "Одиниця вимірювання",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "Значення ваги за день",
+  "Morning (first)": "Ранок (перше)",
+  "Before breakfast is the one to compare.": "До сніданку: саме його варто порівнювати.",
+  "Every weigh-in of the day counts the same.": "Усі зважування за день важать однаково.",
+  "Last": "Останнє",
+  "The most recent one of the day.": "Найпізніше за день.",
+  "Edit weigh-in": "Змінити зважування",
+  "Weigh-in updated": "Зважування оновлено",
+  "Weigh-in deleted": "Зважування видалено",
   // CSV range presets.
   "3 months": "3 місяці",
   "4 weeks": "4 тижні",

@@ -23,7 +23,7 @@ import { uid } from './format.js'
 import { isWarmupRow } from './workout-model.js'
 import { HEVY_TITLE_MAP } from './hevy-id-map.js'
 import { clampIncline, inclineFrom, clampLevel, levelFrom } from './incline.js'
-import { isOwnWorkoutCSV, parseOwnWorkoutCSV } from './ironlog-csv.js'
+import { isOwnWorkoutCSV, parseOwnWorkoutCSV, isOwnBodyCSV, parseOriginalBodyImport, mergeOriginalBodyImport } from './ironlog-csv.js'
 import { unionById } from './sync-merge.js'
 
 /* ----------------------------------------------------------------- CSV ---- */
@@ -709,7 +709,8 @@ function parseLegacyWorkoutCSV(text, { unit = 'kg', customEx = [] } = {}) {
  * records are pulled out with a scan instead. Health writes weights in the unit the
  * phone is set to and labels each record, so the unit is read per record.
  */
-export function parseBodyweight(text, { unit = 'kg' } = {}) {
+export function parseBodyweight(text, { unit = 'kg', weighInTimes = false } = {}) {
+  if (weighInTimes || isOwnBodyCSV(text)) return parseOriginalBodyImport(text, { unit })
   const s = String(text)
   const out = new Map()          // iso date -> { w, t }  (one weigh-in per day, the last)
   let fileUnit = ''
@@ -793,6 +794,7 @@ export function parseImport(text, opts) {
  * not against each other); a day already in the history brings neither.
  */
 export function mergeImport(S, parsed) {
+  if (parsed.kind === 'bodyweight' && parsed.ironlogBodyImport === true) return mergeOriginalBodyImport(S, parsed)
   const result = mergeLegacyImport(S, parsed)
   // Import boundary only: keep original band IDs referenced by newly accepted own-CSV sets.
   // Reuse IronLog's union; never normalize or replace existing band definitions/unknown fields.

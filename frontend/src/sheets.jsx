@@ -41,12 +41,14 @@ import ExerciseViewToggle from './components/ExerciseViewToggle.jsx'
 import { sameMuscleFirst, swapMuscleOf } from './lib/similar-exercises.js'
 import { exerciseMuscleSnapshot, loadOfWorkouts, MUSCLES, MUSCLE_NAME, muscleWeightsOf, normalizeMuscleGroups, hasExplicitMuscleMetadata, inMuscleOrder } from './lib/muscles.js'
 import { parseImport, mergeImport } from './lib/import-csv.js'
+import { previewOriginalBodyImport } from './lib/ironlog-csv.js'
 import { importHevyData, HevyApiError, HEVY_DEV_SETTINGS, mergeHevyRoutines } from './lib/import-hevy.js'
 import { buildPlanBundle, parsePlan, mergePlan, printPlan, planPrintHTML } from './lib/plan-share.js'
 import { estimate1RM, best1RM, is1RMRecord, REP_CAP, formulaOf, FORMULA_NAMES } from './lib/onerm.js'
 import { setTrendsFor, lastTimeBefore, trendGlyph } from './lib/set-trend.js'
 import { setTagOf, setTagName } from './lib/set-tags.js'
 import { isOn } from './lib/modules.js'
+import { addWeighIn, editWeighIn, removeWeighIn, restoreWeighIn, readingsOf, readingCount, timeOf, cleanTime, defaultTimeFor, DEFAULT_TIME } from './lib/weigh-ins.js'
 import { setNoteOf } from './lib/opengym-v145/set-notes.js'
 import { normalizeTempo } from './lib/opengym-v145/tempo.js'
 import { tempoSheet } from './components/TempoSheet.jsx'
@@ -310,12 +312,17 @@ function WeightInput({ value, setValue, unit }) {
 }
 
 /* ============================ body weight ============================ */
-function BwSheet({ required, onDone, close }) {
+function BwSheet({ required, onDone, close, edit }) {
   const st = useStore(s => s.S)
   const unit = st.unit
   const bw = lastBW(st)
-  const [v, setV] = useState(bw ? bw.w : 70)
-  const [date, setDate] = useState(todayISO())
+  const [editing] = useState(() => edit ? readingsOf(st.bodyweight.find(b => b.d === edit.d)).find(r => r.id === String(edit.id)) : null)
+  const [v, setV] = useState(editing ? editing.w : bw ? bw.w : 70)
+  const [date, setDate] = useState(editing ? edit.d : todayISO())
+  const [time, setTime] = useState(editing ? editing.at || DEFAULT_TIME : timeOf(Date.now()))
+  const [timeSet, setTimeSet] = useState(!!editing)
+  const times = st.weighInTimes === true || !!editing || Array.isArray(st.bodyweight.find(b => b.d === date)?.ins)
+  const pickDate = d => { setDate(d); if (!timeSet) setTime(defaultTimeFor(st, d, todayISO())) }
   const screenRef = useRef(null)
   useSheetKeyboard(screenRef, required, { reveal: true })
   const proceed = (event, action) => lightningTransition(event.currentTarget, () => {
@@ -328,15 +335,23 @@ function BwSheet({ required, onDone, close }) {
     if (bwTooHeavy(n, unit)) return
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > todayISO()) { toast(t('Choose a valid date')); return }
     // Today's weigh-in is replaced by a second one, as it always was; an earlier day's is not.
-    if (date !== todayISO() && st.bodyweight.some(b => b.d === date)) { toast(t('That date already has a weigh-in. Delete it first.')); return }
+    if (!times && !edit && date !== todayISO() && st.bodyweight.some(b => b.d === date)) { toast(t('That date already has a weigh-in. Delete it first.')); return }
     const finish = () => {
+      let accepted = true
       update(s => {
+        if (times || edit) {
+          const at = required ? timeOf(Date.now()) : cleanTime(time) || (date === todayISO() ? timeOf(Date.now()) : DEFAULT_TIME)
+          if (edit) accepted = !!editWeighIn(s, edit.d, edit.id, { d: date, at, w: n })
+          else addWeighIn(s, { d: date, at, w: n })
+          return
+        }
         const ex = s.bodyweight.find(b => b.d === date)
         if (ex) { ex.w = n; ex.t = Date.now() } else s.bodyweight.push({ d: date, w: n, t: Date.now() })
         s.bodyweight.sort((a, b) => (a.d < b.d ? -1 : 1))
       })
+      if (!accepted) { toast(t('Choose a valid date')); return }
       close()
-      if (onDone) onDone(n); else toast(t('Weight saved'))
+      if (onDone) onDone(n); else toast(editing ? t('Weigh-in updated') : t('Weight saved'))
     }
     if (required) proceed(event, finish)
     else finish()
@@ -359,8 +374,10 @@ function BwSheet({ required, onDone, close }) {
       ? <div className="muted small">{t('Slide or tap to set your weight. We ask before every workout so your curve stays honest.')}</div>
       : <label className="measure-date">
           <span>{t('Date')}</span>
-          <input className="field" type="date" value={date} max={todayISO()} onChange={e => setDate(e.target.value)} />
+          <input className="field" type="date" value={date} max={todayISO()} onChange={e => pickDate(e.target.value)} />
         </label>}
+    {!required && times && <label className="measure-date"><span>{t('Time')}</span>
+      <input className="field" type="time" dir="ltr" aria-label={t('Time')} value={time} onChange={e => { setTime(e.target.value); setTimeSet(true) }} /></label>}
     {required && <span className="checkin-symbol" aria-hidden="true"><Icon name="scale" /></span>}
     <WeightInput value={v} setValue={setV} unit={unit} />
     <div style={{ height: 14 }} />
@@ -391,6 +408,7 @@ export function bwSheet(opts = {}) {
 // stray tap on one of its trash buttons took a past weigh-in with nothing to bring it back. The log
 // sheet's three are the ones just typed, where taking back a typo in one tap is the point.
 function WeighInRow({ b, unit, confirm = false }) {
+  if (Array.isArray(b.ins)) return <>{readingsOf(b).map(r => <ReadingRow key={r.id} d={b.d} r={r} unit={unit} confirm={confirm} />)}</>
   const delEntry = () => update(s => { s.bodyweight = s.bodyweight.filter(x => x.d !== b.d) })
   const ask = () => confirmSheet({
     title: t('Delete weigh-in?'), message: `${fmtDate(b.d, true)} · ${fmtNum(b.w)} ${unit}`,
@@ -400,6 +418,21 @@ function WeighInRow({ b, unit, confirm = false }) {
     <span className="small muted">{fmtDate(b.d, true)}</span>
     <span className="row" style={{ gap: 12 }}><b>{fmtNum(b.w)} {unit}</b>
       <button className="iconbtn" style={{ width: 32, height: 30, borderRadius: 8, fontSize: 15, color: 'var(--red)' }} onClick={confirm ? ask : delEntry} aria-label={t('Delete weigh-in')}><Icon name="trash" /></button></span>
+  </div>
+}
+
+function ReadingRow({ d, r, unit, confirm }) {
+  const when = [fmtDate(d, true), r.at].filter(Boolean).join(' · ')
+  const remove = () => {
+    let undo
+    update(s => { undo = removeWeighIn(s, d, r.id) })
+    if (undo) ui().toast(t('Weigh-in deleted'), { action: t('Undo'), onAction: () => update(s => { restoreWeighIn(s, undo) }) })
+  }
+  const ask = () => confirmSheet({ title: t('Delete weigh-in?'), message: `${when} · ${fmtNum(r.w)} ${unit}`, confirmText: t('Delete'), danger: true, onConfirm: remove })
+  return <div className="row between" data-reading={r.id} style={{ padding: '9px 2px', borderBottom: '1px solid var(--sep)' }}>
+    <button type="button" className="small muted" onClick={() => bwSheet({ edit: { d, id: r.id } })} aria-label={t('Edit weigh-in') + ', ' + when}>{when}</button>
+    <span className="row" style={{ gap: 12 }}><b>{fmtNum(r.w)} {unit}</b>
+      <button className="iconbtn" style={{ width: 32, height: 30, borderRadius: 8, fontSize: 15, color: 'var(--red)' }} onClick={confirm ? ask : remove} aria-label={t('Delete weigh-in') + ', ' + when}><Icon name="trash" /></button></span>
   </div>
 }
 
@@ -414,7 +447,7 @@ function WeighIns() {
   const weeks = useMemo(() => weeklyWeights(st.bodyweight, ws), [st.bodyweight, ws])
   const points = useMemo(() => [...weeks].reverse()
     .map(w => ({ t: new Date(w.key + 'T12:00:00').getTime(), y: Math.round(w.avg * 100) / 100, d: w.key })), [weeks])
-  const n = weeks.reduce((sum, w) => sum + w.n, 0)
+  const n = weeks.reduce((sum, w) => sum + w.entries.reduce((count, b) => count + readingCount(b), 0), 0)
   if (!n) return <>
     <h3>{t('Weigh-ins')}</h3>
     <div className="empty"><div className="ico"><Icon name="scale" /></div>{t('No weigh-ins yet. Log your weight to start the curve.')}</div>
@@ -458,15 +491,23 @@ const effortLine = (effort, n, scale) => effort === 'none'
 function ImportSummary({ parsed, close }) {
   const st = useStore(s => s.S)
   const isBW = parsed.kind === 'bodyweight'
+  const bodyPreview = isBW && parsed.ironlogBodyImport ? previewOriginalBodyImport(st, parsed) : null
   const have = isBW
     ? parsed.bodyweight.filter(b => st.bodyweight.some(x => x.d === b.d)).length
     : parsed.workouts.filter(w => st.workouts.some(x => x.d === w.d)).length
-  const fresh = (isBW ? parsed.bodyweight.length : parsed.workouts.length) - have
+  const fresh = bodyPreview ? bodyPreview.added + (bodyPreview.measurements || 0) + (bodyPreview.activities || 0) : (isBW ? parsed.bodyweight.length : parsed.workouts.length) - have
 
   const doImport = () => {
     let res
     update(s => { res = mergeImport(s, parsed) })
     close()
+    if (bodyPreview) {
+      const counts = [res.added ? tn('{0} weigh-in imported', '{0} weigh-ins imported', res.added) : '',
+        res.measurements ? tn('{0} measurement', '{0} measurements', res.measurements) : '',
+        res.activities ? t('Activities') + ': ' + res.activities : ''].filter(Boolean)
+      toast(counts.join(' · '))
+      return
+    }
     toast(isBW
       ? tn('{0} weigh-in imported', '{0} weigh-ins imported', res.added)
       : tn('{0} workout imported', '{0} workouts imported', res.added))
@@ -482,6 +523,8 @@ function ImportSummary({ parsed, close }) {
       {isBW ? <>
         <div className="tile"><div className="l">{t('Weigh-ins')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.bodyweight.length}</div></div>
         <div className="tile"><div className="l">{t('New')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{fresh}</div></div>
+        {parsed.measurements?.length > 0 && <div className="tile"><div className="l">{t('Body measurements')}</div><div className="v">{bodyPreview?.measurements || 0}</div></div>}
+        {parsed.activities?.length > 0 && <div className="tile"><div className="l">{t('Activities')}</div><div className="v">{bodyPreview?.activities || 0}</div></div>}
       </> : <>
         <div className="tile"><div className="l">{t('Workouts')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.workouts.length}</div></div>
         <div className="tile"><div className="l">{t('Sets')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.sets}</div></div>
@@ -532,11 +575,11 @@ export function importFromApp(file, onDone) {
   const rd = new FileReader()
   rd.onload = () => {
     let parsed
-    try { parsed = parseImport(String(rd.result), { unit: S().unit, customEx: S().customEx, bands: S().bands, cardioBy: S().cardioBy }) }
+    try { parsed = parseImport(String(rd.result), { unit: S().unit, customEx: S().customEx, bands: S().bands, cardioBy: S().cardioBy, weighInTimes: S().weighInTimes === true }) }
     catch (e) { toast(t('Could not read that file')); return }
     if (parsed.error === 'empty') { toast(t('That file is empty')); return }
     if (parsed.error) { toast(t("We don't recognise that file's columns. Check the docs for supported apps.")); return }
-    if (parsed.kind === 'bodyweight' ? !parsed.bodyweight.length : !parsed.workouts.length) {
+    if (parsed.kind === 'bodyweight' ? !(parsed.bodyweight.length || parsed.measurements?.length || parsed.activities?.length) : !parsed.workouts.length) {
       toast(t('Nothing to import from that file')); return
     }
     ui().openSheet(close => <ImportSummary parsed={parsed} close={close} />)

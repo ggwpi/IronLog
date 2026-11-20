@@ -1,5 +1,17 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Activities": "活动",
+  "Measurement unit": "测量单位",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "每日体重取值",
+  "Morning (first)": "早上（第一次）",
+  "Before breakfast is the one to compare.": "早餐前的那次最值得比较。",
+  "Every weigh-in of the day counts the same.": "当天每次称重都同样计算。",
+  "Last": "最后",
+  "The most recent one of the day.": "当天最近的一次。",
+  "Edit weigh-in": "编辑称重",
+  "Weigh-in updated": "称重已更新",
+  "Weigh-in deleted": "称重记录已删除",
   // CSV range presets.
   "3 months": "3 个月",
   "4 weeks": "4 周",

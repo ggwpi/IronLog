@@ -1,5 +1,17 @@
 // Spanish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Activities": "Actividades",
+  "Measurement unit": "Unidad de medida",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "Valor diario del pesaje",
+  "Morning (first)": "Mañana (primero)",
+  "Before breakfast is the one to compare.": "Antes del desayuno es el que conviene comparar.",
+  "Every weigh-in of the day counts the same.": "Cada pesaje del día cuenta igual.",
+  "Last": "Último",
+  "The most recent one of the day.": "El más reciente del día.",
+  "Edit weigh-in": "Editar pesaje",
+  "Weigh-in updated": "Pesaje actualizado",
+  "Weigh-in deleted": "Pesaje eliminado",
   // CSV range presets.
   "3 months": "3 meses",
   "4 weeks": "4 semanas",

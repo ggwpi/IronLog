@@ -9,6 +9,7 @@ import { workoutControls } from '../lib/workout-controls.js'
 import { isOn, setModule } from '../lib/modules.js'
 import { speedUnitOf } from '../lib/speed.js'
 import { warmupAutoOf } from '../lib/warmup-ramp.js'
+import { dailyModeOf, settleAll } from '../lib/weigh-ins.js'
 import { formulaOf, FORMULA_NAMES } from '../lib/onerm.js'
 import { copyText } from '../lib/clipboard.js'
 import { useUI } from '../store/useUI.js'
@@ -426,6 +427,8 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     pushOK: !MOBILE && pushSupported(), reminderOn: !!S.reminder?.on, nudge: !!S.reminder?.nudge,
     autoBackup: !!S.autoBackup, synced: !!sync, installTip: !MOBILE && !standalone(), androidWeb: IS_ANDROID,
     rotation: scheduleModeOf(S) === 'rotation' && !externalQ,
+    weighInTimes: S.weighInTimes === true || (S.bodyweight || []).some(b => Array.isArray(b.ins)),
+    bodyOn: isOn(S, 'body'),
   }
   const mode = scheduleModeOf(S)
   const layout = ['list', 'compact', 'focus'].includes(S.workoutView) ? S.workoutView : 'cards'
@@ -789,6 +792,14 @@ export default function Settings({ page = null, find = null, via = null, entryKe
             options={[{ value: 'kmh', label: 'km/h' }, { value: 'mph', label: 'mph' }]}
             value={speedUnitOf(S)} onChange={v => update(s => { s.speedUnit = v })} />
         </Row>
+        {isOn(S, 'body') && <Row icon="timer" iconTint="var(--teal)" title={t('Time')} subtitle={t('Weigh-ins')}>
+          <Switch aria-label={t('Time') + ' · ' + t('Weigh-ins')} checked={S.weighInTimes === true} onChange={v => update(s => { s.weighInTimes = v })} />
+        </Row>}
+        {isOn(S, 'body') && (S.weighInTimes === true || (S.bodyweight || []).some(b => Array.isArray(b.ins))) && <SelectRow icon="scale" iconTint="var(--teal)" title={t('Daily weigh-in value')}
+          value={dailyModeOf(S)} onChange={v => update(s => { s.bwDaily = v; settleAll(s, v) })}
+          options={[{ value: 'first', label: t('Morning (first)'), subtitle: t('Before breakfast is the one to compare.') },
+            { value: 'avg', label: t('Average'), subtitle: t('Every weigh-in of the day counts the same.') },
+            { value: 'last', label: t('Last'), subtitle: t('The most recent one of the day.') }]} />}
         {/* Which formula turns a set into an estimated 1RM (Discord, #155): the exercise page,
             the 1RM chart and records all follow it. Formula names are people, not words. */}
         <SelectRow icon="chart" iconTint="var(--teal)" title={t('1RM formula')}

@@ -379,13 +379,18 @@ const V139_DROPS = {
   customEx: new Set(['media', 'url']),
   equipProfiles: new Set(),
   gymCards: new Set(),
+  bodyweight: new Set(['d', 'w', 't', 'src']),
+  measurements: new Set(['d', 't', 'other', 'neck', 'shoulders', 'chest', 'waist', 'hips', 'abdomen',
+    'upperArmLeft', 'upperArmRight', 'forearmLeft', 'forearmRight', 'wristLeft', 'wristRight',
+    'thighLeft', 'thighRight', 'calfLeft', 'calfRight', 'ankleLeft', 'ankleRight', 'bodyFat']),
+  'measurements.other': new Set(['id', 'name', 'value']),
   workouts: new Set(['media', 'note', 'name', 'bw', 'prs', 'vol', 'routineIds']),
   'workouts.entries': new Set(['sg', 'note', 'notePin', 'noProg', 'topW']),
   'workouts.entries.sets': new Set(['w', 'r', 'sec', 'min', 'km', 'dist', 'speed', 'rir', 'rpe', 'planSec', 'note',
     'done', 'weightOrigin', 'at', 'sides', 'type', 'drops', 'clusters', 'warmup']),
 };
 // The lists inside an entry that are walked too, and how their items are matched.
-const NESTED = { routines: ['ex'], workouts: ['entries'], 'workouts.entries': ['sets'] };
+const NESTED = { routines: ['ex'], workouts: ['entries'], 'workouts.entries': ['sets'], measurements: ['other'] };
 // Server bookkeeping and the records merged on their own: never put back from the stored copy.
 const NOT_KEPT = new Set(['_rev', '_wid', '_wids', '_unstamped', '_prior', 'active', 'resetAt', 'resetIds', 'deleted', 'edited']);
 
@@ -434,7 +439,13 @@ function pairItems(a, b) {
 export function keepUnknown(cur, next) {
   if (!isMap(cur) || !isMap(next)) return next;
   keepKeys(cur, next, 'state');
-  for (const f of ENTRY_LISTS) {
+  // A legacy writer may rebuild a daily weight without the newer readings/metadata.
+  // Preserve unknown fields by day; its known weight/time/source edit remains intentional.
+  for (const field of ['bodyweight', 'measurements']) if (Array.isArray(cur[field]) && Array.isArray(next[field])) {
+    const days = new Map(cur[field].filter(x => isMap(x) && x.d != null).map(x => [x.d, x]));
+    for (const x of next[field]) if (isMap(x) && days.has(x.d)) keepKeys(days.get(x.d), x, field);
+  }
+  for (const f of [...ENTRY_LISTS, 'customMeasurements']) {
     if (!Array.isArray(cur[f]) || !Array.isArray(next[f])) continue;
     const before = new Map(cur[f].filter(x => isMap(x) && x.id != null).map(x => [x.id, x]));
     for (const x of next[f]) if (isMap(x) && x.id != null && before.has(x.id)) keepKeys(before.get(x.id), x, f);

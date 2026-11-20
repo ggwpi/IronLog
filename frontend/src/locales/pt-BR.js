@@ -4,6 +4,18 @@
 import pt from './pt.js'
 
 export const PT_BR_OVERRIDES = {
+  "Activities": "Atividades",
+  "Measurement unit": "Unidade de medida",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "Valor diário da pesagem",
+  "Morning (first)": "Manhã (primeira)",
+  "Before breakfast is the one to compare.": "Antes do café da manhã é a que vale comparar.",
+  "Every weigh-in of the day counts the same.": "Todas as pesagens do dia contam o mesmo.",
+  "Last": "Última",
+  "The most recent one of the day.": "A mais recente do dia.",
+  "Edit weigh-in": "Editar pesagem",
+  "Weigh-in updated": "Pesagem atualizada",
+  "Weigh-in deleted": "Pesagem excluída",
   // CSV range presets.
   "3 months": "3 meses",
   "4 weeks": "4 semanas",

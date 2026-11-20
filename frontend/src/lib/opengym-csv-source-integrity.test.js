@@ -4,6 +4,8 @@ import { readFileSync } from 'node:fs'
 
 // Raw Git blobs from e4a68a94c42a3c17cbd560d66ce2e46a7048ab99. Boundary shims are separate.
 const sources = [
+  ["measurements.test.js","6b72150f668b4cb161935fe06750d2a4b275a71c"],
+  ["weigh-ins.test.js","254dbb97f6970382f573a5a770b4badc01584e2e"],
   [
     "export-csv.js",
     "89cc45a3b8bee4c19edad47a9c23d40bb823ed6a"

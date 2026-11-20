@@ -7,6 +7,8 @@ import {
   fromMeasurementDisplay, latestMeasurement, measurementEntryHasValues,
   measurementSeries, measurementUnit, measurementValue, normalizeMeasurementEntry,
   toMeasurementDisplay, normalizeMeasurementsState,
+  measurementUnitLabel, zeroIsReading,
+  CUSTOM_MEASUREMENT_UNITS,
 } from '../lib/measurements.js'
 import { fmtDate, fmtNum, todayISO, uid } from '../lib/format.js'
 import { t } from '../lib/i18n.js'
@@ -19,11 +21,11 @@ import { confirmSheet } from '../sheets.jsx'
 const update = (fn, ...rest) => useStore.getState().update(s => { fn(s); normalizeMeasurementsState(s) }, ...rest)
 const toast = message => useUI.getState().toast(message)
 
-const fieldUnit = (field, profileUnit) => field.key === 'bodyFat' ? '%' : measurementUnit(profileUnit)
+const fieldUnit = (field, profileUnit) => field.key === 'bodyFat' ? '%' : measurementUnitLabel(measurementUnit(profileUnit, field))
 const shownValue = (entry, field, profileUnit) => {
   const value = measurementValue(entry, field.key)
   if (value == null) return null
-  return field.key === 'bodyFat' ? value : toMeasurementDisplay(value, profileUnit)
+  return field.key === 'bodyFat' ? value : toMeasurementDisplay(value, profileUnit, field)
 }
 
 function MeasurementLog({ sourceDate, close }) {
@@ -38,12 +40,13 @@ function MeasurementLog({ sourceDate, close }) {
     }
     for (const o of source.other || []) {
       if (o.value != null && !fields.some(x => x.key === 'other:' + o.id)) {
-        fields.push({ key: 'other:' + o.id, label: o.name, custom: true, group: 'Other' })
+        fields.push({ key: 'other:' + o.id, label: o.name, custom: true, group: 'Other', ...(o.unit ? { unit: o.unit } : {}) })
       }
     }
   }
   const [date, setDate] = useState(source?.d || todayISO())
-  const [values, setValues] = useState(() => Object.fromEntries(fields.map(f => [f.key, shownValue(source, f, S.unit)])))
+  const [initialValues] = useState(() => Object.fromEntries(fields.map(f => [f.key, shownValue(source, f, S.unit)])))
+  const [values, setValues] = useState(initialValues)
 
   const save = () => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > todayISO()) { toast(t('Choose a valid date')); return }
@@ -55,11 +58,14 @@ function MeasurementLog({ sourceDate, close }) {
     base.t = source && date === source.d ? source.t : (date === todayISO() ? Date.now() : new Date(date + 'T12:00:00').getTime())
     for (const field of fields) {
       const raw = values[field.key]
-      const value = raw == null || raw === 0 ? null : Math.round(+raw * 10) / 10
+      // Original unit formatting may show fewer decimals than canonical mass storage.
+      // An untouched field keeps its complete stored value (and any newer remote value).
+      if (source && Object.is(raw, initialValues[field.key])) continue
+      const value = raw == null || (raw === 0 && !zeroIsReading(field.unit)) ? null : field.unit ? Number(raw) : Math.round(+raw * 10) / 10
       if (field.key === 'bodyFat' && value > 100) { toast(t('Body fat must be between 0 and 100%.')); return }
       if (field.custom) {
         const item = base.other.find(o => o.id === field.key.slice(6))
-        if (item) item.value = value == null ? null : fromMeasurementDisplay(value, S.unit)
+        if (item) item.value = value == null ? null : fromMeasurementDisplay(value, S.unit, field)
       } else if (field.key === 'bodyFat') base.bodyFat = value
       else base[field.key] = value == null ? null : fromMeasurementDisplay(value, S.unit)
     }
@@ -105,6 +111,7 @@ export function measurementLogSheet(sourceDate = null) {
 function ManageMeasurements({ close }) {
   const S = useStore(s => s.S)
   const [name, setName] = useState('')
+  const [unit, setUnit] = useState('')
   const groups = [...new Set(MEASUREMENT_FIELDS.map(f => f.group))]
   const toggleBuiltin = (key, on) => update(state => {
     const set = new Set(state.measurementEnabled || [])
@@ -122,7 +129,7 @@ function ManageMeasurements({ close }) {
       MEASUREMENT_FIELDS.some(f => f.label.toLowerCase() === clean.toLowerCase())) {
       toast(t('A custom measurement with that name already exists.')); return
     }
-    update(state => { state.customMeasurements.push({ id: uid(), name: clean.slice(0, 60), enabled: true }) })
+    update(state => { state.customMeasurements.push({ id: uid(), name: clean.slice(0, 60), enabled: true, ...(unit ? { unit } : {}) }) })
     setName('')
   }
   return <>
@@ -142,6 +149,8 @@ function ManageMeasurements({ close }) {
       <TextField value={name} maxLength={60} placeholder={t('Custom measurement')} onChange={e => setName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') add() }} />
       <Button icon="plus" onClick={add} disabled={!name.trim()}>{t('Add')}</Button>
     </div>
+    <SelectRow icon="ruler" title={t('Measurement unit')} value={unit} onChange={setUnit}
+      options={[{ value: '', label: t('Default') }, ...CUSTOM_MEASUREMENT_UNITS.map(value => ({ value, label: value === 'none' ? t('None') : value }))]} />
     <div style={{ height: 14 }} />
     <Button variant="primary" onClick={close}>{t('Done')}</Button>
   </>
@@ -162,7 +171,7 @@ export default function Measurements() {
     }
     for (const custom of S.customMeasurements || []) {
       const key = 'other:' + custom.id
-      if (latestMeasurement(S, key) && !out.some(f => f.key === key)) out.push({ key, label: custom.name, custom: true, group: 'Other' })
+      if (latestMeasurement(S, key) && !out.some(f => f.key === key)) out.push({ key, label: custom.name, custom: true, group: 'Other', ...(custom.unit ? { unit: custom.unit } : {}) })
     }
     return out
   }, [S])
@@ -171,7 +180,7 @@ export default function Measurements() {
   const key = available.some(f => f.key === selected) ? selected : fallback
   const field = available.find(f => f.key === key)
   const points = key ? measurementSeries(S, key, range) : []
-  const unit = key === 'bodyFat' ? '%' : measurementUnit(S.unit)
+  const unit = key === 'bodyFat' ? '%' : measurementUnitLabel(measurementUnit(S.unit, field))
   const all = key ? measurementSeries(S, key) : []
   const latest = all.at(-1)
   const previous = all.at(-2)

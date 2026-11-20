@@ -1,5 +1,17 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Activities": "활동",
+  "Measurement unit": "측정 단위",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "하루 체중 값",
+  "Morning (first)": "아침 (첫 기록)",
+  "Before breakfast is the one to compare.": "아침 식사 전 체중이 비교하기 가장 좋아요.",
+  "Every weigh-in of the day counts the same.": "하루의 모든 체중 기록을 똑같이 계산해요.",
+  "Last": "마지막",
+  "The most recent one of the day.": "그날의 가장 최근 기록.",
+  "Edit weigh-in": "체중 기록 수정",
+  "Weigh-in updated": "체중 기록을 수정했어요",
+  "Weigh-in deleted": "체중 기록 삭제됨",
   // CSV range presets.
   "3 months": "3개월",
   "4 weeks": "4주",

@@ -1,9 +1,34 @@
 // IronLog boundaries around the immutable v1.4.5 CSV engines. No profile or storage writes.
-import { parseCSV, detectSource, parseWorkoutCSV, priorCustom } from './opengym-v145/import-csv.js'
+import { parseCSV, detectSource, parseWorkoutCSV, priorCustom, parseBodyweight as originalParseBodyweight, mergeImport as originalMergeImport } from './opengym-v145/import-csv.js'
+import { withWeighInMetadata } from './weigh-ins.js'
 import { workoutsCSV, WORKOUT_COLUMNS } from './opengym-v145/export-csv.js'
 import { canonicalExId } from './exercises.js'
 
 export { workoutsCSV, bodyCSV, csvCounts } from './opengym-v145/export-csv.js'
+
+export function isOwnBodyCSV(text) {
+  const columns = parseCSV(String(text).replace(/^\uFEFF/, '').split(/\r?\n/, 1)[0])[0] || []
+  return columns[0]?.toLowerCase() === 'date' && /^weight_(kg|lb)$/.test(columns[1] || '')
+}
+export function parseOriginalBodyImport(text, options) {
+  const parsed = originalParseBodyweight(text, options)
+  return parsed.error ? parsed : { ...parsed, ironlogBodyImport: true }
+}
+export function mergeOriginalBodyImport(S, parsed) {
+  const measurementDates = new Set((S.measurements || []).map(m => m.d))
+  const existingFields = new Set((S.customMeasurements || []).map(c => c.id))
+  const working = { unit: S.unit, bwDaily: S.bwDaily, bodyweight: structuredClone(S.bodyweight || []),
+    measurements: [], customMeasurements: structuredClone(S.customMeasurements || []), activities: structuredClone(S.activities || {}) }
+  const input = { ...parsed, ...(parsed.measurements ? { measurements: parsed.measurements.filter(m => !measurementDates.has(m.d)) } : {}) }
+  const result = withWeighInMetadata(working, () => originalMergeImport(working, input))
+  S.bodyweight = working.bodyweight
+  if (working.measurements.length) S.measurements = [...(S.measurements || []), ...working.measurements].sort((a, b) => a.d.localeCompare(b.d))
+  const addedFields = working.customMeasurements.filter(c => !existingFields.has(c.id))
+  if (addedFields.length) S.customMeasurements = [...(S.customMeasurements || []), ...addedFields]
+  if (parsed.activities?.length) S.activities = { ...working.activities, ...S.activities }
+  return result
+}
+export const previewOriginalBodyImport = (S, parsed) => mergeOriginalBodyImport({ ...S }, parsed)
 
 // Only our own workout format takes the new reader. Existing third-party/XML import paths stay
 // on IronLog's current importer. The original upstream recognizer decides, not a new matcher.

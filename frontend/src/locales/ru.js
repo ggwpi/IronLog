@@ -1,5 +1,17 @@
 // Russian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Activities": "Активности",
+  "Measurement unit": "Единица измерения",
+  // Weigh-in times and daily aggregation.
+  "Daily weigh-in value": "Значение веса за день",
+  "Morning (first)": "Утро (первое)",
+  "Before breakfast is the one to compare.": "До завтрака: его и стоит сравнивать.",
+  "Every weigh-in of the day counts the same.": "Все взвешивания за день считаются одинаково.",
+  "Last": "Последнее",
+  "The most recent one of the day.": "Самое позднее за день.",
+  "Edit weigh-in": "Изменить взвешивание",
+  "Weigh-in updated": "Взвешивание обновлено",
+  "Weigh-in deleted": "Взвешивание удалено",
   // CSV range presets.
   "3 months": "3 месяца",
   "4 weeks": "4 недели",
