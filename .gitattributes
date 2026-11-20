@@ -1,0 +1,27 @@
+# Scripts, CSP hashes and generated-source checks require consistent text on Windows too.
+.gitattributes text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.sh text eol=lf
+# Imported immutable openGym modules: provenance hashes must also pass on Windows.
+frontend/src/lib/set-trend.js text eol=lf
+frontend/src/lib/set-trend.test.js text eol=lf
+frontend/src/lib/cardio-kind.js text eol=lf
+frontend/src/lib/modules.js text eol=lf
+frontend/src/lib/modules.test.js text eol=lf
+frontend/src/lib/week-left.js text eol=lf
+frontend/src/lib/strength-level.js text eol=lf
+frontend/src/lib/strength-level.test.js text eol=lf
+frontend/src/lib/relative-strength.js text eol=lf
+frontend/src/lib/relative-strength.test.js text eol=lf
+frontend/src/lib/deload-cycle.js text eol=lf
+frontend/src/lib/deload-cycle.test.js text eol=lf
+frontend/src/lib/set-tags.js text eol=lf
+frontend/src/lib/opengym-v145/muscle-targets.js text eol=lf
+frontend/src/lib/opengym-v145/muscle-targets.test.js text eol=lf
+# Raw original data blobs must retain the same bytes on Windows and Linux.
+frontend/src/lib/opengym-v145/**/*.json text eol=lf

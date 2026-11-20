@@ -3,6 +3,13 @@ import { defaultConfig, isBw, modeOf, MAX_PLANNED_WARMUPS, NOTE_MAX } from './hi
 import { isAssisted, isBodyweightEq, isCardio } from './exercises.js'
 import { sessionsFor } from './progression.js'
 import { isWarmupRow } from './workout-model.js'
+import { warmupModeOf, hasGeneratedWarmups } from './warmup-ramp.js'
+import { routineChangesFromEntry as originalRoutineChanges, updateRoutineFromEntry as originalRoutineUpdate } from './opengym-v145/session-engine/frontend/src/lib/routines.js'
+
+const hasNewWarmupSetup = (routine, entries, idx) => {
+  const at = routineSlotIndex(routine, entries, idx)
+  return at >= 0 && (warmupModeOf(routine.ex[at]) || hasGeneratedWarmups(entries[idx]?.sets || []))
+}
 
 /**
  * Create a deep copy of a routine with a new id and a "(Copy)" suffix.
@@ -144,7 +151,7 @@ export function replaceSlotExercise(slot, id, S, rid) {
   if (old.id === id) return { ...old }
   if ((modeOf(old) === 'cardio') !== isCardio(id)) {
     const kept = ['sg', 'note', 'restSec', 'subs'].filter(key => old[key] != null)
-    return dropSelfBackup({ id, ...defaultConfig(id), ...Object.fromEntries(kept.map(key => [key, old[key]])) })
+    return dropSelfBackup({ id, ...defaultConfig(id, undefined, S), ...Object.fromEntries(kept.map(key => [key, old[key]])) })
   }
   const { id: _replaced, bodyweight: _flag, assisted: _assisted, side: _side, ...carried } = old
   const out = dropSelfBackup({ id, ...carried })
@@ -212,7 +219,8 @@ function setupOf(entry) {
  * editor does). Sets, reps and weight are not offered: the progression engine moves those every
  * session, and the routine is the plan it reads them against.
  */
-export function routineChangesFromEntry(routine, entries, idx) {
+export function routineChangesFromEntry(routine, entries, idx, floor = 0) {
+  if (hasNewWarmupSetup(routine, entries, idx)) return originalRoutineChanges(routine, entries, idx, floor)
   const at = routineSlotIndex(routine, entries, idx)
   if (at < 0) return null
   const slot = routine.ex[at]
@@ -231,7 +239,8 @@ export function routineChangesFromEntry(routine, entries, idx) {
  * does: a key is only stored when it has a value, so "no warm-ups" removes it instead of leaving
  * a 0 that no plan file ever had. Returns the changes it applied, or null.
  */
-export function updateRoutineFromEntry(routine, entries, idx) {
+export function updateRoutineFromEntry(routine, entries, idx, floor = 0) {
+  if (hasNewWarmupSetup(routine, entries, idx)) return originalRoutineUpdate(routine, entries, idx, floor)
   const found = routineChangesFromEntry(routine, entries, idx)
   if (!found) return null
   const slot = routine.ex[found.at]

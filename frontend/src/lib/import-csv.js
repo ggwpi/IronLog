@@ -22,7 +22,9 @@ import { EXDB, EXIDX, canonicalExId, isCardio as isCardioEx } from './exercises.
 import { uid } from './format.js'
 import { isWarmupRow } from './workout-model.js'
 import { HEVY_TITLE_MAP } from './hevy-id-map.js'
-import { clampIncline, inclineFrom } from './incline.js'
+import { clampIncline, inclineFrom, clampLevel, levelFrom } from './incline.js'
+import { isOwnWorkoutCSV, parseOwnWorkoutCSV, isOwnBodyCSV, parseOriginalBodyImport, mergeOriginalBodyImport } from './ironlog-csv.js'
+import { unionById } from './sync-merge.js'
 
 /* ----------------------------------------------------------------- CSV ---- */
 
@@ -92,6 +94,7 @@ const COLUMNS = [
   ['distanceUnit', ['distance unit']],
   // gravl writes a treadmill's grade per set; "Incline (%)" normalises to the same name.
   ['incline', ['incline', 'incline percent']],
+  ['level', ['resistance level']],
   ['seconds', ['seconds', 'duration seconds', 'set duration sec']],
   ['time', ['time', 'duration']],
   // Strong's current export: the whole workout's length, in seconds, on every row.
@@ -474,7 +477,12 @@ export function priorCustom(customEx, id, name) {
 }
 
 // `customEx`: the custom exercises already in state (priorCustom above).
-export function parseWorkoutCSV(text, { unit = 'kg', customEx = [] } = {}) {
+export function parseWorkoutCSV(text, options = {}) {
+  if (isOwnWorkoutCSV(text)) return parseOwnWorkoutCSV(text, options)
+  return parseLegacyWorkoutCSV(text, options)
+}
+
+function parseLegacyWorkoutCSV(text, { unit = 'kg', customEx = [] } = {}) {
   const rows = parseCSV(text)
   if (rows.length < 2) return { error: 'empty' }
   const map = mapHeader(rows[0])
@@ -580,7 +588,7 @@ export function parseWorkoutCSV(text, { unit = 'kg', customEx = [] } = {}) {
     const set = timed
       ? { sec: Math.round(secs), w, done: true, u: rowUnit, ...(warmup ? { phase: 'warmup' } : {}) }
       : isCardio
-        ? { min: mins || 0, speed: mins > 0 ? Math.round(km / (mins / 60) * 10) / 10 : 0, ...inclineFrom({ incline: clampIncline(num(cell(r, 'incline'))) }), done: true, ...(warmup ? { phase: 'warmup' } : {}) }
+        ? { min: mins || 0, speed: mins > 0 ? Math.round(km / (mins / 60) * 10) / 10 : 0, ...inclineFrom({ incline: clampIncline(num(cell(r, 'incline'))) }), ...levelFrom({ level: clampLevel(num(cell(r, 'level'))) }), done: true, ...(warmup ? { phase: 'warmup' } : {}) }
         : { w, r: reps || 0, done: true, u: rowUnit, ...(warmup ? { phase: 'warmup' } : {}) }
     // A "failure" set type (Hevy's CSV writes one) is the app's set taken to failure; not on
     // cardio, which has no effort to read it as.
@@ -701,7 +709,8 @@ export function parseWorkoutCSV(text, { unit = 'kg', customEx = [] } = {}) {
  * records are pulled out with a scan instead. Health writes weights in the unit the
  * phone is set to and labels each record, so the unit is read per record.
  */
-export function parseBodyweight(text, { unit = 'kg' } = {}) {
+export function parseBodyweight(text, { unit = 'kg', weighInTimes = false } = {}) {
+  if (weighInTimes || isOwnBodyCSV(text)) return parseOriginalBodyImport(text, { unit })
   const s = String(text)
   const out = new Map()          // iso date -> { w, t }  (one weigh-in per day, the last)
   let fileUnit = ''
@@ -768,6 +777,8 @@ const bodyOk = (w, u) => w > 0 && w <= (u === 'lb' ? MAX_BODY_KG / LB_TO_KG : MA
 /** Sniff the file and parse it as whatever it is. */
 export function parseImport(text, opts) {
   const s = String(text)
+  // An own-CSV note may contain Apple Health's XML identifiers as ordinary text.
+  if (isOwnWorkoutCSV(s)) return parseOwnWorkoutCSV(s, opts)
   if (s.includes('HKQuantityTypeIdentifier') || /^\s*</.test(s)) return parseBodyweight(s, opts)
   const asWorkouts = parseWorkoutCSV(s, opts)
   if (!asWorkouts.error) return asWorkouts
@@ -783,6 +794,17 @@ export function parseImport(text, opts) {
  * not against each other); a day already in the history brings neither.
  */
 export function mergeImport(S, parsed) {
+  if (parsed.kind === 'bodyweight' && parsed.ironlogBodyImport === true) return mergeOriginalBodyImport(S, parsed)
+  const result = mergeLegacyImport(S, parsed)
+  // Import boundary only: keep original band IDs referenced by newly accepted own-CSV sets.
+  // Reuse IronLog's union; never normalize or replace existing band definitions/unknown fields.
+  if (parsed.source === 'openGym' && result.added > 0 && parsed.bands?.length) {
+    S.bands = unionById(Array.isArray(S.bands) ? S.bands : [], parsed.bands)
+  }
+  return result
+}
+
+function mergeLegacyImport(S, parsed) {
   if (parsed.kind === 'bodyweight') {
     const have = new Set(S.bodyweight.map(b => b.d))
     const fresh = parsed.bodyweight.filter(b => !have.has(b.d))

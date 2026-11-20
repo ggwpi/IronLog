@@ -100,6 +100,30 @@ describe('the native queue', () => {
     expect(await drainWatchEvents()).toEqual([])
     expect(p.ack).not.toHaveBeenCalled()
   })
+  it('pauses native event draining without acknowledging or losing ticks, and resumes after re-enabling Watch', async () => {
+    const S = state({ modules: { watch: false } })
+    const p = plugin([{ id: 'paused', type: 'setDone', wid: 'w-1', exId: '0025', entryIdx: 0, setIdx: 1 }])
+    _setWatchPluginForTest(p, () => ({ S }))
+    const setDone = vi.fn(); bindWatchActions({ setDone })
+    expect(await drainWatchEvents()).toEqual([])
+    expect(p.drain).not.toHaveBeenCalled(); expect(p.ack).not.toHaveBeenCalled(); expect(setDone).not.toHaveBeenCalled()
+    S.modules.watch = true
+    expect(await drainWatchEvents()).toEqual(['paused'])
+    expect(setDone).toHaveBeenCalledTimes(1); expect(p.ack).toHaveBeenCalledWith({ ids: ['paused'] })
+  })
+  it('keeps a tick queued if Watch is switched off while the native drain is in flight', async () => {
+    const S = state(), events = [{ id: 'race', type: 'setDone', wid: 'w-1', exId: '0025', entryIdx: 0, setIdx: 1 }]
+    let release
+    const p = { drain: vi.fn(() => new Promise(resolve => { release = resolve })), ack: vi.fn() }
+    _setWatchPluginForTest(p, () => ({ S }))
+    const setDone = vi.fn(); bindWatchActions({ setDone })
+    const pending = drainWatchEvents()
+    await Promise.resolve(); await Promise.resolve()
+    S.modules = { watch: false }; release({ events })
+    expect(await pending).toEqual([]); expect(setDone).not.toHaveBeenCalled(); expect(p.ack).not.toHaveBeenCalled()
+    S.modules.watch = true; p.drain.mockResolvedValue({ events })
+    expect(await drainWatchEvents()).toEqual(['race'])
+  })
 
   // Data safety (owner, 10-14): at launch S can be the empty copy of an evicted WebView until boot
   // has the file mirror back. A tick drained then found no workout and was acknowledged away.

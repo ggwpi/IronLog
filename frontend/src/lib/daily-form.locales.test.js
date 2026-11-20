@@ -1,0 +1,3 @@
+import { expect,it } from 'vitest'
+const packs=import.meta.glob('../locales/*.js',{eager:true,import:'default'})
+it('localizes every explicit lighter-session choice in all 19 packs',()=>{expect(Object.keys(packs)).toHaveLength(19);for(const pack of Object.values(packs))for(const key of ["Programme","Programme done","Week {0} of {1}","{0}, paused","As planned","10% lighter","One set fewer","Take it easier today?","Rough one. Take it easier today?","Your call. Nothing changes unless you pick it.","Just today. This session sits out of progression, so your next targets stay put.","Lighter day: 10% off the weights. Progression sits this one out.","Lighter day: one set fewer per exercise. Progression sits this one out."])expect(pack[key],key).toBeTruthy()})

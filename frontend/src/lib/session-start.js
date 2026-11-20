@@ -5,11 +5,16 @@
 // either imports this file, so there is no cycle.
 import { buildSets, applyIntensifierPlan, modeOf, barFloor } from './history.js'
 import { isWarmupRow } from './workout-model.js'
-import { nextPrescription, applyPrescription, defaultIncrement, weightIncrement, plannedOf } from './progression.js'
+import { nextPrescription, applyPrescription, defaultIncrement, weightIncrement, plannedOf, sessionsFor } from './progression.js'
 import { dropGrid } from './plates.js'
 import { backoffStepOf, applyBackoff } from './backoff.js'
 import { dbLoadFor, historyAs, ownedWeightsFor } from './dumbbells.js'
 import { isAssisted } from './exercises.js'
+import { isDeloadDay, deloadSets } from './deload-cycle.js'
+import { todayISO } from './format.js'
+import { withWarmupBlock, warmupBuildConfig } from './warmup-ramp.js'
+import { bandClimbReps } from './bands.js'
+import { programmeStatus, programmeSlot, programmePlan } from './programmes.js'
 
 /**
  * Where a planned session's reps come from (Settings → During a workout). 'plan', the default:
@@ -35,20 +40,46 @@ export function buildPlannedEntry(stored, cfg, routine, { noProg = false } = {})
   const meaning = dbLoadFor(stored, cfg)
   const st = historyAs(stored, cfg.id, meaning)
   // `plan` is kept on the entry purely so the workout can explain the number it chose.
-  const plan = noProg ? { policy: 'off', kind: 'off' } : nextPrescription(st, cfg, routine)
+  let plan = noProg ? { policy: 'off', kind: 'off' } : nextPrescription(st, cfg, routine)
+  const iso = stored?.active?.d || todayISO()
+  const slot = noProg ? null : programmeSlot(stored, routine?.id, cfg.id, iso)
+  // openGym 1.4.5: a manually enabled deload week affects new, planned
+  // lifting sessions only. Existing workouts and saved routine definitions
+  // remain untouched; rehab/no-progression routines keep their own behavior.
+  const cycle = !noProg && !slot && !!routine && modeOf(cfg) === 'reps'
+    && !(Array.isArray(cfg.pyramid) && cfg.pyramid.length)
+    && isDeloadDay(stored, iso, !!programmeStatus(stored, iso)?.current)
+  if (cycle) {
+    const lastW = sessionsFor(st, cfg.id, cfg, routine?.id).filter(x => x.mode === 'reps').at(-1)?.weight
+    const n = deloadSets(cfg.sets)
+    plan = {
+      policy: plan.policy, kind: 'deloadweek', sets: n,
+      ...(lastW > 0 ? { weight: lastW } : plan.weight != null && plan.kind !== 'up' ? { weight: plan.weight } : cfg.weight > 0 ? { weight: cfg.weight } : {}),
+      ...(cfg.reps > 0 ? { reps: cfg.reps } : {}),
+      why: ['Deload week: {0} of {1} sets, same weight. Lighter on purpose.', n, Math.max(1, cfg.sets || 1)],
+      prog: { deload: true },
+    }
+  }
+  const rowCfg = cycle ? { ...cfg, sets: plan.sets } : cfg
   // The warm-up ramp and the prescription snap to the exercise's own increment (1.25 kg
   // plates exist), not the unit default; a timed exercise's `inc` is seconds, so it keeps the
   // default for its optional load.
   const step = modeOf(cfg) === 'reps' ? weightIncrement(cfg, st.unit) : defaultIncrement(cfg.id, st.unit)
-  const planReps = !startsFromLast(st)
+  const policyKind = plan.kind
+  if (slot) plan = programmePlan(st, cfg, plan, slot, step)
+  const planReps = !startsFromLast(st) || cycle || plan.kind === 'programme'
   // Warm-ups ramp over the dumbbells you own when the profile lists them (issue #376): a rung
   // lands on the heaviest bell under it, never on a weight in between that no rack holds.
   const ramp = (modeOf(cfg) === 'reps' && ownedWeightsFor(st, cfg)) || step
   // Back-off sets step down from the top set by the exercise's own step (lib/backoff.js).
   const backoffStep = modeOf(cfg) === 'reps' && backoffStepOf(cfg, st.unit) ? step : 0
-  const built = applyPrescription(buildSets(st, cfg, { step: ramp, rid: routine?.id, useTarget: plan.kind === 'off', planReps }), plan, ramp, barFloor(st, cfg.id), isAssisted(cfg))
+  const climbReps = plan.reps != null ? bandClimbReps(st, rowCfg, { step: ramp, rid: routine?.id, useTarget: plan.kind === 'off', planReps }) : 0
+  if (climbReps) plan = { ...plan, reps: climbReps, rowReps: undefined, why: undefined }
+  const built = applyPrescription(buildSets(st, warmupBuildConfig(rowCfg), { step: ramp, rid: routine?.id, useTarget: policyKind === 'off', planReps }), plan, ramp, barFloor(st, cfg.id), isAssisted(cfg))
   const rows = backoffStep ? applyBackoff(built, backoffStep) : built
-  const sets = applyIntensifierPlan(rows, cfg, dropGrid(st, cfg))
+  const sets = withWarmupBlock(stored, rowCfg, applyIntensifierPlan(rows, rowCfg, dropGrid(st, cfg)), {
+    grid: dropGrid(st, cfg), floor: barFloor(st, cfg.id), unit: st.unit,
+  })
   const target = { ...cfg }
   // Stamped on the session, so the meaning it was logged with stays with it (dumbbells.js).
   if (meaning !== 'as') target.dbLoad = meaning
@@ -72,7 +103,7 @@ export function buildPlannedEntry(stored, cfg, routine, { noProg = false } = {})
     && rows.some(s => !isWarmupRow(s) && s.r !== cfg.reps)
   // `planned` is what the routine asked for, kept apart from the target the prescription moved,
   // so the next session can tell an edited plan from a progressed one (nextPrescription).
-  return { target, plan, sets, planned: plannedOf(cfg), ...(carried ? { carried: true } : {}) }
+  return { target, plan, sets, planned: plannedOf(cfg), ...(carried ? { carried: true } : {}), ...(cycle || slot?.deload ? { deload: true } : {}) }
 }
 
 /**
@@ -121,7 +152,7 @@ export function buildSessionEntries(st, r) {
   // right weight already on the screen instead of being told about it afterwards.
   const noProg = r?.excludeFromProgression === true
   return (r ? r.ex : []).map(cfg => {
-    const built = buildPlannedEntry(st, cfg, r, { noProg })
-    return { id: cfg.id, sg: cfg.sg, ...built, ...(noProg ? { noProg: true } : {}) }
+    const { deload, ...built } = buildPlannedEntry(st, cfg, r, { noProg })
+    return { id: cfg.id, sg: cfg.sg, ...built, ...(noProg || deload ? { noProg: true } : {}) }
   })
 }

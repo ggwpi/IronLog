@@ -1,0 +1,12 @@
+/* Scoped to the opt-in Today preview; leave every existing IronLog map/card alone. */
+.ironlog-mini-body-map {
+  display:inline-flex;flex:0 0 44px;width:44px;height:48px;
+  align-items:center;justify-content:center;overflow:hidden;pointer-events:none;
+}
+.ironlog-mini-body-map .bodymap {
+  display:flex;width:44px;height:48px;align-items:center;gap:2px;
+}
+.ironlog-mini-body-map .bm-v {
+  flex:1;min-width:0;width:21px;height:46px;max-height:46px;
+}
+.ironlog-mini-body-map .bm-ph {height:46px;width:44px}

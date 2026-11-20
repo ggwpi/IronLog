@@ -1,3 +1,4 @@
+import { programmeChip } from '../lib/programmes.js'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
@@ -8,6 +9,12 @@ import { bwSheet, goalSheet, dayOverrideSheet, calendarSheet, startFlow, starter
 import LineChart from '../components/LineChart.jsx'
 import Icon from '../components/Icon.jsx'
 import QueueRow from '../components/QueueRow.jsx'
+import { WeeklySetsHomeLine } from '../components/WeeklyMuscleTargetsCard.jsx'
+import DeloadWeekCard from '../components/DeloadWeekCard.jsx'
+import RecoveryHintCard from '../components/RecoveryHintCard.jsx'
+import MiniBodyMap from '../components/MiniBodyMap.jsx'
+import { workoutsLeft } from '../lib/week-left.js'
+import { isOn } from '../lib/modules.js'
 import { queueOf, queueView, weekTally, pinState } from '../lib/queue.js'
 import { scheduleModeOf } from '../lib/rotation.js'
 import { useConnectionTrouble } from '../components/SyncBanner.jsx'
@@ -93,6 +100,8 @@ export default function Home() {
   // The streak card's fraction: this calendar week's workouts over the weekdays with a plan, or,
   // in a coach week, the queue's sessions and your own days together (lib/queue.js weekTally).
   const { done: doneThisWeek, planned: plannedPerWeek } = weekTally(S, todayISO())
+  // Upstream v1.4.5 countdown, opt-in to preserve existing IronLog Home composition.
+  const weeklyCountdown = S.showWorkoutsLeftHome === true ? workoutsLeft(S, todayISO()) : null
   const bwPoints = S.bodyweight.slice(-30).map(b => ({ t: weighInAt(b), y: b.w, d: b.d }))
 
   // today's session shown right under the week strip
@@ -110,6 +119,7 @@ export default function Home() {
       <button className="iconbtn" onClick={() => nav('/settings')} aria-label={trouble ? t('Settings') + ', ' + t('Connection problem') : t('Settings')}><Icon name="gear" />{trouble && <span className="tab-dot" aria-hidden="true" />}</button>
     </div>
 
+    {S.programme && programmeChip(S) && <Button variant="tinted" onClick={() => nav('/plan/programmes')}>{programmeChip(S)}</Button>}
     <div className="home-training">
       {/* A coach week runs by order, not by weekday, so its progress row stands in for the
           seven dots (components/QueueRow.jsx). The today row below stays as it is: the queue's
@@ -125,6 +135,13 @@ export default function Home() {
         </div>
         <div className="week">{strip}</div>
       </>}
+      {/* The native IronLog week strip and Start hero stay untouched for existing profiles. */}
+      {weeklyCountdown && <div className="small dim" data-workouts-left-home
+        style={{ marginBlock: 7, textAlign: 'center' }}>
+        {weeklyCountdown.left > 0
+          ? tn('{0} of {1} left this week', '{0} of {1} left this week', weeklyCountdown.left, weeklyCountdown.of)
+          : t('All done this week. Nice.')}
+      </div>}
       {/* Once today's session is logged the row stops asking for it. The week strip already
           knew (its dot goes 'done'); this row did not, so a finished day kept showing the
           routine name behind a green Start tag and read as still outstanding (issue #4).
@@ -146,7 +163,12 @@ export default function Home() {
         </div>
         {S.active ? <span className="tag home-workout-action"><Icon name={editingSaved ? 'pencil' : 'play'} />{editingSaved ? t('Edit') : t('Resume')}</span>
           : doneToday ? <span className="tag home-workout-action"><Icon name="check" />{t('Done')}</span>
-          : routine ? <span className="tag home-workout-action"><Icon name="play" />{t('Start')}</span>
+          : routine ? (S.showWorkoutMusclePreview === true
+            ? <span className="row" style={{ gap: 8, alignItems: 'center' }}>
+                <MiniBodyMap routines={todayRoutines} body={S.body} />
+                <span className="tag home-workout-action"><Icon name="play" />{t('Start')}</span>
+              </span>
+            : <span className="tag home-workout-action"><Icon name="play" />{t('Start')}</span>)
           : <Icon name="plus" className="chev" />}
       </div>
       {/* The row above starts today's plan in one tap, and so does the Start button in the tab
@@ -164,7 +186,7 @@ export default function Home() {
 
     {/* Jump to the gym check-in cards (QR membership codes). Shown here as a quick tap on
         arrival at the gym; folds away per user via the "Gym check-in" switch in Settings. */}
-    {S.checkIn !== false && (
+    {isOn(S, 'checkin') && (
       <div className="card tappable home-checkin" style={{ cursor: 'pointer' }} {...tappable(() => nav('/checkin'))}>
         <div className="row between">
           <div className="row" style={{ gap: 9 }}>
@@ -191,7 +213,7 @@ export default function Home() {
       </div>
     )}
 
-    {S.showWeightCard !== false && <div className="card home-weight-card">
+    {isOn(S, 'body') && S.showWeightCard !== false && <div className="card home-weight-card">
       <div className="row between bw-head">
         <h2 style={{ margin: 0 }}>{t('Body weight')}</h2>
         <div className="row" style={{ gap: 8 }}>
@@ -227,7 +249,18 @@ export default function Home() {
         : t("No weigh-ins yet. Log your weight to start the curve (we also ask before every workout).")}</div>}
     </div>}
 
-    <div className="card tappable home-streak" style={{ cursor: 'pointer' }} {...tappable(() => calendarSheet())}>
+    {/* Off by default; when chosen, the new weekly progress summary follows the
+        existing IronLog cards without changing the greeting, hero or navigation. */}
+    {S.showWeeklySetsHome === true && <WeeklySetsHomeLine S={S} />}
+
+    {/* New deload suggestions use the existing IronLog Home card style.
+        Without a scheduled or suggested deload this renders nothing. */}
+    <DeloadWeekCard S={S} />
+
+    {/* Optional Recovery Hint, always hidden for pre-feature profiles. */}
+    <RecoveryHintCard S={S} />
+
+    {isOn(S, 'motivation') && <div className="card tappable home-streak" style={{ cursor: 'pointer' }} {...tappable(() => calendarSheet())}>
       <div className="row between">
         <span className="home-streak-flame" aria-hidden="true"><Icon name="flameFill" /></span>
         <div className="home-streak-copy">
@@ -238,6 +271,6 @@ export default function Home() {
         </div>
         <Icon name="calendar" className="chev" style={{ fontSize: 20 }} />
       </div>
-    </div>
+    </div>}
   </div>
 }

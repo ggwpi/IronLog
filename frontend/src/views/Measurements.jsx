@@ -7,61 +7,90 @@ import {
   fromMeasurementDisplay, latestMeasurement, measurementEntryHasValues,
   measurementSeries, measurementUnit, measurementValue, normalizeMeasurementEntry,
   toMeasurementDisplay, normalizeMeasurementsState,
+  measurementUnitLabel, zeroIsReading,
+  CUSTOM_MEASUREMENT_UNITS,
+  customMeasurementUnits, lengthUnitOf, BP_KEY, bpOf, bpText, bpProblem,
+  measurementNoteOf, MEASUREMENT_NOTE_MAX,
 } from '../lib/measurements.js'
 import { fmtDate, fmtNum, todayISO, uid } from '../lib/format.js'
 import { t } from '../lib/i18n.js'
 import LineChart from '../components/LineChart.jsx'
+import BloodPressureCard from '../components/BloodPressureCard.jsx'
 import Icon from '../components/Icon.jsx'
 import { Button, NumberField, Section, Segmented, SelectRow, Switch, TextField } from '../components/ui.jsx'
-import { confirmSheet } from '../sheets.jsx'
+import { confirmSheet, menuSheet } from '../sheets.jsx'
 
 // Every write leaves the list in its one-entry-per-day shape (normalizeMeasurementsState).
 const update = (fn, ...rest) => useStore.getState().update(s => { fn(s); normalizeMeasurementsState(s) }, ...rest)
 const toast = message => useUI.getState().toast(message)
 
-const fieldUnit = (field, profileUnit) => field.key === 'bodyFat' ? '%' : measurementUnit(profileUnit)
+const fieldUnit = (field, profileUnit) => field.key === 'bodyFat' ? '%' : measurementUnitLabel(measurementUnit(profileUnit, field))
 const shownValue = (entry, field, profileUnit) => {
   const value = measurementValue(entry, field.key)
   if (value == null) return null
-  return field.key === 'bodyFat' ? value : toMeasurementDisplay(value, profileUnit)
+  return field.key === 'bodyFat' ? value : toMeasurementDisplay(value, profileUnit, field)
 }
 
 function MeasurementLog({ sourceDate, close }) {
   const S = useStore(s => s.S)
   const source = sourceDate ? S.measurements.find(e => e.d === sourceDate) : null
+  const [displayUnit] = useState(() => lengthUnitOf(S))
+  const bpEnabled = (S.measurementEnabled || []).includes(BP_KEY) || !!bpOf(source)
+  const [initialBP] = useState(() => bpOf(source) || { sys: null, dia: null, pulse: null })
+  const [bp, setBP] = useState(initialBP)
+  const [initialNote] = useState(() => typeof source?.note === 'string' ? source.note : '')
+  const [note, setNote] = useState(initialNote)
   const enabled = enabledMeasurementFields(S)
-  const fields = [...enabled]
+  const gathered = [...enabled]
   // Editing must expose populated fields even if the user disabled them after logging.
   if (source) {
     for (const f of MEASUREMENT_FIELDS) {
-      if (source[f.key] != null && !fields.some(x => x.key === f.key)) fields.push(f)
+      if (source[f.key] != null && !gathered.some(x => x.key === f.key)) gathered.push(f)
     }
     for (const o of source.other || []) {
-      if (o.value != null && !fields.some(x => x.key === 'other:' + o.id)) {
-        fields.push({ key: 'other:' + o.id, label: o.name, custom: true, group: 'Other' })
+      if (o.value != null && !gathered.some(x => x.key === 'other:' + o.id)) {
+        gathered.push({ key: 'other:' + o.id, label: o.name, custom: true, group: 'Other', ...(o.unit ? { unit: o.unit } : {}) })
       }
     }
   }
+  const [fields] = useState(gathered)
   const [date, setDate] = useState(source?.d || todayISO())
-  const [values, setValues] = useState(() => Object.fromEntries(fields.map(f => [f.key, shownValue(source, f, S.unit)])))
+  const [initialValues] = useState(() => Object.fromEntries(fields.map(f => [f.key, shownValue(source, f, displayUnit)])))
+  const [values, setValues] = useState(initialValues)
 
   const save = () => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > todayISO()) { toast(t('Choose a valid date')); return }
     if (date !== sourceDate && S.measurements.some(e => e.d === date)) {
       toast(t('That date already has measurements. Edit it instead.')); return
     }
+    const problem = bpEnabled && bpProblem(bp)
+    if (problem) {
+      toast(problem === 'pair' ? t('Blood pressure takes both numbers, like 120 over 80.')
+        : problem === 'order' ? t('The first number is the higher one, like 120 over 80.')
+          : problem === 'pulse' ? t('That pulse looks off. Check it again?') : t('That blood pressure looks off. Check it again?'))
+      return
+    }
     const base = source ? normalizeMeasurementEntry(source, S.customMeasurements) : emptyMeasurement(date, S.customMeasurements)
     base.d = date
     base.t = source && date === source.d ? source.t : (date === todayISO() ? Date.now() : new Date(date + 'T12:00:00').getTime())
     for (const field of fields) {
       const raw = values[field.key]
-      const value = raw == null || raw === 0 ? null : Math.round(+raw * 10) / 10
+      // Original unit formatting may show fewer decimals than canonical mass storage.
+      // An untouched field keeps its complete stored value (and any newer remote value).
+      if (source && Object.is(raw, initialValues[field.key])) continue
+      const value = raw == null || (raw === 0 && !zeroIsReading(field.unit)) ? null : field.unit ? Number(raw) : Math.round(+raw * 10) / 10
       if (field.key === 'bodyFat' && value > 100) { toast(t('Body fat must be between 0 and 100%.')); return }
       if (field.custom) {
         const item = base.other.find(o => o.id === field.key.slice(6))
-        if (item) item.value = value == null ? null : fromMeasurementDisplay(value, S.unit)
+        if (item) { item.value = value == null ? null : fromMeasurementDisplay(value, displayUnit, field); if (field.unit) item.unit = field.unit }
       } else if (field.key === 'bodyFat') base.bodyFat = value
-      else base[field.key] = value == null ? null : fromMeasurementDisplay(value, S.unit)
+      else base[field.key] = value == null ? null : fromMeasurementDisplay(value, displayUnit)
+    }
+    if (bpEnabled && (!source || ['sys', 'dia', 'pulse'].some(key => !Object.is(bp[key], initialBP[key])))) for (const [name, key, unit] of [['sys', 'bpSys', 'mmHg'], ['dia', 'bpDia', 'mmHg'], ['pulse', 'pulse', 'bpm']]) base[key] = bp[name] == null ? null : fromMeasurementDisplay(bp[name], displayUnit, { key, unit })
+    if (!source || note !== initialNote) {
+      const cleaned = measurementNoteOf(note)
+      if (cleaned) base.note = cleaned
+      else delete base.note
     }
     if (!measurementEntryHasValues(base)) { toast(t('Enter at least one measurement')); return }
     // `t` is when the check-in was last saved: the newer one of a day wins a sync merge, the
@@ -87,12 +116,18 @@ function MeasurementLog({ sourceDate, close }) {
         <span>{t(field.label)}</span>
         <span className="measure-input">
           <NumberField nullable value={values[field.key]} onChange={value => setValues(v => ({ ...v, [field.key]: value }))} />
-          <i>{fieldUnit(field, S.unit)}</i>
+          <i>{fieldUnit(field, displayUnit)}</i>
         </span>
       </label>)}
-    </div> : <div className="empty small">{t('Choose at least one measurement first.')}</div>}
+    </div> : !bpEnabled && <div className="empty small">{t('Choose at least one measurement first.')}</div>}
+    {bpEnabled && <div className="measure-form" data-bp-fields>
+      {[['sys', 'Systolic', 'mmHg'], ['dia', 'Diastolic', 'mmHg'], ['pulse', 'Resting pulse', 'bpm']].map(([key, label, unit]) => <label className="measure-field" key={key}>
+        <span>{t(label)}</span><span className="measure-input"><NumberField nullable aria-label={t(label)} value={bp[key]} onChange={value => setBP(current => ({ ...current, [key]: value }))} /><i>{unit}</i></span>
+      </label>)}
+    </div>}
+    <label className="measure-date"><span>{t('Notes')}</span><textarea className="field" rows={2} dir="auto" aria-label={t('Notes')} maxLength={MEASUREMENT_NOTE_MAX} value={note} onChange={e => setNote(e.target.value)} /></label>
     <div style={{ height: 14 }} />
-    <Button variant="primary" onClick={save} disabled={!fields.length}>{t('Save')}</Button>
+    <Button variant="primary" onClick={save} disabled={!fields.length && !bpEnabled}>{t('Save')}</Button>
     <div style={{ height: 8 }} />
     <Button variant="ghost" className="dim" onClick={close}>{t('Cancel')}</Button>
   </>
@@ -105,6 +140,7 @@ export function measurementLogSheet(sourceDate = null) {
 function ManageMeasurements({ close }) {
   const S = useStore(s => s.S)
   const [name, setName] = useState('')
+  const [unit, setUnit] = useState('')
   const groups = [...new Set(MEASUREMENT_FIELDS.map(f => f.group))]
   const toggleBuiltin = (key, on) => update(state => {
     const set = new Set(state.measurementEnabled || [])
@@ -115,6 +151,13 @@ function ManageMeasurements({ close }) {
     const item = state.customMeasurements.find(c => c.id === id)
     if (item) item.enabled = on
   })
+  const chooseUnit = field => menuSheet({ title: field.name, items: customMeasurementUnits(field, S.measurements).map(unit => ({
+    icon: unit === measurementUnit(lengthUnitOf(S), field) ? 'check' : 'ruler', label: unit === 'none' ? t('None') : unit,
+    onClick: () => update(state => {
+      const current = state.customMeasurements.find(c => c.id === field.id)
+      if (current && customMeasurementUnits(current, state.measurements).includes(unit)) current.unit = unit
+    }),
+  })) })
   const add = () => {
     const clean = name.trim()
     if (!clean) return
@@ -122,7 +165,7 @@ function ManageMeasurements({ close }) {
       MEASUREMENT_FIELDS.some(f => f.label.toLowerCase() === clean.toLowerCase())) {
       toast(t('A custom measurement with that name already exists.')); return
     }
-    update(state => { state.customMeasurements.push({ id: uid(), name: clean.slice(0, 60), enabled: true }) })
+    update(state => { state.customMeasurements.push({ id: uid(), name: clean.slice(0, 60), enabled: true, ...(unit ? { unit } : {}) }) })
     setName('')
   }
   return <>
@@ -135,13 +178,19 @@ function ManageMeasurements({ close }) {
       </div>)}
       {group === 'Other' && S.customMeasurements.map(field => <div className="lrow" key={field.id}>
         <span className="lrow-m"><span className="lrow-t">{field.name}</span><span className="lrow-s">{t('Custom')}</span></span>
+        <Button size="sm" variant="ghost" onClick={() => chooseUnit(field)}>{measurementUnitLabel(measurementUnit(lengthUnitOf(S), field)) || t('None')}</Button>
         <Switch checked={field.enabled !== false} onChange={on => toggleCustom(field.id, on)} />
       </div>)}
     </Section>)}
+    <Section title={t('Health')}><div className="lrow"><span className="lrow-m"><span className="lrow-t">{t('Blood pressure')}</span></span>
+      <Switch aria-label={t('Blood pressure')} checked={(S.measurementEnabled || []).includes(BP_KEY)} onChange={on => toggleBuiltin(BP_KEY, on)} />
+    </div></Section>
     <div className="row" style={{ gap: 8, alignItems: 'stretch' }}>
       <TextField value={name} maxLength={60} placeholder={t('Custom measurement')} onChange={e => setName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') add() }} />
       <Button icon="plus" onClick={add} disabled={!name.trim()}>{t('Add')}</Button>
     </div>
+    <SelectRow icon="ruler" title={t('Measurement unit')} value={unit} onChange={setUnit}
+      options={[{ value: '', label: t('Default') }, ...CUSTOM_MEASUREMENT_UNITS.map(value => ({ value, label: value === 'none' ? t('None') : value }))]} />
     <div style={{ height: 14 }} />
     <Button variant="primary" onClick={close}>{t('Done')}</Button>
   </>
@@ -162,7 +211,7 @@ export default function Measurements() {
     }
     for (const custom of S.customMeasurements || []) {
       const key = 'other:' + custom.id
-      if (latestMeasurement(S, key) && !out.some(f => f.key === key)) out.push({ key, label: custom.name, custom: true, group: 'Other' })
+      if (latestMeasurement(S, key) && !out.some(f => f.key === key)) out.push({ key, label: custom.name, custom: true, group: 'Other', ...(custom.unit ? { unit: custom.unit } : {}) })
     }
     return out
   }, [S])
@@ -171,12 +220,13 @@ export default function Measurements() {
   const key = available.some(f => f.key === selected) ? selected : fallback
   const field = available.find(f => f.key === key)
   const points = key ? measurementSeries(S, key, range) : []
-  const unit = key === 'bodyFat' ? '%' : measurementUnit(S.unit)
+  const unit = key === 'bodyFat' ? '%' : measurementUnitLabel(measurementUnit(lengthUnitOf(S), field))
   const all = key ? measurementSeries(S, key) : []
   const latest = all.at(-1)
   const previous = all.at(-2)
   const delta = latest && previous ? Math.round((latest.y - previous.y) * 10) / 10 : null
   const recent = [...S.measurements].reverse()
+  const hasBP = (S.measurementEnabled || []).includes(BP_KEY) || S.measurements.some(e => bpOf(e))
 
   const remove = entry => confirmSheet({
     title: t('Delete measurements?'),
@@ -192,7 +242,7 @@ export default function Measurements() {
       <button className="iconbtn" onClick={manageMeasurementsSheet} aria-label={t('Choose measurements')}><Icon name="gear" /></button>
     </div>
 
-    <div className="card">
+    {(available.length > 0 || !hasBP) && <div className="card">
       <div className="row between" style={{ marginBottom: 10 }}>
         <div>
           <div className="muted small">{field ? t(field.label) : t('Body measurements')}</div>
@@ -208,9 +258,10 @@ export default function Measurements() {
       <Segmented className="seg-range" value={range} onChange={setRange}
         options={[{ value: 30, label: '1M' }, { value: 90, label: '3M' }, { value: 365, label: '1Y' }, { value: 0, label: t('All') }]} />
       <div className="chart"><LineChart points={points} h={170} unit={unit} color="var(--teal)" /></div>
-    </div>
+    </div>}
 
-    {!available.length && <div className="card">
+    {hasBP && <BloodPressureCard S={S} range={range} onRange={!available.length ? setRange : null} onLog={!available.length ? () => measurementLogSheet() : null} />}
+    {!available.length && !hasBP && <div className="card">
       <div className="muted small">{t('Choose the measurements you want to track, then log your first check-in.')}</div>
       <div style={{ height: 10 }} /><Button onClick={manageMeasurementsSheet}>{t('Choose measurements')}</Button>
     </div>}
@@ -220,8 +271,8 @@ export default function Measurements() {
       <Button size="sm" variant="ghost" icon="gear" onClick={manageMeasurementsSheet}>{t('Fields')}</Button>
     </div>
     {recent.length ? <div className="list">{recent.map(entry => {
-      const count = MEASUREMENT_KEYS.filter(k => entry[k] != null).length + (entry.other || []).filter(o => o.value != null).length
-      const previewFields = enabledMeasurementFields(S).map(f => ({ field: f, value: shownValue(entry, f, S.unit) })).filter(x => x.value != null).slice(0, 3)
+      const count = MEASUREMENT_KEYS.filter(k => entry[k] != null).length + (entry.other || []).filter(o => o.value != null).length + (bpOf(entry) ? 1 : 0)
+      const previewFields = enabledMeasurementFields(S).map(f => ({ field: f, value: shownValue(entry, f, lengthUnitOf(S)) })).filter(x => x.value != null).slice(0, 3)
       return <div className="card measure-history" key={entry.d}>
         <div className="row between">
           <div><b>{fmtDate(entry.d, true)}</b><div className="small dim" style={{ marginTop: 2 }}>{t(count === 1 ? '{0} measurement' : '{0} measurements', count)}</div></div>
@@ -230,7 +281,9 @@ export default function Measurements() {
             <button className="iconbtn" style={{ color: 'var(--red)' }} onClick={() => remove(entry)} aria-label={t('Delete')}><Icon name="trash" /></button>
           </div>
         </div>
-        {previewFields.length > 0 && <div className="measure-preview">{previewFields.map(({ field: f, value }) => <span key={f.key}>{t(f.label)} <b>{fmtNum(value)} {fieldUnit(f, S.unit)}</b></span>)}</div>}
+        {previewFields.length > 0 && <div className="measure-preview">{previewFields.map(({ field: f, value }) => <span key={f.key}>{t(f.label)} <b>{fmtNum(value)} {fieldUnit(f, lengthUnitOf(S))}</b></span>)}</div>}
+        {bpOf(entry) && <div className="measure-preview"><span>{t('Blood pressure')} <b><bdi dir="ltr">{bpText(bpOf(entry))}</bdi></b> {bpOf(entry).pulse != null && <>{fmtNum(bpOf(entry).pulse)} bpm</>}</span></div>}
+        {typeof entry.note === 'string' && entry.note && <p className="small muted" dir="auto" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{entry.note}</p>}
       </div>
     })}</div> : <div className="empty small">{t('No measurements yet')}</div>}
   </div>

@@ -60,6 +60,31 @@ test('review payload carries the plan, the window, effort and aggregates', () =>
   assert.ok(Array.isArray(p.library) && p.library.length > 0);
 });
 
+for (const kind of ['review', 'ask', 'debrief']) test(`${kind} retains full IronLog set notes through the original reader without exposing media`, () => {
+  const S = sampleState(), note = 'א'.repeat(500);
+  const set = S.workouts[0].entries[0].sets[0];
+  set.note = '  ' + note + '  '; set.media = [{ hash: 'private-set-media' }]; set.futureSecret = 'private-future-field';
+  S.workouts[0].entries[0].sets[1].note = '   ';
+  S.workouts[0].entries[0].sets[2].note = { private: 'never-coerce' };
+  const before = structuredClone(S);
+  const p = payload.build(S, { handle: handleFor('fixture'), kind, workoutId: 'w1' });
+  const rows = (kind === 'debrief' ? p.session : p.window.workouts[0]).entries[0].sets;
+  assert.equal(rows[0].note, note);
+  assert.equal('note' in rows[1], false); assert.equal('note' in rows[2], false);
+  assert.equal('media' in rows[0], false); assert.equal('futureSecret' in rows[0], false);
+  assert.ok(!JSON.stringify(p).includes('private-set-media'));
+  assert.deepEqual(S, before);
+});
+
+test('running-session notes remain bounded and do not alter its existing numeric payload', () => {
+  const S = sampleState(), today = structuredClone(S.workouts[0]);
+  today.entries[0].sets[0].note = 'x'.repeat(900);
+  const p = payload.build(S, { handle: handleFor('fixture'), kind: 'ask', today });
+  assert.equal(p.today.entries[0].sets[0].note.length, payload.NOTE_MAX);
+  assert.equal(p.today.entries[0].sets[0].w, today.entries[0].sets[0].w);
+  assert.equal(today.entries[0].sets[0].note.length, 900);
+});
+
 test('a stalling exercise shows up in the aggregates the way the engine counts it', () => {
   const S = sampleState();
   // Three sessions that all fell short of the 10-rep target.

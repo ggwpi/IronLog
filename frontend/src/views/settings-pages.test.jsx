@@ -89,7 +89,7 @@ describe('the root', () => {
     expect(host.querySelector('.sp-acct .lrow-t').textContent).toBe('Guest')
     expect(host.querySelector('.sp-acct .lrow-s').textContent).toBe('Your data lives on this device. Sign in to sync.')
     // a guest in a browser has no reminders (no push server) and no Coach page (the server's Coach)
-    expect(titles()).toEqual(['Guest', 'Workout', 'Timer alerts', 'Plan & schedule', 'Units & language', 'Equipment', 'Look & Home', 'Data & backup', 'About & updates'])
+    expect(titles()).toEqual(['Guest', 'Modules', 'Workout', 'Timer alerts', 'Plan & schedule', 'Units & language', 'Equipment', 'Look & Home', 'Data & backup', 'About & updates'])
     expect(rowTitled('Workout').querySelector('.lrow-v').textContent).toBe('1:30 rest · Cards')
     expect(rowTitled('Timer alerts').querySelector('.lrow-v').textContent).toBe('Sound · Vibrate')
     expect(rowTitled('Plan & schedule').querySelector('.lrow-v').textContent).toMatch(/^Fixed Week · Mon/)
@@ -275,14 +275,14 @@ describe('the pages', () => {
     mount('workout')
     expect([...host.querySelectorAll('.sect-t')].map(e => e.textContent)).toEqual(['Rest', 'Logging', 'Before and during'])
     expect(titles()).toEqual(['Rest timer', 'Rest between warm-ups', 'Rest-pause rest', 'Effort per set', 'Shown under each exercise', 'Layout',
-      'Collapse completed exercises', 'Skip completed exercises', 'Weigh in before workouts', 'Keep screen awake', 'Exercise animations', 'Fine-tuning'])
+      'Collapse completed exercises', 'Skip completed exercises', 'Weigh in before workouts', 'Daily form', 'Automatic warm-ups', 'Keep screen awake', 'Exercise animations', 'Fine-tuning'])
     // QA 10-05: the "screen stays on" line is the awake row's own subtitle, not a section footer
     // that read as if it explained the animations above it.
     expect(rowTitled('Keep screen awake').querySelector('.lrow-s').textContent).toMatch(/^The screen stays on/)
     expect(rowTitled('Exercise animations').querySelector('.lrow-s')).toBeNull()
     expect([...host.querySelectorAll('.sect-f')].some(f => /screen stays on/.test(f.textContent))).toBe(false)
     mount('advanced')
-    expect(titles()).toEqual(['Planned sessions start from', 'Keep timing after target', 'Weight and reps buttons',
+    expect(titles()).toEqual(['Compare sets with last time', 'Level', 'Planned sessions start from', 'Keep timing after target', 'Weight and reps buttons',
       'Drop and burst shortcuts on every set', 'Swipe actions', 'Exercise chips at the top', 'Superset buttons in the exercise header', 'Move, swap and remove buttons below the exercise'])
   })
 
@@ -446,5 +446,37 @@ describe('translations', () => {
   })
   it('the root groups only name real pages', () => {
     for (const g of ROOT_GROUPS) for (const id of g) expect(PAGES[id], id).toBeTruthy()
+  })
+})
+
+
+describe('openGym Modules on IronLog original Look & Home switch', () => {
+  it('keeps legacy check-in behavior and writes both original and module preferences', () => {
+    const saved = structuredClone(mocks.S)
+    mount('look')
+    let sw = rowTitled('Gym check-in').querySelector('[role="switch"]')
+    expect(sw.getAttribute('aria-checked')).toBe('true')
+    act(() => sw.click())
+    expect(mocks.S.checkIn).toBe(false)
+    expect(mocks.S.modules).toEqual({ checkin: false })
+    expect(mocks.S.workouts).toEqual(saved.workouts)
+    expect(mocks.S.routines).toEqual(saved.routines)
+
+    mount('look')
+    sw = rowTitled('Gym check-in').querySelector('[role="switch"]')
+    expect(sw.getAttribute('aria-checked')).toBe('false')
+    act(() => sw.click())
+    expect(mocks.S.checkIn).toBe(true)
+    expect(mocks.S.modules).toEqual({ checkin: true })
+  })
+
+  it('uses upstream module choice over an older checkIn flag, without changing it until user interaction', () => {
+    mocks.S.checkIn = true
+    mocks.S.modules = { checkin: false, coach: false }
+    mount('look')
+    const sw = rowTitled('Gym check-in').querySelector('[role="switch"]')
+    expect(sw.getAttribute('aria-checked')).toBe('false')
+    expect(mocks.S.checkIn).toBe(true)
+    expect(mocks.S.modules.coach).toBe(false)
   })
 })

@@ -50,6 +50,7 @@ jobs:
         working-directory: frontend
       - run: npm test
         working-directory: frontend
+      - run: node scripts/build-body-sync-assets.mjs --check
       # A broken import or bad JSX fails the build long before any test covers it.
       - run: npm run build
         working-directory: frontend

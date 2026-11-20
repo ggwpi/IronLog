@@ -1,0 +1,50 @@
+[
+  {
+    "lang": "en",
+    "screen": "home",
+    "width": 390,
+    "height": 1372,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "lang": "en",
+    "screen": "stats",
+    "width": 390,
+    "height": 4080,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "lang": "en",
+    "screen": "workout",
+    "width": 390,
+    "height": 844,
+    "changedPixels": 4,
+    "maxChannelDelta": 1
+  },
+  {
+    "lang": "he",
+    "screen": "home",
+    "width": 390,
+    "height": 1372,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "lang": "he",
+    "screen": "stats",
+    "width": 390,
+    "height": 4064,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "lang": "he",
+    "screen": "workout",
+    "width": 390,
+    "height": 844,
+    "changedPixels": 0,
+    "maxChannelDelta": 0
+  }
+]

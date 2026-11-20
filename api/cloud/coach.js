@@ -801,7 +801,7 @@ export async function scanCoachCadence(database) {
         return
       const tz = S.reminder?.tz || 'UTC',
         now = clockFor(tz)
-      if (isDue(S.coach, S, now, r.state.reviewedAt || 0, tz))
+      if (S?.modules?.coach !== false && isDue(S.coach, S, now, r.state.reviewedAt || 0, tz))
         await enqueueCoach(
           db,
           uid,

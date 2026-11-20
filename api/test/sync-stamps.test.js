@@ -16,6 +16,18 @@ import { stampPut } from '../sync-stamps.js';
 
 const clone = v => JSON.parse(JSON.stringify(v));
 const NOW = 1_800_000_000_000;
+test('programme edits are stamped per definition; incapable clients retain existing definitions and run', () => {
+  const cur = { _ts: NOW, programmes: { a: { id: 'a', weeks: [{ rpe: 7 }] }, b: { id: 'b', weeks: [{}] } },
+    programme: { id: 'a', startedOn: '2026-11-16', saved: { week: { 1: ['r'] } } } };
+  const next = clone(cur); next.programmes.a.weeks[0].rpe = 8;
+  stampPut(cur, next, { overRead: true, now: NOW + 10 });
+  assert.equal(next.edited['programmes.a'], NOW + 10);
+  assert.equal(next.edited['programmes.b'], undefined);
+  const old = { _ts: NOW + 20, workouts: [] };
+  stampPut(next, old, { overRead: true, now: NOW + 20 });
+  assert.deepEqual(old.programmes, next.programmes);
+  assert.deepEqual(old.programme, next.programme);
+});
 const stored = () => ({
   _ts: NOW - 5000, _rev: 3, restSec: 90, queue: { ids: ['a'] }, week: { 1: 'r1' },
   workouts: [{ id: 'w1', d: '2026-10-01', start: 1, end: 2 }, { id: 'w2', d: '2026-10-02', start: 3, end: 4 }],
@@ -410,4 +422,30 @@ test('PUT /api/data: an older app\'s two changes of one setting in a row both la
   const onDisk = JSON.parse(fs.readFileSync(path.join(dataDir, 'state-u1.json'), 'utf8'));
   assert.ok(onDisk._unstamped?.ed?.restSec > 0);
   assert.equal(onDisk._prior?.restSec?.length, 2);   // 100, then 120
+});
+
+test('openGym module preferences are stamped per key by the existing cloud API without touching records', () => {
+  const cur = stored();
+  cur.modules = { body: true, coach: true };
+  const next = clone(cur);
+  next.modules.body = false;
+  stampPut(cur, next, { overRead: true, stamped: false, now: NOW });
+  assert.ok(next.edited['modules.body'] >= NOW);
+  assert.equal(next.edited['modules.coach'], undefined);
+  assert.equal(next.edited.modules, undefined);
+  assert.deepEqual(next.workouts, cur.workouts);
+  assert.deepEqual(next.routines, cur.routines);
+});
+
+test('an older client not sending Modules cannot erase the stored openGym choices', () => {
+  const cur = stored();
+  cur.modules = { body: false, coach: true };
+  cur.edited['modules.body'] = NOW - 100;
+  const next = clone(cur);
+  delete next.modules;
+  delete next.edited;
+  stampPut(cur, next, { overRead: true, stamped: false, now: NOW });
+  assert.deepEqual(next.modules, cur.modules);
+  assert.equal(next.edited['modules.body'], NOW - 100);
+  assert.deepEqual(next.workouts, cur.workouts);
 });

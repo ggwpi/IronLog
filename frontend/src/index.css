@@ -2171,3 +2171,39 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
   left:calc(-1 * var(--eb-l,0px));right:calc(-1 * var(--eb-r,0px));
   box-shadow:0 0 28px rgba(0,0,0,.28);
 }
+
+/* Programme leaves use the existing IronLog tokens and controls. */
+.prog-run{margin-bottom:16px}.prog-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prog-bar{height:4px;border-radius:2px;background:var(--surface-3);margin-top:10px;overflow:hidden}
+.prog-bar span{display:block;height:100%;background:var(--acc)}
+.prog-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.prog-actions.col{flex-direction:column;margin-top:16px}
+.prog-pct{flex:none;display:flex;align-items:baseline;gap:3px;background:var(--surface-2);border-radius:10px;padding:0 10px}
+.prog-pct .num{width:4ch;min-height:40px;text-align:end}.prog-pct i{font-style:normal;color:var(--label-2)}
+.prog-weeks .stp{flex:none;width:136px}
+
+/* Scoped new Tools leaf; shared IronLog components and tokens remain unchanged. */
+.tools-card{padding:14px 14px 12px}
+.tools-h{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:var(--fs-body);font-weight:600;letter-spacing:-.01em}
+.tools-h .icn{color:var(--acc-ink);font-size:1.125rem}
+.tools-sub{margin:14px 0 6px;font-size:var(--fs-subhead);font-weight:600}
+.tools-chips{margin-bottom:10px;flex-wrap:wrap;overflow:visible}
+/* A long exercise name (or a long translation of one) stays inside the card: one line, cut with an
+   ellipsis on the name, so the chip keeps its hit area (::before) around it. */
+.tools-chips .chip{flex:none;max-width:100%;display:inline-flex}
+.tools-chips .chip>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tools-chips .chip.add{display:inline-flex;align-items:center;gap:4px;color:var(--acc-ink)}
+.tools-result{display:flex;flex-direction:column;gap:2px;padding:6px 0 2px}
+.tools-big{font-size:var(--fs-title2);font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.tools-tiles{margin-bottom:4px}
+.tools-tiles .tile{background:var(--surface-2)}
+.tools-table td:first-of-type{text-align:start}
+.tools-table tbody th{width:auto;white-space:nowrap}
+.tools-time{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.tools-time .stp-l{text-align:start}
+.tools-time input{width:100%;font-variant-numeric:tabular-nums}
+.tools-foot{text-align:center;margin:4px 16px 24px}
+
+.tools-table{width:100%;border-collapse:collapse;text-align:start;font-variant-numeric:tabular-nums}
+.tools-table th,.tools-table td{padding:7px 6px;border-bottom:var(--hair) solid var(--sep)}
+.tools-table thead th{color:var(--label-2);font-size:var(--fs-footnote)}
+.tools-table td b{display:inline-block;direction:ltr;unicode-bidi:isolate}

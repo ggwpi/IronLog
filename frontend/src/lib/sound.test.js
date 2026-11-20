@@ -64,6 +64,27 @@ beforeEach(async () => {
 afterEach(() => { vi.useRealTimers() })
 
 describe('sounds off', () => {
+  it('the original tempo queue stays silent when disabled and tolerates cancellation', () => {
+    const cancel = sound.queueTones(false, [[440, 0.1, 0]])
+    expect(FakeCtx.instances).toHaveLength(0)
+    expect(() => cancel()).not.toThrow()
+  })
+  it('queues tempo on the audio clock and cancels its bus without changing IronLog beeps', () => {
+    sound.beep(true, 880, 0.15)
+    const existing = ctx(), buses = []
+    const original = FakeCtx.prototype.createGain
+    const spy = vi.spyOn(FakeCtx.prototype, 'createGain').mockImplementation(function () {
+      const bus = original.call(this); bus.disconnect = vi.fn(); buses.push(bus); return bus
+    })
+    try {
+      const cancel = sound.queueTones(true, [[440, 0.08, 0], [523, 0.14, 3], [880, 0.14, 6]])
+      expect(FakeCtx.instances[1].tones).toEqual([{ freq: 440, at: 0 }, { freq: 523, at: 3 }, { freq: 880, at: 6 }])
+      cancel()
+      expect(buses[0].disconnect).toHaveBeenCalledOnce()
+      expect(existing.tones).toEqual([{ freq: 880, at: 0 }])
+      expect(session.type).toBe('auto')
+    } finally { spy.mockRestore() }
+  })
   it('creates no audio context and leaves the audio session alone', () => {
     sound.beep(false, 880, 0.15)
     sound.unlock(false)

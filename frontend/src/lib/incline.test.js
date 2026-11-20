@@ -1,7 +1,7 @@
 // Treadmill incline per cardio set (Discord "Add incline level for treadmill"): optional on the
 // set, offered where a grade means something, and carried everywhere a cardio set is read back.
 import { describe, it, expect } from 'vitest'
-import { INCLINE_MAX, clampIncline, inclineFits, hasIncline, inclineFrom } from './incline.js'
+import { INCLINE_MAX, clampIncline, inclineFits, hasIncline, inclineFrom, LEVEL_MAX, clampLevel, levelFits, levelFrom, cardioCol } from './incline.js'
 import { EXIDX } from './exercises.js'
 import { setLabel, buildSets, insertWarmupRow, copyRowAt } from './history.js'
 import { workoutText } from './workout-text.js'
@@ -17,6 +17,49 @@ const BIKE = '2138'           // stationary bike run v. 3
 const ROWER = '1161'          // rowing (with rowing machine)
 const ROPE = '2612'           // jump rope
 const JACKS = '3094'          // jumping jack
+
+describe('original resistance level through IronLog history', () => {
+  it('reads resistance from third-party spreadsheets through the existing importer', () => {
+    const head = 'Date,Exercise,Distance (km),Seconds,Resistance level'
+    const csv = [head, '2026-10-01,Stationary bike,5,1800,8', '2026-10-02,Stationary bike,5,1800,99', '2026-10-03,Stationary bike,5,1800,0'].join('\n')
+    const rows = parseWorkoutCSV(csv).workouts.map(w => w.entries[0].sets[0])
+    expect(rows[0]).toMatchObject({ min: 30, speed: 10, level: 8 })
+    expect(rows[1].level).toBe(30)
+    expect(rows[2]).not.toHaveProperty('level')
+  })
+  it('uses original bounds and column precedence without inventing old data', () => {
+    expect(clampLevel(99)).toBe(LEVEL_MAX)
+    expect(clampLevel(8.6)).toBe(9)
+    for (const value of [null, '', 0, -1, 'invalid']) expect(clampLevel(value)).toBe(null)
+    expect(levelFrom({ level: 8 })).toEqual({ level: 8 })
+    expect(levelFrom({})).toEqual({})
+    expect(levelFits(EXIDX[BIKE])).toBe(true)
+    expect(levelFits(EXIDX[TREADMILL])).toBe(false)
+    expect(cardioCol(EXIDX[BIKE], [{ incline: 5 }])).toBe('incline')
+    expect(cardioCol(EXIDX[TREADMILL], [{ level: 8, incline: 5 }])).toBe('level')
+  })
+  it('seeds planned and previous levels without changing history or legacy rows', () => {
+    const cfg = { id: BIKE, sets: 1, min: 20, speed: 8 }
+    const state = { exWeights: {}, workouts: [{ id: 'old', d: '2026-10-01', entries: [{ id: BIKE, target: cfg, sets: [{ min: 30, speed: 10, level: 8, done: true }] }] }] }
+    const before = structuredClone(state)
+    expect(buildSets(state, cfg)[0]).toMatchObject({ min: 30, speed: 10, level: 8, done: false })
+    expect(buildSets(state, { ...cfg, level: 12 })[0].level).toBe(12)
+    expect(buildSets({ workouts: [] }, cfg)[0]).not.toHaveProperty('level')
+    expect(state).toEqual(before)
+  })
+  it('retains level, Hebrew notes and media through copies, finish and text', () => {
+    const row = { min: 30, speed: 10, level: 8, done: true, note: 'א'.repeat(500), media: [{ hash: 'keep' }] }
+    const w = { id: 'bike', d: '2026-10-01', start: 0, end: 1800000, name: 'Bike', entries: [{ id: BIKE, target: { mode: 'cardio' }, sets: [row] }] }
+    const before = structuredClone(w)
+    expect(copyRowAt([row], 0)[1]).toEqual({ ...row, done: false })
+    expect(insertWarmupRow([row], 'cardio', {})[0].level).toBe(8)
+    expect(finishCardio(w)[0].sets[0]).toEqual(row)
+    expect(setLabel(BIKE, row)).toContain('Level 8')
+    expect(workoutText(w, { unit: 'kg', nameOf: () => 'Bike' })).toContain('Level 8')
+    expect(JSON.parse(JSON.stringify(w))).toEqual(before)
+    expect(w).toEqual(before)
+  })
+})
 
 describe('clampIncline', () => {
   it('keeps a grade on the half percent between 0 and 40', () => {

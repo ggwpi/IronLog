@@ -211,6 +211,21 @@ export function askNotifPermissionOnce() {
 // Test seam: a fresh launch.
 export function _resetNotifAsk() { askP = null }
 
+// New speech capabilities use IronLog's existing native bridge. Older shells fall back to
+// the browser voice through the original speech module; no permission or preference is changed.
+export async function speakNative(text, { lang = '', rate = 1, pitch = 1, voice = '', onSilent = false, flush = false } = {}) {
+  if (!MOBILE || !text) return false
+  try { const p = await restPlugin(); if (!p) return false; await p.RestAlert.speak({ text: String(text), lang: String(lang || ''), rate: Number(rate) || 1, pitch: Number(pitch) || 1, voice: String(voice || ''), onSilent: onSilent === true, flush: flush === true }); return true } catch { return false }
+}
+export async function voicesNative() {
+  if (!MOBILE) return null
+  try { const p = await restPlugin(); const r = await p?.RestAlert.voices(); return Array.isArray(r?.voices) ? r.voices.filter(v => v && typeof v.id === 'string') : null } catch { return null }
+}
+export async function hushNative() {
+  if (!MOBILE) return false
+  try { const p = await restPlugin(); if (!p) return false; await p.RestAlert.hush(); return true } catch { return false }
+}
+
 async function deliver(alert) {
   // The end passed while the call waited its turn (a slow bridge, a frozen WebView): nothing to
   // ring any more, and the plugin would refuse it ("at must be in the future").

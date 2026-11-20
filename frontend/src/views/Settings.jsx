@@ -1,9 +1,20 @@
 import { useEffect, useRef, useState, forwardRef, useSyncExternalStore } from 'react'
 import { useNavigate, useParams, useLocation, Navigate } from 'react-router-dom'
 import { useStore, DEF, hasData } from '../store/useStore.js'
+import { muscleTargetsSheet } from '../components/WeeklyMuscleTargetsCard.jsx'
+import { DeloadSettingsRows } from '../components/DeloadWeekCard.jsx'
+import { setRecoveryHint } from '../lib/recovery-hint.js'
 import { healthStatus, loadHealth, enableHealth, disableHealth, openHealthConnect, onHealthChange } from '../lib/health-sync.js'
 import { workoutControls } from '../lib/workout-controls.js'
+import { isOn, setModule } from '../lib/modules.js'
+import { bandsSheet } from '../components/Bands.jsx'
+import { bandsOf } from '../lib/bands.js'
+import ModulesSettings from '../components/ModulesSettings.jsx'
+import { switchGym } from '../lib/gym-inventory.js'
 import { speedUnitOf } from '../lib/speed.js'
+import { warmupAutoOf } from '../lib/warmup-ramp.js'
+import { dailyModeOf, settleAll } from '../lib/weigh-ins.js'
+import { lengthUnitOf } from '../lib/measurements.js'
 import { formulaOf, FORMULA_NAMES } from '../lib/onerm.js'
 import { copyText } from '../lib/clipboard.js'
 import { useUI } from '../store/useUI.js'
@@ -17,6 +28,7 @@ import { unlock, chime, playOnSilentSupported, vibrateSupported, appleTouchDevic
 import { REST_SOUND_IDS, restSoundOf } from '../lib/rest-sounds.js'
 import { scheduleModeOf, chooseFixedWeek, chooseRotation } from '../lib/rotation.js'
 import { queueOf } from '../lib/queue.js'
+import { weekTargetOf } from '../lib/week-left.js'
 import { api, webauthnOK, passkeyRegister, passkeyError, IS_ANDROID } from '../lib/api.js'
 import { pushSupported, enablePush, disablePush, sendTestPush, syncPushSubscription } from '../lib/push.js'
 import { wakeLockSupported } from '../lib/wakelock.js'
@@ -51,6 +63,7 @@ import { PAGES, ROOT_GROUPS, pageVisible, searchSettings, pageTrail } from './se
 import { platformNow } from '../lib/platform-now.js'
 import { pathBefore } from '../lib/nav.js'
 import WatchSettingsPage from './WatchSettings.jsx'
+import { csvExportSheet } from '../components/CsvExportSheet.jsx'
 
 /* Settings (v1.3.11). The root is one screen: an account card, eleven rows that each open a page
    (/settings/<page>), and a search over every row. Rare things live one level further down
@@ -72,7 +85,8 @@ export function SettingsRoute() {
   // `ios` now, not after an async platform check: the Apple Watch page is iPhone only, and a route
   // that did not know yet sent every visit to it straight back to the root.
   // (Unknown counts as yes inside the phone app: the page itself then says there is no watch.)
-  const ctx = { user: useStore(s => s.user), mobile: MOBILE, cloudCoach: !!useStore(s => s.config?.coach?.cloud), ios: MOBILE && platformNow() !== 'android' }
+  const moduleState = useStore(s => s.S)
+  const ctx = { user: useStore(s => s.user), mobile: MOBILE, cloudCoach: !!useStore(s => s.config?.coach?.cloud), ios: MOBILE && platformNow() !== 'android', coachOn: isOn(moduleState, 'coach'), watchOn: isOn(moduleState, 'watch') }
   if (page && (!PAGES[page] || !pageVisible(PAGES[page].parent || page, ctx))) return <Navigate to="/settings" replace />
   if (page === 'coach') return <Navigate to="/coach/setup" replace />
   return <Settings key={page || 'root'} page={page || null} find={loc.state?.find || null} via={loc.state?.via || null} entryKey={loc.key} />
@@ -418,6 +432,10 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     profiles: (S.equipProfiles || []).length > 0, nameLang: EXERCISE_NAME_LANGS.includes(baseLang(lang)),
     pushOK: !MOBILE && pushSupported(), reminderOn: !!S.reminder?.on, nudge: !!S.reminder?.nudge,
     autoBackup: !!S.autoBackup, synced: !!sync, installTip: !MOBILE && !standalone(), androidWeb: IS_ANDROID,
+    rotation: scheduleModeOf(S) === 'rotation' && !externalQ,
+    weighInTimes: S.weighInTimes === true || (S.bodyweight || []).some(b => Array.isArray(b.ins)),
+    bodyOn: isOn(S, 'body'),
+    coachOn: isOn(S, 'coach'), watchOn: isOn(S, 'watch'), effortOn: isOn(S, 'effort'), healthOn: isOn(S, 'health'), platesOn: isOn(S, 'plates'),
   }
   const mode = scheduleModeOf(S)
   const layout = ['list', 'compact', 'focus'].includes(S.workoutView) ? S.workoutView : 'cards'
@@ -426,6 +444,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
   const themeLabel = { dark: t('Dark'), light: t('Light'), system: t('System') }[S.theme || 'dark'] || t('Dark')
   // The value a root row shows, so most questions are answered without opening the page.
   const preview = {
+    modules: () => t('Modules'),
     workout: () => (S.restSec > 0 ? t('{0} rest', fmtRest(S.restSec)) : t('No rest timer')) + ' · ' + layoutLabel,
     alerts: () => [S.sound ? t('Sound') : null, canVibrate && S.vibrate !== false ? t('Vibrate') : null, S.timerFlash ? t('Flash') : null].filter(Boolean).join(' · ') || t('Silent'),
     reminders: () => (S.reminder?.on ? (S.reminder.time || DEF.reminder?.time || '') : t('Off')),
@@ -473,7 +492,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
   // warm-up rest"). Absent is like the work sets, 0 no timer (lib/supersetFlow.js warmupRestSecFor).
   const warmAll = typeof S.warmupRestSec === 'number' ? S.warmupRestSec : null
   const setWarm = v => update(s => { if (v === null) delete s.warmupRestSec; else s.warmupRestSec = v })
-  const warmupRestRow = <Row icon="timer" iconTint="var(--yellow)" title={t('Rest between warm-ups')} accessory="chevron"
+  const warmupRestRow = isOn(S, 'plates') && <Row icon="timer" iconTint="var(--yellow)" title={t('Rest between warm-ups')} accessory="chevron"
     subtitle={t('The last warm-up still gets the full rest before your first work set.')}
     value={warmAll === null ? t('Like the work sets') : warmAll > 0 ? fmtRest(warmAll) : t('No timer')}
     onClick={() => menuSheet({
@@ -489,6 +508,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     })} />
 
   const pages = {
+    modules: () => <ModulesSettings S={S} update={update} />,
     watch: () => <WatchSettingsPage />,
     workout: () => <>
       <Section title={t('Rest')} footer={t('Each exercise can have its own rest too. Set it in the exercise settings of a routine.')}>
@@ -499,12 +519,12 @@ export default function Settings({ page = null, find = null, via = null, entryKe
       <Section title={t('Logging')}>
         {/* Two names for the same judgement, so the column asks in the scale you already think in.
             The (i) sits before the control: you read it on the way to the choice, not after it. */}
-        <Row icon="gauge" iconTint="var(--purple)" title={t('Effort per set')}>
+        {isOn(S, 'effort') && <Row icon="gauge" iconTint="var(--purple)" title={t('Effort per set')}>
           <button className="helpbtn" aria-label={t('What are RIR and RPE?')} onClick={effortHelpSheet}><Icon name="info" /></button>
           <Segmented className="seg-inline"
             options={[{ value: 'none', label: t('Off') }, { value: 'rir', label: t('RIR') }, { value: 'rpe', label: t('RPE') }]}
             value={effortOf(S)} onChange={v => update(s => { s.effort = v; delete s.showRir })} />
-        </Row>
+        </Row>}
         {/* The line under each exercise that the rows are held against (#173). Tapping the line in
             a workout switches it too; this is where the choice can be found without knowing that. */}
         <SelectRow icon="history" iconTint="var(--blue)" title={t('Shown under each exercise')}
@@ -540,10 +560,23 @@ export default function Settings({ page = null, find = null, via = null, entryKe
       <Section title={t('Before and during')}>
         {/* The quick weigh-in that opens on Start (sheets.jsx startFlow, issue #137); off skips
             straight to the session. Home and Stats still log weight by hand. */}
-        <Row icon="scale" iconTint="var(--green)" title={t('Weigh in before workouts')}
+        {isOn(S, 'body') && <Row icon="scale" iconTint="var(--green)" title={t('Weigh in before workouts')}
           subtitle={t('Asks for your body weight when a workout starts. Off starts the session straight away.')}>
           <Switch checked={S.weighIn !== false} onChange={v => update(s => { s.weighIn = v })} />
-        </Row>
+        </Row>}
+        {/* Optional openGym Daily Form: disabled unless explicitly enabled. */}
+        {S.modules?.health !== false && <Row icon="moon" iconTint="var(--indigo)"
+          title={t('Daily form')} subtitle={t('Check in before workouts?')}>
+          <Switch checked={S.dailyForm === true}
+            onChange={v => update(s => { s.dailyForm = v })} />
+        </Row>}
+        {isOn(S, 'plates') && <SelectRow icon="sunrise" iconTint="var(--orange)" title={t('Automatic warm-ups')}
+          value={warmupAutoOf(S)} onChange={value => update(s => { s.warmupAuto = value })}
+          options={[
+            { value: 'off', label: t('Off'), subtitle: t('Only the warm-ups you plan yourself.') },
+            { value: 'compounds', label: t('Compound lifts'), subtitle: t('Squats, presses, rows and friends get a ramp. Curls and raises start cold.') },
+            { value: 'all', label: t('Every loaded lift'), subtitle: t('Heavy lifts get more rungs, light ones one or none.') },
+          ]} />}
         {(wakeOK || !MOBILE) && (
           <Row icon="phoneScreen" iconTint="var(--yellow)" title={t('Keep screen awake')}
             subtitle={wakeOK ? t('The screen stays on while a workout is running, so you don’t have to unlock your phone between sets.') : t('Not supported in this browser.')}>
@@ -575,6 +608,14 @@ export default function Settings({ page = null, find = null, via = null, entryKe
       const setWc = (k, v) => update(s => { s.wc = { ...workoutControls(s), [k]: v } })
       return <>
         <Section title={t('Sessions and timed sets')}>
+          <Row icon="chart" iconTint="var(--teal)" title={t('Compare sets with last time')}>
+            <Switch aria-label={t('Compare sets with last time')} checked={S.setTrend === true}
+              onChange={v => update(s => { s.setTrend = v })} />
+          </Row>
+          <Row icon="slider" title={t('Level')} subtitle={t('Cardio')}>
+            <Switch aria-label={t('Level')} checked={S.showCardioLevel === true}
+              onChange={value => update(s => { s.showCardioLevel = value })} />
+          </Row>
           {/* Whose reps a planned session opens with (lib/session-start.js). The plan's by default:
               the routine is what you said you would do, and history and progression decide the
               weight. The other choice is the old behaviour, reps carried over from last time.
@@ -666,6 +707,10 @@ export default function Settings({ page = null, find = null, via = null, entryKe
             <Switch checked={!!S.timerFlash} onChange={v => update(s => { s.timerFlash = v })} />
           </Row>
         </Section>
+        {/* openGym's deload settings within IronLog's unchanged Fine-tuning page. */}
+        <Section title={t('Deload weeks')}>
+          <DeloadSettingsRows />
+        </Section>
       </>
     },
 
@@ -685,6 +730,14 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         {/* Rotation chosen with no loop running yet: the loop is built on Plan. */}
         {mode === 'rotation' && !liveQ && <Row icon="calendar" iconTint="var(--orange)" title={t('Build your loop in Plan')}
           accessory="chevron" onClick={() => nav('/plan')} />}
+        {/* A rotation needs an explicit weekly target: the loop itself is not tied to weekdays.
+            Off preserves the queue's usual progress bar and adds no Home countdown. */}
+        {mode === 'rotation' && !externalQ && <SelectRow icon="target" iconTint="var(--green)"
+          title={t('Workouts per week')}
+          value={weekTargetOf(S) || 0}
+          onChange={v => update(s => { s.weekTarget = v || null })}
+          options={[{ value: 0, label: t('Off'), subtitle: t('No weekly countdown on Home.') },
+            ...[1, 2, 3, 4, 5, 6, 7].map(n => ({ value: n, label: String(n) }))]} />}
         {/* Monday or Sunday: the Plan list, the Home strip, the calendar grid and every "this
             week" total follow it. Stored as a getDay() index (see lib/format.js). */}
         <Row icon="calendar" iconTint="var(--orange)" title={t('Week starts on')}>
@@ -694,6 +747,10 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         </Row>
       </Section>
       <Section>
+        {/* openGym 1.4.5 ranges in the native IronLog bottom sheet. */}
+        <Row icon="figureStrength" iconTint="var(--teal)" title={t('Weekly muscle volume')}
+          subtitle={t('Work sets') + ' · ' + t('Goal')} accessory="chevron"
+          onClick={muscleTargetsSheet} />
         <Row icon="clipboard" iconTint="var(--green)" title={t('Load starter plan')} accessory="chevron" onClick={starterPlanSheet} />
       </Section>
     </>,
@@ -744,6 +801,17 @@ export default function Settings({ page = null, find = null, via = null, entryKe
             options={[{ value: 'kmh', label: 'km/h' }, { value: 'mph', label: 'mph' }]}
             value={speedUnitOf(S)} onChange={v => update(s => { s.speedUnit = v })} />
         </Row>
+        {isOn(S, 'body') && <Row icon="timer" iconTint="var(--teal)" title={t('Time')} subtitle={t('Weigh-ins')}>
+          <Switch aria-label={t('Time') + ' · ' + t('Weigh-ins')} checked={S.weighInTimes === true} onChange={v => update(s => { s.weighInTimes = v })} />
+        </Row>}
+        {isOn(S, 'body') && <Row icon="ruler" iconTint="var(--teal)" title={t('Measurement unit')}>
+          <Segmented className="seg-inline" value={lengthUnitOf(S)} options={[{ value: 'cm', label: 'cm' }, { value: 'in', label: 'in' }]} onChange={v => update(s => { s.measureUnit = v })} />
+        </Row>}
+        {isOn(S, 'body') && (S.weighInTimes === true || (S.bodyweight || []).some(b => Array.isArray(b.ins))) && <SelectRow icon="scale" iconTint="var(--teal)" title={t('Daily weigh-in value')}
+          value={dailyModeOf(S)} onChange={v => update(s => { s.bwDaily = v; settleAll(s, v) })}
+          options={[{ value: 'first', label: t('Morning (first)'), subtitle: t('Before breakfast is the one to compare.') },
+            { value: 'avg', label: t('Average'), subtitle: t('Every weigh-in of the day counts the same.') },
+            { value: 'last', label: t('Last'), subtitle: t('The most recent one of the day.') }]} />}
         {/* Which formula turns a set into an estimated 1RM (Discord, #155): the exercise page,
             the 1RM chart and records all follow it. Formula names are people, not words. */}
         <SelectRow icon="chart" iconTint="var(--teal)" title={t('1RM formula')}
@@ -809,7 +877,32 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         {/* Membership QR codes on Home (views/CheckIn.jsx); off = no Home card, no route. */}
         <Row icon="qr" iconTint="var(--blue)" title={t('Gym check-in')}
           subtitle={t('Show a card on Home with your membership QR codes.')}>
-          <Switch checked={S.checkIn !== false} onChange={v => update(s => { s.checkIn = v })} />
+          <Switch checked={isOn(S, 'checkin')} onChange={v => update(s => { s.checkIn = v; setModule(s, 'checkin', v) })} />
+        </Row>
+        {/* openGym 1.4.5 targets summary: opt-in, never changes existing Home cards. */}
+        <Row icon="figureStrength" iconTint="var(--teal)" title={t('Weekly muscle volume')}
+          subtitle={t('Work sets') + ' · ' + t('This week')}>
+          <Switch checked={S.showWeeklySetsHome === true}
+            onChange={v => update(s => { s.showWeeklySetsHome = v })} />
+        </Row>
+        {/* OpenGym's Today-row muscle preview is opt-in. The original IronLog hero stays
+            exactly as it was until this setting is explicitly enabled. */}
+        <Row icon="figureStrength" iconTint="var(--teal)" title={t('Muscle map')}
+          subtitle={t('Today') + ' · ' + t('Start')}>
+          <Switch checked={S.showWorkoutMusclePreview === true}
+            onChange={v => update(s => { s.showWorkoutMusclePreview = v })} />
+        </Row>
+        {/* The openGym weekly countdown is optional and never replaces IronLog's streak. */}
+        <Row icon="target" iconTint="var(--green)" title={t('Workouts per week')}
+          subtitle={t('This week') + ' · ' + t('On Home')}>
+          <Switch checked={S.showWorkoutsLeftHome === true}
+            onChange={v => update(s => { s.showWorkoutsLeftHome = v })} />
+        </Row>
+        {/* Recovery is an opt-in Home card; preserve every existing Home card. */}
+        <Row icon="figureStrength" iconTint="var(--green)" title={t('Recovery tips')}
+          subtitle={t('A quiet hint about which muscles have rested and which are still recovering.')}>
+          <Switch checked={S.recoveryHint === true}
+            onChange={on => update(s => setRecoveryHint(s, on))} />
         </Row>
         {/* The Home summary is optional; hiding it leaves weight logging, history and Stats intact. */}
         <Row icon="scale" iconTint="var(--green)" title={t('Body weight')}
@@ -839,7 +932,8 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         {/* Android only: the system folder picker (#161). iOS shows Documents in Files already. */}
         {MOBILE && android && S.autoBackup && <BackupFolderRow />}
       </Section>
-      {MOBILE && <HealthConnectCard S={S} toast={toast} android={android} />}
+      <Section><Row icon="share" iconTint="var(--blue)" title={t('Export as spreadsheet (CSV)')} accessory="chevron" onClick={csvExportSheet} /></Section>
+      {MOBILE && isOn(S, 'health') && <HealthConnectCard S={S} toast={toast} android={android} />}
       <Section title={t('Bring data in')}>
         <Row icon="download" iconTint="var(--teal)" title={t('Import backup')} accessory="chevron" onClick={() => fileRef.current.click()} />
         <Row icon="download" iconTint="var(--teal)" title={t('Import from another app')}
@@ -1375,14 +1469,15 @@ function EquipmentCard({ S, update }) {
     ? ownBars.map(eq => { const n = t(eq); return n.charAt(0).toLocaleUpperCase() + n.slice(1) + ' ' + fmtPlate(ownBarDefault(S, eq)) + ' ' + unit }).join(' · ')
     : t('Standard bars. Tap if yours are lighter.')
   return <Section title={t('Equipment')} footer={t('Filters the exercise library and picker, and flags routine exercises that need something you don’t have in the active profile.')}>
-    <Row icon="plate" iconTint="var(--orange)" title={t('Plates')} subtitle={plateSummary} accessory="chevron" onClick={() => plateInventorySheet()} />
+    {isOn(S, 'plates') && <Row icon="plate" iconTint="var(--orange)" title={t('Plates')} subtitle={plateSummary} accessory="chevron" onClick={() => plateInventorySheet()} />}
     <Row icon="dumbbell" iconTint="var(--teal)" title={t('Dumbbells')} subtitle={dumbbellSummary} accessory="chevron" onClick={() => dumbbellInventorySheet()} />
     <Row icon="barbell" iconTint="var(--blue)" title={t('Your bars')} subtitle={barSummary} accessory="chevron" onClick={() => barDefaultsSheet()} />
+    <Row icon="link" iconTint="var(--teal)" title={t('Resistance bands')} value={String(bandsOf(S).length)} accessory="chevron" onClick={bandsSheet} />
     {profiles.length > 0 && <Row icon="kettlebell" iconTint="var(--acc)" title={t('Filter by equipment')}>
       <Switch checked={!!S.equipFilterOn} onChange={v => update(s => { s.equipFilterOn = v })} />
     </Row>}
     {profiles.length > 0 && <SelectRow icon="house" iconTint="var(--blue)" title={t('Active profile')}
-      value={S.activeEquipId || ''} onChange={v => update(s => { s.activeEquipId = v })}
+      value={S.activeEquipId || ''} onChange={v => update(s => { switchGym(s, v) })}
       options={profiles.map(p => ({ value: p.id, label: p.name }))} />}
     {profiles.map(p => (
       <Row key={p.id} icon="house" iconTint="var(--teal)" title={p.name}

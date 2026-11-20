@@ -64,13 +64,15 @@ const capStamps = m => {
 const OWN_MERGE = new Set([
   '_ts', '_rev', '_wid', '_wids', '_unstamped', '_prior', 'active', 'unit', 'unitSet', 'resetAt', 'resetIds', 'deleted', 'edited', 'undone', 'routineOrder',
   'workouts', 'routines', 'customEx', 'equipProfiles', 'gymCards', 'bodyweight', 'measurements', 'favEx',
-  'exWeights', 'balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'dayNotes', 'dayPhotos',
+  'exWeights', 'balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'stackWeights', 'dayNotes', 'dayPhotos', 'dayForm',
 ]);
-const PER_KEY = new Set(['week', 'dayPlan', 'exNotes', 'barWeights']);
+const PER_KEY = new Set(['week', 'dayPlan', 'exNotes', 'barWeights', 'programmes', 'modules', 'bandEx']);
 // The maps whose every entry carries its own edit time (sync-merge.js STAMPED_MAPS): merged per
 // key by the app, so never stamped here as a whole setting. dayNotes is a note per day off,
 // dayPhotos a progress photo filed under a day (#557), one entry per photo.
-export const STAMPED_MAPS = ['balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'dayNotes', 'dayPhotos'];
+export const STAMPED_MAPS = ['balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'stackWeights', 'dayNotes', 'dayPhotos', 'dayForm'];
+import { protectLegacyBodyData } from './body-compat/legacy.js';
+import { protectLegacyBands, protectLegacyCircuits } from './training-compat.js';
 const ENTRY_META = new Set(['id', '_ts', '_f', '_u']);
 const ENTRY_LISTS = ['routines', 'customEx', 'equipProfiles', 'gymCards', 'workouts'];
 
@@ -379,13 +381,18 @@ const V139_DROPS = {
   customEx: new Set(['media', 'url']),
   equipProfiles: new Set(),
   gymCards: new Set(),
+  bodyweight: new Set(['d', 'w', 't', 'src']),
+  measurements: new Set(['d', 't', 'other', 'neck', 'shoulders', 'chest', 'waist', 'hips', 'abdomen',
+    'upperArmLeft', 'upperArmRight', 'forearmLeft', 'forearmRight', 'wristLeft', 'wristRight',
+    'thighLeft', 'thighRight', 'calfLeft', 'calfRight', 'ankleLeft', 'ankleRight', 'bodyFat']),
+  'measurements.other': new Set(['id', 'name', 'value']),
   workouts: new Set(['media', 'note', 'name', 'bw', 'prs', 'vol', 'routineIds']),
   'workouts.entries': new Set(['sg', 'note', 'notePin', 'noProg', 'topW']),
   'workouts.entries.sets': new Set(['w', 'r', 'sec', 'min', 'km', 'dist', 'speed', 'rir', 'rpe', 'planSec', 'note',
     'done', 'weightOrigin', 'at', 'sides', 'type', 'drops', 'clusters', 'warmup']),
 };
 // The lists inside an entry that are walked too, and how their items are matched.
-const NESTED = { routines: ['ex'], workouts: ['entries'], 'workouts.entries': ['sets'] };
+const NESTED = { routines: ['ex'], workouts: ['entries'], 'workouts.entries': ['sets'], measurements: ['other'] };
 // Server bookkeeping and the records merged on their own: never put back from the stored copy.
 const NOT_KEPT = new Set(['_rev', '_wid', '_wids', '_unstamped', '_prior', 'active', 'resetAt', 'resetIds', 'deleted', 'edited']);
 
@@ -431,13 +438,35 @@ function pairItems(a, b) {
   return b.map((x, i) => [a[i], x]);
 }
 /** Step 0 (above): put back into `next` what a writer that does not stamp left out of `cur`. */
-export function keepUnknown(cur, next) {
+export function keepUnknown(cur, next, { bodyDataVersion = 0, trainingDataVersion = 0 } = {}) {
   if (!isMap(cur) || !isMap(next)) return next;
+  const absentBodyPrefs = bodyDataVersion >= 1 ? ['weighInTimes', 'bwDaily', 'measureUnit'].filter(k => !Object.hasOwn(next, k)) : [];
+  const absentTrainingPrefs = trainingDataVersion >= 1 ? ['bands', 'bandEx'].filter(k => !Object.hasOwn(next, k)) : [];
   keepKeys(cur, next, 'state');
-  for (const f of ENTRY_LISTS) {
+  for (const key of absentBodyPrefs) delete next[key];
+  for (const key of absentTrainingPrefs) delete next[key];
+  // A legacy writer may rebuild a daily weight without the newer readings/metadata.
+  // Preserve unknown fields by day; its known weight/time/source edit remains intentional.
+  for (const field of bodyDataVersion >= 1 ? [] : ['bodyweight', 'measurements']) if (Array.isArray(cur[field]) && Array.isArray(next[field])) {
+    const days = new Map(cur[field].filter(x => isMap(x) && x.d != null).map(x => [x.d, x]));
+    for (const x of next[field]) if (isMap(x) && days.has(x.d)) keepKeys(days.get(x.d), x, field);
+  }
+  for (const f of [...ENTRY_LISTS, ...(bodyDataVersion >= 1 ? [] : ['customMeasurements'])]) {
     if (!Array.isArray(cur[f]) || !Array.isArray(next[f])) continue;
     const before = new Map(cur[f].filter(x => isMap(x) && x.id != null).map(x => [x.id, x]));
-    for (const x of next[f]) if (isMap(x) && x.id != null && before.has(x.id)) keepKeys(before.get(x.id), x, f);
+    for (const x of next[f]) if (isMap(x) && x.id != null && before.has(x.id)) {
+      const absent = [];
+      if (trainingDataVersion >= 1) {
+        const remember = (old, n, place) => {
+          if (!isMap(old) || !isMap(n)) return;
+          for (const key of ['bands', ...(trainingDataVersion >= 2 ? ['circuits', 'sgCircuit', 'preType'] : [])]) if (Object.hasOwn(old, key) && !Object.hasOwn(n, key)) absent.push([n, key]);
+          for (const field of NESTED[place] || []) for (const [o, v] of pairItems(list(old[field]), list(n[field]))) remember(o, v, `${place}.${field}`);
+        };
+        remember(before.get(x.id), x, f);
+      }
+      keepKeys(before.get(x.id), x, f);
+      for (const [item, key] of absent) delete item[key];
+    }
   }
   return next;
 }
@@ -474,7 +503,7 @@ function keepHeld(next, now) {
 const BOOKKEEPING = new Set(['_ts', '_f', '_u', '_rev', '_wid', '_wids', '_unstamped', '_prior', 'edited', 'deleted', 'undone']);
 const content = S => JSON.stringify(S, (k, v) => (BOOKKEEPING.has(k) ? undefined : v));
 
-export function stampPut(cur, next, { overRead = false, stamped = false, now = Date.now(), report = null } = {}) {
+export function stampPut(cur, next, { overRead = false, stamped = false, bodyDataVersion = 0, trainingDataVersion = 0, now = Date.now(), report = null } = {}) {
   if (!next || typeof next !== 'object') return next;
   const t = Math.max(Number(now) || 0, highestStamp(cur) + 1, highestStamp(next) + 1);
   const reset = (Number(next.resetAt) || 0) > (Number(cur?.resetAt) || 0);
@@ -494,8 +523,11 @@ export function stampPut(cur, next, { overRead = false, stamped = false, now = D
     // them stamped as one it changed (QA 2026-10-07), and such a stamp is dropped here.
     if (e) { delete e._wid; delete e._wids; }
     if (e && Object.keys(e).length) next.edited = e; else delete next.edited;
-    const before = !stamped && report ? content(next) : null;
-    if (!stamped) keepUnknown(cur, next);
+    const before = report ? content(next) : null;
+    if (!stamped) keepUnknown(cur, next, { bodyDataVersion, trainingDataVersion });
+    if (!(bodyDataVersion >= 1)) protectLegacyBodyData(cur, next);
+    if (!(trainingDataVersion >= 1)) protectLegacyBands(cur, next, pairItems);
+    if (!(trainingDataVersion >= 2)) protectLegacyCircuits(cur, next, pairItems);
     if (!stamped && overRead) {
       const fp = fingerprint(sent);
       const own = isMap(cur._unstamped) && cur._unstamped.fp === fp ? cur._unstamped : null;

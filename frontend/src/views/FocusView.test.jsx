@@ -6,8 +6,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Workout from './Workout.jsx'
 import { DEF, useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
+import { auditCompleteProfilePreservation } from '../lib/migration-audit.js'
 
-vi.mock('../lib/sound.js', () => ({ beep: vi.fn(), vibrate: vi.fn(), unlock: vi.fn() }))
+vi.mock('../lib/sound.js', () => ({ beep: vi.fn(), vibrate: vi.fn(), unlock: vi.fn(), queueTones: vi.fn(() => vi.fn()) }))
 vi.mock('../lib/api.js', () => ({ api: vi.fn(() => Promise.resolve({})) }))
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
@@ -41,6 +42,26 @@ function openMenu() {
   return sheetContainer
 }
 
+function renderLatestSheet() {
+  if (sheetRoot) act(() => sheetRoot.unmount())
+  if (sheetContainer) sheetContainer.remove()
+  const sheet = useUI.getState().sheets.at(-1)
+  sheetContainer = document.createElement('div')
+  document.body.appendChild(sheetContainer)
+  sheetRoot = createRoot(sheetContainer)
+  act(() => sheetRoot.render(sheet.render(() => useUI.getState().closeSheet(sheet.id))))
+  return sheetContainer
+}
+
+function setMenuAction(label) {
+  act(() => container.querySelector('button[aria-label="Set menu"]').click())
+  const menu = renderLatestSheet()
+  const action = [...menu.querySelectorAll('.menu-item')].find(b => b.querySelector('.tt')?.textContent === label)
+  expect(action).toBeTruthy()
+  act(() => action.click())
+  return renderLatestSheet()
+}
+
 beforeEach(() => {
   useUI.setState({ sheets: [], toastMsg: '', timer: null, work: null })
 })
@@ -55,6 +76,43 @@ afterEach(() => {
 })
 
 describe('Focus workout view', () => {
+  it('completes the tempo guide through the existing Focus Done behavior and retains set metadata', () => {
+    vi.useFakeTimers()
+    try {
+      const row = { w: 60, r: 1, done: false, note: 'א'.repeat(500), tag: 'blue', media: [{ hash: 'keep' }] }
+      mount({ id: '0025', target: { sets: 1, reps: 1, weight: 60, tempo: '1-0-1-0' }, sets: [row] }, { unit: 'kg' })
+      let editor = setMenuAction('Tempo')
+      act(() => [...editor.querySelectorAll('button')].find(b => b.textContent === 'Tempo 1-0-1-0, start the guide').click())
+      const guide = renderLatestSheet()
+      act(() => [...guide.querySelectorAll('button')].find(b => b.textContent === 'Start').click())
+      act(() => vi.advanceTimersByTime(5100))
+      act(() => [...guide.querySelectorAll('button')].find(b => b.textContent === 'Tick the set').click())
+      expect(useStore.getState().S.active.entries[0].sets[0]).toMatchObject({ ...row, done: true })
+    } finally { useUI.getState().stopRest(); vi.useRealTimers() }
+  })
+  it('edits an opted-in cardio level while preserving notes, media and old default controls', () => {
+    const row = { min: 30, speed: 10, level: 8, done: false, note: 'א'.repeat(500), tag: 'blue', media: [{ hash: 'keep' }] }
+    mount({ id: '2138', target: { sets: 1, min: 30, speed: 10 }, sets: [row] }, { unit: 'kg', showCardioLevel: true })
+    const increase = container.querySelector('button[aria-label="Increase level"]')
+    expect(increase).toBeTruthy()
+    act(() => increase.click())
+    expect(useStore.getState().S.active.entries[0].sets[0]).toEqual({ ...row, level: 9 })
+    act(() => useStore.getState().update(s => { s.active.entries[0].sets[0].level = 30 }))
+    act(() => container.querySelector('button[aria-label="Increase level"]').click())
+    expect(useStore.getState().S.active.entries[0].sets[0].level).toBe(30)
+    act(() => useStore.getState().update(s => { s.active.entries[0].sets[0].level = 1 }))
+    act(() => container.querySelector('button[aria-label="Decrease level"]').click())
+    expect(useStore.getState().S.active.entries[0].sets[0]).toEqual({ ...row, level: undefined })
+  })
+  it('keeps resistance hidden by default and locks completed cardio rows', () => {
+    mount({ id: '2138', target: { mode: 'cardio' }, sets: [{ min: 30, speed: 10, level: 8, done: true }] })
+    expect(container.querySelector('button[aria-label="Increase level"]')).toBeNull()
+    expect(useStore.getState().S.active.entries[0].sets[0].level).toBe(8)
+    act(() => useStore.getState().update(s => { s.showCardioLevel = true }))
+    const increase = container.querySelector('button[aria-label="Increase level"]')
+    expect(increase).toBeTruthy()
+    expect(increase.disabled).toBe(true)
+  })
   it('omits a plan that repeats the prescription and keeps plate guidance in the badge row', () => {
     mount({
       id: SQUAT,
@@ -127,6 +185,106 @@ describe('Focus workout view', () => {
 
 // The speed stepper follows the profile's speed unit like the set row does (lib/speed.js): shown,
 // stepped and typed in mph, stored in km/h. It used to say km/h whatever the setting.
+describe('Focus view cardio distance', () => {
+  const BIKE = '2138'
+  const bike = () => ({ id: BIKE, target: { sets: 1, min: 30, speed: 10 }, sets: [{ min: 30, speed: 10, done: false, note: 'א'.repeat(500), tag: 'blue', media: [{ hash: 'keep' }] }] })
+  const row = () => useStore.getState().S.active.entries[0].sets[0]
+  const cell = () => container.querySelector('button[aria-label="Increase distance"]').closest('.stp-w')
+
+  it('uses original kilometre conversion and derived speed with the existing Focus controls', () => {
+    mount(bike(), { unit: 'kg', cardioBy: { [BIKE]: 'distance' } })
+    const metadata = { note: row().note, tag: row().tag, media: clone(row().media) }
+    expect(cell().querySelector('input').value).toBe('5')
+    act(() => container.querySelector('button[aria-label="Increase distance"]').click())
+    expect(row()).toMatchObject({ min: 30, km: 5.5, speed: 11, ...metadata })
+    act(() => container.querySelector('button[aria-label="Increase duration"]').click())
+    expect(row()).toMatchObject({ min: 31, km: 5.5, speed: 10.65, ...metadata })
+  })
+
+  it('shows miles independently of weight units while keeping kilometres in the saved row', () => {
+    mount(bike(), { unit: 'kg', speedUnit: 'mph', cardioBy: { [BIKE]: 'distance' } })
+    expect(cell().querySelector('.stp-l').textContent).toBe('Distance (mi)')
+    expect(cell().querySelector('input').value).toBe('3.11')
+    act(() => container.querySelector('button[aria-label="Increase distance"]').click())
+    expect(row()).toMatchObject({ km: 5.166, speed: 10.33 })
+    expect(useStore.getState().S.unit).toBe('kg')
+  })
+
+  it('switches logging mode in the actual menu without rewriting the active row or existing choices', () => {
+    mount(bike(), { unit: 'kg', cardioBy: { future: 'preserve' } })
+    const before = clone(row())
+    const beforeProfile = clone(useStore.getState().S)
+    const menu = openMenu()
+    act(() => [...menu.querySelectorAll('.menu-item')].find(b => b.querySelector('.tt')?.textContent === 'Log distance instead').click())
+    expect(useStore.getState().S.cardioBy).toEqual({ future: 'preserve', [BIKE]: 'distance' })
+    expect(row()).toEqual(before)
+    expect(auditCompleteProfilePreservation(beforeProfile, useStore.getState().S).ok).toBe(true)
+    expect(cell().querySelector('input').value).toBe('5')
+  })
+
+  it('retains the existing lock on completed sets', () => {
+    const entry = bike(); entry.sets[0].done = true
+    mount(entry, { unit: 'kg', cardioBy: { [BIKE]: 'distance' } })
+    const before = clone(row())
+    expect(cell().querySelector('input').disabled).toBe(true)
+    act(() => container.querySelector('button[aria-label="Increase distance"]').click())
+    expect(row()).toEqual(before)
+  })
+})
+
+describe('Focus existing set metadata controls', () => {
+  const note = 'א'.repeat(500)
+  const entry = () => ({ id: SQUAT, target: { mode: 'reps', tempo: '2-0-1-0' }, sets: [{ w: 60, r: 8, done: false, note, tag: 'blue', media: [{ hash: 'keep' }] }] })
+  const row = () => useStore.getState().S.active.entries[0].sets[0]
+  const button = (sheet, text) => [...sheet.querySelectorAll('button')].find(b => b.textContent === text)
+
+  it('opens the actual 500-character IronLog note editor and saves without changing set fields', () => {
+    mount(entry())
+    const before = clone(row())
+    const sheet = setMenuAction('Edit note')
+    expect(sheet.querySelector('textarea').maxLength).toBe(500)
+    expect(sheet.querySelector('textarea').value).toBe(note)
+    act(() => button(sheet, 'Save').click())
+    expect(row()).toEqual(before)
+    expect(JSON.parse(localStorage.getItem('gym_state_v1')).active.entries[0].sets[0]).toEqual(before)
+  })
+
+  it('sets and clears the original tag through the actual picker without losing metadata', () => {
+    const e = entry(); e.sets[0].done = true
+    mount(e)
+    const before = clone(row())
+    let sheet = setMenuAction('Colour tag')
+    act(() => [...sheet.querySelectorAll('.menu-item')].find(b => b.textContent.includes('Orange')).click())
+    expect(row()).toEqual({ ...before, tag: 'orange' })
+    sheet = setMenuAction('Colour tag')
+    act(() => [...sheet.querySelectorAll('.menu-item')].find(b => b.querySelector('.tt')?.textContent === 'None').click())
+    const { tag, ...untagged } = before
+    expect(row()).toEqual(untagged)
+  })
+
+  it('sets an original tempo preset and clears back to the exercise without changing other fields', () => {
+    mount(entry())
+    const before = clone(row())
+    let sheet = setMenuAction('Tempo')
+    act(() => button(sheet, '3-1-1-0').click())
+    act(() => button(sheet, 'Save').click())
+    expect(row()).toEqual({ ...before, tempo: '3-1-1-0' })
+    sheet = setMenuAction('Tempo')
+    act(() => button(sheet, 'Like the exercise (2-0-1-0)').click())
+    expect(row()).toEqual(before)
+  })
+
+  it.each(['warmup', 'cardio'])('does not offer rep tempo on a %s row', kind => {
+    const e = entry()
+    if (kind === 'warmup') e.sets[0].warmup = true
+    else { e.id = '2138'; e.target.mode = 'cardio'; e.sets[0] = { min: 30, speed: 10, done: false } }
+    mount(e)
+    act(() => container.querySelector('button[aria-label="Set menu"]').click())
+    const sheet = renderLatestSheet()
+    expect([...sheet.querySelectorAll('.menu-item .tt')].map(b => b.textContent)).not.toContain('Tempo')
+  })
+})
+
 describe('Focus view cardio speed', () => {
   const BIKE = '2138'   // stationary bike, cardio
   const bike = () => ({ id: BIKE, target: { sets: 1, min: 20, speed: 8 }, sets: [{ min: 20, speed: 8, done: false }] })

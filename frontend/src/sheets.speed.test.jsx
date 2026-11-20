@@ -22,7 +22,7 @@ function open(settings, existing) {
   act(() => root.render(sheet.render(() => useUI.getState().closeSheet(sheet.id))))
   const speed = [...host.querySelectorAll('.stp-w')].find(w => w.querySelector('.stp-l')?.textContent.startsWith('Speed'))
   const save = [...host.querySelectorAll('button')].find(b => b.textContent.trim() === 'Save')
-  return { speed, save, onSave }
+  return { host, speed, save, onSave }
 }
 
 beforeEach(() => {
@@ -33,6 +33,20 @@ beforeEach(() => {
 afterEach(() => { act(() => { mounted.splice(0).forEach(root => root.unmount()) }) })
 
 describe('cardio settings speed', () => {
+  it('edits an opted-in planned level and retains existing grade data on save', () => {
+    const { host, save, onSave } = open({ unit: 'kg', showCardioLevel: true }, { sets: 1, min: 20, speed: 8, level: 8, incline: 4 })
+    const level = [...host.querySelectorAll('.stp-w')].find(w => w.querySelector('.stp-l')?.textContent === 'Level')
+    expect(level).toBeTruthy()
+    act(() => level.querySelector('button[aria-label="Increase"]').click())
+    act(() => save.click())
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ level: 9, incline: 4, min: 20, speed: 8 }))
+  })
+  it('preserves stored level when the existing default editor hides its control', () => {
+    const { host, save, onSave } = open({ unit: 'kg' }, { sets: 1, min: 20, speed: 8, level: 8 })
+    expect([...host.querySelectorAll('.stp-l')].some(e => e.textContent === 'Level')).toBe(false)
+    act(() => save.click())
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ level: 8 }))
+  })
   it('reads and steps in mph for a profile in pounds, and saves km/h', () => {
     const { speed, save, onSave } = open({ unit: 'lb' }, { sets: 1, min: 20, speed: 8 })
     expect(speed.querySelector('.stp-l').textContent).toBe('Speed (mph)')

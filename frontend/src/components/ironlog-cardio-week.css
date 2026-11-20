@@ -1,0 +1,18 @@
+/* New original cardio leaf uses IronLog's actual card/row/button/stepper primitives.
+   Scoped adapters only: no upstream stylesheet or existing chart/card selectors. */
+[data-cardio-week] .cardio-num { font-size: 24px; font-weight: 700; margin-block: 8px; }
+[data-cardio-week] .cardio-kind { display: flex; gap: 6px; align-items: center; }
+[data-cardio-week] .cardio-done { color: var(--acc); }
+[data-cardio-week] .pbar { display: block; height: 4px; border-radius: 4px; overflow: hidden; background: var(--surface-2); }
+[data-cardio-week] .pbar > i { display: block; width: calc(var(--p) * 100%); height: 100%; background: var(--acc); }
+[data-cardio-week] .cardio-goals { list-style: none; padding: 0; margin-block: 16px 0; }
+[data-cardio-week] .cardio-goal-row { display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; margin-block: 10px; }
+[data-cardio-week] .cardio-goal-row .pbar { grid-column: 2 / -1; }
+[data-cardio-week] .cg-name { min-width: 0; overflow-wrap: anywhere; }
+[data-cardio-week] .cg-num { font-variant-numeric: tabular-nums; }
+[data-cardio-week] .cardio-bars { position: relative; display: flex; align-items: flex-end; gap: 6px; height: 72px; margin-block: 20px 8px; }
+[data-cardio-week] .cardio-bar { flex: 1; height: max(2px, calc(var(--h) * 100%)); border-radius: 4px 4px 0 0; background: var(--acc); opacity: .45; }
+[data-cardio-week] .cardio-bar.now { opacity: 1; }
+[data-cardio-week] .cardio-goal { position: absolute; inset-inline: 0; bottom: calc(var(--g) * 100%); border-block-start: 1px dashed var(--label-2); }
+[data-cardio-goal-edit] .rec-kinds { gap: 6px; }
+[data-cardio-goal-edit] .rec-kinds .chip { display: inline-flex; align-items: center; gap: 4px; }

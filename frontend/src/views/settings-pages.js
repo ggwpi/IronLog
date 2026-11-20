@@ -9,6 +9,7 @@ import { t } from '../lib/i18n.js'
 import { ACCENT_NAMES } from '../lib/format.js'
 
 export const PAGES = {
+  modules: { title: 'Modules', icon: 'slider', tint: 'var(--blue)' },
   workout: { title: 'Workout', icon: 'play', tint: 'var(--green)' },
   alerts: { title: 'Timer alerts', icon: 'speaker', tint: 'var(--pink)' },
   reminders: { title: 'Reminders', icon: 'bell', tint: 'var(--red)' },
@@ -26,7 +27,7 @@ export const PAGES = {
 export const PAGE_IDS = Object.keys(PAGES)
 
 // The root, top to bottom. Whether a row shows is pageVisible's call.
-export const ROOT_GROUPS = [['workout', 'alerts', 'reminders'], ['plan', 'units', 'equipment'], ['look', 'coach', 'watch'], ['data', 'about']]
+export const ROOT_GROUPS = [['modules', 'workout', 'alerts', 'reminders'], ['plan', 'units', 'equipment'], ['look', 'coach', 'watch'], ['data', 'about']]
 
 /**
  * Whether a page exists for this device and profile. Reminders need a push server (signed in) or
@@ -34,6 +35,7 @@ export const ROOT_GROUPS = [['workout', 'alerts', 'reminders'], ['plan', 'units'
  * runs on the server, set up by its admin).
  */
 export function pageVisible(page, ctx) {
+  if (page === 'coach' && ctx.coachOn === false || page === 'watch' && ctx.watchOn === false) return false
   if (page === 'reminders') return !!(ctx.user || ctx.mobile)
   if (page === 'coach') return !!(ctx.mobile || (ctx.user && ctx.cloudCoach))
   // The iPhone app only: the watch app ships inside it.
@@ -53,6 +55,7 @@ const signedInWeb = c => !!c.user && !c.mobile && !c.demo
 const remind = c => !!c.mobile || !!c.pushOK
 const PUSH = 'Push notifications'
 export const SEARCH = [
+  { page: 'equipment', title: 'Resistance bands', icon: 'link', tint: 'var(--teal)', kw: 'bands resistance colours colors strength level' },
   // Workout
   { page: 'workout', title: 'Rest timer', icon: 'timer', tint: 'var(--orange)', kw: 'rest pause break seconds minutes timer countdown' },
   { page: 'workout', title: 'Rest-pause rest', icon: 'bolt', tint: 'var(--orange)', kw: 'burst cluster rest pause' },
@@ -63,11 +66,14 @@ export const SEARCH = [
   { page: 'workout', title: 'Collapse completed exercises', icon: 'minimize', tint: 'var(--teal)', kw: 'collapse fold minimize hide done finished completed exercises list compact remaining left to do' },
   { page: 'workout', title: 'Skip completed exercises', icon: 'skipForward', tint: 'var(--teal)', kw: 'skip jump done finished completed exercises cards focus next previous' },
   { page: 'workout', title: 'Weigh in before workouts', icon: 'scale', tint: 'var(--green)', kw: 'body weight weigh scale start' },
+  { page: 'workout', title: 'Daily form', icon: 'moon', tint: 'var(--indigo)', kw: 'check in check-in sleep energy soreness stress deload wellbeing before workout' },
   { page: 'workout', title: 'Keep screen awake', icon: 'phoneScreen', tint: 'var(--yellow)', kw: 'wake lock screen sleep display on', when: c => c.wakeOK || !c.mobile },
   { page: 'workout', title: 'Exercise animations', icon: 'image', tint: 'var(--teal)', kw: 'gif animation video media pictures images', opts: ['Full', 'Small', 'Hidden'] },
   { page: 'workout', title: 'Animation quality', icon: 'image', tint: 'var(--indigo)', kw: 'animation quality resolution sharp hd download pack still px', when: c => c.mobile },
   { page: 'workout', title: 'Fine-tuning', icon: 'wrench', tint: 'var(--grey)', kw: 'advanced more options' },
   // Fine-tuning
+  { page: 'advanced', title: 'Compare sets with last time', icon: 'chart', tint: 'var(--teal)', kw: 'compare set trend previous last time arrows weight reps' },
+  { page: 'advanced', title: 'Level', icon: 'slider', tint: 'var(--blue)', kw: 'cardio resistance bike rowing elliptical level' },
   { page: 'advanced', title: 'Planned sessions start from', icon: 'clipboard', tint: 'var(--green)', kw: 'start from plan last session reps carry over', opts: ['Your plan', 'Your last session'] },
   { page: 'advanced', title: 'Keep timing after target', icon: 'stopwatch', tint: 'var(--orange)', kw: 'timed set overtime hold duration' },
   { page: 'advanced', title: 'Weight and reps buttons', icon: 'plusCircle', tint: 'var(--green)', kw: 'steppers plus minus buttons workout controls' },
@@ -92,6 +98,7 @@ export const SEARCH = [
   { page: 'reminders', title: 'Send test notification', icon: 'bell', tint: 'var(--red)', kw: 'test push notification try', when: c => !c.mobile && c.pushOK, via: PUSH },
   // Plan & schedule
   { page: 'plan', title: 'How you train', icon: 'repeat', tint: 'var(--orange)', kw: 'scheduling schedule rotation fixed week split loop round cycle', opts: ['Fixed Week', 'Rotation'] },
+  { page: 'plan', title: 'Workouts per week', icon: 'target', tint: 'var(--green)', kw: 'rotation goal weekly target workouts countdown', when: c => c.rotation },
   { page: 'plan', title: 'Week starts on', icon: 'calendar', tint: 'var(--orange)', kw: 'monday sunday first day week', opts: ['Monday', 'Sunday'], tkw: () => t('week start') },
   { page: 'plan', title: 'Load starter plan', icon: 'clipboard', tint: 'var(--green)', kw: 'starter template beginner program routine' },
   // Units & language
@@ -101,6 +108,9 @@ export const SEARCH = [
   { page: 'units', title: 'Weight unit', icon: 'scale', tint: 'var(--teal)', kw: 'kg lb lbs pounds kilos kilograms unit' },
   { page: 'units', title: 'Weight decimals', icon: 'ruler', tint: 'var(--teal)', kw: 'decimals precision microplates rounding' },
   { page: 'units', title: 'Speed unit', icon: 'figureRun', tint: 'var(--teal)', kw: 'speed mph kmh km/h miles cardio' },
+  { page: 'units', title: 'Time', icon: 'timer', tint: 'var(--teal)', kw: 'weigh-ins bodyweight time multiple readings clock morning', when: c => c.bodyOn !== false },
+  { page: 'units', title: 'Measurement unit', icon: 'ruler', tint: 'var(--teal)', kw: 'measurement circumference centimetres inches cm in', when: c => c.bodyOn !== false },
+  { page: 'units', title: 'Daily weigh-in value', icon: 'scale', tint: 'var(--teal)', kw: 'weigh-ins daily average morning first last readings', when: c => c.bodyOn !== false && c.weighInTimes, opts: ['Morning (first)', 'Average', 'Last'] },
   { page: 'units', title: '1RM formula', icon: 'chart', tint: 'var(--teal)', kw: '1rm one rep max epley brzycki lombardi formula estimate' },
   // Equipment
   { page: 'equipment', title: 'Plates', icon: 'plate', tint: 'var(--orange)', kw: 'plates bar plate math barbell' },
@@ -116,9 +126,14 @@ export const SEARCH = [
   { page: 'look', title: 'Exercise drawings', icon: 'figureStrength', tint: 'var(--teal)', kw: 'figure male female woman man picture', opts: ['Male', 'Female'] },
   { page: 'look', title: 'Gym check-in', icon: 'qr', tint: 'var(--blue)', kw: 'qr code membership card check in barcode' },
   { page: 'look', title: 'Body weight', icon: 'scale', tint: 'var(--green)', kw: 'weight card home' },
+  { page: 'look', title: 'Recovery tips', icon: 'figureStrength', tint: 'var(--green)', kw: 'recovery tips tired muscles fatigue rest home card hint' },
+  { page: 'look', title: 'Workouts per week', icon: 'target', tint: 'var(--green)', kw: 'weekly countdown home workouts left plan' },
+  { page: 'look', title: 'Weekly muscle volume', icon: 'figureStrength', tint: 'var(--teal)', kw: 'muscle volume training weekly targets sets home show' },
+  { page: 'look', title: 'Muscle map', icon: 'figureStrength', tint: 'var(--teal)', kw: 'mini body muscle map today home workout row preview plan start' },
   { page: 'look', title: 'Show connection status', icon: 'cloud', tint: 'var(--blue)', kw: 'sync offline banner bar connection', when: c => !c.demo },
   // Data & backup
   { page: 'data', title: 'Export backup (JSON)', icon: 'share', tint: 'var(--blue)', kw: 'export backup json download save' },
+  { page: 'data', title: 'Export as spreadsheet (CSV)', icon: 'share', tint: 'var(--blue)', kw: 'csv export spreadsheet excel sheets workouts body measurements' },
   { page: 'data', title: 'Export with photos & videos (.zip)', icon: 'share', tint: 'var(--blue)', kw: 'zip media export backup', when: c => c.hasMedia },
   { page: 'data', title: 'Auto-backup on changes', icon: 'folder', tint: 'var(--blue)', kw: 'auto backup automatic', when: c => c.mobile },
   { page: 'data', title: 'Backup folder', icon: 'folder', tint: 'var(--blue)', kw: 'auto backup folder location directory', when: c => c.mobile && c.android && c.autoBackup },
@@ -198,6 +213,8 @@ export function searchSettings(query, ctx, tr = t) {
     consider({ page: id, title: PAGES[id].title, icon: PAGES[id].icon, tint: PAGES[id].tint }, true)
   }
   for (const e of SEARCH) {
+    const gate = { 'Effort per set': 'effortOn', 'Weigh in before workouts': 'bodyOn', 'Daily form': 'healthOn', 'Automatic warm-ups': 'platesOn', 'Rest between warm-ups': 'platesOn', 'Plates': 'platesOn' }[e.title]
+    if (gate && ctx[gate] === false) continue
     if (!pageVisible(PAGES[e.page].parent || e.page, ctx)) continue
     if (e.when && !e.when(ctx)) continue
     consider(e, false)

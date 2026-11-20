@@ -1,4 +1,8 @@
+import { rpeAs } from '../lib/programmes.js'
 import { useState } from 'react'
+import { BandChips } from '../components/Bands.jsx'
+import { usesBands, setBandsOf, toggleSetBand } from '../lib/bands.js'
+import { isOn } from '../lib/modules.js'
 import { useStore } from '../store/useStore.js'
 import { exOr } from '../lib/exercises.js'
 import { clampIncline, hasIncline, inclineFits, INCLINE_MAX, INCLINE_STEP } from '../lib/incline.js'
@@ -15,7 +19,13 @@ import {
 } from '../lib/workout-model.js'
 import { weightIncrement, stepWeight } from '../lib/progression.js'
 import { speedUnitOf, toSpeed, fromSpeed } from '../lib/speed.js'
-import { effortPickerSheet, exerciseDetailSheet, exerciseHistorySheet, exerciseNoteSheet, menuSheet, barWeightSheet } from '../sheets.jsx'
+import { byDistance, withCardioBy, distUnitOf, distLabel, toDist, fromDist, distanceKmOf } from '../lib/opengym-v145/distance.js'
+import { effortPickerSheet, exerciseDetailSheet, exerciseHistorySheet, exerciseNoteSheet, menuSheet, barWeightSheet, setNoteSheet } from '../sheets.jsx'
+import { SET_TAGS, setTagOf, setTagName, withSetTag } from '../lib/set-tags.js'
+import { setNoteOf } from '../lib/opengym-v145/set-notes.js'
+import { tempoOf } from '../lib/opengym-v145/tempo.js'
+import { setTempoSheet } from '../components/TempoSheet.jsx'
+import { cardioCol, clampLevel, LEVEL_MAX } from '../lib/incline.js'
 import { baseWeightFor, inventoryFor, loadKindFor, rowLoad } from '../lib/plates.js'
 import { ownedWeightsFor, stepOwned } from '../lib/dumbbells.js'
 import Icon from '../components/Icon.jsx'
@@ -97,6 +107,7 @@ function PlanBadge({ entry, mode }) {
 }
 
 function PlateBadge({ S, entry, set }) {
+  if (!isOn(S, 'plates')) return null
   if (modeOf({ ...(entry.target || {}), id: entry.id }) !== 'reps') return null
   const load = rowLoad(loadKindFor(S, { ...(entry.target || {}), id: entry.id }), set.w, baseWeightFor(S, entry.id), inventoryFor(S))
   if (!load) return null
@@ -107,7 +118,7 @@ function PlateBadge({ S, entry, set }) {
 }
 
 export default function FocusView({
-  entryIdx, unit, onToggle, onToggleSide, onField, onMutateSet, onStartTimed,
+  entryIdx, unit, onToggle, onToggleSide, onField, onMutateSet, onStartTimed, onKeepWarmups,
   onAddWarmup, onRemoveSetAt, onProgressionSettings, onSwap, onRemoveExercise,
   onNoProg, busy, onSelectEntry, onAdvanceUnit, onPairPrev, onPairNext, onUnpair, pointerEpoch,
 }) {
@@ -129,6 +140,10 @@ export default function FocusView({
   const locked = !set.done && setIdx > firstOpenSet
   const readOnly = set.done || locked
   const mode = modeOf({ ...(entry.target || {}), id: entry.id })
+  const distUnit = distUnitOf(S)
+  const byDist = mode === 'cardio' && byDistance(S, entry.id)
+  const cardioField = S.showCardioLevel === true ? cardioCol(ex, entry.sets) : null
+  const switchCardioBy = () => useStore.getState().update(st => { st.cardioBy = withCardioBy(st.cardioBy, entry.id, byDist ? 'speed' : 'distance') })
   const effort = effortOf(S)
   const effortField = EFFORT[effort]?.f
   const effortValue = effortField ? set[effortField] ?? null : null
@@ -228,6 +243,8 @@ export default function FocusView({
       { icon: 'chartLine', label: t('Progression settings'), onClick: onProgressionSettings },
       onNoProg && { icon: 'pause', label: t('Don’t count for progression'), sub: t('This exercise, this session only'), on: entry.noProg === true, onClick: () => onNoProg(entry.noProg !== true) },
       mode === 'reps' && { icon: 'plate', label: t('Plate loading'), onClick: () => barWeightSheet(entry.id, { ...(entry.target || {}), id: entry.id }) },
+      mode === 'cardio' && { icon: 'swap', label: byDist ? t('Log speed instead') : t('Log distance instead'), onClick: switchCardioBy },
+      onKeepWarmups && { icon: 'sunrise', label: t('Keep these warm-ups'), sub: t('Saved in the routine, scaled to your work weight'), onClick: onKeepWarmups },
       onPairPrev && { icon: 'link', label: t('Make superset with previous'), onClick: onPairPrev },
       onPairNext && { icon: 'link', label: t('Make superset with next'), onClick: onPairNext },
       { icon: 'shuffle', label: t('Swap exercise'), onClick: onSwap, disabled: busy },
@@ -235,9 +252,19 @@ export default function FocusView({
     ],
   })
 
+  const openTagMenu = () => menuSheet({
+    title: t('Colour tag'), subtitle: t('Set {0}', setIdx + 1),
+    items: [
+      ...SET_TAGS.map(tag => ({ label: <><span style={{ color: tag.color }} aria-hidden="true">{tag.shape}</span> {setTagName(tag.id)}</>, on: setTagOf(set)?.id === tag.id, onClick: () => onMutateSet(setIdx, row => withSetTag(row, tag.id)) })),
+      { icon: 'minus', label: t('None'), on: !setTagOf(set), onClick: () => onMutateSet(setIdx, row => withSetTag(row, null)) },
+    ],
+  })
   const openSetMenu = () => menuSheet({
     title: t('Set {0}', setIdx + 1),
     items: [
+      { icon: 'palette', label: t('Colour tag'), sub: setTagOf(set) ? `${setTagOf(set).shape} ${setTagName(set.tag)}` : t('Your own code for this set'), onClick: openTagMenu },
+      { icon: 'note', label: setNoteOf(set) ? t('Edit note') : t('Note'), sub: setNoteOf(set) || t('A word about this set'), onClick: () => setNoteSheet(entryIdx, setIdx) },
+      !isWarmupRow(set) && mode === 'reps' && { icon: 'stopwatch', label: t('Tempo'), sub: tempoOf(entry.target, set) || t('None'), onClick: () => setTempoSheet(entryIdx, setIdx, { onTick: complete }) },
       { icon: 'flame', label: isWarmupRow(set) ? t('Mark as work set') : t('Mark as warm-up'), onClick: () => onMutateSet(setIdx, toggleWarmup) },
       { icon: 'arrowDown', label: t('Add drop set'), onClick: () => onMutateSet(setIdx, row => addDropTo(row, entry.target)) },
       { icon: 'bolt', label: t('Add burst'), onClick: () => onMutateSet(setIdx, row => addBurstTo(row, entry.target?.intensifier?.type === 'restpause' ? entry.target.intensifier.restSec : (S.restPauseSec || 15))) },
@@ -277,7 +304,7 @@ export default function FocusView({
         {pinnedNote && <div className="focus-note pinned"><Icon name="flag" />{t('From {0}:', fmtDate(pinnedNote.d, true))} {pinnedNote.note}</div>}
         {entry.note && <div className="focus-note">{entry.note}</div>}
         {last && <div className="focus-last">{t('Last time')} · {fmtDate(last.d)}</div>}
-        {guidance && <button className="focus-guidance" onClick={onProgressionSettings}><Icon name="lightbulb" />{t(guidance.policyLabel)}</button>}
+        {guidance && <button className="focus-guidance" onClick={onProgressionSettings}><Icon name="lightbulb" />{t(guidance.policyLabel)}{entry.plan?.kind === 'programme' && <> · {t(...guidance.why)}{guidance.prog?.rpe != null && (' · ' + rpeAs(guidance.prog.rpe, effort).k + ' ' + fmtNum(rpeAs(guidance.prog.rpe, effort).v))}</>}</button>}
       </div>
       <Prescription entry={entry} setIdx={setIdx} unit={S.unit} fallbackRest={S.restSec}>
         <PlanBadge entry={entry} mode={mode} />
@@ -293,10 +320,13 @@ export default function FocusView({
               onChange={value => onField(setIdx, 'min', value)} />
             {/* Stored in km/h, shown and typed in the profile's speed unit, as on every other
                 cardio input (lib/speed.js). */}
-            <Stepper label={speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)')} ariaLabel="speed" value={toSpeed(set.speed || 0, speedUnit)} step={0.5} disabled={readOnly}
-              onChange={value => onField(setIdx, 'speed', fromSpeed(value, speedUnit))} />
+            {byDist ? <Stepper label={t('Distance ({0})', distLabel(distUnit))} ariaLabel="distance" value={toDist(distanceKmOf(set), distUnit)} step={distUnit === 'mi' ? .1 : .5} disabled={readOnly}
+              onChange={value => onField(setIdx, 'km', fromDist(value, distUnit))} />
+              : <Stepper label={speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)')} ariaLabel="speed" value={toSpeed(set.speed || 0, speedUnit)} step={0.5} disabled={readOnly}
+                onChange={value => onField(setIdx, 'speed', fromSpeed(value, speedUnit))} />}
             {/* The treadmill's grade, where the exercise has one (lib/incline.js). */}
-            {(inclineFits(ex) || entry.sets.some(hasIncline)) && <Stepper label={t('Incline (%)')} ariaLabel="incline" value={set.incline || 0} step={INCLINE_STEP} max={INCLINE_MAX} disabled={readOnly}
+            {cardioField === 'level' ? <Stepper label={t('Level')} ariaLabel="level" value={set.level ?? null} step={1} max={LEVEL_MAX} decimal={false} disabled={readOnly}
+              onChange={value => onField(setIdx, 'level', clampLevel(value))} /> : (inclineFits(ex) || entry.sets.some(hasIncline)) && <Stepper label={t('Incline (%)')} ariaLabel="incline" value={set.incline || 0} step={INCLINE_STEP} max={INCLINE_MAX} disabled={readOnly}
               onChange={value => onField(setIdx, 'incline', clampIncline(value))} />}
           </> : <>
             <Stepper label={t('Load ({0})', S.unit)} ariaLabel="load" value={set.w || 0} step={loadStep} onStep={stepLoad} disabled={readOnly}
@@ -308,6 +338,7 @@ export default function FocusView({
           </div> : <Stepper label={t('Reps')} ariaLabel="reps" value={set.r || 0} step={1} decimal={false} disabled={readOnly}
             onChange={value => onField(setIdx, 'r', value)} />}</>}
         </>}
+        {mode === 'reps' && usesBands(S, entry.id, entry.target) && <BandChips className="focus-bands" value={setBandsOf(set)} label={t('Bands for set {0}', setIdx + 1)} onToggle={id => { if (!readOnly) onMutateSet(setIdx, row => toggleSetBand(row, id)) }} />}
         <div className="focus-extras">
           {drops.map((drop, index) => <div className="focus-extra" key={`drop-${index}`}>
             <span>{t('Drop {0}', index + 1)}</span>

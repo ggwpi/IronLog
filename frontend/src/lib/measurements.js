@@ -1,6 +1,10 @@
 // Body measurements are stored in centimetres, regardless of the profile's weight unit.
 // Keeping one canonical unit means changing kg/lb never relabels old circumference values as
 // something they are not. The UI converts at its edge: kg profiles see cm, lb profiles see in.
+import { measurementUnit as originalUnit, toMeasurementDisplay as originalDisplay, fromMeasurementDisplay as originalStored,
+  normalizeMeasurementEntry as originalEntry, measurementValue as originalValue, measurementSeries as originalSeries, bpOf as originalBP, BP_KEY, lengthUnitOf as originalLengthUnit } from './opengym-v145/measurements.js'
+export { measurementUnitLabel, zeroIsReading, CUSTOM_MEASUREMENT_UNITS, customMeasurementUnits, lengthUnitOf, BP_KEY, bpOf, bpText, bpSeries, bpProblem, MEASUREMENT_NOTE_MAX } from './opengym-v145/measurements.js'
+export const measurementNoteOf = value => originalEntry({ note: value }).note || ''
 
 export const MEASUREMENT_FIELDS = [
   { key: 'neck', label: 'Neck', group: 'Torso' },
@@ -30,14 +34,14 @@ export const DEFAULT_MEASUREMENT_KEYS = MEASUREMENT_FIELDS.filter(f => !f.option
 const round = n => Math.round(n * 10) / 10
 const valid = v => Number.isFinite(+v) && +v > 0 ? round(+v) : null
 
-export const measurementUnit = unit => unit === 'lb' ? 'in' : 'cm'
-export const toMeasurementDisplay = (cm, unit) => cm == null ? null : round(unit === 'lb' ? cm / 2.54 : cm)
-export const fromMeasurementDisplay = (value, unit) => value == null ? null : valid(unit === 'lb' ? +value * 2.54 : +value)
+export const measurementUnit = (unit, field) => field?.unit ? originalUnit(unit, field) : unit === 'lb' || unit === 'in' ? 'in' : 'cm'
+export const toMeasurementDisplay = (cm, unit, field) => field?.unit ? originalDisplay(cm, unit, field) : cm == null ? null : round(unit === 'lb' || unit === 'in' ? cm / 2.54 : cm)
+export const fromMeasurementDisplay = (value, unit, field) => field?.unit ? originalStored(value, unit, field) : value == null ? null : valid(unit === 'lb' || unit === 'in' ? +value * 2.54 : +value)
 
 export function emptyMeasurement(date, custom = []) {
   const entry = { d: date, t: new Date(date + 'T12:00:00').getTime() }
   for (const key of MEASUREMENT_KEYS) entry[key] = null
-  entry.other = custom.map(c => ({ id: c.id, name: c.name, value: null }))
+  entry.other = custom.map(c => ({ id: c.id, name: c.name, value: null, ...(c.unit ? { unit: c.unit } : {}) }))
   return entry
 }
 
@@ -45,6 +49,8 @@ export function emptyMeasurement(date, custom = []) {
 // a backup must not lose history merely because its custom-field definition is absent.
 export function normalizeMeasurementEntry(raw = {}, custom = []) {
   const entry = emptyMeasurement(raw.d || '', custom)
+  const original = originalEntry(raw, custom)
+  const typed = new Map(original.other.map(o => [o.id, o]))
   entry.t = Number.isFinite(+raw.t) ? +raw.t : entry.t
   for (const key of MEASUREMENT_KEYS) entry[key] = valid(raw[key])
   if (entry.bodyFat != null && entry.bodyFat > 100) entry.bodyFat = null
@@ -54,10 +60,11 @@ export function normalizeMeasurementEntry(raw = {}, custom = []) {
   entry.other = (Array.isArray(raw.other) ? raw.other : []).map(o => {
     if (!o || !o.id || seen.has(o.id)) return null
     seen.add(o.id)
-    return { id: String(o.id), name: String(known.get(o.id)?.name || o.name || 'Other'), value: valid(o.value) }
+    const unit = o.unit || known.get(o.id)?.unit
+    return { ...o, id: String(o.id), name: String(known.get(o.id)?.name || o.name || 'Other'), value: unit ? typed.get(String(o.id))?.value ?? null : valid(o.value), ...(unit ? { unit } : {}) }
   }).filter(Boolean)
-  for (const c of custom) if (!seen.has(c.id)) entry.other.push({ id: c.id, name: c.name, value: null })
-  return entry
+  for (const c of custom) if (!seen.has(c.id)) entry.other.push({ id: c.id, name: c.name, value: null, ...(c.unit ? { unit: c.unit } : {}) })
+  return { ...raw, ...entry }
 }
 
 // Fold a second entry for a date into the first. The later reading wins per field, but a field
@@ -81,11 +88,11 @@ export function normalizeMeasurementsState(state) {
   state.customMeasurements = rawCustom.map(c => {
     if (!c || !c.id || !String(c.name || '').trim() || ids.has(String(c.id))) return null
     const id = String(c.id); ids.add(id)
-    return { id, name: String(c.name).trim().slice(0, 60), enabled: c.enabled !== false }
+    return { ...c, id, name: String(c.name).trim().slice(0, 60), enabled: c.enabled !== false }
   }).filter(Boolean)
 
   const enabled = Array.isArray(state.measurementEnabled) ? state.measurementEnabled : DEFAULT_MEASUREMENT_KEYS
-  state.measurementEnabled = [...new Set(enabled.filter(k => MEASUREMENT_KEYS.includes(k)))]
+  state.measurementEnabled = [...new Set(enabled.filter(k => MEASUREMENT_KEYS.includes(k) || k === BP_KEY))]
   const entries = (Array.isArray(state.measurements) ? state.measurements : [])
     .filter(e => e && /^\d{4}-\d{2}-\d{2}$/.test(e.d || ''))
     .map(e => normalizeMeasurementEntry(e, state.customMeasurements))
@@ -108,7 +115,8 @@ export function normalizeMeasurementsState(state) {
 export function measurementValue(entry, key) {
   if (!entry) return null
   if (!key.startsWith('other:')) return valid(entry[key])
-  return valid((entry.other || []).find(o => o.id === key.slice(6))?.value)
+  const item = (entry.other || []).find(o => o.id === key.slice(6))
+  return item?.unit ? originalValue(entry, key) : valid(item?.value)
 }
 
 export function measurementLabel(key, custom = []) {
@@ -123,19 +131,22 @@ export function enabledMeasurementFields(state) {
   const enabled = new Set(state.measurementEnabled || DEFAULT_MEASUREMENT_KEYS)
   const builtins = MEASUREMENT_FIELDS.filter(f => enabled.has(f.key))
   const custom = (state.customMeasurements || []).filter(c => c.enabled !== false)
-    .map(c => ({ key: 'other:' + c.id, label: c.name, group: 'Other', custom: true }))
+    .map(c => ({ key: 'other:' + c.id, label: c.name, group: 'Other', custom: true, ...(c.unit ? { unit: c.unit } : {}) }))
   return [...builtins, ...custom]
 }
 
 export function measurementSeries(state, key, range = 0, now = Date.now()) {
   const cutoff = range ? now - range * 86400000 : -Infinity
-  const unit = state.unit || 'kg'
+  const unit = originalLengthUnit(state)
   const percent = key === 'bodyFat'
+  const field = key.startsWith('other:') ? (state.customMeasurements || []).find(c => c.id === key.slice(6)) : null
+  if (key.startsWith('other:') && (field?.unit || (state.measurements || []).some(e => e.other?.some(o => o.id === key.slice(6) && o.unit)))) return originalSeries(state, key, range, now)
   return (state.measurements || []).map(entry => {
     const raw = measurementValue(entry, key)
     const at = new Date(entry.d + 'T12:00:00').getTime()
     if (raw == null || at < cutoff) return null
-    return { t: at, d: entry.d, y: percent ? raw : toMeasurementDisplay(raw, unit) }
+    const item = key.startsWith('other:') ? (entry.other || []).find(o => o.id === key.slice(6)) : null
+    return { t: at, d: entry.d, y: percent ? raw : toMeasurementDisplay(raw, unit, item?.unit ? item : field) }
   }).filter(Boolean)
 }
 
@@ -148,6 +159,6 @@ export function latestMeasurement(state, key) {
 }
 
 export function measurementEntryHasValues(entry) {
-  return MEASUREMENT_KEYS.some(k => valid(entry?.[k]) != null) ||
-    (entry?.other || []).some(o => valid(o?.value) != null)
+  return !!originalBP(entry) || MEASUREMENT_KEYS.some(k => valid(entry?.[k]) != null) ||
+    (entry?.other || []).some(o => o?.unit ? originalValue({ other: [o] }, 'other:' + o.id) != null : valid(o?.value) != null)
 }

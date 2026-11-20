@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
+import { isOn } from '../lib/modules.js'
 import { dayPhotosOf } from '../lib/day-photos.js'
 import { EXIDX, matchExercise, betterWeight, isAssisted } from '../lib/exercises.js'
 import { lastBW, streakWeeks, setLabel, modeOf, effortOf, entriesForExercise, metricEntriesForExercise, metricModeForEntry, bestWeightForEntry, completedRepsOf, workoutDay, workoutAt } from '../lib/history.js'
@@ -9,6 +10,13 @@ import { speedUnitOf, speedLabel, toSpeed } from '../lib/speed.js'
 import { t, exerciseNameFor, exerciseNameClass, getLang } from '../lib/i18n.js'
 import { bwSheet, goalSheet, calendarSheet, dayOverrideSheet, workoutDetailSheet, exerciseHistorySheet, WorkoutRow, bwDeltaColor, weighInsSheet } from '../sheets.jsx'
 import LineChart from '../components/LineChart.jsx'
+import { lifetimeTotals } from '../lib/lifetime-totals.js'
+import CardioWeekCard from '../components/CardioWeek.jsx'
+import '../components/ironlog-cardio-week.css'
+import StrengthLevelsCard from '../components/StrengthLevelsCard.jsx'
+import RelativeStrengthCard from '../components/RelativeStrengthCard.jsx'
+import WeeklyMuscleTargetsCard from '../components/WeeklyMuscleTargetsCard.jsx'
+import DailyFormStatsCard from '../components/DailyFormStatsCard.jsx'
 import Heatmap from '../components/Heatmap.jsx'
 import Icon from '../components/Icon.jsx'
 import BodyMap, { BodyMapLegend } from '../components/BodyMap.jsx'
@@ -438,6 +446,8 @@ export default function Stats() {
   const bw30 = S.bodyweight.filter(b => weighInAt(b) > now - 30 * 86400000)
   const bwDelta30 = bw30.length > 1 ? bw30[bw30.length - 1].w - bw30[0].w : null
   const workouts = S.workouts
+  // Upstream's lifetime calculation is pure; rendering it never changes a user's history.
+  const totals = useMemo(() => lifetimeTotals(S), [S.workouts])
   const monthW = workouts.filter(w => workoutDay(w)?.slice(0, 7) === todayISO().slice(0, 7)).length
 
   // Dumbbell weights are read in each exercise's current meaning (lib/dumbbells.js), so the
@@ -574,7 +584,7 @@ export default function Stats() {
   // curve of its own, because the two only mean something together: the same weight moved
   // with more left in the tank is progress a weight-only chart draws as a flat line.
   const exRir = exPts.map(p => avgRir(p.sets))
-  const showEff = exRir.filter(v => v != null).length >= 3
+  const showEff = isOn(S, 'effort') && exRir.filter(v => v != null).length >= 3
   const effPts = exPts.map((p, i) => (exRir[i] == null ? null : { t: p.t, y: toScale(kind, exRir[i]), d: p.d })).filter(p => p && inExRange(p))
   // Pyramid sets' Max sets: the most reps in one, per workout — the point of a Max set is seeing
   // that number climb, which the top-set weight line does not show.
@@ -642,13 +652,33 @@ export default function Stats() {
     <div className="hdr"><div><h1>{t('Stats')}</h1><div className="sub">{t('Progress & history')}</div></div>
       <button className="iconbtn" onClick={() => nav('/history')} aria-label={t('History')}><Icon name="history" /></button></div>
 
+    <Button variant="tinted" icon="calculator" onClick={() => nav('/tools')}>{t('Tools')}</Button>
     <div className="tiles stats-summary">
       <div className="tile"><div className="l"><span>{t('Workouts')}</span><Icon name="dumbbell" /></div><div className="v">{workouts.length}</div></div>
       <div className="tile"><div className="l"><span>{t('This month')}</span><Icon name="calendar" /></div><div className="v">{monthW}</div></div>
-      <div className="tile"><div className="l"><span>{t('Week streak')}</span><Icon name="flameFill" /></div><div className="v">{streakWeeks(S)}</div></div>
-      <div className="tile"><div className="l"><span>{t('Weight 30d')}</span><Icon name="scale" /></div><div className="v" style={{ color: bwDelta30 === null ? 'inherit' : bwDeltaColor(bwDelta30, (lastBW(S) || {}).w || 0) }}>{bwDelta30 === null ? '–' : <>{(bwDelta30 > 0 ? '+' : '') + fmtNum(bwDelta30)} <span className="tile-unit">{S.unit}</span></>}</div></div>
+      {isOn(S, 'motivation') && <div className="tile"><div className="l"><span>{t('Week streak')}</span><Icon name="flameFill" /></div><div className="v">{streakWeeks(S)}</div></div>}
+      {isOn(S, 'body') && <div className="tile"><div className="l"><span>{t('Weight 30d')}</span><Icon name="scale" /></div><div className="v" style={{ color: bwDelta30 === null ? 'inherit' : bwDeltaColor(bwDelta30, (lastBW(S) || {}).w || 0) }}>{bwDelta30 === null ? '–' : <>{(bwDelta30 > 0 ? '+' : '') + fmtNum(bwDelta30)} <span className="tile-unit">{S.unit}</span></>}</div></div>}
 
     </div>
+
+    {/* The first new upstream Stats feature is rendered with the existing IronLog
+        card, row and typography styles. Existing summary cards stay untouched. */}
+    {workouts.length > 0 && <div className="card" data-lifetime-totals>
+      <h2>{t('History')}</h2>
+      <div className="row between" style={{ padding: '8px 0', borderBottom: 'var(--hair) solid var(--sep)' }}>
+        <span className="muted">{t('Workouts')}</span><span>{fmtNum(totals.workouts)}</span>
+      </div>
+      <div className="row between" style={{ padding: '8px 0', borderBottom: 'var(--hair) solid var(--sep)' }}>
+        <span className="muted">{t('Work sets')}</span><span>{fmtNum(totals.sets)}</span>
+      </div>
+      <div className="row between" style={{ padding: '8px 0' }}>
+        <span className="muted">{t('Hours')}</span><span>{fmtNum(Math.round(totals.hours * 10) / 10)}</span>
+      </div>
+    </div>}
+
+    {/* Same IronLog card/sheet system as the existing Stats UI. No upstream styling. */}
+    <CardioWeekCard S={S} />
+    {isOn(S, 'strength') && workouts.length > 0 && <StrengthLevelsCard S={S} />}
 
     <div className="card">
       <h2>{t('Activity (last 12 months)')}</h2>
@@ -662,27 +692,32 @@ export default function Stats() {
 
     {(workouts.length > 0 || Object.keys(loadOfWeeklyPlan(S)).length > 0) && <MuscleBalance S={S} />}
     {S.routines.length > 0 && <WeeklyPlanVolume S={S} />}
-    {workouts.length > 0 && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
+    {/* New weekly target ranges are an additional IronLog card, not a replacement
+        for the existing weekly planned-volume or body-map cards. */}
+    <WeeklyMuscleTargetsCard S={S} />
+    {/* openGym check-in history uses an additional IronLog card, without replacing existing cards. */}
+    {isOn(S, 'health') && <DailyFormStatsCard S={S} />}
+    {isOn(S, 'strength') && workouts.length > 0 && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
       <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t('Structural balance')}</h2>
         <div className="muted small" style={{ marginTop: 4 }}>{t('See which lift is holding back the rest.')}</div></div>
       <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/structural-balance')}>{t('Open')}</Button>
     </div>}
-    {(workouts.length > 0 || dayPhotosOf(S).length > 0) && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
+    {isOn(S, 'body') && (workouts.length > 0 || dayPhotosOf(S).length > 0) && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
       <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t('Progress photos')}</h2>
         <div className="muted small" style={{ marginTop: 4 }}>{t('Every progress photo, lined up by date, for any day. Plus a before/after slider.')}</div></div>
       <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/progress-photos')}>{t('Open')}</Button>
     </div>}
-    <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
+    {isOn(S, 'body') && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
       <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t('Body measurements')}</h2>
         <div className="muted small" style={{ marginTop: 4 }}>{(S.measurements || []).length
           ? t('Last check-in {0}', fmtDate(S.measurements[S.measurements.length - 1].d, true))
           : t('Waist, arms, body fat and anything else you measure, each with its own curve.')}</div></div>
       <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/measurements')}>{t('Open')}</Button>
-    </div>
-    {(hasEffort(S) || hasEstimableEffort(S)) && <EffortCard S={S} />}
+    </div>}
+    {isOn(S, 'effort') && (hasEffort(S) || hasEstimableEffort(S)) && <EffortCard S={S} />}
 
     <div className="cols">
-      <div className="card">
+      {isOn(S, 'body') && <div className="card">
         <div className="row between bw-head" style={{ marginBottom: 8 }}>
           <h2 style={{ margin: 0 }}>{t('Body weight')}</h2>
           <div className="row" style={{ gap: 8 }}>
@@ -697,7 +732,7 @@ export default function Stats() {
         {S.bodyweight.length > 0 && <div className="row" style={{ justifyContent: 'flex-end', marginTop: 4 }}>
           <Button size="sm" variant="ghost" trailingIcon="chevronRight" onClick={weighInsSheet}>{t('All weigh-ins')}</Button>
         </div>}
-      </div>
+      </div>}
 
       <div className="card">
         <h2>{t('Exercise progress')}</h2>
@@ -750,6 +785,10 @@ export default function Stats() {
         </> : <div className="muted small">{t('Finish your first workout and your progress curves will show up here.')}</div>}
       </div>
     </div>
+
+    {/* Upstream relative-strength chart, following the existing exercise picker,
+        using IronLog's line graph and native card design. */}
+    {isOn(S, 'strength') && curEx && <RelativeStrengthCard S={S} exId={curEx} />}
 
     {workouts.length > 0 && <>
       <div className="row between" style={{ marginBottom: 10 }}>

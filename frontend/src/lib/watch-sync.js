@@ -28,10 +28,22 @@ import { buildCombinedEntries, deriveSessionName } from './session-merge.js'
 import { todayISO } from './format.js'
 import { sanitizeHr } from './heart-rate.js'
 import { readWatchPrefs, settingsForWatch, writeWatchStatus, onWatchPrefs } from './watch-settings.js'
+import { isOn } from './modules.js'
+import { circuitClock } from './circuit.js'
 
 export const SNAPSHOT_VERSION = 1
 const APPLIED_KEY = 'gym_watch_applied'
 const APPLIED_MAX = 300
+let circuitSource = () => null
+let scheduleCircuitWatch = null
+export function bindCircuitSource(read) { circuitSource = typeof read === 'function' ? read : () => null }
+export const readCircuitRun = () => circuitSource()
+export function circuitChanged() { scheduleCircuitWatch?.(); if (typeof window !== 'undefined') window.dispatchEvent(new Event('gym-circuit-change')) }
+export function watchRestTimer(timer, run = circuitSource()) {
+  const clock = circuitClock(run)
+  if (!clock) return timer
+  return clock.kind === 'rest' ? { endsAt: clock.endsAt, total: clock.total, ...(clock.paused ? { paused: true, left: clock.left } : {}) } : null
+}
 const SEND_DEBOUNCE_MS = 400
 // Routines the watch can start besides today's: enough to choose from, small enough to send.
 const READY_MAX = 8
@@ -215,7 +227,7 @@ function entryIndexOf (A, ev) {
  * changes of the same set, the later one (`at`) wins.
  */
 export function applyEvents (events, getState) {
-  if (!Array.isArray(events)) return []
+  if (!Array.isArray(events) || !isOn(getState()?.S, 'watch')) return []
   const applied = readApplied()
   const done = []
   for (const ev of events) {
@@ -324,7 +336,7 @@ export function drainWatchEvents () {
   draining = (async () => {
     try {
       const p = await watchPlugin()
-      if (!p || !getStateRef || !storeReady()) return []
+      if (!p || !getStateRef || !storeReady() || !isOn(getStateRef()?.S, 'watch')) return []
       const { events = [] } = (await p.WatchBridge.drain()) || {}
       const done = applyEvents(events, getStateRef)
       if (done.length) await getStateRef()?.saveNow?.()
@@ -423,8 +435,8 @@ export function watchExtras (S) {
   const bw = Array.isArray(S?.bodyweight) && S.bodyweight.length ? S.bodyweight[S.bodyweight.length - 1] : null
   return {
     lang,
-    weighIn: S?.weighIn !== false,
-    ...(bw && num(bw.w) ? { lastBw: num(bw.w) } : {}),
+    weighIn: isOn(S, 'body') && S?.weighIn !== false,
+    ...(isOn(S, 'body') && bw && num(bw.w) ? { lastBw: num(bw.w) } : {}),
   }
 }
 
@@ -464,14 +476,16 @@ export async function startWatchSync ({ useStore, useUI }) {
     if (!linked || !storeReady()) return
     try {
       const S = useStore.getState().S
-      const prefs = readWatchPrefs()
+      const savedPrefs = readWatchPrefs()
+      const prefs = { ...savedPrefs, enabled: savedPrefs.enabled && isOn(S, 'watch') }
+      const healthActive = healthOn && isOn(S, 'health') && prefs.enabled
       // Settings → Apple Watch: off, the watch is told there is nothing (no workout, nothing ready).
       const snap = prefs.enabled
-        ? buildSnapshot(S, { timer: useUI.getState().timer, ready: readyFor(S) })
+        ? buildSnapshot(S, { timer: watchRestTimer(useUI.getState().timer), ready: readyFor(S) })
         : { v: SNAPSHOT_VERSION, unit: S.unit === 'lb' ? 'lb' : 'kg', active: null, ready: null }
-      snap.settings = { ...settingsForWatch(prefs, healthOn), ...watchExtras(S) }
+      snap.settings = { ...settingsForWatch(prefs, healthActive), ...watchExtras(S) }
       // With Apple Health on: the deleted workouts, so the watch removes the copies it saved.
-      if (healthOn) { const gone = healthGoneFor(S); if (gone.length) snap.healthGone = gone }
+      if (healthActive) { const gone = healthGoneFor(S); if (gone.length) snap.healthGone = gone }
       const json = JSON.stringify(fitSnapshot(snap))
       if (json !== lastSent) {
         const r = await p.WatchBridge.sendSnapshot({ json })
@@ -483,7 +497,7 @@ export async function startWatchSync ({ useStore, useUI }) {
       if (clips.length && key !== lastClips) {
         await p.WatchBridge.sendClips({ wid: S.active.id, clips })
         lastClips = key
-      } else if (!S.active && lastClips) {
+      } else if ((!S.active || !prefs.enabled) && lastClips) {
         // The workout is over: animations still on their way to the watch are not wanted any more.
         lastClips = null
         await p.WatchBridge.dropClips?.()
@@ -491,13 +505,15 @@ export async function startWatchSync ({ useStore, useUI }) {
     } catch { /* no watch, or not now: the next change tries again */ }
   }
   const schedule = () => { if (!linked) return; clearTimeout(tm); tm = setTimeout(send, SEND_DEBOUNCE_MS) }
+  scheduleCircuitWatch = schedule
   const offStore = useStore.subscribe((s, prev) => {
     // Boot done: what the watch sent meanwhile is applied now, and the watch hears the real state.
     if (s.ready && !prev.ready) { drainWatchEvents(); schedule() }
     if (s.S === prev.S) return
+    if (isOn(s.S, 'watch') && !isOn(prev.S, 'watch')) drainWatchEvents()
     schedule()
     // A workout started on the phone: the watch app opens with it (HealthKit's startWatchApp).
-    if (linked && shouldOpenOnWatch(prev.S?.active, s.S?.active)) Promise.resolve().then(() => p.WatchBridge.openOnWatch()).catch(() => {})
+    if (linked && isOn(s.S, 'watch') && shouldOpenOnWatch(prev.S?.active, s.S?.active)) Promise.resolve().then(() => { if (isOn(useStore.getState().S, 'watch')) return p.WatchBridge.openOnWatch() }).catch(() => {})
   })
   // The rest as the watch needs it changes when it starts, stops or is paused, not every second.
   const restOf = t => (t ? `${t.endsAt}|${!!t.paused}|${!!t.ready}` : '')
@@ -515,7 +531,7 @@ export async function startWatchSync ({ useStore, useUI }) {
   document.addEventListener('visibilitychange', onVisible)
   schedule()
   drainWatchEvents()
-  return () => { offStore(); offUI(); offPrefs(); offHealth(); offLang(); sub?.remove?.(); subLink?.remove?.(); document.removeEventListener('visibilitychange', onVisible); clearTimeout(tm) }
+  return () => { if (scheduleCircuitWatch === schedule) scheduleCircuitWatch = null; offStore(); offUI(); offPrefs(); offHealth(); offLang(); sub?.remove?.(); subLink?.remove?.(); document.removeEventListener('visibilitychange', onVisible); clearTimeout(tm) }
 }
 
 // Test seams.

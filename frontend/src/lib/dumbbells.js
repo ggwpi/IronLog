@@ -30,6 +30,7 @@
 // this file without a cycle.
 
 import { EXIDX, isBodyweightEq } from './exercises.js'
+import { machineWeightsFor } from './machine-stacks.js'
 
 const exOf = exOrId => (typeof exOrId === 'string' ? EXIDX[exOrId] : exOrId)
 const unitOf = S => (S?.unit === 'lb' ? 'lb' : 'kg')
@@ -202,6 +203,8 @@ export const withDumbbells = (S, weights, now = Date.now()) =>
  * moves in pairs (2 × each weight); every other meaning moves one bell at a time.
  */
 export function ownedWeightsFor(S, cfg) {
+  const machine = machineWeightsFor(S, cfg)
+  if (machine) return machine
   const ex = exOf(cfg?.id)
   if (ex?.eq !== 'dumbbell') return null
   const bw = cfg?.bodyweight != null ? !!cfg.bodyweight : isBodyweightEq(cfg?.id)

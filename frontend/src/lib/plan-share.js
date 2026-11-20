@@ -1,3 +1,6 @@
+import * as programmeShare from './opengym-v145/programme-share/frontend/src/lib/plan-share.js'
+import { syncSessionEngineProfile } from './opengym-session-profile.js'
+import { syncUpstreamLocale } from './opengym-locale.js'
 // Share a weekly plan.
 //
 // Two jobs:
@@ -11,6 +14,9 @@
 import { EXIDX, canonicalExId, isBodyweightEq, isCustomEx } from './exercises.js'
 import { cleanBackups } from './routine-backups.js'
 import { cleanUrl } from './media-refs.js'
+import { warmupModeOf, ownRowsOf } from './warmup-ramp.js'
+import { clampIncline, clampLevel } from './incline.js'
+
 import { modeOf, exLine, MAX_PLANNED_WARMUPS } from './history.js'
 import { deriveSessionName } from './session-merge.js'
 import { isPyramid, normalizePyramid, normalizePyramidRest, normalizePyramidWeight } from './pyramid.js'
@@ -23,6 +29,14 @@ import { convertWeight } from './units.js'
 import { fmtSpeed, speedUnitOf } from './speed.js'
 import { MUSCLES, inMuscleOrder } from './muscles.js'
 import { SG_NAME_MAX } from './superset-meta.js'
+
+// New fields at the existing IronLog plan boundary; validation belongs to the original model.
+const warmupChoiceFields = cfg => {
+  const mode = warmupModeOf(cfg)
+  if (!mode) return {}
+  const rows = mode === 'own' ? ownRowsOf(cfg) : []
+  return { warmup: mode, ...(rows.length ? { warmupRows: rows } : {}) }
+}
 
 const PLAN_FMT = 1
 const WEEK_DAYS = [1, 2, 3, 4, 5, 6, 0]   // every getDay() index; only the reader's own
@@ -139,6 +153,10 @@ function cleanEx(e) {
   if (e.note) o.note = e.note
   const warm = cleanWarmupSets(e.warmupSets)
   if (warm) o.warmupSets = warm
+  Object.assign(o, warmupChoiceFields(e))
+  const incline = clampIncline(e.incline), level = clampLevel(e.level)
+  if (incline > 0) o.incline = incline
+  if (level > 0) o.level = level
   // Drop-sets and rest-pause are part of how the exercise is prescribed, not a logging detail.
   // Without this a shared "3x5 with a double drop" arrived at the other end as a plain 3x5,
   // silently — parsePlan's `dropped` counter only tracks exercises it cannot resolve at all.
@@ -211,7 +229,15 @@ function cleanCustom(c) {
 }
 
 /** Build the shareable bundle: every routine, the week schedule, referenced customs. */
+export function buildProgrammeBundle(S, id) {
+  syncSessionEngineProfile(S); syncUpstreamLocale()
+  return programmeShare.buildProgrammeBundle(S, id)
+}
 export function buildPlanBundle(S, name) {
+  if (Object.keys(S.programmes || {}).length) {
+    syncSessionEngineProfile(S); syncUpstreamLocale()
+    return programmeShare.buildPlanBundle(S, name)
+  }
   const unit = planUnit(S.unit == null ? 'kg' : S.unit)
   if (!unit) unitError()
   const routines = (S.routines || []).map(r => ({
@@ -245,6 +271,7 @@ export function parsePlan(raw, destinationUnit = 'kg') {
   const notPlan = () => Object.assign(new Error(t('this isn’t an openGym plan file')), { code: 'not-plan' })
   let data = raw
   if (typeof raw === 'string') { try { data = JSON.parse(raw) } catch { throw notPlan() } }
+  if (data && (Object.hasOwn(data, 'programmes') || Object.hasOwn(data, 'programme_fmt'))) return programmeShare.parsePlan(data, destinationUnit)
   const destination = planUnit(destinationUnit)
   if (!data || typeof data !== 'object' || Array.isArray(data) || !data.opengym_plan || !Array.isArray(data.routines) || !destination) {
     throw notPlan()
@@ -278,6 +305,16 @@ export function parsePlan(raw, destinationUnit = 'kg') {
       const pyramidRest = pyramid.length ? normalizePyramidRest(e.pyramidRest, pyramid.length) : []
       const pyramidWeight = pyramid.length ? normalizePyramidWeight(e.pyramidWeight, pyramid.length) : []
       const { warmupSets, intensifier, restSec, warmupRestSec, warmupRestOff: _warmOff, sideRestSec: _sideRest, subs: _subs, pyramid: _pyramid, pyramidRest: _pyramidRest, pyramidWeight: _pyramidWeight, sgName: _sgName, sgRest: _sgRest, ...passthrough } = e
+      if (warmupModeOf(e)) {
+        delete passthrough.warmup
+        delete passthrough.warmupRows
+        Object.assign(passthrough, warmupChoiceFields(e))
+      }
+      delete passthrough.incline
+      delete passthrough.level
+      const incline = clampIncline(e.incline), level = clampLevel(e.level)
+      if (incline > 0) passthrough.incline = incline
+      if (level > 0) passthrough.level = level
       if (!known.has(passthrough.id)) passthrough.id = canonicalExId(passthrough.id)
       return convertedExercise({ ...passthrough, ...(pyramid.length ? { pyramid } : {}), ...(pyramidRest.length ? { pyramidRest } : {}), ...(pyramidWeight.length ? { pyramidWeight } : {}), ...(warm ? { warmupSets: warm } : {}), ...(intens ? { intensifier: intens } : {}), ...(rest ? { restSec: rest } : {}), ...(warmOff ? { warmupRestOff: true } : warmRest ? { warmupRestSec: warmRest } : {}), ...(sideRest ? { sideRestSec: sideRest } : {}), ...(subs.length ? { subs } : {}), ...(sgName ? { sgName } : {}), ...(sgRest ? { sgRest } : {}) }, sourceUnit || destination, destination)
     })
@@ -307,6 +344,7 @@ export function parsePlan(raw, destinationUnit = 'kg') {
  *    leaves empty become rest days — a half-overwritten week would silently mix two plans)
  */
 export function mergePlan(s, bundle, { schedule } = {}) {
+  if (Object.hasOwn(bundle, 'programmes')) return programmeShare.mergePlan(s, bundle, { schedule })
   const destination = planUnit(s.unit == null ? 'kg' : s.unit)
   if (!destination) unitError()
   const source = convertedBundle(bundle, destination)

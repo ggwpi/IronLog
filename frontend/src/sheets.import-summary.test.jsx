@@ -59,6 +59,31 @@ describe('the import summary’s counts', () => {
   afterEach(() => { if (root) act(() => root.unmount()); root = null; document.body.innerHTML = '' })
   const lines = () => [...host.querySelectorAll('.small.dim')].map(d => d.textContent)
 
+  it('offers an additional timed reading on a day already stored and previews without mutation', async () => {
+    useStore.setState(s => ({ S: { ...s.S, weighInTimes: true, bodyweight: [{ d: '2026-10-01', w: 80, t: 100, ins: [{ id: 'am', at: '07:00', w: 80, t: 100, future: 'keep' }] }] } }))
+    const before = structuredClone(useStore.getState().S)
+    await summaryFor('date,weight_kg\n2026-10-01T07:00,80\n2026-10-01T19:00,82')
+    expect(useStore.getState().S).toEqual(before)
+    const importBtn = [...host.querySelectorAll('button')].find(b => b.textContent === 'Import')
+    expect(importBtn.disabled).toBe(false)
+    act(() => importBtn.click())
+    expect(useStore.getState().S.bodyweight[0].ins.map(r => r.w)).toEqual([80, 82])
+    expect(useStore.getState().S.bodyweight[0].ins[0].future).toBe('keep')
+    expect(useUI.getState().toastMsg).toBe('1 weigh-in imported')
+  })
+  it('accepts a measurement-only own export without requiring a weight or rewriting existing measurement days', async () => {
+    useStore.setState(s => ({ S: { ...s.S, customMeasurements: [], measurements: [{ d: '2026-10-01', waist: 99, future: 'keep', other: [] }] } }))
+    const before = structuredClone(useStore.getState().S)
+    await summaryFor('date,weight_kg,waist_cm\n2026-10-01,,85\n2026-10-02,,86')
+    expect(useStore.getState().S).toEqual(before)
+    const importBtn = [...host.querySelectorAll('button')].find(b => b.textContent === 'Import')
+    expect(importBtn.disabled).toBe(false)
+    act(() => importBtn.click())
+    expect(useStore.getState().S.measurements[0]).toEqual(before.measurements[0])
+    expect(useStore.getState().S.measurements[1]).toMatchObject({ d: '2026-10-02', waist: 86 })
+    expect(useUI.getState().toastMsg).toBe('1 measurement')
+  })
+
   it('says how many rows were skipped, singular and plural, and nothing when none were', async () => {
     await summaryFor([HEAD, '2026-01-02,Bench Press,60,5', 'not a date,Bench Press,60,5'].join('\n'))
     expect(lines()).toContain('1 row skipped (couldn’t read it)')

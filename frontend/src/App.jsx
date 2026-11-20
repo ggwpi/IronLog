@@ -19,6 +19,11 @@ import { initBackButton } from './lib/back.js'
 import { installEdgeSwipeBack, BACK_PREVIEW_EVENT } from './lib/edge-swipe-back.js'
 import { startWatchSync, bindWatchAppActions, patchSetIn } from './lib/watch-sync.js'
 import { stampWorkout } from './lib/sync-merge.js'
+import { setKnownBands, setBandWeightDecimals } from './lib/bands.js'
+import { isOn } from './lib/modules.js'
+import './components/ironlog-bands.css'
+import CircuitSheetHost from './components/CircuitSheets.jsx'
+import './components/ironlog-circuit.css'
 import { logWeighIn } from './lib/bodyweight.js'
 import { startWidgetSync } from './lib/widgets.js'
 import { startLiveActivitySync } from './lib/live-activity.js'
@@ -44,6 +49,8 @@ import PermissionSteps from './views/PermissionSteps.jsx'
 import Home from './views/Home.jsx'
 import CheckIn from './views/CheckIn.jsx'
 import Plan from './views/Plan.jsx'
+import Tools from './views/Tools.jsx'
+import Programmes, { ProgrammeEdit } from './views/Programmes.jsx'
 import RoutineEdit from './views/RoutineEdit.jsx'
 import Workout from './views/Workout.jsx'
 import Stats from './views/Stats.jsx'
@@ -83,6 +90,8 @@ function Shell() {
   const loc = useLocation()
   const navType = useNavigationType()
   const { S, user, ready } = useStore()
+  setKnownBands(S.bands)
+  setBandWeightDecimals(S.wdec)
   useLayoutEffect(() => {
     if (!(S.ironlogPaletteVersion >= 1)) useStore.getState().update(restoreUpstreamPalette)
   }, [S.ironlogPaletteVersion])
@@ -252,26 +261,29 @@ function Shell() {
       <Route path="/home" element={<Home />} />
       {/* Gym check-in — switched off in Settings, the route falls through to the
           catch-all redirect below. */}
-      {S.checkIn !== false && <Route path="/checkin" element={<CheckIn />} />}
+      {isOn(S, 'checkin') && <Route path="/checkin" element={<CheckIn />} />}
       <Route path="/plan" element={<Plan />} />
+      <Route path="/plan/programmes" element={<Programmes />} />
+      <Route path="/plan/prog/:id" element={<ProgrammeEdit />} />
       <Route path="/plan/r/:id" element={<RoutineEdit />} />
       <Route path="/workout" element={<Workout />} />
       <Route path="/stats" element={<Stats />} />
+      <Route path="/tools" element={<Tools />} />
       <Route path="/history" element={<History />} />
       <Route path="/library" element={<Library />} />
       <Route path="/muscles" element={<Muscles />} />
       <Route path="/structural-balance" element={<StructuralBalance />} />
-      <Route path="/progress-photos" element={<ProgressPhotos />} />
-      <Route path="/measurements" element={<Measurements />} />
+      <Route path="/progress-photos" element={isOn(S, 'body') ? <ProgressPhotos /> : <Navigate to="/stats" replace />} />
+      <Route path="/measurements" element={isOn(S, 'body') ? <Measurements /> : <Navigate to="/stats" replace />} />
       <Route path="/settings" element={<SettingsRoute />} />
       <Route path="/settings/:page" element={<SettingsRoute />} />
       {/* The Coach screens gate themselves on the instance config; the routes exist
           unconditionally so a deep link from a notification lands somewhere sane
           rather than on the catch-all. */}
-      <Route path="/coach" element={<CoachChat />} />
-      <Route path="/coach/intake" element={<CoachIntake />} />
+      <Route path="/coach" element={isOn(S, 'coach') ? <CoachChat /> : <Navigate to="/home" replace />} />
+      <Route path="/coach/intake" element={isOn(S, 'coach') ? <CoachIntake /> : <Navigate to="/home" replace />} />
       <Route path="/coach/proposal" element={<Navigate to="/coach" replace />} />
-      <Route path="/coach/setup" element={<CoachSetup />} />
+      <Route path="/coach/setup" element={isOn(S, 'coach') ? <CoachSetup /> : <Navigate to="/home" replace />} />
       <Route path="/admin" element={user?.admin ? <Admin /> : <Navigate to="/home" replace />} />
       <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
@@ -296,6 +308,7 @@ function Shell() {
       {!noTabs && <TabBar onStart={startFlow} />}
       <RestTimer />
       <Modals />
+      <CircuitSheetHost />
       <Toast />
       <TimerFlash />
     </>

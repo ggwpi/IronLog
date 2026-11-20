@@ -1582,6 +1582,24 @@ paths:
                     True when the client stamps its own changes in `deleted`, `edited` and
                     each entry's `_ts`/`_f`, as the app does. Omit it to have the server
                     stamp what changed against the stored document.
+                trainingDataVersion:
+                  type: integer
+                  enum: [1, 2]
+                  description: >-
+                    Declare resistance-band support before intentionally editing band inventory,
+                    exercise preferences or per-set bands. Omit it for older clients; band data
+                    are preserved and ambiguous structural edits of banded rows are rejected.
+                    Version 2 also supports circuit configurations, saved results and restoring
+                    regular routines. Earlier clients preserve those fields and cannot unlink
+                    circuit groups without upgrading.
+                bodyDataVersion:
+                  type: integer
+                  const: 1
+                  description: >-
+                    Declare support for timed weigh-ins, typed measurement units, blood
+                    pressure, pulse and measurement notes. Send 1 when intentionally editing
+                    these fields. Without this request capability, the server protects body
+                    data that older clients cannot represent. It is not a profile setting.
       responses:
         '200':
           description: Saved.

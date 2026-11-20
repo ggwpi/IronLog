@@ -1,0 +1,20 @@
+/* New band leaves use the existing IronLog palette and controls. No global overrides. */
+.bandchips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.bandchips .chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 10px;border-radius:var(--r-sm);background:var(--surface-2);color:var(--label);border:1px solid var(--sep)}
+.bandchips .chip.on-band{box-shadow:inset 0 0 0 1.5px var(--band);font-weight:600}
+.bandchips .chip.add{color:var(--acc)}
+.bandchips .chip.add svg{width:13px;height:13px}
+.band-lvl{color:var(--label-2)}
+.band-lvl::before{content:'·';margin-inline-end:6px}
+.banddot{width:10px;height:10px;border-radius:50%;background:var(--band);flex:none;box-shadow:inset 0 0 0 1px var(--sep)}
+.banddot.big{width:16px;height:16px}
+.banddots{display:inline-flex;gap:3px;vertical-align:middle;margin-inline-start:4px}
+.bandrow{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:4px 8px;border-bottom:1px solid var(--sep)}
+.bandrow:last-child{border-bottom:0}
+.bandrow-main{flex:1;display:flex;align-items:center;gap:10px;min-height:44px;text-align:start;min-width:0}
+.bandrow-name{flex:1;min-width:0;overflow-wrap:anywhere}
+.bandedit{flex-basis:100%;display:grid;gap:10px;padding:4px 0 12px}
+.bandswatches{display:flex;flex-wrap:wrap;gap:10px}
+.bandswatch{width:36px;height:36px;border-radius:50%;background:var(--band);border:1px solid var(--sep)}
+.bandswatch.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--band)}
+.focus-bands{margin:10px 0 2px}

@@ -78,13 +78,14 @@ import { bestWeightForEntry } from './history.js'
 import { convertStateUnit, convertBodyWeight } from './units.js'
 import { sanitizeAccent } from './accent.js'
 import { readDayNote as readNote } from './day-notes.js'
+import { mergeDay, dailyModeOf, settleAll } from './weigh-ins.js'
 
 const clone = o => JSON.parse(JSON.stringify(o))
 const list = v => (Array.isArray(v) ? v : [])
 // The maps whose every entry carries its own edit time (mergeStampedMap). dayNotes is a day's
 // note on a day off (lib/day-notes.js), one entry per date.
 // dayPhotos is a progress photo filed under a day (lib/day-photos.js), one entry per photo.
-export const STAMPED_MAPS = ['balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'dayNotes', 'dayPhotos']
+export const STAMPED_MAPS = ['balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'stackWeights', 'dayNotes', 'dayPhotos', 'dayForm']
 
 /** The copy with the later `_ts`; on a tie the first argument (callers pass local first). */
 export const newerOf = (a, b) => ((b?._ts || 0) > (a?._ts || 0) ? b : a)
@@ -164,11 +165,18 @@ export function mergeWorkoutMedia(kept, other) {
 const byDayStart = (a, b) => (a.d === b.d ? (a.start || 0) - (b.start || 0) : a.d < b.d ? -1 : 1)
 
 /** One entry per day; where both have a day, the one edited later (`t`); sorted by day. */
-export function mergeBodyweight(a = [], b = []) {
+export function mergeBodyweight(a = [], b = [], options = {}) {
+  const { readings = true, mode = 'first' } = typeof options === 'string' ? { mode: options } : options
   const byDay = new Map()
   for (const e of [...list(a), ...list(b)]) {
     if (!e || e.d == null) continue
     const cur = byDay.get(e.d)
+    if (readings && cur && (Array.isArray(cur.ins) || Array.isArray(e.ins))) {
+      const merged = mergeDay(cur, e, mode)
+      if (merged) byDay.set(e.d, merged)
+      else byDay.delete(e.d)
+      continue
+    }
     if (!cur || (e.t || 0) > (cur.t || 0)) byDay.set(e.d, e)
   }
   return [...byDay.values()].sort((x, y) => (x.d < y.d ? -1 : 1))
@@ -403,7 +411,7 @@ const RESET_LISTS = {
   workouts: workoutKey, routines: x => x?.id, customEx: x => x?.id, bodyweight: bodyweightKey,
   measurements: bodyweightKey, gymCards: x => x?.id, equipProfiles: x => x?.id, favEx: x => x,
 }
-const RESET_MAPS = ['exNotes', 'barWeights', ...STAMPED_MAPS]
+const RESET_MAPS = ['exNotes', 'barWeights', 'programmes', ...STAMPED_MAPS]
 /** An entry's name in resetIds: a workout's id (or day and start), a weigh-in's day and time, … */
 export const entryKey = (field, x) => String(RESET_LISTS[field](x))
 // Per field, the most names a reset keeps — far more workouts than anyone logs, and a bound on
@@ -463,6 +471,7 @@ export function sinceReset(S, at, ids) {
     out.favEx = []
     out.exNotes = {}
     out.barWeights = {}
+    out.programmes = {}
     for (const f of STAMPED_MAPS) {
       out[f] = Object.fromEntries(Object.entries(isMap(S[f]) ? S[f] : {}).filter(([, v]) => after(stampOf(v))))
     }
@@ -613,10 +622,10 @@ function applyDeletions(S, deleted) {
 const OWN_MERGE = new Set([
   '_ts', '_rev', '_wid', '_wids', '_unstamped', '_prior', 'active', 'unit', 'unitSet', 'resetAt', 'resetIds', 'deleted', 'edited', 'undone', 'routineOrder',
   'workouts', 'routines', 'customEx', 'equipProfiles', 'gymCards', 'bodyweight', 'measurements', 'favEx',
-  'exWeights', 'balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'dayNotes', 'dayPhotos',
+  'exWeights', 'balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'stackWeights', 'dayNotes', 'dayPhotos', 'dayForm',
 ])
 // Stamped per key instead of whole: one day of the plan, one exercise's note or bar.
-const PER_KEY = new Set(['week', 'dayPlan', 'exNotes', 'barWeights'])
+const PER_KEY = new Set(['week', 'dayPlan', 'exNotes', 'barWeights', 'programmes', 'modules', 'bandEx'])
 // The order of the routines, as the list shows them, is a choice of its own (`edited.routineOrder`):
 // a reorder on one device was lost to the other's whole copy whenever that one was newer.
 export const ORDER_KEY = 'routineOrder'
@@ -818,9 +827,10 @@ export function mergeStates(a0, b0, { prefer } = {}) {
       })
     }
   }
-  out.bodyweight = mergeBodyweight(n.bodyweight, o.bodyweight).map(clone)
+  out.bodyweight = mergeBodyweight(n.bodyweight, o.bodyweight, { mode: dailyModeOf(out) }).map(clone)
+  settleAll(out)
   // A day's body measurements are one check-in, kept and merged the way a weigh-in is.
-  if (list(n.measurements).length || list(o.measurements).length) out.measurements = mergeBodyweight(n.measurements, o.measurements).map(clone)
+  if (list(n.measurements).length || list(o.measurements).length) out.measurements = mergeBodyweight(n.measurements, o.measurements, { readings: false }).map(clone)
   if (list(n.favEx).length || list(o.favEx).length) out.favEx = [...new Set([...list(n.favEx), ...list(o.favEx)])]
   // What either device removed stays removed (the `deleted` section above). A workout taken out
   // this way leaves its exercises' kept loads to be read again, as an edit of it would: from the
@@ -844,7 +854,7 @@ export function mergeStates(a0, b0, { prefer } = {}) {
     if (kept) out.exWeights[id] = clone(kept)
     else delete out.exWeights[id]
   }
-  for (const f of ['exNotes', 'barWeights']) {
+  for (const f of ['exNotes', 'barWeights', 'programmes']) {
     if (n[f] || o[f]) out[f] = clone({ ...(o[f] || {}), ...(n[f] || {}) })
   }
   // The plate-loading choices (lib/plates.js) are stamped the same way: an exercise's loading and
@@ -1011,6 +1021,10 @@ export function highestStamp(S) {
   }
   for (const f of STAMPED_MAPS) if (isMap(S[f])) for (const v of Object.values(S[f])) see(stampOf(v))
   for (const e of [...list(S.bodyweight), ...list(S.measurements)]) if (e && typeof e === 'object') see(e.t)
+  for (const e of list(S.bodyweight)) {
+    for (const r of list(e?.ins)) see(r?.t)
+    if (isMap(e?.gone)) for (const at of Object.values(e.gone)) see(at)
+  }
   return m
 }
 
@@ -1044,6 +1058,11 @@ export function stampChange(prev, next, wall = Date.now()) {
     for (const e of list(next[f])) {
       if (!e || typeof e !== 'object' || e.d == null || e.t == null) continue
       const old = before.get(e.d)
+      if (f === 'bodyweight' && Array.isArray(e.ins) && (!old || old.t !== e.t)) {
+        const oldReadings = new Map(list(old?.ins).filter(r => r?.id != null).map(r => [String(r.id), r]))
+        for (const r of e.ins) if (r && r.t != null && (!oldReadings.has(String(r.id)) || oldReadings.get(String(r.id)).t !== r.t)) r.t = Math.max(Number(r.t) || 0, now)
+        if (isMap(e.gone)) for (const id of Object.keys(e.gone)) if (e.gone[id] !== old?.gone?.[id]) e.gone[id] = Math.max(Number(e.gone[id]) || 0, now)
+      }
       if (!old || old.t !== e.t) e.t = Math.max(Number(e.t) || 0, now)
     }
   }
@@ -1128,7 +1147,7 @@ export function localExtras(local, server) {
   const setup = ['gymCards', 'equipProfiles'].reduce((n, f) => n + list(local?.[f]).filter(x => x && x.id != null && !ids(f).has(x.id)).length, 0) +
     list(local?.measurements).filter(e => e && e.d != null && !measured.has(e.d)).length +
     Object.entries(isMap(local?.dayNotes) ? local.dayNotes : {}).filter(([k, v]) => readNote(v) && !readNote(server?.dayNotes?.[k])).length +
-    keysNew('week') + keysNew('dayPlan') + keysNew('exNotes')
+    keysNew('week') + keysNew('dayPlan') + keysNew('exNotes') + keysNew('programmes')
   return {
     workouts: list(local?.workouts).filter(w => !have.has(workoutKey(w))).length,
     bodyweight: list(local?.bodyweight).filter(e => e && e.d != null && (!days.has(e.d) || differs(e, days.get(e.d)))).length,

@@ -1,9 +1,15 @@
 // Pure helpers over the state object S (ported 1:1 from the vanilla app).
 import { syncSupersetMeta } from './superset-meta.js'
 import { todayISO, isoOf, weekKey, weekStartOf, fmtNum } from './format.js'
-import { fmtSpeed } from './speed.js'
+import { isOn } from './modules.js'
+import { seedBands, setBandsOf, bandSetLabel } from './bands.js'
+import { fmtSpeed, speedUnitOf } from './speed.js'
+import { cardioStartSpeed } from './cardio-kind.js'
 import { hasIncline, inclineFrom } from './incline.js'
-import { isCardio, isBodyweightEq, isAssisted, betterWeight } from './exercises.js'
+import { hasLevel, levelFrom } from './opengym-v145/incline.js'
+import { fmtDist, fmtPace } from './opengym-v145/distance.js'
+import { hasGeneratedWarmups, rerampGeneratedWarmups } from './warmup-ramp.js'
+import { EXIDX, isCardio, isBodyweightEq, isAssisted, betterWeight } from './exercises.js'
 import { barWeightFor } from './bar.js'
 import { phaseForSet, modeForSet, modeForEntry, isWarmupRow, isFailureSet, isDropSet, isRestPauseSet, normalizeMode, completedVolumeOf, hasCompletedWork, nextDropWeight, splitBurstReps, makeSideSet, isSideSet, syncSideAggregate, WEIGHT_ORIGIN_MANUAL, dropsOf, clustersOf } from './workout-model.js'
 import { backoffAt, backoffStepOf, backoffWeights } from './backoff.js'
@@ -125,6 +131,7 @@ export const capEffort = (kind, v) =>
 // when the profile has no answer of its own — an explicit 'none' has to win over it, or a
 // backup or another device that still carries the old flag would switch the column back on.
 export const effortOf = S => {
+  if (S && !isOn(S, 'effort')) return 'none'
   const e = S && S.effort
   return e === 'none' || EFFORT[e] ? e : (S && S.showRir ? 'rir' : 'none')
 }
@@ -138,7 +145,8 @@ const effortTail = s => {
 // entry or a workout entry); passing an id alone keeps the old body-part behaviour.
 // `speedUnit` is the profile's (lib/speed.js speedUnitOf); without one a cardio set reads km/h.
 const EXPLICIT_MODES = new Set(['reps', 'time', 'cardio'])
-export function setLabel(id, s, cfg, speedUnit) {
+export function setLabel(id, s, cfg, speedUnit, bands) {
+  if (setBandsOf(s).length && !isSideSet(s)) return bandSetLabel(id, s, cfg, speedUnit, bands)
   // The id is the caller's when the config does not carry one: a freestyle target is built
   // without it, and modeOf would then fall back to 'reps' and print a run as "0×0".
   const c = cfg ? { ...cfg, id: cfg.id ?? id } : { id }
@@ -151,7 +159,11 @@ export function setLabel(id, s, cfg, speedUnit) {
   // to the volume those same sets still count. A set with reps and nothing cardio was a rep set.
   if (!EXPLICIT_MODES.has(cfg?.mode) && mode !== 'reps' && s.r > 0 && !(s.min > 0 || s.speed > 0 || s.sec > 0)) mode = 'reps'
   // A treadmill grade rides along when the set has one (lib/incline.js); a flat set reads as it did.
-  if (mode === 'cardio') return `${s.min || 0} min @ ${fmtSpeed(s.speed || 0, speedUnit)}` + (hasIncline(s) ? ' · ' + t('{0}% incline', fmtNum(Number(s.incline))) : '')
+  if (mode === 'cardio' && Number(s.km) > 0) {
+    const du = speedUnit === 'mph' ? 'mi' : 'km'
+    return [`${s.min || 0} min`, fmtDist(s.km, du), fmtPace(s, du)].filter(Boolean).join(' · ') + (hasIncline(s) ? ' · ' + t('{0}% incline', fmtNum(Number(s.incline))) : '') + (hasLevel(s) ? ' · ' + t('Level {0}', fmtNum(Number(s.level))) : '')
+  }
+  if (mode === 'cardio') return `${s.min || 0} min @ ${fmtSpeed(s.speed || 0, speedUnit)}` + (hasIncline(s) ? ' · ' + t('{0}% incline', fmtNum(Number(s.incline))) : '') + (hasLevel(s) ? ' · ' + t('Level {0}', fmtNum(Number(s.level))) : '')
   // A set taken to failure carries its "F" behind the numbers, the mark lifting logs use for it;
   // the history, the text export and the set menu all read it from here.
   const fail = isFailureSet(s) ? ' ' + t('F') : ''
@@ -205,9 +217,12 @@ export function setLabel(id, s, cfg, speedUnit) {
   return oneSide(s) + fail + effortTail(s)
 }
 // Default config for a freshly added exercise.
-export function defaultConfig(id, mode) {
+export function defaultConfig(id, mode, S) {
   const m = mode || modeOf({ id })
-  if (m === 'cardio') return { sets: 1, min: 20, speed: 8 }
+  if (m === 'cardio') {
+    const ex = EXIDX[id]
+    return { sets: 1, min: 20, speed: cardioStartSpeed(ex?.n, ex?.eq, speedUnitOf(S)) }
+  }
   // Written only when it is true, so a barbell config is byte-for-byte what it was before
   // the flag existed and a plan file gains nothing it does not need.
   const bw = isBodyweightEq(id) ? { bodyweight: true } : {}
@@ -243,7 +258,7 @@ export function exLine(cfg, unit, speedUnit) {
   const load = !cfg.weight ? ''
     : backoff ? ' · ' + (isBw(cfg) ? '+' : '') + backoffWeights(cfg.weight, n, backoff).map(fmtNum).join(' → ') + ' ' + unit
       : ' · ' + (isBw(cfg) ? '+' : '') + fmtNum(cfg.weight) + ' ' + unit
-  if (mode === 'cardio') return `${n} × ${cfg.min || 20} min @ ${fmtSpeed(cfg.speed || 8, speedUnit)}`
+  if (mode === 'cardio') return `${n} × ${cfg.min || 20} min @ ${fmtSpeed(cfg.speed || 8, speedUnit)}` + (hasLevel(cfg) ? ' · ' + t('Level {0}', fmtNum(Number(cfg.level))) : '')
   // A timed hold has no rep count to spell a split out of ("8/side" below) — "per side" says it
   // happens twice, once each side (buildWorkSets), rather than trying to divide a duration.
   if (mode === 'time') return `${setsRepsOf(cfg)}${load}${isPerSide(cfg) ? ' · ' + t('per side') : ''}`
@@ -255,7 +270,7 @@ export function exLine(cfg, unit, speedUnit) {
 // Drop superset ids that no longer have an adjacent partner (after unlink/reorder/remove).
 export function cleanupSg(ex) {
   ex.forEach((e, i) => {
-    if (e.sg && !(ex[i - 1]?.sg === e.sg || ex[i + 1]?.sg === e.sg)) delete e.sg
+    if (e.sg && !(ex[i - 1]?.sg === e.sg || ex[i + 1]?.sg === e.sg) && !(e.sgCircuit || e.target?.sgCircuit)) delete e.sg
   })
   // A superset's name and rest (#292) follow its members in and out of the group.
   syncSupersetMeta(ex)
@@ -529,7 +544,7 @@ export function nextTrainingDay(S, iso) {
  * insertWarmupRow for why this module cannot read it itself).
  */
 export function buildSets(S, cfg, options = {}) {
-  const rows = buildWorkSets(S, cfg, options)
+  const rows = seedBands(S, cfg, buildWorkSets(S, cfg, options), options)
   const warm = Math.max(0, Math.min(MAX_PLANNED_WARMUPS, Math.round(cfg.warmupSets) || 0))
   if (!warm) return rows
   const mode = modeOf(cfg)
@@ -574,7 +589,7 @@ function buildWorkSets(S, cfg, options = {}) {
   if (mode === 'cardio') {
     for (let i = 0; i < n; i++) {
       const prev = prevAt(i)
-      sets.push({ min: prev ? prev.min : (cfg.min || 20), speed: prev ? prev.speed : (cfg.speed || 8), ...inclineFrom(prev), done: false })
+      sets.push({ min: prev ? prev.min : (cfg.min || 20), speed: prev ? prev.speed : (cfg.speed || 8), ...inclineFrom(prev || cfg), ...levelFrom(hasLevel(cfg) ? cfg : prev), done: false })
     }
     return sets
   }
@@ -995,6 +1010,7 @@ function assistedRung(from, to, step) {
 }
 
 export function rerampWarmups(rows, step = 2.5, floor = 0, assisted = false) {
+  if (hasGeneratedWarmups(rows)) return rerampGeneratedWarmups(rows, step, floor, assisted)
   const firstWork = rows.findIndex(x => !isWarmupRow(x))
   if (firstWork <= 0) return rows
   const target = rows[firstWork].w || 0
@@ -1042,6 +1058,7 @@ export function insertWarmupRow(rows, mode, target, step = 2.5, floor = 0) {
       min: prev ? prev.min : (work ? work.min : (target.min || 20)),
       speed: prev ? prev.speed : (work ? work.speed : (target.speed || 8)),
       ...inclineFrom(prev || work),
+      ...levelFrom(prev || work),
       done: false, phase: 'warmup', warmup: true,
     }
     : mode === 'time'

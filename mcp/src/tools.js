@@ -12,6 +12,10 @@ import {
 import { queueView, queueNext, pinState } from '../../frontend/src/lib/queue.js'
 import { exOr, registerCustom } from '../../frontend/src/lib/exercises.js'
 import { isWarmupRow, isFailureSet } from '../../frontend/src/lib/workout-model.js'
+import { setNoteOf } from '../../frontend/src/lib/opengym-v145/set-notes.js'
+import { setTagCell } from '../../frontend/src/lib/set-tags.js'
+import { levelFrom } from '../../frontend/src/lib/incline.js'
+import { setBandsOf } from '../../frontend/src/lib/bands.js'
 import {
   bestSetOf, best1RM, e1rmSeries, DEFAULT_FORMULA, REP_CAP
 } from '../../frontend/src/lib/onerm.js'
@@ -66,14 +70,19 @@ function entryView(e, S) {
     target: e.target || null,
     sets: (e.sets || []).map(s => ({
       done: !!s.done,
-      label: setLabel(e.id, { ...s, done: undefined }, cfg),
+      label: setLabel(e.id, { ...s, done: undefined }, cfg, undefined, S.bands || []),
+      ...(setBandsOf(s).length ? { bands: setBandsOf(s) } : {}),
       // Taken to failure (the app's "F"): RIR 0 for effort when nothing was rated by hand.
       ...(isFailureSet(s) ? { failure: true } : {}),
       w: Number(s.w) || 0,
       r: Number(s.r) || 0,
       sec: Number(s.sec) || 0,
       min: Number(s.min) || 0,
-      speed: Number(s.speed) || 0
+      speed: Number(s.speed) || 0,
+      ...levelFrom(s),
+      // Original upstream read-only metadata projection; keep IronLog's full stored notes.
+      ...(setNoteOf(s) ? { note: setNoteOf(s) } : {}),
+      ...(setTagCell(s) ? { color_tag: setTagCell(s) } : {})
     }))
   }
 }
@@ -610,7 +619,8 @@ export const previewSession = {
           phase: isWarmupRow(s) ? 'warmup' : 'work',
           type: s.type || 'straight',
           ...(isFailureSet(s) ? { failure: true } : {}),
-          label: setLabel(cfg.id, { ...s, done: undefined }, { ...cfg, id: cfg.id }),
+          label: setLabel(cfg.id, { ...s, done: undefined }, { ...cfg, id: cfg.id }, undefined, S.bands || []),
+          ...(setBandsOf(s).length ? { bands: setBandsOf(s) } : {}),
           w: Number(s.w) || 0,
           r: Number(s.r) || 0,
           sec: Number(s.sec) || 0,

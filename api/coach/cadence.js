@@ -29,6 +29,7 @@ export function startCadence(deps) {
         // A profile that never agreed to the Coach is skipped before its whole state is read.
         if (deps.skip?.(user.id)) continue;
         const S = jobs.readState(user.id);
+        if (S?.modules?.coach === false) continue;
         const coach = S?.coach;
         if (!coach?.consent?.agreedAt) continue;         // consent revoked ⇒ cadence stops
         // A job still running, or a proposal nobody has answered, is not a reason for another:

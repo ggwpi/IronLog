@@ -20,6 +20,9 @@
 // rendering silence for the rest of the page, and under 'playback' keeps the phone's audio
 // session busy. (Suspending does NOT hand the phone back to a paused music app — see 1.)
 import { REST_SOUNDS } from './rest-sounds.js'
+// Only the new tempo guide uses the original cancellable audio queue. Existing IronLog
+// beeps/chimes, silent-mode policy and native haptics keep their current engine.
+export { queueTones } from './opengym-v145/sound.js'
 
 let audioCtx = null
 let idleTm = null

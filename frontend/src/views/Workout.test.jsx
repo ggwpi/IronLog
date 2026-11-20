@@ -1756,7 +1756,7 @@ describe('workout focus view', () => {
     })], 0, { active: { workoutView: 'focus' } })
 
     await click(buttonNamed('Set menu'))
-    await act(async () => { mocks.menuSheet.mock.calls.at(-1)[0].items[1].onClick() })
+    await act(async () => { mocks.menuSheet.mock.calls.at(-1)[0].items.find(item => item?.label === 'Add drop set').onClick() })
     await rerender()
     const left = container.querySelector('[data-focus-side="L"]')
     expect(left.textContent).toContain('Drop 1')
@@ -1765,7 +1765,7 @@ describe('workout focus view', () => {
     expect(mocks.S.active.entries[0].sets[0].sides.R.drops[0].w).toBe(16)
 
     await click(buttonNamed('Set menu'))
-    await act(async () => { mocks.menuSheet.mock.calls.at(-1)[0].items[2].onClick() })
+    await act(async () => { mocks.menuSheet.mock.calls.at(-1)[0].items.find(item => item?.label === 'Add burst').onClick() })
     await rerender()
     const burstLeft = container.querySelector('[data-focus-side="L"]')
     expect(burstLeft.textContent).toContain('Drop 1')
@@ -1833,6 +1833,38 @@ describe('workout focus view', () => {
     expect(mocks.S.active.entries[0].sets[0]).toMatchObject({ min: 21, speed: 8.5 })
   })
 
+  it.each(['cards', 'list', 'compact'])('logs cardio distance through the existing %s row without changing metadata', async view => {
+    const metadata = { note: 'א'.repeat(500), tag: 'blue', media: [{ hash: 'keep' }] }
+    await mount([exercise('plain-treadmill', [false], {
+      target: { mode: 'cardio', min: 30, speed: 10 }, sets: [{ min: 30, speed: 10, done: false, ...metadata }],
+    })], 0, { workoutView: view, cardioBy: { 'plain-treadmill': 'distance' } })
+    expect(container.textContent).toContain('Distance (km)')
+    let cells = container.querySelector('.setrow').querySelectorAll('.stp')
+    expect(cells[1].querySelector('input').value).toBe('5')
+    await click(cells[1].querySelector('button[aria-label="Increase"]'))
+    await rerender()
+    expect(mocks.S.active.entries[0].sets[0]).toMatchObject({ min: 30, km: 5.5, speed: 11, done: false, ...metadata })
+    cells = container.querySelector('.setrow').querySelectorAll('.stp')
+    await click(cells[0].querySelector('button[aria-label="Increase"]'))
+    expect(mocks.S.active.entries[0].sets[0]).toMatchObject({ min: 31, km: 5.5, speed: 10.65, done: false, ...metadata })
+  })
+
+  it.each(['cards', 'list', 'compact'])('edits and clears resistance through the existing %s row without changing metadata', async view => {
+    const metadata = { note: 'א'.repeat(500), tag: 'blue', media: [{ hash: 'keep' }] }
+    await mount([exercise('plain-bike', [false], {
+      target: { mode: 'cardio', min: 30, speed: 10 }, sets: [{ min: 30, speed: 10, level: 1, done: false, ...metadata }],
+    })], 0, { workoutView: view, showCardioLevel: true })
+    expect(container.textContent).toContain('Level')
+    const cell = () => container.querySelector('.setrow').querySelectorAll('.stp')[2]
+    await click(cell().querySelector('button[aria-label="Increase"]'))
+    expect(mocks.S.active.entries[0].sets[0]).toEqual({ min: 30, speed: 10, level: 2, done: false, ...metadata })
+    await rerender()
+    await click(cell().querySelector('button[aria-label="Decrease"]'))
+    await rerender()
+    await click(cell().querySelector('button[aria-label="Decrease"]'))
+    expect(mocks.S.active.entries[0].sets[0]).toEqual({ min: 30, speed: 10, done: false, ...metadata })
+  })
+
   it('keeps drop and burst rows editable and opens every set action', async () => {
     await mount([exercise('plain-bench', [false], {
       sets: [{
@@ -1851,7 +1883,7 @@ describe('workout focus view', () => {
     expect(mocks.S.active.entries[0].sets[0].r).toBe(9)
     await click(buttonNamed('Set menu'))
     const labels = mocks.menuSheet.mock.calls.at(-1)[0].items.filter(Boolean).map(item => item.label)
-    expect(labels).toEqual(['Mark as warm-up', 'Add drop set', 'Add burst', 'Taken to failure', 'Delete set'])
+    expect(labels).toEqual(['Colour tag', 'Note', 'Tempo', 'Mark as warm-up', 'Add drop set', 'Add burst', 'Taken to failure', 'Delete set'])
     // Taken to failure toggles the mark, and the focus card shows its F.
     await act(async () => { mocks.menuSheet.mock.calls.at(-1)[0].items.filter(Boolean).find(item => item.label === 'Taken to failure').onClick() })
     expect(mocks.S.active.entries[0].sets[0].failure).toBe(true)
@@ -1859,7 +1891,7 @@ describe('workout focus view', () => {
     expect(container.querySelector('.focus-failure').textContent).toBe('F')
   })
 
-  it('does not expose a Focus-only set note action', async () => {
+  it('keeps note editing inside the existing set menu without an extra Focus-only button', async () => {
     await mount([exercise('plain-bench', [false, false])], 0, { active: { workoutView: 'focus' } })
     await click(buttonNamed('Next set'))
     expect(buttonNamed('Set note')).toBeNull()
@@ -2916,7 +2948,7 @@ describe('workout controls: the more menu and the set menu', () => {
   it('opens a per-set menu from the set number with drop, burst and remove', async () => {
     await mount([exercise('plain-bench', [false, false])])
     await act(async () => { container.querySelector('button[aria-label="Set 2"]').dispatchEvent(new dom.Event('click', { bubbles: true })) })
-    expect(menuItemsOf(lastMenu()).map(it => it.label)).toEqual(['Make it a warm-up set', 'Taken to failure', 'Drop set', 'Rest-pause burst', 'Copy this set', 'Remove this set'])
+    expect(menuItemsOf(lastMenu()).map(it => it.label)).toEqual(['Colour tag', 'Note', 'Tempo', 'Make it a warm-up set', 'Taken to failure', 'Drop set', 'Rest-pause burst', 'Copy this set', 'Remove this set'])
     expect(item('Make it a warm-up set').icon).toBe('sunrise')
 
     await act(async () => { item('Drop set').onClick() })
@@ -2925,6 +2957,44 @@ describe('workout controls: the more menu and the set menu', () => {
     await act(async () => { container.querySelector('button[aria-label="Set 2"]').dispatchEvent(new dom.Event('click', { bubbles: true })) })
     await act(async () => { item('Remove this set').onClick() })
     expect(mocks.S.active.entries[0].sets.length).toBe(1)
+  })
+
+  it.each(['red', 'orange', 'yellow', 'green', 'blue', 'purple'])('sets and clears the original %s tag through IronLog menus without changing training data', async tag => {
+    await mount([exercise('plain-bench', [false, false])])
+    const before = structuredClone(mocks.S.active.entries[0].sets)
+    expect(container.querySelector('[data-set-tag]')).toBeNull()
+    const open = async () => {
+      await act(async () => { container.querySelectorAll('button.n')[1].dispatchEvent(new dom.Event('click', { bubbles: true })) })
+      await act(async () => { item('Colour tag').onClick() })
+    }
+    await open()
+    const ids = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
+    await act(async () => { menuItemsOf(lastMenu())[ids.indexOf(tag)].onClick() })
+    await rerender()
+    expect(mocks.S.active.entries[0].sets).toEqual([before[0], { ...before[1], tag }])
+    expect(container.querySelectorAll('[data-set-tag]')).toHaveLength(1)
+    expect(container.querySelector('[data-set-tag]').closest('button.n').getAttribute('aria-label')).toMatch(/Set 2, /)
+    await open()
+    expect(menuItemsOf(lastMenu())[ids.indexOf(tag)].on).toBe(true)
+    await act(async () => { item('None').onClick() })
+    await rerender()
+    expect(mocks.S.active.entries[0].sets).toEqual(before)
+    expect(container.querySelector('[data-set-tag]')).toBeNull()
+  })
+
+  it('shows an existing long set note and opens the existing IronLog editor from its line and menu', async () => {
+    const note = 'Original IronLog note '.repeat(25).slice(0, 500)
+    await mount([exercise('plain-bench', [false, false], { sets: [{ w: 60, r: 8, done: false, note }, { w: 60, r: 8, done: false }] })])
+    const before = structuredClone(mocks.S.active.entries[0].sets)
+    const line = container.querySelector('[data-set-note]')
+    expect(line.textContent).toContain(note.trim())
+    await act(async () => line.click())
+    expect(mocks.setNoteSheet).toHaveBeenCalledWith(0, 0)
+    await act(async () => container.querySelector('button.n').dispatchEvent(new dom.Event('click', { bubbles: true })))
+    expect(item('Edit note').sub).toBe(note.trim())
+    await act(async () => item('Edit note').onClick())
+    expect(mocks.setNoteSheet).toHaveBeenLastCalledWith(0, 0)
+    expect(mocks.S.active.entries[0].sets).toEqual(before)
   })
 
   it('marks a set as taken to failure from its menu, with an F on its number, and back', async () => {
@@ -3320,6 +3390,38 @@ describe('Update routine, from the More menu of an exercise', () => {
   }
   const routine = (slot = {}) => ({ id: 'A', name: 'Push', ex: [{ id: 'plain-bench', sets: 1, mode: 'reps', reps: 5, weight: 60, ...slot }] })
   const ownEntry = (extra = {}) => exercise('plain-bench', [false], { rid: 'A', ...extra })
+
+  it('keeps the shown warm-ups as an original scaled recipe without touching workout rows or other slot fields', async () => {
+    const slot = routine({ warmupSets: 1, note: 'routine note', customFuture: 'keep' })
+    await mount([ownEntry({ sets: [{ w: 30, r: 5, warmup: true, done: true, note: 'א'.repeat(500), media: [{ hash: 'keep' }] }, { w: 60, r: 8, done: false }] })], 0, { routines: [slot] })
+    const before = structuredClone(mocks.S.active)
+    await openMore()
+    await act(async () => { item('Keep these warm-ups').onClick() })
+    expect(mocks.S.routines[0].ex[0]).toEqual({ id: 'plain-bench', sets: 1, mode: 'reps', reps: 5, weight: 60, note: 'routine note', customFuture: 'keep', warmup: 'own', warmupRows: [{ wp: 50, r: 5 }] })
+    expect(mocks.S.active).toEqual(before)
+  })
+
+  it('keeps warm-ups in the exact duplicate occurrence from the actual Focus menu', async () => {
+    const first = { id: 'plain-bench', sets: 1, mode: 'reps', reps: 5, weight: 60, note: 'first' }
+    const second = { ...first, note: 'second' }
+    await mount([ownEntry(), ownEntry({ sets: [{ w: 30, r: 5, warmup: true, done: false }, { w: 60, r: 8, done: false }] })], 1,
+      { routines: [{ id: 'A', name: 'Twins', ex: [first, second] }], active: { workoutView: 'focus' } })
+    const before = structuredClone(mocks.S.active)
+    await openMore()
+    await act(async () => { item('Keep these warm-ups').onClick() })
+    expect(mocks.S.routines[0].ex[0]).toEqual(first)
+    expect(mocks.S.routines[0].ex[1]).toEqual({ ...second, warmup: 'own', warmupRows: [{ wp: 50, r: 5 }] })
+    expect(mocks.S.active).toEqual(before)
+  })
+
+  it('rejects a stale Keep action after the running session changes', async () => {
+    await mount([ownEntry({ sets: [{ w: 30, r: 5, warmup: true, done: false }, { w: 60, r: 8, done: false }] })], 0, { routines: [routine()] })
+    await openMore(); const keep = item('Keep these warm-ups').onClick
+    const before = structuredClone(mocks.S.routines)
+    mocks.S.active.id = 'different-session'
+    await act(async () => { keep() })
+    expect(mocks.S.routines).toEqual(before)
+  })
 
   it('is not offered while the routine already says what the session does', async () => {
     await mount([ownEntry()], 0, { routines: [routine()] })

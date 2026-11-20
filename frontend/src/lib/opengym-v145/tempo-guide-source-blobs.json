@@ -1,0 +1,7 @@
+{
+  "frontend/src/components/Tempo.jsx": "74f38edc33106b4f57f10ee87532b1c7fbea3f04",
+  "frontend/src/components/Tempo.test.jsx": "4ad933ff4f024f33999f0baf487726853578ae7a",
+  "frontend/src/lib/opengym-v145/sound.js": "e708c54ed995687703d0347a64bf9fdc836fc8ec",
+  "frontend/src/lib/opengym-v145/rest-sounds.js": "399040962f086097637030dd473d5e30532c02dd",
+  "frontend/src/lib/opengym-v145/sound.test.js": "9c3b92ecb7e1032606dd180392434c35f57ecdd5"
+}

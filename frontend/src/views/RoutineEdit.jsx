@@ -1,4 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
+import { routineCircuit, routineCircuitSheet } from '../components/CircuitSheets.jsx'
+import { circuitLine } from '../lib/circuit-copy.js'
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
@@ -438,7 +440,7 @@ export default function RoutineEdit() {
 
   const addExercise = () => exercisePicker((ex, quick) => {
     if (quick) {
-      edit(x => x.push({ id: ex.id, ...defaultConfig(ex.id) }))
+      edit(x => x.push({ id: ex.id, ...defaultConfig(ex.id, undefined, S) }))
       toast(t('“{0}” added to {1}', exerciseNameText(ex), r.name))
     } else {
       exConfigSheet(ex, null, cfg => edit(x => { x.push({ id: ex.id, ...cfg }) }), null, r, null, null, undefined, { backups: true })
@@ -473,6 +475,7 @@ export default function RoutineEdit() {
     </div>
 
     <div className="sect-b" style={{ marginBottom: 16 }}>
+      <Row icon="stopwatch" title={t('Routine type')} value={routineCircuit(r) ? circuitLine(routineCircuit(r)) : t('Regular')} accessory="chevron" onClick={() => routineCircuitSheet(id)} />
       <SelectRow icon="chartLine" title={t('Progression')} sheetTitle={t('Progression')}
         value={r.prog || 'linear'} onChange={v => update(s => { s.routines.find(x => x.id === id).prog = v })}
         options={POLICIES_FOR.reps.map(p => ({ value: p, label: t(POLICY_NAME[p]), subtitle: t(POLICY_DESC[p]) }))} />

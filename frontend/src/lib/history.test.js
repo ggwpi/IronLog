@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { nextTrainingDay, modeOf, isTimed, fmtSec, setLabel, defaultConfig, buildSets, freestyleConfig, exLine, workoutVolume, bestWeightFor, bestWeightForEntry, completedRepsOf, metricRowsForEntry, effortOf, stepEffort, capEffort, isBw, isPerSide, sideReps, repStep, cascadeWeight, insertWarmupRow, makeWarmupAt, canBeWarmup, makeWorkAt, removeRowAt, removeLastSet, setSpanAt, workSetsDone, setsDone, setsDoneActive, setUnits, doneUnits, setUnitsTotal, pairAdjacent, unpairSuperset, supersetUnits, sessionSections, applyIntensifierPlan, pinnedNoteFor, exNoteFor, effectiveRoutineIds, effectiveRoutines, effectiveRoutineId, effectiveRoutine, lastEntryFor, entryExcluded, entryRoutineId, setsRepsOf } from './history.js'
 import { makeSideSet, setSideField, toggleSide, WEIGHT_ORIGIN_MANUAL } from './workout-model.js'
 import { EXDB } from './exercises.js'
+import { cardioStartSpeed } from './cardio-kind.js'
 import { todayISO, isoOf } from './format.js'
 
 // Real ids out of the shipped catalogue, so the body-part fallback is exercised for real.
@@ -326,7 +327,7 @@ describe('logging effort across a session', () => {
 describe('defaultConfig', () => {
   it('gives each mode a sensible starting point', () => {
     expect(defaultConfig(LIFT)).toEqual({ sets: 3, reps: 10, weight: 0, mode: 'reps' })
-    expect(defaultConfig(CARDIO)).toEqual({ sets: 1, min: 20, speed: 8 })
+    expect(defaultConfig(CARDIO)).toEqual({ sets: 1, min: 20, speed: cardioStartSpeed(EXDB.find(e => e.id === CARDIO)?.n, EXDB.find(e => e.id === CARDIO)?.eq) })
     expect(defaultConfig(LIFT, 'time')).toEqual({ sets: 3, sec: 45, weight: 0, mode: 'time' })
   })
   it('seeds the bodyweight flag from the catalogue, and only when it is true', () => {

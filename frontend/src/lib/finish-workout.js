@@ -2,6 +2,7 @@
 // exercise the exact shape the UI writes without mounting React or mutating store state.
 import { bestWeightForEntry, cleanupSg } from './history.js'
 import { hasCompletedWork, isSideSet } from './workout-model.js'
+import { withoutAdvances } from './circuit.js'
 
 // planSec is live-session bookkeeping: a hold displaced before it finished puts its plan aside so
 // the row still knows what it is asking for (Workout.startTimed). A finished session keeps only
@@ -121,8 +122,10 @@ export function buildCompletedWorkout(active, { end = Date.now(), prs = [], snap
     routineId: routineIds[0] ?? null,
     name: active.name,
     bw: active.bw,
+    ...(active.gym && typeof active.gym === 'object' ? { gym: structuredClone(active.gym) } : {}),
     entries,
     prs,
+    ...(Array.isArray(active.circuits) && active.circuits.length ? { circuits: withoutAdvances(structuredClone(active.circuits)) } : {}),
     ...(allNoProg ? { excludeFromProgression: true } : {}),
     ...(sessionNote ? { note: sessionNote } : {}),
   }

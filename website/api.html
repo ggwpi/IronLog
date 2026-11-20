@@ -1565,6 +1565,16 @@ main.api-main .lead { color: var(--fg-2); max-width: 58ch; margin: 14px 0 0; fon
     <span class="p-type">boolean</span>
     <span class="p-desc">True when the client stamps its own changes in <code>deleted</code>, <code>edited</code> and each entry's <code>_ts</code>/<code>_f</code>, as the app does. Omit it to have the server stamp what changed against the stored document.</span>
   </div>
+  <div class="prow">
+    <span class="p-name">trainingDataVersion</span>
+    <span class="p-type">1 | 2</span>
+    <span class="p-desc">Declare resistance-band support before intentionally editing band inventory, exercise preferences or per-set bands. Omit it for older clients; band data are preserved and ambiguous structural edits of banded rows are rejected. Version 2 also supports circuit configurations, saved results and restoring regular routines. Earlier clients preserve those fields and cannot unlink circuit groups without upgrading.</span>
+  </div>
+  <div class="prow">
+    <span class="p-name">bodyDataVersion</span>
+    <span class="p-type">always 1</span>
+    <span class="p-desc">Declare support for timed weigh-ins, typed measurement units, blood pressure, pulse and measurement notes. Send 1 when intentionally editing these fields. Without this request capability, the server protects body data that older clients cannot represent. It is not a profile setting.</span>
+  </div>
 </div>
     <p class="ep-h">Responses</p>
     <div class="ptab">

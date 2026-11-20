@@ -2,6 +2,9 @@
 // moves with water, salt and the last meal by more than it moves in a month, so the number worth
 // following is the week's mean — the one a single weigh-in on the card cannot give you.
 import { isoOf, weekKey } from './format.js'
+import { addWeighIn, timeOf } from './weigh-ins.js'
+import { weighInAt as originalWeighInAt } from './opengym-v145/session-engine/frontend/src/lib/bodyweight.js'
+export { weightRate, rateCorridor, rateStatus, RATE_WINDOW_DAYS, RATE_MIN_WEIGHINS, RATE_MIN_SPAN_DAYS } from './opengym-v145/session-engine/frontend/src/lib/bodyweight.js'
 
 /**
  * The weigh-ins grouped into weeks, newest week first. Each week carries its mean, how many
@@ -33,6 +36,7 @@ export function weeklyWeights(bodyweight, ws) {
  * at noon of the day it is for instead.
  */
 export function weighInAt(b) {
+  if (Array.isArray(b?.ins)) return originalWeighInAt(b)
   const t = Number(b?.t)
   return t > 0 && isoOf(new Date(t)) === b.d ? t : new Date(b.d + 'T12:00:00').getTime()
 }
@@ -48,6 +52,7 @@ export function logWeighIn(s, w, at = Date.now()) {
   if (!Array.isArray(s.bodyweight)) s.bodyweight = []
   const d = isoOf(new Date(at))
   const ex = s.bodyweight.find(b => b.d === d)
+  if (s.weighInTimes === true || Array.isArray(ex?.ins)) return !!addWeighIn(s, { d, at: timeOf(at), w: n, t: at })
   if (ex) { ex.w = n; ex.t = at } else s.bodyweight.push({ d, w: n, t: at })
   s.bodyweight.sort((a, b) => (a.d < b.d ? -1 : 1))
   return true

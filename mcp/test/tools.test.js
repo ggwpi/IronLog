@@ -470,6 +470,52 @@ describe('list_workouts', () => {
 /* ---------- get_workout ---------- */
 
 describe('get_workout', () => {
+  test('reads band names within the current profile without leaking another profile or changing history', () => {
+    const w = S.workouts[0]
+    S.bands = [{ id: 'r', name: 'אדומה', color: '#eb5757' }]
+    w.entries = [{ id: '0025', target: { mode: 'reps' }, sets: [{ w: 0, r: 12, bands: ['r'], note: 'א'.repeat(500), done: true }] }]
+    const before = structuredClone(S)
+    const result = call('get_workout', { workout_id: w.id }).entries[0].sets[0]
+    expect(result.label).toContain('אדומה'); expect(result.bands).toEqual(['r'])
+    expect(result.note).toBe('א'.repeat(500)); expect(S).toEqual(before)
+    S.bands = [{ id: 'r', name: 'Different profile', color: '#eb5757' }]
+    expect(call('get_workout', { workout_id: w.id }).entries[0].sets[0].label).toContain('Different profile')
+    S.bands = []
+    expect(call('get_workout', { workout_id: w.id }).entries[0].sets[0].label).not.toContain('Different profile')
+    expect(w).toEqual(before.workouts[0])
+  })
+  test('reads resistance without losing long notes or mutating stored cardio data', () => {
+    const w = S.workouts[0]
+    w.entries = [{ id: '2138', target: { mode: 'cardio' }, sets: [{ min: 20, speed: 25, level: 8, done: true, note: 'א'.repeat(500), media: [{ hash: 'private' }] }] }]
+    const before = structuredClone(S)
+    const out = call('get_workout', { workout_id: w.id }).entries[0].sets[0]
+    expect(out.level).toBe(8)
+    expect(out.label).toContain('Level 8')
+    expect(out.note).toBe('א'.repeat(500))
+    expect(out).not.toHaveProperty('media')
+    expect(S).toEqual(before)
+  })
+  test('reads original note/tag metadata without truncating IronLog notes or exposing set media', () => {
+    const w = S.workouts[0], set = w.entries[0].sets[0]
+    set.note = 'א'.repeat(500); set.tag = 'blue'; set.media = [{ hash: 'fixture-private-media' }]
+    const before = structuredClone(S)
+    const out = call('get_workout', { workout_id: w.id }).entries[0].sets[0]
+    expect(out.note).toBe(set.note)
+    expect(out.color_tag).toBe('blue')
+    expect(out).not.toHaveProperty('media')
+    expect(out.w).toBe(Number(set.w) || 0)
+    expect(out.r).toBe(Number(set.r) || 0)
+    expect(S).toEqual(before)
+  })
+  test('keeps the legacy set response shape when metadata is absent or unknown', () => {
+    const w = S.workouts[0], set = w.entries[0].sets[0]
+    set.note = 12; set.tag = 'future-tag'
+    const before = structuredClone(set)
+    const out = call('get_workout', { workout_id: w.id }).entries[0].sets[0]
+    expect(out).not.toHaveProperty('note')
+    expect(out).not.toHaveProperty('color_tag')
+    expect(set).toEqual(before)
+  })
   test('matches the newest workout from list_workouts, every set has a readable label', () => {
     const list = call('list_workouts', {}).workouts
     const w = call('get_workout', { date: list[0].date })
