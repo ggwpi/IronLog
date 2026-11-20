@@ -1,5 +1,21 @@
 // Polish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "Dodaj swoje gumy",
+  "Bands": "Gumy",
+  "Band {0}": "Guma {0}",
+  "Resistance bands": "Gumy oporowe",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "Najlżejsza na górze. Stuknij gumę pod serią, jeśli jej użyłeś, dwie naraz, jeśli łączyłeś. Gdy każda seria dobije do górnej liczby powtórzeń, następny trening da ci kolejną gumę.",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "Twoje gumy nie mają kolorów? Nazwij je poziomem, np. „Poziom 3”, i zostaw szary.",
+  "Move {0} up": "Przesuń {0} w górę",
+  "Move {0} down": "Przesuń {0} w dół",
+  "Name": "Nazwa",
+  "Level or strength (optional)": "Poziom lub opór (opcjonalnie)",
+  "Level or strength (optional), like “Heavy”": "Poziom lub opór (opcjonalnie), np. „Mocna”",
+  "Colour": "Kolor",
+  "Resistance ({0}, optional)": "Opór ({0}, opcjonalnie)",
+  "Start with the usual five": "Zacznij od typowych pięciu",
+  "Add a band": "Dodaj gumę",
+  "Bands for set {0}": "Gumy w serii {0}",
   "Health": "Zdrowie",
   "Notes": "Notatki",
   // Blood pressure and pulse.

@@ -1,5 +1,21 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "เพิ่มยางยืดของคุณ",
+  "Bands": "ยางยืด",
+  "Band {0}": "ยางยืด {0}",
+  "Resistance bands": "ยางยืดแรงต้าน",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "เส้นที่เบาที่สุดอยู่บนสุด แตะยางยืดใต้เซ็ตเพื่อบอกว่าใช้เส้นนั้น แตะสองเส้นถ้าใช้คู่กัน เมื่อทุกเซ็ตทำได้ถึงจำนวนครั้งสูงสุด ครั้งหน้าจะได้เส้นถัดไป",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "ยางของคุณไม่มีสี? ตั้งชื่อตามระดับ เช่น “ระดับ 3” แล้วใช้สีเทาไป",
+  "Move {0} up": "เลื่อน {0} ขึ้น",
+  "Move {0} down": "เลื่อน {0} ลง",
+  "Name": "ชื่อ",
+  "Level or strength (optional)": "ระดับหรือแรงต้าน (ไม่บังคับ)",
+  "Level or strength (optional), like “Heavy”": "ระดับหรือแรงต้าน (ไม่บังคับ) เช่น “หนัก”",
+  "Colour": "สี",
+  "Resistance ({0}, optional)": "แรงต้าน ({0}, ไม่บังคับ)",
+  "Start with the usual five": "เริ่มด้วยห้าเส้นตามปกติ",
+  "Add a band": "เพิ่มยางยืด",
+  "Bands for set {0}": "ยางยืดของเซ็ต {0}",
   "Health": "สุขภาพ",
   "Notes": "โน้ต",
   // Blood pressure and pulse.

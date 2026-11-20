@@ -1,5 +1,21 @@
 // Portuguese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "Adicionar as tuas bandas",
+  "Bands": "Bandas",
+  "Band {0}": "Banda {0}",
+  "Resistance bands": "Bandas elásticas",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "A mais leve em cima. Toca numa banda debaixo de uma série para dizer que a usaste, duas de uma vez se juntaste. Quando todas as séries chegam ao topo das repetições, a sessão seguinte dá-te a banda seguinte.",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "As tuas bandas não têm cores? Dá-lhes nome pelo nível, como “Nível 3”, e fica com o cinzento.",
+  "Move {0} up": "Subir {0}",
+  "Move {0} down": "Descer {0}",
+  "Name": "Nome",
+  "Level or strength (optional)": "Nível ou resistência (opcional)",
+  "Level or strength (optional), like “Heavy”": "Nível ou resistência (opcional), como “Forte”",
+  "Colour": "Cor",
+  "Resistance ({0}, optional)": "Resistência ({0}, opcional)",
+  "Start with the usual five": "Começar com as cinco do costume",
+  "Add a band": "Adicionar uma banda",
+  "Bands for set {0}": "Bandas da série {0}",
   "Health": "Saúde",
   "Notes": "Notas",
   // Blood pressure and pulse.

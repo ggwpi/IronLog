@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { BandChips } from '../components/Bands.jsx'
+import { usesBands, setBandsOf, toggleSetBand } from '../lib/bands.js'
 import { useStore } from '../store/useStore.js'
 import { exOr } from '../lib/exercises.js'
 import { clampIncline, hasIncline, inclineFits, INCLINE_MAX, INCLINE_STEP } from '../lib/incline.js'
@@ -333,6 +335,7 @@ export default function FocusView({
           </div> : <Stepper label={t('Reps')} ariaLabel="reps" value={set.r || 0} step={1} decimal={false} disabled={readOnly}
             onChange={value => onField(setIdx, 'r', value)} />}</>}
         </>}
+        {mode === 'reps' && usesBands(S, entry.id, entry.target) && <BandChips className="focus-bands" value={setBandsOf(set)} label={t('Bands for set {0}', setIdx + 1)} onToggle={id => { if (!readOnly) onMutateSet(setIdx, row => toggleSetBand(row, id)) }} />}
         <div className="focus-extras">
           {drops.map((drop, index) => <div className="focus-extra" key={`drop-${index}`}>
             <span>{t('Drop {0}', index + 1)}</span>

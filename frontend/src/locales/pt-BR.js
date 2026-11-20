@@ -4,6 +4,22 @@
 import pt from './pt.js'
 
 export const PT_BR_OVERRIDES = {
+  "Add your bands": "Adicionar suas bandas",
+  "Bands": "Bandas",
+  "Band {0}": "Banda {0}",
+  "Resistance bands": "Elásticos de resistência",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "A mais leve em cima. Toque em uma banda embaixo de uma série para dizer que você usou, duas de uma vez se juntou. Quando todas as séries chegarem ao topo das repetições, a próxima sessão te dá a próxima banda.",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "Suas bandas não têm cores? Dê nome pelo nível, como “Nível 3”, e fique com o cinza.",
+  "Move {0} up": "Subir {0}",
+  "Move {0} down": "Descer {0}",
+  "Name": "Nome",
+  "Level or strength (optional)": "Nível ou resistência (opcional)",
+  "Level or strength (optional), like “Heavy”": "Nível ou resistência (opcional), como “Forte”",
+  "Colour": "Cor",
+  "Resistance ({0}, optional)": "Resistência ({0}, opcional)",
+  "Start with the usual five": "Começar com as cinco de sempre",
+  "Add a band": "Adicionar uma banda",
+  "Bands for set {0}": "Bandas da série {0}",
   "Health": "Saúde",
   "Notes": "Notas",
   // Blood pressure and pulse.

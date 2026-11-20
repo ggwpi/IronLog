@@ -1,5 +1,21 @@
 // Hungarian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "Saját gumik hozzáadása",
+  "Bands": "Gumik",
+  "Band {0}": "{0}. gumi",
+  "Resistance bands": "Gumiszalagok",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "A legkönnyebb legfelül. Koppints egy gumira a sorozat alatt, ha azt használtad, akár kettőre is egyszerre. Ha minden sorozat eléri az ismétlések felső határát, a következő edzés a következő gumit adja.",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "Nincs színe a gumijaidnak? Nevezd el őket szint szerint, pl. „3. szint”, és maradjon a szürke.",
+  "Move {0} up": "{0} feljebb",
+  "Move {0} down": "{0} lejjebb",
+  "Name": "Név",
+  "Level or strength (optional)": "Szint vagy erősség (nem kötelező)",
+  "Level or strength (optional), like “Heavy”": "Szint vagy erősség (nem kötelező), pl. „Erős”",
+  "Colour": "Szín",
+  "Resistance ({0}, optional)": "Ellenállás ({0}, nem kötelező)",
+  "Start with the usual five": "Kezdés a szokásos öttel",
+  "Add a band": "Gumi hozzáadása",
+  "Bands for set {0}": "Gumik a(z) {0}. sorozathoz",
   "Health": "Egészség",
   "Notes": "Jegyzetek",
   // Blood pressure and pulse.

@@ -2,6 +2,7 @@
 import { syncSupersetMeta } from './superset-meta.js'
 import { todayISO, isoOf, weekKey, weekStartOf, fmtNum } from './format.js'
 import { isOn } from './modules.js'
+import { seedBands, setBandsOf, bandSetLabel } from './bands.js'
 import { fmtSpeed, speedUnitOf } from './speed.js'
 import { cardioStartSpeed } from './cardio-kind.js'
 import { hasIncline, inclineFrom } from './incline.js'
@@ -144,7 +145,8 @@ const effortTail = s => {
 // entry or a workout entry); passing an id alone keeps the old body-part behaviour.
 // `speedUnit` is the profile's (lib/speed.js speedUnitOf); without one a cardio set reads km/h.
 const EXPLICIT_MODES = new Set(['reps', 'time', 'cardio'])
-export function setLabel(id, s, cfg, speedUnit) {
+export function setLabel(id, s, cfg, speedUnit, bands) {
+  if (setBandsOf(s).length && !isSideSet(s)) return bandSetLabel(id, s, cfg, speedUnit, bands)
   // The id is the caller's when the config does not carry one: a freestyle target is built
   // without it, and modeOf would then fall back to 'reps' and print a run as "0×0".
   const c = cfg ? { ...cfg, id: cfg.id ?? id } : { id }
@@ -542,7 +544,7 @@ export function nextTrainingDay(S, iso) {
  * insertWarmupRow for why this module cannot read it itself).
  */
 export function buildSets(S, cfg, options = {}) {
-  const rows = buildWorkSets(S, cfg, options)
+  const rows = seedBands(S, cfg, buildWorkSets(S, cfg, options), options)
   const warm = Math.max(0, Math.min(MAX_PLANNED_WARMUPS, Math.round(cfg.warmupSets) || 0))
   if (!warm) return rows
   const mode = modeOf(cfg)

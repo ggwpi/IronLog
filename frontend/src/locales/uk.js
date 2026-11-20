@@ -1,5 +1,21 @@
 // Ukrainian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "Додати свої резинки",
+  "Bands": "Резинки",
+  "Band {0}": "Резинка {0}",
+  "Resistance bands": "Гумки",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "Найлегша зверху. Торкнися резинки під підходом, якщо використав її, дві одразу, якщо подвоїв. Коли в кожному підході дійдеш до верху повторів, наступне тренування дасть тобі наступну резинку.",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "Твої стрічки без кольорів? Назви їх за рівнем, наприклад «Рівень 3», і залиш сірий.",
+  "Move {0} up": "{0} вище",
+  "Move {0} down": "{0} нижче",
+  "Name": "Назва",
+  "Level or strength (optional)": "Рівень або сила (необов’язково)",
+  "Level or strength (optional), like “Heavy”": "Рівень або сила (необов’язково), наприклад «Важка»",
+  "Colour": "Колір",
+  "Resistance ({0}, optional)": "Опір ({0}, необов’язково)",
+  "Start with the usual five": "Почати зі звичних п’яти",
+  "Add a band": "Додати резинку",
+  "Bands for set {0}": "Резинки для підходу {0}",
   "Health": "Здоров'я",
   "Notes": "Нотатки",
   // Blood pressure and pulse.

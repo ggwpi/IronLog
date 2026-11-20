@@ -19,6 +19,8 @@ import { initBackButton } from './lib/back.js'
 import { installEdgeSwipeBack, BACK_PREVIEW_EVENT } from './lib/edge-swipe-back.js'
 import { startWatchSync, bindWatchAppActions, patchSetIn } from './lib/watch-sync.js'
 import { stampWorkout } from './lib/sync-merge.js'
+import { setKnownBands, setBandWeightDecimals } from './lib/bands.js'
+import './components/ironlog-bands.css'
 import { logWeighIn } from './lib/bodyweight.js'
 import { startWidgetSync } from './lib/widgets.js'
 import { startLiveActivitySync } from './lib/live-activity.js'
@@ -83,6 +85,8 @@ function Shell() {
   const loc = useLocation()
   const navType = useNavigationType()
   const { S, user, ready } = useStore()
+  setKnownBands(S.bands)
+  setBandWeightDecimals(S.wdec)
   useLayoutEffect(() => {
     if (!(S.ironlogPaletteVersion >= 1)) useStore.getState().update(restoreUpstreamPalette)
   }, [S.ironlogPaletteVersion])

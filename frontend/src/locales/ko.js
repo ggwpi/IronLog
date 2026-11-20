@@ -1,5 +1,21 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "내 밴드 추가",
+  "Bands": "밴드",
+  "Band {0}": "밴드 {0}",
+  "Resistance bands": "저항 밴드",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "가장 가벼운 밴드가 맨 위예요. 세트 아래에서 쓴 밴드를 탭하세요. 겹쳐 썼다면 두 개도 돼요. 모든 세트가 반복 상한에 닿으면 다음 세션에 다음 밴드를 드려요.",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "밴드에 색이 없나요? “레벨 3”처럼 레벨로 이름을 붙이고 회색으로 두세요.",
+  "Move {0} up": "{0} 위로",
+  "Move {0} down": "{0} 아래로",
+  "Name": "이름",
+  "Level or strength (optional)": "레벨 또는 강도(선택)",
+  "Level or strength (optional), like “Heavy”": "레벨 또는 강도(선택), 예: “강함”",
+  "Colour": "색",
+  "Resistance ({0}, optional)": "저항 ({0}, 선택)",
+  "Start with the usual five": "기본 다섯 개로 시작",
+  "Add a band": "밴드 추가",
+  "Bands for set {0}": "세트 {0}의 밴드",
   "Health": "건강",
   "Notes": "메모",
   // Blood pressure and pulse.

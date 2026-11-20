@@ -1,5 +1,7 @@
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import SwipeCards from '../components/SwipeCards.jsx'
+import { BandChips } from '../components/Bands.jsx'
+import { usesBands, setBandsOf, toggleSetBand } from '../lib/bands.js'
 import SwipeRow from '../components/SwipeRow.jsx'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
@@ -793,6 +795,8 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
             </button>
           </div>}
           {loadLine(String(i))}
+          {!pairTail && mode === 'reps' && usesBands(S, entry.id, entry.target) && <BandChips value={setBandsOf(s)} label={t('Bands for set {0}', phaseNum)}
+            onToggle={id => onField(i, 'bands', setBandsOf(toggleSetBand(s, id)))} />}
           {!pairTail && mode === 'reps' && !isWarmupRow(s) && tempoOf(entry.target, s) && <button type="button" className="small dim" data-set-tempo
             style={{ display: 'block', minHeight: 44, textAlign: 'start' }} onClick={() => setTempoSheet(entryIdx, i, { onTick: () => onToggle(i) })}>
             {t('Tempo')} <bdi dir="ltr">{tempoOf(entry.target, s)}</bdi>

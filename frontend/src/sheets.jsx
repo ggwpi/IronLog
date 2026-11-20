@@ -1,4 +1,6 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
+import { BandChips } from './components/Bands.jsx'
+import { usesBands, withBandEx, setBandsOf, toggleSetBand } from './lib/bands.js'
 import { useStore } from './store/useStore.js'
 import { checkinMode, readForm, withForm, goLighter, canGoLighter, LIGHTER_KINDS } from './lib/daily-form.js'
 import DailyFormCheckin from './components/DailyFormCheckin.jsx'
@@ -1930,7 +1932,8 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
         range = normalizeRepRange(reps, c.repsMin, stride)
         reps = range.reps
       }
-      const out = { sets, mode: 'reps', reps, weight: Math.max(0, c.weight || 0), ...flags, ...(perSide ? { side: true } : {}), ...prog, ...withNote, ...withWarmups, ...withRest, ...withSetRests, ...withMeant, ...withSubs }
+      const planBands = usesBands(st, ex.id, c) && !perSide ? setBandsOf({ bands: c.bands }) : []
+      const out = { sets, mode: 'reps', reps, weight: Math.max(0, c.weight || 0), ...flags, ...(perSide ? { side: true } : {}), ...prog, ...withNote, ...withWarmups, ...withRest, ...withSetRests, ...withMeant, ...withSubs, ...(planBands.length ? { bands: planBands } : {}) }
       if (normalizeTempo(c.tempo)) out.tempo = normalizeTempo(c.tempo)
       // The list is the prescription; sets and reps follow it, so everything that reads the
       // flat target (a config sheet reopened with the toggle off, older builds) still makes sense.
@@ -2146,6 +2149,12 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
     </>}
     {/* ---------- bodyweight + per side (issues #31/#32/#33) ---------- */}
     {!cardio && <div className="sect-b" style={{ marginBottom: 8 }}>
+      {mode === 'reps' && <>
+        <Row icon="link" iconTint="var(--teal)" title={t('Bands')}>
+          <Switch checked={usesBands(st, ex.id, c)} onChange={v => update(s => { s.bandEx = withBandEx(s.bandEx, ex.id, v, usesBands({}, ex.id)) })} />
+        </Row>
+        {usesBands(st, ex.id, c) && !perSide && <BandChips value={setBandsOf({ bands: c.bands })} onToggle={id => setC(x => ({ ...x, bands: setBandsOf(toggleSetBand({ bands: x.bands }, id)) }))} />}
+      </>}
       <Row icon="figureStrength" iconTint="var(--acc)" title={t('Bodyweight')}
         subtitle={bw ? (mode === 'time' ? t('No weight to enter. Just time the hold.') : t('No weight to enter. Just log the reps.')) : t('Ask for a weight on every set.')}>
         <Switch checked={bw} onChange={v => setC(x => ({ ...x, bodyweight: v, weight: v ? 0 : x.weight }))} />

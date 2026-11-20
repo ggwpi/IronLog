@@ -286,3 +286,24 @@ cloud handler/profile implementation against `origin/main` and `origin/feat/supa
 The working Supabase/Vercel boundary is inherited. Historical cleanup/provisioning instructions
 are not migration actions and were not executed. This batch neither deploys nor accesses live data.
 It does not certify the remaining upstream functionality or native/restore/visual matrices.
+
+## Original resistance bands through IronLog (2026-11-20)
+
+Complete original band editor/chips/model and tests use IronLog's existing controls and sheet
+host. Actual configuration save, Cards/List/Compact/Focus, original plan/history seeding and
+climbing, labels, CSV and read-only MCP are connected. Unknown inventory/set metadata, 500-char
+Hebrew notes, canonical kg resistance, explicit per-exercise preferences and profile-isolated
+labels have regressions. Original source remains protected by raw Git-blob guards. The remaining
+per-side, summary, portable-plan and native matrices are not certified by these web tests.
+
+The request's `trainingDataVersion: 1` distinguishes capable writers from old clients that merely
+echo unknown profile fields. Existing stamped/unstamped compatibility preserves band data; an
+ambiguous legacy structural edit is refused before persistence. Capable clears and resets work.
+The existing per-key conflict mechanism merges exercise choices; Supabase/schema/auth stay intact.
+
+Full final frontend: 6,568 passed / six unchanged Windows path failures (6,574 / 553 files).
+API: 716 passed / the identical 24 Windows failures / 46 skipped (786). MCP: 98 passed / one
+unchanged permissions failure and two existing watcher errors. Build, 6,554+6,554 media, Node
+loading, generated artifacts, 108,000 fatigue and 1,800 history probes pass. All 19 locales have
+2,655 keys; the pre-existing untranslated backlog remains 52. No manual browser/Python/debug
+test scripts or live-data operations were used. Current-head Linux CI remains a separate gate.

@@ -1,5 +1,21 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "अपने बैंड जोड़ें",
+  "Bands": "बैंड",
+  "Band {0}": "बैंड {0}",
+  "Resistance bands": "रेज़िस्टेंस बैंड",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "सबसे हल्का सबसे ऊपर। सेट के नीचे वह बैंड टैप करें जो आपने इस्तेमाल किया, दो साथ लगाए हों तो दोनों। जब हर सेट रेप्स की ऊपरी सीमा छू ले, तो अगला सेशन आपको अगला बैंड देता है।",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "आपके बैंड पर रंग नहीं? उन्हें लेवल से नाम दें, जैसे “लेवल 3”, और ग्रे रहने दें।",
+  "Move {0} up": "{0} ऊपर करें",
+  "Move {0} down": "{0} नीचे करें",
+  "Name": "नाम",
+  "Level or strength (optional)": "लेवल या ताक़त (वैकल्पिक)",
+  "Level or strength (optional), like “Heavy”": "लेवल या ताक़त (वैकल्पिक), जैसे “भारी”",
+  "Colour": "रंग",
+  "Resistance ({0}, optional)": "प्रतिरोध ({0}, वैकल्पिक)",
+  "Start with the usual five": "आम पाँच से शुरू करें",
+  "Add a band": "बैंड जोड़ें",
+  "Bands for set {0}": "सेट {0} के बैंड",
   "Health": "सेहत",
   "Notes": "नोट्स",
   // Blood pressure and pulse.

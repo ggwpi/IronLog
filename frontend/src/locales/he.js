@@ -1,6 +1,22 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  "Add your bands": "הוספת הגומיות שלך",
+  "Bands": "גומיות",
+  "Band {0}": "גומייה {0}",
+  "Resistance bands": "גומיות התנגדות",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "הגומייה הקלה ביותר בראש הרשימה. בחרו מתחת לסט את הגומיות שבהן השתמשתם, ואפשר לבחור שתיים יחד. כשכל הסטים מגיעים למספר החזרות העליון, האימון הבא יציע את הגומייה הבאה.",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "אין צבעים בגומיות שלכם? תנו להן שם לפי דרגה, למשל ״דרגה 3״, והשאירו את הצבע האפור.",
+  "Move {0} up": "הזזת {0} למעלה",
+  "Move {0} down": "הזזת {0} למטה",
+  "Name": "שם",
+  "Level or strength (optional)": "דרגה או חוזק (רשות)",
+  "Level or strength (optional), like “Heavy”": "דרגה או חוזק (רשות), למשל ״חזק״",
+  "Colour": "צבע",
+  "Resistance ({0}, optional)": "התנגדות ({0}, רשות)",
+  "Start with the usual five": "התחלה עם חמש הגומיות הנפוצות",
+  "Add a band": "הוספת גומייה",
+  "Bands for set {0}": "גומיות לסט {0}",
   "Health": "בריאות",
   "Notes": "הערות",
   // Blood pressure and pulse.

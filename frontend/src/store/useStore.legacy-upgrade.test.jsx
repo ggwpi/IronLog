@@ -113,6 +113,7 @@ describe('the first sync after the update from v1.3.9', () => {
     const put = srv.log.find(x => x.method === 'PUT')
     expect(put.body.stamped).toBe(false)
     expect(put.body.bodyDataVersion).toBe(1)
+    expect(put.body.trainingDataVersion).toBe(1)
     expect(put.body.baseRev).toBe(3)
     expect(localStorage.getItem('gym_legacy_owed')).toBe(null)
     // and from here on this app stamps its own changes

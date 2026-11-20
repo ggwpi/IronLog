@@ -1,5 +1,21 @@
 // Russian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "Добавить свои резинки",
+  "Bands": "Резинки",
+  "Band {0}": "Резинка {0}",
+  "Resistance bands": "Резинки",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "Самая лёгкая сверху. Нажми на резинку под подходом, если использовал её, две сразу, если сдвоил. Когда в каждом подходе ты дойдёшь до верха повторов, на следующей тренировке получишь следующую резинку.",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "У твоих лент нет цветов? Назови их по уровню, например «Уровень 3», и оставь серый.",
+  "Move {0} up": "{0} выше",
+  "Move {0} down": "{0} ниже",
+  "Name": "Название",
+  "Level or strength (optional)": "Уровень или сила (необязательно)",
+  "Level or strength (optional), like “Heavy”": "Уровень или сила (необязательно), например «Тяжёлая»",
+  "Colour": "Цвет",
+  "Resistance ({0}, optional)": "Сопротивление ({0}, необязательно)",
+  "Start with the usual five": "Начать с обычных пяти",
+  "Add a band": "Добавить резинку",
+  "Bands for set {0}": "Резинки для подхода {0}",
   "Health": "Здоровье",
   "Notes": "Заметки",
   // Blood pressure and pulse.

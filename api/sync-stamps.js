@@ -66,12 +66,13 @@ const OWN_MERGE = new Set([
   'workouts', 'routines', 'customEx', 'equipProfiles', 'gymCards', 'bodyweight', 'measurements', 'favEx',
   'exWeights', 'balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'dayNotes', 'dayPhotos', 'dayForm',
 ]);
-const PER_KEY = new Set(['week', 'dayPlan', 'exNotes', 'barWeights', 'modules']);
+const PER_KEY = new Set(['week', 'dayPlan', 'exNotes', 'barWeights', 'modules', 'bandEx']);
 // The maps whose every entry carries its own edit time (sync-merge.js STAMPED_MAPS): merged per
 // key by the app, so never stamped here as a whole setting. dayNotes is a note per day off,
 // dayPhotos a progress photo filed under a day (#557), one entry per photo.
 export const STAMPED_MAPS = ['balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'dayNotes', 'dayPhotos', 'dayForm'];
 import { protectLegacyBodyData } from './body-compat/legacy.js';
+import { protectLegacyBands } from './training-compat.js';
 const ENTRY_META = new Set(['id', '_ts', '_f', '_u']);
 const ENTRY_LISTS = ['routines', 'customEx', 'equipProfiles', 'gymCards', 'workouts'];
 
@@ -437,11 +438,13 @@ function pairItems(a, b) {
   return b.map((x, i) => [a[i], x]);
 }
 /** Step 0 (above): put back into `next` what a writer that does not stamp left out of `cur`. */
-export function keepUnknown(cur, next, { bodyDataVersion = 0 } = {}) {
+export function keepUnknown(cur, next, { bodyDataVersion = 0, trainingDataVersion = 0 } = {}) {
   if (!isMap(cur) || !isMap(next)) return next;
   const absentBodyPrefs = bodyDataVersion >= 1 ? ['weighInTimes', 'bwDaily', 'measureUnit'].filter(k => !Object.hasOwn(next, k)) : [];
+  const absentTrainingPrefs = trainingDataVersion >= 1 ? ['bands', 'bandEx'].filter(k => !Object.hasOwn(next, k)) : [];
   keepKeys(cur, next, 'state');
   for (const key of absentBodyPrefs) delete next[key];
+  for (const key of absentTrainingPrefs) delete next[key];
   // A legacy writer may rebuild a daily weight without the newer readings/metadata.
   // Preserve unknown fields by day; its known weight/time/source edit remains intentional.
   for (const field of bodyDataVersion >= 1 ? [] : ['bodyweight', 'measurements']) if (Array.isArray(cur[field]) && Array.isArray(next[field])) {
@@ -451,7 +454,18 @@ export function keepUnknown(cur, next, { bodyDataVersion = 0 } = {}) {
   for (const f of [...ENTRY_LISTS, ...(bodyDataVersion >= 1 ? [] : ['customMeasurements'])]) {
     if (!Array.isArray(cur[f]) || !Array.isArray(next[f])) continue;
     const before = new Map(cur[f].filter(x => isMap(x) && x.id != null).map(x => [x.id, x]));
-    for (const x of next[f]) if (isMap(x) && x.id != null && before.has(x.id)) keepKeys(before.get(x.id), x, f);
+    for (const x of next[f]) if (isMap(x) && x.id != null && before.has(x.id)) {
+      const absent = [];
+      if (trainingDataVersion >= 1) {
+        const remember = (old, n, place) => {
+          if (Object.hasOwn(old, 'bands') && !Object.hasOwn(n, 'bands')) absent.push(n);
+          for (const field of NESTED[place] || []) for (const [o, v] of pairItems(list(old[field]), list(n[field]))) remember(o, v, `${place}.${field}`);
+        };
+        remember(before.get(x.id), x, f);
+      }
+      keepKeys(before.get(x.id), x, f);
+      for (const item of absent) delete item.bands;
+    }
   }
   return next;
 }
@@ -488,7 +502,7 @@ function keepHeld(next, now) {
 const BOOKKEEPING = new Set(['_ts', '_f', '_u', '_rev', '_wid', '_wids', '_unstamped', '_prior', 'edited', 'deleted', 'undone']);
 const content = S => JSON.stringify(S, (k, v) => (BOOKKEEPING.has(k) ? undefined : v));
 
-export function stampPut(cur, next, { overRead = false, stamped = false, bodyDataVersion = 0, now = Date.now(), report = null } = {}) {
+export function stampPut(cur, next, { overRead = false, stamped = false, bodyDataVersion = 0, trainingDataVersion = 0, now = Date.now(), report = null } = {}) {
   if (!next || typeof next !== 'object') return next;
   const t = Math.max(Number(now) || 0, highestStamp(cur) + 1, highestStamp(next) + 1);
   const reset = (Number(next.resetAt) || 0) > (Number(cur?.resetAt) || 0);
@@ -509,8 +523,9 @@ export function stampPut(cur, next, { overRead = false, stamped = false, bodyDat
     if (e) { delete e._wid; delete e._wids; }
     if (e && Object.keys(e).length) next.edited = e; else delete next.edited;
     const before = report ? content(next) : null;
-    if (!stamped) keepUnknown(cur, next, { bodyDataVersion });
+    if (!stamped) keepUnknown(cur, next, { bodyDataVersion, trainingDataVersion });
     if (!(bodyDataVersion >= 1)) protectLegacyBodyData(cur, next);
+    if (!(trainingDataVersion >= 1)) protectLegacyBands(cur, next, pairItems);
     if (!stamped && overRead) {
       const fp = fingerprint(sent);
       const own = isMap(cur._unstamped) && cur._unstamped.fp === fp ? cur._unstamped : null;

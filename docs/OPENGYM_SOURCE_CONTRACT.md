@@ -193,3 +193,19 @@ The server's reading model is the full original raw Git blob. Its weight convert
 compiled from the full pinned original units module by `scripts/build-body-sync-assets.mjs`;
 source hash, standalone output, regeneration and cross-runtime behavior are checked. Neither
 boundary changes authentication, database schema, production data or the conflict protocol.
+
+## Resistance-band boundaries
+
+The full original `Bands.jsx`, its tests, the band model/tests and history-band tests are retained
+with raw Git-blob guards. It uses IronLog's existing generic fields/buttons and sheet host. New
+styles are confined to band-specific classes. Existing workout layouts and controls are retained.
+Original seeding, climbing and set-label algorithms run from the immutable source closure; adapters
+project IronLog's exercise choice and dictionary, preserving its Hebrew/RTL/precision preferences.
+Inventory extension metadata survive the original cleaner, and resistance remains canonical kg.
+Per-profile MCP labels receive explicit inventories so names do not leak between account reads.
+
+The existing profile PUT advertises `trainingDataVersion: 1` outside profile state. Old stamped
+and unstamped clients preserve new inventory/configuration/set fields. Structural edits with no
+safe set identity are rejected before persistence; upgraded clients can edit/clear them and an
+explicit reset retains existing semantics. Band-exercise preferences use the existing per-key
+conflict mechanism on both sides. This adds no tables, authentication or database writer.

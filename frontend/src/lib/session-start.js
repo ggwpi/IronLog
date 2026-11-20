@@ -13,6 +13,7 @@ import { isAssisted } from './exercises.js'
 import { isDeloadDay, deloadSets } from './deload-cycle.js'
 import { todayISO } from './format.js'
 import { withWarmupBlock, warmupBuildConfig } from './warmup-ramp.js'
+import { bandClimbReps } from './bands.js'
 
 /**
  * Where a planned session's reps come from (Settings → During a workout). 'plan', the default:
@@ -67,6 +68,8 @@ export function buildPlannedEntry(stored, cfg, routine, { noProg = false } = {})
   const ramp = (modeOf(cfg) === 'reps' && ownedWeightsFor(st, cfg)) || step
   // Back-off sets step down from the top set by the exercise's own step (lib/backoff.js).
   const backoffStep = modeOf(cfg) === 'reps' && backoffStepOf(cfg, st.unit) ? step : 0
+  const climbReps = plan.reps != null ? bandClimbReps(st, rowCfg, { step: ramp, rid: routine?.id, useTarget: plan.kind === 'off', planReps }) : 0
+  if (climbReps) plan = { ...plan, reps: climbReps, rowReps: undefined, why: undefined }
   const built = applyPrescription(buildSets(st, warmupBuildConfig(rowCfg), { step: ramp, rid: routine?.id, useTarget: plan.kind === 'off', planReps }), plan, ramp, barFloor(st, cfg.id), isAssisted(cfg))
   const rows = backoffStep ? applyBackoff(built, backoffStep) : built
   const sets = withWarmupBlock(stored, rowCfg, applyIntensifierPlan(rows, rowCfg, dropGrid(st, cfg)), {

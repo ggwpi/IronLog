@@ -1,5 +1,21 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "Bantlarını ekle",
+  "Bands": "Bantlar",
+  "Band {0}": "Bant {0}",
+  "Resistance bands": "Direnç bantları",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "En hafifi en üstte. Kullandığın bandı setin altından seç, iki tane birden de olur. Her set tekrar üst sınırına ulaşınca bir sonraki antrenman sana sıradaki bandı verir.",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "Bantlarının rengi yok mu? Onlara seviyeye göre ad ver, “Seviye 3” gibi, griyi koru.",
+  "Move {0} up": "{0} yukarı",
+  "Move {0} down": "{0} aşağı",
+  "Name": "Ad",
+  "Level or strength (optional)": "Seviye veya direnç (isteğe bağlı)",
+  "Level or strength (optional), like “Heavy”": "Seviye veya direnç (isteğe bağlı), örn. “Ağır”",
+  "Colour": "Renk",
+  "Resistance ({0}, optional)": "Direnç ({0}, isteğe bağlı)",
+  "Start with the usual five": "Bilinen beşliyle başla",
+  "Add a band": "Bant ekle",
+  "Bands for set {0}": "{0}. set için bantlar",
   "Health": "Sağlık",
   "Notes": "Notlar",
   // Blood pressure and pulse.

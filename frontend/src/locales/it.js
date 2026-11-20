@@ -1,5 +1,21 @@
 // Italian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "Aggiungi i tuoi elastici",
+  "Bands": "Elastici",
+  "Band {0}": "Elastico {0}",
+  "Resistance bands": "Elastici",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "Il più leggero in alto. Tocca un elastico sotto una serie per dire che l’hai usato, anche due insieme se li hai doppiati. Quando ogni serie arriva al massimo delle ripetizioni, la sessione dopo ti passa l’elastico successivo.",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "Le tue bande non hanno colori? Chiamale per livello, tipo “Livello 3”, e tieni il grigio.",
+  "Move {0} up": "Sposta {0} su",
+  "Move {0} down": "Sposta {0} giù",
+  "Name": "Nome",
+  "Level or strength (optional)": "Livello o resistenza (facoltativo)",
+  "Level or strength (optional), like “Heavy”": "Livello o resistenza (facoltativo), tipo “Forte”",
+  "Colour": "Colore",
+  "Resistance ({0}, optional)": "Resistenza ({0}, facoltativa)",
+  "Start with the usual five": "Inizia con i soliti cinque",
+  "Add a band": "Aggiungi un elastico",
+  "Bands for set {0}": "Elastici della serie {0}",
   "Health": "Salute",
   "Notes": "Note",
   // Blood pressure and pulse.

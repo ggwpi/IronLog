@@ -470,6 +470,20 @@ describe('list_workouts', () => {
 /* ---------- get_workout ---------- */
 
 describe('get_workout', () => {
+  test('reads band names within the current profile without leaking another profile or changing history', () => {
+    const w = S.workouts[0]
+    S.bands = [{ id: 'r', name: 'אדומה', color: '#eb5757' }]
+    w.entries = [{ id: '0025', target: { mode: 'reps' }, sets: [{ w: 0, r: 12, bands: ['r'], note: 'א'.repeat(500), done: true }] }]
+    const before = structuredClone(S)
+    const result = call('get_workout', { workout_id: w.id }).entries[0].sets[0]
+    expect(result.label).toContain('אדומה'); expect(result.bands).toEqual(['r'])
+    expect(result.note).toBe('א'.repeat(500)); expect(S).toEqual(before)
+    S.bands = [{ id: 'r', name: 'Different profile', color: '#eb5757' }]
+    expect(call('get_workout', { workout_id: w.id }).entries[0].sets[0].label).toContain('Different profile')
+    S.bands = []
+    expect(call('get_workout', { workout_id: w.id }).entries[0].sets[0].label).not.toContain('Different profile')
+    expect(w).toEqual(before.workouts[0])
+  })
   test('reads resistance without losing long notes or mutating stored cardio data', () => {
     const w = S.workouts[0]
     w.entries = [{ id: '2138', target: { mode: 'cardio' }, sets: [{ min: 20, speed: 25, level: 8, done: true, note: 'א'.repeat(500), media: [{ hash: 'private' }] }] }]

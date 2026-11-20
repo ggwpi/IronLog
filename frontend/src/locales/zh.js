@@ -1,5 +1,21 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "添加你的弹力带",
+  "Bands": "弹力带",
+  "Band {0}": "弹力带 {0}",
+  "Resistance bands": "弹力带",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "最轻的在最上面。在某组下方点你用过的弹力带，叠用就点两条。当每组都做到次数上限，下次训练就换下一条。",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "你的弹力带没有颜色？按级别命名，比如“3 级”，保持灰色就行。",
+  "Move {0} up": "上移 {0}",
+  "Move {0} down": "下移 {0}",
+  "Name": "名称",
+  "Level or strength (optional)": "级别或强度（可选）",
+  "Level or strength (optional), like “Heavy”": "级别或强度（可选），如“重”",
+  "Colour": "颜色",
+  "Resistance ({0}, optional)": "阻力（{0}，可选）",
+  "Start with the usual five": "从常见的五条开始",
+  "Add a band": "添加弹力带",
+  "Bands for set {0}": "第 {0} 组的弹力带",
   "Health": "健康",
   "Notes": "备注",
   // Blood pressure and pulse.

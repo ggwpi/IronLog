@@ -1,5 +1,21 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "আপনার ব্যান্ড যোগ করুন",
+  "Bands": "ব্যান্ড",
+  "Band {0}": "ব্যান্ড {0}",
+  "Resistance bands": "রেজিস্ট্যান্স ব্যান্ড",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "সবচেয়ে হালকাটি উপরে। সেটের নিচে যে ব্যান্ড ব্যবহার করেছেন সেটি ট্যাপ করুন, দুটি একসাথে হলে দুটোই। প্রতিটি সেট রেপের ওপরের সীমায় পৌঁছালে পরের সেশন আপনাকে পরের ব্যান্ড দেয়।",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "আপনার ব্যান্ডের রং নেই? লেভেল দিয়ে নাম দিন, যেমন “লেভেল ৩”, আর ধূসরই রাখুন।",
+  "Move {0} up": "{0} উপরে সরান",
+  "Move {0} down": "{0} নিচে সরান",
+  "Name": "নাম",
+  "Level or strength (optional)": "লেভেল বা শক্তি (ঐচ্ছিক)",
+  "Level or strength (optional), like “Heavy”": "লেভেল বা শক্তি (ঐচ্ছিক), যেমন “ভারী”",
+  "Colour": "রং",
+  "Resistance ({0}, optional)": "প্রতিরোধ ({0}, ঐচ্ছিক)",
+  "Start with the usual five": "সাধারণ পাঁচটি দিয়ে শুরু করুন",
+  "Add a band": "ব্যান্ড যোগ করুন",
+  "Bands for set {0}": "সেট {0}-এর ব্যান্ড",
   "Health": "স্বাস্থ্য",
   "Notes": "নোট",
   // Blood pressure and pulse.

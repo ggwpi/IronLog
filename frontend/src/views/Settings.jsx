@@ -7,6 +7,8 @@ import { setRecoveryHint } from '../lib/recovery-hint.js'
 import { healthStatus, loadHealth, enableHealth, disableHealth, openHealthConnect, onHealthChange } from '../lib/health-sync.js'
 import { workoutControls } from '../lib/workout-controls.js'
 import { isOn, setModule } from '../lib/modules.js'
+import { bandsSheet } from '../components/Bands.jsx'
+import { bandsOf } from '../lib/bands.js'
 import { speedUnitOf } from '../lib/speed.js'
 import { warmupAutoOf } from '../lib/warmup-ramp.js'
 import { dailyModeOf, settleAll } from '../lib/weigh-ins.js'
@@ -1464,6 +1466,7 @@ function EquipmentCard({ S, update }) {
     <Row icon="plate" iconTint="var(--orange)" title={t('Plates')} subtitle={plateSummary} accessory="chevron" onClick={() => plateInventorySheet()} />
     <Row icon="dumbbell" iconTint="var(--teal)" title={t('Dumbbells')} subtitle={dumbbellSummary} accessory="chevron" onClick={() => dumbbellInventorySheet()} />
     <Row icon="barbell" iconTint="var(--blue)" title={t('Your bars')} subtitle={barSummary} accessory="chevron" onClick={() => barDefaultsSheet()} />
+    <Row icon="link" iconTint="var(--teal)" title={t('Resistance bands')} value={String(bandsOf(S).length)} accessory="chevron" onClick={bandsSheet} />
     {profiles.length > 0 && <Row icon="kettlebell" iconTint="var(--acc)" title={t('Filter by equipment')}>
       <Switch checked={!!S.equipFilterOn} onChange={v => update(s => { s.equipFilterOn = v })} />
     </Row>}

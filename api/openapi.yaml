@@ -1582,6 +1582,13 @@ paths:
                     True when the client stamps its own changes in `deleted`, `edited` and
                     each entry's `_ts`/`_f`, as the app does. Omit it to have the server
                     stamp what changed against the stored document.
+                trainingDataVersion:
+                  type: integer
+                  const: 1
+                  description: >-
+                    Declare resistance-band support before intentionally editing band inventory,
+                    exercise preferences or per-set bands. Omit it for older clients; band data
+                    are preserved and ambiguous structural edits of banded rows are rejected.
                 bodyDataVersion:
                   type: integer
                   const: 1

@@ -1,5 +1,21 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  "Add your bands": "أضف أشرطتك",
+  "Bands": "الأشرطة",
+  "Band {0}": "شريط {0}",
+  "Resistance bands": "أشرطة المقاومة",
+  "Lightest at the top. Tap a band under a set to say you used it, two at once if you doubled up. When every set hits the top of its reps, the next session hands you the next band.": "الأخف في الأعلى. اضغط على شريط تحت المجموعة لتقول إنك استخدمته، واثنين معًا إن ضاعفت. عندما تصل كل مجموعة إلى أعلى التكرارات، تمنحك الجلسة التالية الشريط التالي.",
+  "No colours on yours? Name them by level instead, like “Level 3”, and keep the grey.": "أشرطتك بلا ألوان؟ سمّها حسب المستوى، مثل “المستوى 3”، واترك الرمادي.",
+  "Move {0} up": "نقل {0} لأعلى",
+  "Move {0} down": "نقل {0} لأسفل",
+  "Name": "الاسم",
+  "Level or strength (optional)": "المستوى أو القوة (اختياري)",
+  "Level or strength (optional), like “Heavy”": "المستوى أو القوة (اختياري)، مثل “ثقيل”",
+  "Colour": "اللون",
+  "Resistance ({0}, optional)": "المقاومة ({0}، اختياري)",
+  "Start with the usual five": "ابدأ بالخمسة المعتادة",
+  "Add a band": "أضف شريطًا",
+  "Bands for set {0}": "أشرطة المجموعة {0}",
   "Health": "الصحة",
   "Notes": "الملاحظات",
   // Blood pressure and pulse.

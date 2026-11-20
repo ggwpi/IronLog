@@ -53,6 +53,7 @@ const signedInWeb = c => !!c.user && !c.mobile && !c.demo
 const remind = c => !!c.mobile || !!c.pushOK
 const PUSH = 'Push notifications'
 export const SEARCH = [
+  { page: 'equipment', title: 'Resistance bands', icon: 'link', tint: 'var(--teal)', kw: 'bands resistance colours colors strength level' },
   // Workout
   { page: 'workout', title: 'Rest timer', icon: 'timer', tint: 'var(--orange)', kw: 'rest pause break seconds minutes timer countdown' },
   { page: 'workout', title: 'Rest-pause rest', icon: 'bolt', tint: 'var(--orange)', kw: 'burst cluster rest pause' },
