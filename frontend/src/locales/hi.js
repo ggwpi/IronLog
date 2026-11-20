@@ -1,5 +1,22 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "जितनी तेज़ी से हो सके ऊपर। गाइड इसे एक फुर्तीला सेकंड देता है।",
+  "Tempo {0}": "टेम्पो {0}",
+  "{0} reps": "{0} रेप",
+  "{0} s under tension": "{0} सेकंड टेंशन में",
+  "Get set": "तैयार हो जाइए",
+  "Rep {0} of {1}": "रेप {0} / {1}",
+  "{0} s under tension. Lovely and slow.": "{0} सेकंड टेंशन में। बढ़िया और धीमे।",
+  "A tone for each phase": "हर फ़ेज़ के लिए अलग टोन",
+  "A buzz for each phase": "हर फ़ेज़ पर एक वाइब्रेशन",
+  "Again": "फिर से",
+  "Stop": "रोकें",
+  "Tick the set": "सेट पर टिक करें",
+  "Tempo {0}, start the guide": "टेम्पो {0}, गाइड शुरू करें",
+  "Lower": "नीचे",
+  "Lift": "ऊपर",
+  "Squeeze": "स्क्वीज़",
   // Cardio resistance controls.
   "Level": "लेवल",
   // Original automatic and saved warm-up controls.

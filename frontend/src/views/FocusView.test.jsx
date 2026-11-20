@@ -8,7 +8,7 @@ import { DEF, useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
 import { auditCompleteProfilePreservation } from '../lib/migration-audit.js'
 
-vi.mock('../lib/sound.js', () => ({ beep: vi.fn(), vibrate: vi.fn(), unlock: vi.fn() }))
+vi.mock('../lib/sound.js', () => ({ beep: vi.fn(), vibrate: vi.fn(), unlock: vi.fn(), queueTones: vi.fn(() => vi.fn()) }))
 vi.mock('../lib/api.js', () => ({ api: vi.fn(() => Promise.resolve({})) }))
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
@@ -76,6 +76,20 @@ afterEach(() => {
 })
 
 describe('Focus workout view', () => {
+  it('completes the tempo guide through the existing Focus Done behavior and retains set metadata', () => {
+    vi.useFakeTimers()
+    try {
+      const row = { w: 60, r: 1, done: false, note: 'א'.repeat(500), tag: 'blue', media: [{ hash: 'keep' }] }
+      mount({ id: '0025', target: { sets: 1, reps: 1, weight: 60, tempo: '1-0-1-0' }, sets: [row] }, { unit: 'kg' })
+      let editor = setMenuAction('Tempo')
+      act(() => [...editor.querySelectorAll('button')].find(b => b.textContent === 'Tempo 1-0-1-0, start the guide').click())
+      const guide = renderLatestSheet()
+      act(() => [...guide.querySelectorAll('button')].find(b => b.textContent === 'Start').click())
+      act(() => vi.advanceTimersByTime(5100))
+      act(() => [...guide.querySelectorAll('button')].find(b => b.textContent === 'Tick the set').click())
+      expect(useStore.getState().S.active.entries[0].sets[0]).toMatchObject({ ...row, done: true })
+    } finally { useUI.getState().stopRest(); vi.useRealTimers() }
+  })
   it('edits an opted-in cardio level while preserving notes, media and old default controls', () => {
     const row = { min: 30, speed: 10, level: 8, done: false, note: 'א'.repeat(500), tag: 'blue', media: [{ hash: 'keep' }] }
     mount({ id: '2138', target: { sets: 1, min: 30, speed: 10 }, sets: [row] }, { unit: 'kg', showCardioLevel: true })

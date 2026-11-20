@@ -1,0 +1,5 @@
+/* New guide only: existing editor, workout controls and global tokens stay unchanged. */
+.ironlog-tempo-guide .tempo-stage { text-align: center; padding-block: 24px; margin-block: 12px; border-radius: var(--radius, 16px); background: var(--surface-2); font-variant-numeric: tabular-nums; }
+.ironlog-tempo-guide .tempo-count { font-size: 48px; font-weight: 700; color: var(--acc); }
+.ironlog-tempo-guide .tempo-phase { font-size: 24px; font-weight: 600; }
+.ironlog-tempo-guide .tempo-sub { margin-block-start: 8px; color: var(--dim); }

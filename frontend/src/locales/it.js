@@ -1,5 +1,22 @@
 // Italian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "Su più veloce che puoi. La guida gli dà un secondo rapido.",
+  "Tempo {0}": "Tempo {0}",
+  "{0} reps": "{0} ripetizioni",
+  "{0} s under tension": "{0} s sotto tensione",
+  "Get set": "Pronti",
+  "Rep {0} of {1}": "Rip. {0} di {1}",
+  "{0} s under tension. Lovely and slow.": "{0} s sotto tensione. Belli lenti.",
+  "A tone for each phase": "Un tono per ogni fase",
+  "A buzz for each phase": "Una vibrazione per ogni fase",
+  "Again": "Ancora",
+  "Stop": "Stop",
+  "Tick the set": "Spunta la serie",
+  "Tempo {0}, start the guide": "Tempo {0}, avvia la guida",
+  "Lower": "Discesa",
+  "Lift": "Salita",
+  "Squeeze": "Contrazione",
   // Cardio resistance controls.
   "Level": "Livello",
   // Original automatic and saved warm-up controls.

@@ -1,5 +1,22 @@
 // Russian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "Вверх как можно быстрее. Подсказка даёт на это одну быструю секунду.",
+  "Tempo {0}": "Темп {0}",
+  "{0} reps": {"one":"{0} повторение","few":"{0} повторения","many":"{0} повторений","other":"{0} повторения"},
+  "{0} s under tension": "{0} с под нагрузкой",
+  "Get set": "Приготовьтесь",
+  "Rep {0} of {1}": "Повтор {0} из {1}",
+  "{0} s under tension. Lovely and slow.": "{0} с под нагрузкой. Красиво и медленно.",
+  "A tone for each phase": "Свой сигнал для каждой фазы",
+  "A buzz for each phase": "Вибрация на каждую фазу",
+  "Again": "Ещё раз",
+  "Stop": "Стоп",
+  "Tick the set": "Отметить подход",
+  "Tempo {0}, start the guide": "Темп {0}, запустить подсказку",
+  "Lower": "Опускание",
+  "Lift": "Подъём",
+  "Squeeze": "Сжатие",
   // Cardio resistance controls.
   "Level": "Уровень",
   // Original automatic and saved warm-up controls.

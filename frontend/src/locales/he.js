@@ -1,6 +1,23 @@
 // Hebrew UI strings. English source keys follow the existing locale-pack contract.
 // Exercise catalogue names and instructions use their existing English fallback.
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "הרמה מהירה ככל האפשר. המדריך מקצה לה שנייה אחת.",
+  "Tempo {0}": "טמפו {0}",
+  "{0} reps": "{0} חזרות",
+  "{0} s under tension": "{0} שניות תחת עומס",
+  "Get set": "להתכונן",
+  "Rep {0} of {1}": "חזרה {0} מתוך {1}",
+  "{0} s under tension. Lovely and slow.": "{0} שניות תחת עומס. לאט ובשליטה.",
+  "A tone for each phase": "צליל לכל שלב",
+  "A buzz for each phase": "רטט לכל שלב",
+  "Again": "שוב",
+  "Stop": "עצירה",
+  "Tick the set": "סימון הסט כהושלם",
+  "Tempo {0}, start the guide": "טמפו {0}, הפעלת המדריך",
+  "Lower": "הורדה",
+  "Lift": "הרמה",
+  "Squeeze": "כיווץ",
   // Cardio resistance controls.
   "Level": "רמה",
   // Original automatic and saved warm-up controls.

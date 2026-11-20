@@ -1,5 +1,22 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "최대한 빠르게 들어 올리세요. 가이드는 재빠른 1초를 줘요.",
+  "Tempo {0}": "템포 {0}",
+  "{0} reps": "{0}회",
+  "{0} s under tension": "긴장 시간 {0}초",
+  "Get set": "준비",
+  "Rep {0} of {1}": "{1}회 중 {0}회",
+  "{0} s under tension. Lovely and slow.": "긴장 시간 {0}초. 천천히, 아주 좋아요.",
+  "A tone for each phase": "단계마다 다른 신호음",
+  "A buzz for each phase": "단계마다 진동",
+  "Again": "다시",
+  "Stop": "정지",
+  "Tick the set": "세트 체크",
+  "Tempo {0}, start the guide": "템포 {0}, 가이드 시작",
+  "Lower": "내리기",
+  "Lift": "들기",
+  "Squeeze": "쥐어짜기",
   // Cardio resistance controls.
   "Level": "강도",
   // Original automatic and saved warm-up controls.

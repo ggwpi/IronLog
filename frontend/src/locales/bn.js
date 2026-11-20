@@ -1,5 +1,22 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "যত দ্রুত পারেন তুলুন। গাইড এর জন্য এক ঝটপট সেকেন্ড দেয়।",
+  "Tempo {0}": "টেম্পো {0}",
+  "{0} reps": "{0}টি রেপ",
+  "{0} s under tension": "{0} সে টেনশনে",
+  "Get set": "প্রস্তুত হোন",
+  "Rep {0} of {1}": "রেপ {0} / {1}",
+  "{0} s under tension. Lovely and slow.": "{0} সে টেনশনে। চমৎকার আর ধীরে।",
+  "A tone for each phase": "প্রতিটি ধাপের জন্য আলাদা টোন",
+  "A buzz for each phase": "প্রতিটি ধাপে একটি ভাইব্রেশন",
+  "Again": "আবার",
+  "Stop": "থামান",
+  "Tick the set": "সেটে টিক দিন",
+  "Tempo {0}, start the guide": "টেম্পো {0}, গাইড শুরু করুন",
+  "Lower": "নামানো",
+  "Lift": "তোলা",
+  "Squeeze": "চাপ",
   // Cardio resistance controls.
   "Level": "লেভেল",
   // Original automatic and saved warm-up controls.

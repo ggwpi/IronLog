@@ -1,5 +1,22 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "إلى الأعلى بأسرع ما تستطيع. الدليل يعطيها ثانية خاطفة.",
+  "Tempo {0}": "الإيقاع {0}",
+  "{0} reps": "{0} تكرارات",
+  "{0} s under tension": "{0} ث تحت الشد",
+  "Get set": "استعد",
+  "Rep {0} of {1}": "التكرار {0} من {1}",
+  "{0} s under tension. Lovely and slow.": "{0} ث تحت الشد. ببطء وجمال.",
+  "A tone for each phase": "نغمة لكل مرحلة",
+  "A buzz for each phase": "اهتزاز لكل مرحلة",
+  "Again": "مرة أخرى",
+  "Stop": "إيقاف",
+  "Tick the set": "أشّر على المجموعة",
+  "Tempo {0}, start the guide": "الإيقاع {0}، ابدأ الدليل",
+  "Lower": "نزول",
+  "Lift": "رفع",
+  "Squeeze": "عصر",
   // Cardio resistance controls.
   "Level": "المستوى",
   // Original automatic and saved warm-up controls.

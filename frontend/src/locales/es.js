@@ -1,5 +1,22 @@
 // Spanish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "Sube tan rápido como puedas. La guía le da un segundito.",
+  "Tempo {0}": "Tempo {0}",
+  "{0} reps": "{0} repeticiones",
+  "{0} s under tension": "{0} s bajo tensión",
+  "Get set": "Prepárate",
+  "Rep {0} of {1}": "Rep. {0} de {1}",
+  "{0} s under tension. Lovely and slow.": "{0} s bajo tensión. Bien lento y bonito.",
+  "A tone for each phase": "Un tono por fase",
+  "A buzz for each phase": "Una vibración por fase",
+  "Again": "Otra vez",
+  "Stop": "Parar",
+  "Tick the set": "Marcar la serie",
+  "Tempo {0}, start the guide": "Tempo {0}, iniciar la guía",
+  "Lower": "Bajar",
+  "Lift": "Subir",
+  "Squeeze": "Apretar",
   // Cardio resistance controls.
   "Level": "Nivel",
   // Original automatic and saved warm-up controls.

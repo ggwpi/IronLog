@@ -150,3 +150,18 @@ CSV export is read-only; full new measurement/multiple-weigh-in imports and sync
 The all/custom date sheet uses existing IronLog controls; upstream report-range presets and
 automatic normalization await their original dependency integration. Coach payload notes, native
 device flows and the remaining parity ledger stay open. See the dedicated CSV verification report.
+
+
+## Tempo guide and audio boundary
+
+The complete original Tempo component, audio engine and rest-sound table are retained as raw
+pinned Git blobs with their original tests. IronLog's existing tempo editor opens only the new
+original guide inside its own sheet host. Scoped styles use IronLog tokens; its existing editor,
+workout layouts and global stylesheet stay in place. Only the new guide uses the original
+cancellable audio queue. IronLog's existing beep/chime engine, silent-mode preference, native
+haptics and media storage remain the boundaries used by its existing features.
+
+Guide completion calls the actual IronLog Done handler only while the session, exercise, target
+and full row snapshot still match. Previewing an unsaved tempo never writes it into the set or
+offers completion against a different saved tempo. Actual Focus completion and stale-session,
+row/target changes have automated regressions. Hardware/background audio is not certified.

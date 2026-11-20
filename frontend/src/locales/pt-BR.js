@@ -4,6 +4,23 @@
 import pt from './pt.js'
 
 export const PT_BR_OVERRIDES = {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "A subir o mais rápido que conseguires. O guia dá-lhe um segundo rapidinho.",
+  "Tempo {0}": "Cadência {0}",
+  "{0} reps": "{0} repetições",
+  "{0} s under tension": "{0} s sob tensão",
+  "Get set": "Prepara-te",
+  "Rep {0} of {1}": "Rep {0} de {1}",
+  "{0} s under tension. Lovely and slow.": "{0} s sob tensão. Lindo e lento.",
+  "A tone for each phase": "Um tom para cada fase",
+  "A buzz for each phase": "Uma vibração para cada fase",
+  "Again": "Outra vez",
+  "Stop": "Parar",
+  "Tick the set": "Marcar a série",
+  "Tempo {0}, start the guide": "Cadência {0}, iniciar o guia",
+  "Lower": "Descer",
+  "Lift": "Subir",
+  "Squeeze": "Contrair",
   // Cardio resistance controls.
   "Level": "Nível",
   // Original automatic and saved warm-up controls.

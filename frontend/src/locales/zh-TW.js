@@ -1,4 +1,21 @@
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "盡可能快地上舉。引導只給它短短一秒。",
+  "Tempo {0}": "節奏 {0}",
+  "{0} reps": "{0} 次",
+  "{0} s under tension": "受力 {0} 秒",
+  "Get set": "預備",
+  "Rep {0} of {1}": "第 {0} 下，共 {1} 下",
+  "{0} s under tension. Lovely and slow.": "受力 {0} 秒。慢得漂亮。",
+  "A tone for each phase": "每個階段一個提示音",
+  "A buzz for each phase": "每個階段一種震動",
+  "Again": "再一次",
+  "Stop": "停止",
+  "Tick the set": "勾選這組",
+  "Tempo {0}, start the guide": "節奏 {0}，開始引導",
+  "Lower": "下放",
+  "Lift": "上舉",
+  "Squeeze": "收縮",
   // Cardio resistance controls.
   "Level": "阻力段",
   // Original automatic and saved warm-up controls.

@@ -1,5 +1,22 @@
 // Ukrainian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "Вгору якнайшвидше. Підказка дає на це одну швидку секунду.",
+  "Tempo {0}": "Темп {0}",
+  "{0} reps": {"one":"{0} повторення","few":"{0} повторення","many":"{0} повторень","other":"{0} повторення"},
+  "{0} s under tension": "{0} с під навантаженням",
+  "Get set": "Приготуйся",
+  "Rep {0} of {1}": "Повтор {0} з {1}",
+  "{0} s under tension. Lovely and slow.": "{0} с під навантаженням. Гарно й повільно.",
+  "A tone for each phase": "Свій сигнал для кожної фази",
+  "A buzz for each phase": "Вібрація на кожну фазу",
+  "Again": "Ще раз",
+  "Stop": "Стоп",
+  "Tick the set": "Позначити підхід",
+  "Tempo {0}, start the guide": "Темп {0}, запустити підказку",
+  "Lower": "Опускання",
+  "Lift": "Підйом",
+  "Squeeze": "Стискання",
   // Cardio resistance controls.
   "Level": "Рівень",
   // Original automatic and saved warm-up controls.

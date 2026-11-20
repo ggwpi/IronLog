@@ -1,5 +1,22 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "ขึ้นให้เร็วที่สุด ตัวช่วยนับให้เวลาแค่หนึ่งวินาทีสั้นๆ",
+  "Tempo {0}": "เทมโป {0}",
+  "{0} reps": "{0} ครั้ง",
+  "{0} s under tension": "{0} วินาทีภายใต้แรงตึง",
+  "Get set": "เตรียมตัว",
+  "Rep {0} of {1}": "ครั้งที่ {0} จาก {1}",
+  "{0} s under tension. Lovely and slow.": "{0} วินาทีภายใต้แรงตึง ช้าๆ สวยๆ",
+  "A tone for each phase": "โทนเสียงแยกตามแต่ละช่วง",
+  "A buzz for each phase": "สั่นแยกตามแต่ละช่วง",
+  "Again": "อีกครั้ง",
+  "Stop": "หยุด",
+  "Tick the set": "ติ๊กเซ็ตนี้",
+  "Tempo {0}, start the guide": "เทมโป {0} เริ่มตัวช่วยนับ",
+  "Lower": "ลง",
+  "Lift": "ขึ้น",
+  "Squeeze": "บีบ",
   // Cardio resistance controls.
   "Level": "ระดับ",
   // Original automatic and saved warm-up controls.

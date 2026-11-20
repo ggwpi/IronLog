@@ -179,3 +179,27 @@ watcher EPERM errors. Plain-Node import graph, production build, 6,554 stills/6,
 108,000 fatigue and 1,800 history comparisons pass. All 19 locales contain 2,600 matching keys.
 Warm-up commit 3d75d41b has green Linux CI run 44613304455 (all five jobs).
 These checks verify this integration; broader native, restore and full feature parity remain open.
+
+
+## Original tempo guide integration (2026-11-20)
+
+The complete original Tempo component, audio engine/rest table and their original tests are
+imported unchanged and protected by five raw Git-blob checks. IronLog's existing tempo editor
+opens the guide inside its existing sheet host; existing editor controls remain. Original count-in,
+phase timing, audio-clock scheduling/cancellation, haptics, repetition count and sound/buzz
+preferences are used. IronLog's existing beep/chime/silent-mode/native-haptic behavior is retained.
+Guide completion returns through existing Done handlers in all layouts; the actual Focus flow is
+covered with a long Hebrew note, tag and media. Changed session, row or prescription rejects stale
+completion. A preview of an unsaved tempo never changes the stored prescription.
+
+The final full frontend run passes 6,449 cases with only the same six Windows path failures
+(6,455 total / 542 files). Actual audio-bus cancellation/isolation and plural-placeholder tests pass;
+all 19 locales contain 2,616 matching keys. Real-device/background audio and haptics still need
+native hardware verification. This does not certify complete migration or native parity.
+
+For this batch, API again has 696 pass / 24 unchanged Windows failures / 46 skips (766 total);
+MCP has 97 pass / one unchanged permissions failure and two unchanged watcher errors. The failing
+API names match ed247ff4 exactly. Plain-Node MCP loading, production build, 6,554 stills/6,554
+animations, locale parity, 108,000 fatigue and 1,800 history comparisons pass. No live data or
+production environment was accessed. Resistance commit ed247ff4 has all five Linux CI jobs green
+in Tests #240 (run 44658984478).

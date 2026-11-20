@@ -3,14 +3,16 @@ import { useState } from 'react'
 import { useUI } from '../store/useUI.js'
 import { useStore } from '../store/useStore.js'
 import { t } from '../lib/i18n.js'
-import { normalizeTempo, parseTempo, tempoOf, PHASES } from '../lib/opengym-v145/tempo.js'
+import { normalizeTempo, parseTempo, tempoOf, guideReps, PHASES } from '../lib/opengym-v145/tempo.js'
+import { TempoGuide } from './Tempo.jsx'
+import './ironlog-tempo-guide.css'
 import { setSpanAt } from '../lib/history.js'
 import { Row, Switch, Stepper, Button } from './ui.jsx'
 
 const PRESETS = ['3-1-1-0', '2-0-1-0', '3-0-1-0', '4-0-1-0', '2-1-2-1', '5-0-X-0']
 const labels = () => [t('Lower (s)'), t('Pause at the bottom (s)'), t('Lift (s)'), t('Squeeze at the top (s)')]
 
-export function TempoEditor({ value, title, clearLabel, onDone, close }) {
+export function TempoEditor({ value, title, clearLabel, onDone, close, onGuide }) {
   const [parts, setParts] = useState(() => (normalizeTempo(value) || '3-0-1-0').split('-'))
   const tempo = normalizeTempo(parts.join('-'))
   const parsed = parseTempo(parts.join('-'))
@@ -27,6 +29,7 @@ export function TempoEditor({ value, title, clearLabel, onDone, close }) {
         disabled={parts[i] === 'X'} onChange={v => change(i, v)} />
     </div>)}
     <Row icon="bolt" title={t('Explosive lift (X)')}><Switch aria-label={t('Explosive lift (X)')} checked={parts[2] === 'X'} onChange={on => change(2, on ? 'X' : 1)} /></Row>
+    {onGuide && <Button icon="play" disabled={!tempo} onClick={() => { close(); onGuide(tempo) }}>{t('Tempo {0}, start the guide', tempo || '–')}</Button>}
     <Button variant="primary" disabled={!tempo} onClick={() => onDone(tempo)}>{t('Save')}</Button>
     {value && <Button variant="plain" onClick={() => onDone(null)}>{clearLabel || t('No tempo')}</Button>}
     <Button variant="ghost" onClick={close}>{t('Cancel')}</Button>
@@ -37,7 +40,7 @@ export function tempoSheet(options) {
   return useUI.getState().openSheet(close => <TempoEditor {...options} close={close} onDone={v => { close(); options.onDone(v) }} />)
 }
 
-export function setTempoSheet(entryIdx, setIdx) {
+export function setTempoSheet(entryIdx, setIdx, { onTick } = {}) {
   const active = useStore.getState().S.active
   const entry = active?.entries?.[entryIdx]
   if (!entry) return
@@ -45,7 +48,18 @@ export function setTempoSheet(entryIdx, setIdx) {
   const row = entry.sets[start]
   if (!row) return
   const ref = { id: active.id, entryId: entry.id, rows: entry.sets.length }
-  return tempoSheet({ title: t('Tempo for this set'), value: tempoOf(entry.target, row), clearLabel: normalizeTempo(entry.target?.tempo) ? t('Like the exercise ({0})', normalizeTempo(entry.target.tempo)) : t('No tempo'), onDone: value => {
+  const rowSignature = JSON.stringify(row)
+  const targetSignature = JSON.stringify(entry.target)
+  const sameRow = () => {
+    const current = useStore.getState().S.active
+    const e = current?.entries?.[entryIdx]
+    return current?.id === ref.id && e?.id === ref.entryId && e.sets.length === ref.rows && JSON.stringify(e.target) === targetSignature && JSON.stringify(e.sets[start]) === rowSignature
+  }
+  const onGuide = tempo => useUI.getState().openSheet(close => <div className="ironlog-tempo-guide">
+    <TempoGuide tempo={tempo} reps={guideReps(row, entry.target)} close={close}
+      onTick={!row.done && onTick && tempo === tempoOf(entry.target, row) ? () => { close(); if (sameRow()) onTick() } : null} />
+  </div>)
+  return tempoSheet({ title: t('Tempo for this set'), value: tempoOf(entry.target, row), onGuide, clearLabel: normalizeTempo(entry.target?.tempo) ? t('Like the exercise ({0})', normalizeTempo(entry.target.tempo)) : t('No tempo'), onDone: value => {
     useStore.getState().update(s => {
       const current = s.active?.entries?.[entryIdx]
       if (!current || s.active.id !== ref.id || current.id !== ref.entryId || current.sets.length !== ref.rows) return

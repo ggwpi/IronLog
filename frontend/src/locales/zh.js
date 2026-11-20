@@ -1,5 +1,22 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "尽可能快地上举。引导只给它短短一秒。",
+  "Tempo {0}": "节奏 {0}",
+  "{0} reps": "{0} 次",
+  "{0} s under tension": "受力 {0} 秒",
+  "Get set": "准备",
+  "Rep {0} of {1}": "第 {0} 次，共 {1} 次",
+  "{0} s under tension. Lovely and slow.": "受力 {0} 秒。慢得漂亮。",
+  "A tone for each phase": "每个阶段一个提示音",
+  "A buzz for each phase": "每个阶段一种震动",
+  "Again": "再来",
+  "Stop": "停止",
+  "Tick the set": "勾选这一组",
+  "Tempo {0}, start the guide": "节奏 {0}，开始引导",
+  "Lower": "下放",
+  "Lift": "上举",
+  "Squeeze": "收缩",
   // Cardio resistance controls.
   "Level": "阻力档",
   // Original automatic and saved warm-up controls.

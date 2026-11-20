@@ -259,7 +259,7 @@ export default function FocusView({
     items: [
       { icon: 'palette', label: t('Colour tag'), sub: setTagOf(set) ? `${setTagOf(set).shape} ${setTagName(set.tag)}` : t('Your own code for this set'), onClick: openTagMenu },
       { icon: 'note', label: setNoteOf(set) ? t('Edit note') : t('Note'), sub: setNoteOf(set) || t('A word about this set'), onClick: () => setNoteSheet(entryIdx, setIdx) },
-      !isWarmupRow(set) && mode === 'reps' && { icon: 'stopwatch', label: t('Tempo'), sub: tempoOf(entry.target, set) || t('None'), onClick: () => setTempoSheet(entryIdx, setIdx) },
+      !isWarmupRow(set) && mode === 'reps' && { icon: 'stopwatch', label: t('Tempo'), sub: tempoOf(entry.target, set) || t('None'), onClick: () => setTempoSheet(entryIdx, setIdx, { onTick: complete }) },
       { icon: 'flame', label: isWarmupRow(set) ? t('Mark as work set') : t('Mark as warm-up'), onClick: () => onMutateSet(setIdx, toggleWarmup) },
       { icon: 'arrowDown', label: t('Add drop set'), onClick: () => onMutateSet(setIdx, row => addDropTo(row, entry.target)) },
       { icon: 'bolt', label: t('Add burst'), onClick: () => onMutateSet(setIdx, row => addBurstTo(row, entry.target?.intensifier?.type === 'restpause' ? entry.target.intensifier.restSec : (S.restPauseSec || 15))) },

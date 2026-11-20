@@ -1,5 +1,22 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "Olabildiğince hızlı yukarı. Rehber buna hızlı bir saniye verir.",
+  "Tempo {0}": "Tempo {0}",
+  "{0} reps": "{0} tekrar",
+  "{0} s under tension": "{0} sn gerilim altında",
+  "Get set": "Hazırlan",
+  "Rep {0} of {1}": "Tekrar {0} / {1}",
+  "{0} s under tension. Lovely and slow.": "{0} sn gerilim altında. Güzel ve yavaş.",
+  "A tone for each phase": "Her faz için bir ton",
+  "A buzz for each phase": "Her faz için bir titreşim",
+  "Again": "Bir daha",
+  "Stop": "Durdur",
+  "Tick the set": "Seti işaretle",
+  "Tempo {0}, start the guide": "Tempo {0}, rehberi başlat",
+  "Lower": "İndir",
+  "Lift": "Kaldır",
+  "Squeeze": "Sık",
   // Cardio resistance controls.
   "Level": "Seviye",
   // Original automatic and saved warm-up controls.

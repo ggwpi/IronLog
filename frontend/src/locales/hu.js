@@ -1,5 +1,22 @@
 // Hungarian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // Original tempo guide.
+  "Up as fast as you can. The guide gives it one quick second.": "Fel, amilyen gyorsan csak tudod. Az útmutató egy fürge másodpercet ad rá.",
+  "Tempo {0}": "Tempó {0}",
+  "{0} reps": "{0} ismétlés",
+  "{0} s under tension": "{0} mp feszülés alatt",
+  "Get set": "Felkészülni",
+  "Rep {0} of {1}": "{0}/{1}. ismétlés",
+  "{0} s under tension. Lovely and slow.": "{0} mp feszülés alatt. Szép lassan.",
+  "A tone for each phase": "Külön hang minden fázishoz",
+  "A buzz for each phase": "Rezgés minden fázisnál",
+  "Again": "Még egyszer",
+  "Stop": "Leállítás",
+  "Tick the set": "Sorozat kipipálása",
+  "Tempo {0}, start the guide": "Tempó {0}, útmutató indítása",
+  "Lower": "Le",
+  "Lift": "Fel",
+  "Squeeze": "Szorítás",
   // Cardio resistance controls.
   "Level": "Fokozat",
   // Original automatic and saved warm-up controls.

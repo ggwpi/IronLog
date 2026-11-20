@@ -503,7 +503,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
         { items: [
           { icon: 'palette', label: t('Colour tag'), sub: tagHere ? `${tagHere.shape} ${setTagName(tagHere.id)}` : t('Your own code for this set'), onClick: () => tagSheet(spanStart, warm ? t('Warm-up') : t('Set {0}', setNumOf(s, i))) },
           { icon: 'note', label: noteHere ? t('Edit note') : t('Note'), sub: noteHere || t('A word about this set'), onClick: () => setNoteSheet(entryIdx, spanStart) },
-          !warm && mode === 'reps' && { icon: 'stopwatch', label: t('Tempo'), sub: tempoOf(entry.target, entry.sets[spanStart]) || t('None'), onClick: () => setTempoSheet(entryIdx, spanStart) },
+          !warm && mode === 'reps' && { icon: 'stopwatch', label: t('Tempo'), sub: tempoOf(entry.target, entry.sets[spanStart]) || t('None'), onClick: () => setTempoSheet(entryIdx, spanStart, { onTick: () => onToggle(spanStart) }) },
           !warm && mode === 'reps' && canBeWarmup(s) && entry.sets.some((x, j) => j !== i && !isWarmupRow(x)) && { icon: 'sunrise', label: t('Make it a warm-up set'), onClick: () => setPhaseAt(i, true) },
           warm && mode === 'reps' && { icon: 'dumbbell', label: t('Count it as a working set'), onClick: () => setPhaseAt(i, false) },
           // Taken to failure: a toggle with its check, like the menu's other on/off rows. It counts
@@ -794,7 +794,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
           </div>}
           {loadLine(String(i))}
           {!pairTail && mode === 'reps' && !isWarmupRow(s) && tempoOf(entry.target, s) && <button type="button" className="small dim" data-set-tempo
-            style={{ display: 'block', minHeight: 44, textAlign: 'start' }} onClick={() => setTempoSheet(entryIdx, i)}>
+            style={{ display: 'block', minHeight: 44, textAlign: 'start' }} onClick={() => setTempoSheet(entryIdx, i, { onTick: () => onToggle(i) })}>
             {t('Tempo')} <bdi dir="ltr">{tempoOf(entry.target, s)}</bdi>
           </button>}
           {!pairTail && setNoteOf(s) && <button type="button" className="small dim" data-set-note
